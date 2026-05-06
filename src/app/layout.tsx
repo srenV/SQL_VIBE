@@ -1,13 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { ThemeScript } from "@/components/themeProvider";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: [
+    { path: "../fonts/Inter-300.woff2", weight: "300", style: "normal" },
+    { path: "../fonts/Inter-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/Inter-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/Inter-600.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/Inter-700.woff2", weight: "700", style: "normal" },
+    { path: "../fonts/Inter-800.woff2", weight: "800", style: "normal" },
+  ],
   variable: "--font-inter",
   display: "swap",
-  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -38,6 +45,7 @@ export default function RootLayout({
           Zum Inhalt springen
         </a>
         {children}
+        <Footer />
       </body>
     </html>
   );

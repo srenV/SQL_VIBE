@@ -1,3 +1,8 @@
+/**
+ * ExercisePageClient – Client-Komponente fuer die Uebungsseite.
+ * Steuert die Darstellung je nach Aufgabentyp (Write, Debug, Predict, Schema, Story)
+ * und verwaltet Navigation, Fortschritt und Layout.
+ */
 "use client";
 
 import React from "react";

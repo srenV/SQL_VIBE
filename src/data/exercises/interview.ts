@@ -1,3 +1,7 @@
+/**
+ * Interview-Uebungen.
+ * Enthaelt anspruchsvolle SQL-Aufgaben im Stile von Vorstellungsgespraechen.
+ */
 import { makeWriteExercise, makeDebugExercise, makePredictExercise, makeSchemaExercise, resetCounter } from "@/data/exercises/_factory";
 import type { Exercise } from "@/types/exercise";
 import { shopDataset } from "@/data/datasets/shop";

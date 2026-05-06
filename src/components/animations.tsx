@@ -1,8 +1,20 @@
+/**
+ * Animations-Komponenten fuer die VIBAA MySQL-Lernplattform.
+ *
+ * Enthaelt:
+ * - FadeIn: Einblend-Animation mit Richtungsoptionen (oben, unten, links, rechts).
+ * - ScaleOnHover: Skalierungs-Animation beim Ueberfahren mit der Maus.
+ * - AnimatedList: Gestaffelte Einblend-Animation fuer Listen-Items.
+ *
+ * English: Animation components for the VIBAA MySQL learning platform.
+ * Includes FadeIn, ScaleOnHover, and AnimatedList.
+ */
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
+/** Props fuer die FadeIn-Komponente. Richtungs-optionen: up, down, left, right. */
 export interface FadeInProps {
   direction?: "up" | "down" | "left" | "right";
   delay?: number;
@@ -11,6 +23,7 @@ export interface FadeInProps {
   children?: React.ReactNode;
 }
 
+/** Offset-Werte fuer die jeweilige Einblendrichtung. */
 const directionOffset = {
   up: { y: 24, x: 0 },
   down: { y: -24, x: 0 },
@@ -84,7 +97,9 @@ export const FadeIn = React.forwardRef<HTMLDivElement, FadeInProps>(
 );
 FadeIn.displayName = "FadeIn";
 
+/** Props fuer die ScaleOnHover-Komponente. Skalierung mit Standard 1.02. */
 export interface ScaleOnHoverProps {
+  /** Skalierungsfaktor beim Ueberfahren (Standard: 1.02). */
   scale?: number;
   className?: string;
   children?: React.ReactNode;
@@ -122,7 +137,9 @@ export const ScaleOnHover = React.forwardRef<HTMLDivElement, ScaleOnHoverProps>(
 );
 ScaleOnHover.displayName = "ScaleOnHover";
 
+/** Props fuer die AnimatedList-Komponente. Gestaffelte Einblend-Animation fuer Kinder-Elemente. */
 export interface AnimatedListProps {
+  /** Verzoegerung zwischen einzelnen Listenelementen in Sekunden (Standard: 0.08). */
   stagger?: number;
   className?: string;
   children?: React.ReactNode;

@@ -4,7 +4,9 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * SqlEditor – Textarea for SQL input with monospace font and minimal chrome.
+ * SqlEditor – Textarea fuer SQL-Eingabe mit Monospace-Font und minimalem Chrom.
+ *
+ * English: SqlEditor – Textarea for SQL input with monospace font and minimal chrome.
  */
 export interface SqlEditorProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: boolean;

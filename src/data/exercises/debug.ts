@@ -1,3 +1,7 @@
+/**
+ * Debug-Uebungen.
+ * Enthaelt Uebungen, bei denen fehlerhafte SQL-Abfragen korrigiert werden muessen.
+ */
 import { makeWriteExercise, makeDebugExercise, makePredictExercise, makeSchemaExercise, resetCounter } from "@/data/exercises/_factory";
 import type { Exercise } from "@/types/exercise";
 import { shopDataset } from "@/data/datasets/shop";

@@ -1,3 +1,8 @@
+/**
+ * PredictQuiz – Interaktive Multiple-Choice-Komponente fuer Vorhersage-Uebungen.
+ * Zeigt eine Frage mit Antwortoptionen an, wertet die Auswahl aus und
+ * verfolgt den Lernfortschritt.
+ */
 "use client";
 
 import React from "react";
@@ -11,8 +16,10 @@ import type { PlaygroundExercise, QuizOption } from "@/types/playground";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
 import { introspectSchema } from "@/lib/schemaExplorer";
 
+/** Props fuer die PredictQuiz-Komponente. */
 interface PredictQuizProps {
   exercise: PlaygroundExercise;
+  /** Callback nach erfolgreicher Loesung. */
   onComplete?: (attemptCount: number) => void;
 }
 
@@ -23,6 +30,7 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
   const [attemptCount, setAttemptCount] = React.useState(0);
   const [liveSchema, setLiveSchema] = React.useState(exercise.schemaTables || []);
   const [showCelebration, setShowCelebration] = React.useState(false);
+  const [db, setDb] = React.useState<import("sql.js").Database | null>(null);
 
   const prevCompletedRef = React.useRef(false);
   const dbRef = React.useRef<import("sql.js").Database | null>(null);
@@ -33,6 +41,7 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
       try {
         const db = await createDatabase(exercise.setupSql);
         dbRef.current = db;
+        setDb(db);
         const schema = introspectSchema(db);
         if (mounted) {
           setLiveSchema(schema.length > 0 ? schema : (exercise.schemaTables || []));
@@ -204,7 +213,7 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
             <h4 className="text-sm font-semibold text-ink mb-3">Schema-Explorer</h4>
-            <SchemaExplorer tables={liveSchema} />
+            <SchemaExplorer tables={liveSchema} db={db} />
           </Card>
         </FadeIn>
       )}

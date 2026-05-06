@@ -1,7 +1,13 @@
+/**
+ * Logo – Zeigt das VIBAA-Logo mit optionalem Kompaktmodus.
+ * Im Kompaktmodus wird nur der Buchstabe "V" angezeigt.
+ */
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/** Props fuer die Logo-Komponente. */
 export interface LogoProps extends React.HTMLAttributes<HTMLSpanElement> {
+  /** Kompaktmodus: zeigt nur "V" statt "VIBAA". */
   compact?: boolean;
 }
 

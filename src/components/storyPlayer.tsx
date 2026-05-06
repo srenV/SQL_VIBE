@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * StoryPlayer – Narrativer Spielmodus (SQL Noir / Murder Mystery).
+ * StoryPlayer – Narrativer Spielmodus (SQL Agent).
  *
  * Zeigt ein Szenario mit mehreren Kapiteln an. Jedes Kapitel hat:
  *   1. Einen narrativen Einfuehrungstext
@@ -73,6 +73,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
     requestStrongerHint,
     resetSession,
     liveSchema,
+    db,
   } = playground;
 
   const prevCompletedRef = React.useRef(false);
@@ -353,7 +354,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
             <h4 className="text-sm font-semibold text-ink mb-3">Schema-Explorer</h4>
-            <SchemaExplorer tables={liveSchema} />
+            <SchemaExplorer tables={liveSchema} db={db} />
           </Card>
         </FadeIn>
       )}

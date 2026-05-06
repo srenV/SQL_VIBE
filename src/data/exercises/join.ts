@@ -1,0 +1,817 @@
+/**
+ * JOIN-Uebungen.
+ * Enthaelt Uebungen fuer INNER JOIN, LEFT JOIN und RIGHT JOIN.
+ */
+import { makeWriteExercise, makeDebugExercise, makePredictExercise, makeSchemaExercise, resetCounter } from "@/data/exercises/_factory";
+import type { Exercise } from "@/types/exercise";
+import { shopDataset } from "@/data/datasets/shop";
+import { fitnessDataset } from "@/data/datasets/fitness";
+import { hrDataset } from "@/data/datasets/hr";
+import { ticketsDataset } from "@/data/datasets/tickets";
+import { bankingDataset } from "@/data/datasets/banking";
+import { streamingDataset } from "@/data/datasets/streaming";
+import { logsDataset } from "@/data/datasets/logs";
+
+export const joinExercises: Exercise[] = [];
+resetCounter();
+joinExercises.push(
+  makeWriteExercise("joi", {
+    title: "kunden und bestellungen verbinden",
+    description: "Zeige name und gesamtbetrag durch einen INNER JOIN zwischen `kunden` und `bestellungen`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT name, gesamtbetrag FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT name, gesamtbetrag FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen kunden und bestellungen",
+    description: "Zeige alle Zeilen aus `kunden` und passende aus `bestellungen` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT name, gesamtbetrag FROM kunden LEFT JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT name, gesamtbetrag FROM kunden LEFT JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen kunden und bestellungen",
+    description: "Zeige alle Zeilen aus `bestellungen` und passende aus `kunden`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT name, gesamtbetrag FROM kunden RIGHT JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT name, gesamtbetrag FROM kunden RIGHT JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Bestellungen pro Kunde zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `bestellungen` zu jeder Zeile aus `kunden` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id GROUP BY kunden.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id GROUP BY kunden.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "produkte und kategorien verbinden",
+    description: "Zeige produkte.name und kategorien.name durch einen INNER JOIN zwischen `produkte` und `kategorien`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT produkte.name, kategorien.name FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT produkte.name, kategorien.name FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen produkte und kategorien",
+    description: "Zeige alle Zeilen aus `produkte` und passende aus `kategorien` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT produkte.name, kategorien.name FROM produkte LEFT JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT produkte.name, kategorien.name FROM produkte LEFT JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen produkte und kategorien",
+    description: "Zeige alle Zeilen aus `kategorien` und passende aus `produkte`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT produkte.name, kategorien.name FROM produkte RIGHT JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT produkte.name, kategorien.name FROM produkte RIGHT JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Kategorien pro Produkt zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `kategorien` zu jeder Zeile aus `produkte` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT produkte.id, COUNT(*) AS anzahl FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id GROUP BY produkte.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT produkte.id, COUNT(*) AS anzahl FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id GROUP BY produkte.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "bestellungen und zahlungen verbinden",
+    description: "Zeige status und betrag durch einen INNER JOIN zwischen `bestellungen` und `zahlungen`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT status, betrag FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT status, betrag FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen bestellungen und zahlungen",
+    description: "Zeige alle Zeilen aus `bestellungen` und passende aus `zahlungen` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT status, betrag FROM bestellungen LEFT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT status, betrag FROM bestellungen LEFT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen bestellungen und zahlungen",
+    description: "Zeige alle Zeilen aus `zahlungen` und passende aus `bestellungen`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT status, betrag FROM bestellungen RIGHT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT status, betrag FROM bestellungen RIGHT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Zahlungen pro Bestellung zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `zahlungen` zu jeder Zeile aus `bestellungen` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "shop",
+    referenceQuery: `SELECT bestellungen.id, COUNT(*) AS anzahl FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id GROUP BY bestellungen.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT bestellungen.id, COUNT(*) AS anzahl FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id GROUP BY bestellungen.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "nutzer und workouts verbinden",
+    description: "Zeige nutzer.name und dauer_min durch einen INNER JOIN zwischen `nutzer` und `workouts`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT nutzer.name, dauer_min FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT nutzer.name, dauer_min FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen nutzer und workouts",
+    description: "Zeige alle Zeilen aus `nutzer` und passende aus `workouts` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT nutzer.name, dauer_min FROM nutzer LEFT JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT nutzer.name, dauer_min FROM nutzer LEFT JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen nutzer und workouts",
+    description: "Zeige alle Zeilen aus `workouts` und passende aus `nutzer`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT nutzer.name, dauer_min FROM nutzer RIGHT JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT nutzer.name, dauer_min FROM nutzer RIGHT JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Workouts pro Nutzer zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `workouts` zu jeder Zeile aus `nutzer` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id GROUP BY nutzer.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id GROUP BY nutzer.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "workouts und saetze verbinden",
+    description: "Zeige datum und wiederholungen durch einen INNER JOIN zwischen `workouts` und `saetze`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT datum, wiederholungen FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT datum, wiederholungen FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen workouts und saetze",
+    description: "Zeige alle Zeilen aus `workouts` und passende aus `saetze` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT datum, wiederholungen FROM workouts LEFT JOIN saetze ON workouts.id = saetze.workout_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT datum, wiederholungen FROM workouts LEFT JOIN saetze ON workouts.id = saetze.workout_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen workouts und saetze",
+    description: "Zeige alle Zeilen aus `saetze` und passende aus `workouts`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT datum, wiederholungen FROM workouts RIGHT JOIN saetze ON workouts.id = saetze.workout_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT datum, wiederholungen FROM workouts RIGHT JOIN saetze ON workouts.id = saetze.workout_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Saetze pro Workout zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `saetze` zu jeder Zeile aus `workouts` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "fitness",
+    referenceQuery: `SELECT workouts.id, COUNT(*) AS anzahl FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id GROUP BY workouts.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT workouts.id, COUNT(*) AS anzahl FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id GROUP BY workouts.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "mitarbeiter und abteilungen verbinden",
+    description: "Zeige mitarbeiter.name und abteilungen.name durch einen INNER JOIN zwischen `mitarbeiter` und `abteilungen`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen mitarbeiter und abteilungen",
+    description: "Zeige alle Zeilen aus `mitarbeiter` und passende aus `abteilungen` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter LEFT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter LEFT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen mitarbeiter und abteilungen",
+    description: "Zeige alle Zeilen aus `abteilungen` und passende aus `mitarbeiter`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter RIGHT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter RIGHT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Abteilungen pro Mitarbeiter zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `abteilungen` zu jeder Zeile aus `mitarbeiter` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id GROUP BY mitarbeiter.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id GROUP BY mitarbeiter.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "mitarbeiter und urlaub verbinden",
+    description: "Zeige name und tage durch einen INNER JOIN zwischen `mitarbeiter` und `urlaub`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT name, tage FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT name, tage FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen mitarbeiter und urlaub",
+    description: "Zeige alle Zeilen aus `mitarbeiter` und passende aus `urlaub` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT name, tage FROM mitarbeiter LEFT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT name, tage FROM mitarbeiter LEFT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen mitarbeiter und urlaub",
+    description: "Zeige alle Zeilen aus `urlaub` und passende aus `mitarbeiter`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT name, tage FROM mitarbeiter RIGHT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT name, tage FROM mitarbeiter RIGHT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Urlaub pro Mitarbeiter zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `urlaub` zu jeder Zeile aus `mitarbeiter` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "hr",
+    referenceQuery: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id GROUP BY mitarbeiter.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id GROUP BY mitarbeiter.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "tickets und agenten verbinden",
+    description: "Zeige tickets.titel und agenten.name durch einen INNER JOIN zwischen `tickets` und `agenten`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.titel, agenten.name FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT tickets.titel, agenten.name FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen tickets und agenten",
+    description: "Zeige alle Zeilen aus `tickets` und passende aus `agenten` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.titel, agenten.name FROM tickets LEFT JOIN agenten ON tickets.agent_id = agenten.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT tickets.titel, agenten.name FROM tickets LEFT JOIN agenten ON tickets.agent_id = agenten.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen tickets und agenten",
+    description: "Zeige alle Zeilen aus `agenten` und passende aus `tickets`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.titel, agenten.name FROM tickets RIGHT JOIN agenten ON tickets.agent_id = agenten.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT tickets.titel, agenten.name FROM tickets RIGHT JOIN agenten ON tickets.agent_id = agenten.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Agenten pro Ticket zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `agenten` zu jeder Zeile aus `tickets` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id GROUP BY tickets.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id GROUP BY tickets.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "tickets und kategorien verbinden",
+    description: "Zeige tickets.titel und kategorien.name durch einen INNER JOIN zwischen `tickets` und `kategorien`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.titel, kategorien.name FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT tickets.titel, kategorien.name FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen tickets und kategorien",
+    description: "Zeige alle Zeilen aus `tickets` und passende aus `kategorien` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.titel, kategorien.name FROM tickets LEFT JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT tickets.titel, kategorien.name FROM tickets LEFT JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen tickets und kategorien",
+    description: "Zeige alle Zeilen aus `kategorien` und passende aus `tickets`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.titel, kategorien.name FROM tickets RIGHT JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT tickets.titel, kategorien.name FROM tickets RIGHT JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Kategorien pro Ticket zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `kategorien` zu jeder Zeile aus `tickets` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "tickets",
+    referenceQuery: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id GROUP BY tickets.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id GROUP BY tickets.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "kunden und konten verbinden",
+    description: "Zeige kunden.name und saldo durch einen INNER JOIN zwischen `kunden` und `konten`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT kunden.name, saldo FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT kunden.name, saldo FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen kunden und konten",
+    description: "Zeige alle Zeilen aus `kunden` und passende aus `konten` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT kunden.name, saldo FROM kunden LEFT JOIN konten ON kunden.id = konten.kunde_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT kunden.name, saldo FROM kunden LEFT JOIN konten ON kunden.id = konten.kunde_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen kunden und konten",
+    description: "Zeige alle Zeilen aus `konten` und passende aus `kunden`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT kunden.name, saldo FROM kunden RIGHT JOIN konten ON kunden.id = konten.kunde_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT kunden.name, saldo FROM kunden RIGHT JOIN konten ON kunden.id = konten.kunde_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Konten pro Kunde zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `konten` zu jeder Zeile aus `kunden` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id GROUP BY kunden.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id GROUP BY kunden.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "konten und transaktionen verbinden",
+    description: "Zeige kontonummer und betrag durch einen INNER JOIN zwischen `konten` und `transaktionen`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT kontonummer, betrag FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT kontonummer, betrag FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen konten und transaktionen",
+    description: "Zeige alle Zeilen aus `konten` und passende aus `transaktionen` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT kontonummer, betrag FROM konten LEFT JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT kontonummer, betrag FROM konten LEFT JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen konten und transaktionen",
+    description: "Zeige alle Zeilen aus `transaktionen` und passende aus `konten`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT kontonummer, betrag FROM konten RIGHT JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT kontonummer, betrag FROM konten RIGHT JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Transaktionen pro Konto zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `transaktionen` zu jeder Zeile aus `konten` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "banking",
+    referenceQuery: `SELECT konten.id, COUNT(*) AS anzahl FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id GROUP BY konten.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT konten.id, COUNT(*) AS anzahl FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id GROUP BY konten.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "nutzer und watch_history verbinden",
+    description: "Zeige nutzer.name und fortschritt_prozent durch einen INNER JOIN zwischen `nutzer` und `watch_history`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "streaming",
+    referenceQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen nutzer und watch_history",
+    description: "Zeige alle Zeilen aus `nutzer` und passende aus `watch_history` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "streaming",
+    referenceQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer LEFT JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer LEFT JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "RIGHT JOIN zwischen nutzer und watch_history",
+    description: "Zeige alle Zeilen aus `watch_history` und passende aus `nutzer`.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "streaming",
+    referenceQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer RIGHT JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `RIGHT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer RIGHT JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "Watch-History pro Nutzer zaehlen (JOIN + GROUP BY)",
+    description: "Zaehle, wie viele Zeilen aus `watch_history` zu jeder Zeile aus `nutzer` passen.",
+    difficulty: "intermediate",
+    category: "JOIN",
+    datasetId: "streaming",
+    referenceQuery: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id GROUP BY nutzer.id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Kombiniere JOIN mit GROUP BY und COUNT."
+    ],
+    hiddenTestQuery: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id GROUP BY nutzer.id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "filme und bewertungen verbinden",
+    description: "Zeige filme.titel und sterne durch einen INNER JOIN zwischen `filme` und `bewertungen`.",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "streaming",
+    referenceQuery: `SELECT filme.titel, sterne FROM filme INNER JOIN bewertungen ON filme.id = bewertungen.film_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `INNER JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT filme.titel, sterne FROM filme INNER JOIN bewertungen ON filme.id = bewertungen.film_id;`,
+    hiddenTestMode: "rows",
+  }),
+
+  makeWriteExercise("joi", {
+    title: "LEFT JOIN zwischen filme und bewertungen",
+    description: "Zeige alle Zeilen aus `filme` und passende aus `bewertungen` (auch wenn keine Uebereinstimmung).",
+    difficulty: "junior",
+    category: "JOIN",
+    datasetId: "streaming",
+    referenceQuery: `SELECT filme.titel, sterne FROM filme LEFT JOIN bewertungen ON filme.id = bewertungen.film_id;`,
+    expectedResultText: "",
+    tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
+    hints: [
+      "Verwende `LEFT JOIN ... ON`."
+    ],
+    hiddenTestQuery: `SELECT filme.titel, sterne FROM filme LEFT JOIN bewertungen ON filme.id = bewertungen.film_id;`,
+    hiddenTestMode: "rows",
+  })
+);

@@ -171,9 +171,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-surface-dim py-6 text-center text-sm text-ink-muted">
-        VIBAA &mdash; Lerne MySQL spielerisch
-      </footer>
+
     </div>
   );
 }

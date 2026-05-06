@@ -3,9 +3,14 @@
 import React from "react";
 import type { SqlColumn, SqlRow } from "@/types/playground";
 
+/**
+ * ResultsetTable – Zeigt die Ergebnisse einer SQL-Abfrage in einer Tabelle an.
+ * Spalten und Zeilen werden aus den SqlColumn/SqlRow-Daten gerendert.
+ */
 export interface ResultsetTableProps {
   columns: SqlColumn[];
   rows: SqlRow[];
+  /** Tabellenueberschrift (Caption), die ueber der Tabelle angezeigt wird. */
   caption?: string;
 }
 

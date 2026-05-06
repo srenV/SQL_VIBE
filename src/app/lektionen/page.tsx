@@ -48,9 +48,7 @@ export default function LektionenPage() {
         </Container>
       </main>
 
-      <footer className="border-t border-surface-dim py-6 text-center text-sm text-ink-muted">
-        VIBAA – Lerne MySQL spielerisch
-      </footer>
+
     </div>
   );
 }

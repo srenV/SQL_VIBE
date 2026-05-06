@@ -1,3 +1,7 @@
+/**
+ * Lektionen-Detailseite – Zeigt alle Uebungen einer Lektion mit
+ * Fortschrittsanzeige und Schwierigkeitsgrad-Labels an.
+ */
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { catalog, allLessonIds } from "@/data/catalog";

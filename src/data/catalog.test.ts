@@ -1,3 +1,7 @@
+/**
+ * Katalog-Tests – Prueft Integritaet und Vollstaendigkeit des Uebungskatalogs.
+ * Ueberprueft Datensaetze, Lektionen, Uebungsverknuepfungen und IDs.
+ */
 import { catalog, allExerciseIds, allLessonIds } from "@/data/catalog";
 
 describe("Catalog", () => {

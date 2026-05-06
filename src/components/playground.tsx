@@ -1,3 +1,8 @@
+/**
+ * Playground – Hauptkomponente fuer die SQL-Uebungsumgebung.
+ * Orchestriert SQL-Editor, Schema-Explorer, Ergebnistabelle,
+ * Hinweise und verdeckte Tests in einer einheitlichen Oberflaeche.
+ */
 "use client";
 
 import React from "react";
@@ -33,6 +38,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
     requestStrongerHint,
     resetSession,
     liveSchema,
+    db,
   } = usePlayground(exercise);
 
   const hasHiddenFailures = hiddenTestResults && hiddenTestResults.some((r) => !r.passed);
@@ -247,7 +253,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
             <h4 className="text-sm font-semibold text-ink mb-3">Schema-Explorer</h4>
-            <SchemaExplorer tables={liveSchema} />
+            <SchemaExplorer tables={liveSchema} db={db} />
           </Card>
         </FadeIn>
       )}

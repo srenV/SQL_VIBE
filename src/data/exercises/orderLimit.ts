@@ -1,0 +1,416 @@
+/**
+ * ORDER BY und LIMIT-Uebungen.
+ * Enthaelt Uebungen fuer Sortierung und Ergebnismengenbeschraenkung.
+ */
+import { makeWriteExercise, makeDebugExercise, makePredictExercise, makeSchemaExercise, resetCounter } from "@/data/exercises/_factory";
+import type { Exercise } from "@/types/exercise";
+import { shopDataset } from "@/data/datasets/shop";
+import { fitnessDataset } from "@/data/datasets/fitness";
+import { hrDataset } from "@/data/datasets/hr";
+import { ticketsDataset } from "@/data/datasets/tickets";
+import { bankingDataset } from "@/data/datasets/banking";
+import { streamingDataset } from "@/data/datasets/streaming";
+import { logsDataset } from "@/data/datasets/logs";
+
+export const orderLimitExercises: Exercise[] = [];
+resetCounter();
+orderLimitExercises.push(
+  makeWriteExercise("ord", {
+    title: "kunden sortieren nach stadt",
+    description: "Gib alle Zeilen aus `kunden` aus, sortiert nach `stadt` aufsteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "shop",
+    referenceQuery: `SELECT * FROM kunden ORDER BY stadt ASC;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `ORDER BY stadt ASC`."
+    ],
+    hiddenTestQuery: `SELECT * FROM kunden ORDER BY stadt ASC;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "nutzer absteigend sortieren",
+    description: "Gib alle Zeilen aus `nutzer` aus, sortiert nach `id` absteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "fitness",
+    referenceQuery: `SELECT * FROM nutzer ORDER BY id DESC;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `ORDER BY id DESC`."
+    ],
+    hiddenTestQuery: `SELECT * FROM nutzer ORDER BY id DESC;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "Top 5 aus uebungen",
+    description: "Gib die ersten 5 Zeilen aus `uebungen` aus, sortiert nach `kategorie` absteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "fitness",
+    referenceQuery: `SELECT * FROM uebungen ORDER BY kategorie DESC LIMIT 5;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `LIMIT 5` nach `ORDER BY`."
+    ],
+    hiddenTestQuery: `SELECT * FROM uebungen ORDER BY kategorie DESC LIMIT 5;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "Erste 3 Eintraege aus abteilungen",
+    description: "Gib die ersten 3 Zeilen aus `abteilungen` aus, sortiert nach `budget` aufsteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "hr",
+    referenceQuery: `SELECT * FROM abteilungen ORDER BY budget ASC LIMIT 3;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `LIMIT 3` nach `ORDER BY`."
+    ],
+    hiddenTestQuery: `SELECT * FROM abteilungen ORDER BY budget ASC LIMIT 3;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "mitarbeiter sortieren nach position",
+    description: "Gib alle Zeilen aus `mitarbeiter` aus, sortiert nach `position` aufsteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "hr",
+    referenceQuery: `SELECT * FROM mitarbeiter ORDER BY position ASC;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `ORDER BY position ASC`."
+    ],
+    hiddenTestQuery: `SELECT * FROM mitarbeiter ORDER BY position ASC;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "agenten absteigend sortieren",
+    description: "Gib alle Zeilen aus `agenten` aus, sortiert nach `aktiv` absteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "tickets",
+    referenceQuery: `SELECT * FROM agenten ORDER BY aktiv DESC;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `ORDER BY aktiv DESC`."
+    ],
+    hiddenTestQuery: `SELECT * FROM agenten ORDER BY aktiv DESC;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "Top 5 aus kunden",
+    description: "Gib die ersten 5 Zeilen aus `kunden` aus, sortiert nach `geburtsdatum` absteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "banking",
+    referenceQuery: `SELECT * FROM kunden ORDER BY geburtsdatum DESC LIMIT 5;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `LIMIT 5` nach `ORDER BY`."
+    ],
+    hiddenTestQuery: `SELECT * FROM kunden ORDER BY geburtsdatum DESC LIMIT 5;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "Erste 3 Eintraege aus konten",
+    description: "Gib die ersten 3 Zeilen aus `konten` aus, sortiert nach `kunde_id` aufsteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "banking",
+    referenceQuery: `SELECT * FROM konten ORDER BY kunde_id ASC LIMIT 3;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `LIMIT 3` nach `ORDER BY`."
+    ],
+    hiddenTestQuery: `SELECT * FROM konten ORDER BY kunde_id ASC LIMIT 3;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "nutzer sortieren nach name",
+    description: "Gib alle Zeilen aus `nutzer` aus, sortiert nach `name` aufsteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "streaming",
+    referenceQuery: `SELECT * FROM nutzer ORDER BY name ASC;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `ORDER BY name ASC`."
+    ],
+    hiddenTestQuery: `SELECT * FROM nutzer ORDER BY name ASC;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "filme absteigend sortieren",
+    description: "Gib alle Zeilen aus `filme` aus, sortiert nach `jahr` absteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "streaming",
+    referenceQuery: `SELECT * FROM filme ORDER BY jahr DESC;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `ORDER BY jahr DESC`."
+    ],
+    hiddenTestQuery: `SELECT * FROM filme ORDER BY jahr DESC;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "Top 5 aus events",
+    description: "Gib die ersten 5 Zeilen aus `events` aus, sortiert nach `session_id` absteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "logs",
+    referenceQuery: `SELECT * FROM events ORDER BY session_id DESC LIMIT 5;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `LIMIT 5` nach `ORDER BY`."
+    ],
+    hiddenTestQuery: `SELECT * FROM events ORDER BY session_id DESC LIMIT 5;`,
+    hiddenTestMode: "exact",
+  }),
+
+  makeWriteExercise("ord", {
+    title: "Erste 3 Eintraege aus sessions",
+    description: "Gib die ersten 3 Zeilen aus `sessions` aus, sortiert nach `browser` aufsteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: "logs",
+    referenceQuery: `SELECT * FROM sessions ORDER BY browser ASC LIMIT 3;`,
+    expectedResultText: "",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: [
+      "Verwende `LIMIT 3` nach `ORDER BY`."
+    ],
+    hiddenTestQuery: `SELECT * FROM sessions ORDER BY browser ASC LIMIT 3;`,
+    hiddenTestMode: "exact",
+  })
+);
+
+orderLimitExercises.push(
+  makeWriteExercise("ord", {
+    title: "Produkte sortiert nach Preis",
+    description: "Gib `name` und `preis` aller Produkte aus, sortiert nach `preis` aufsteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: shopDataset.id,
+    referenceQuery: "SELECT name, preis FROM produkte ORDER BY preis ASC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY preis ASC`."],
+    hiddenTestQuery: "SELECT name, preis FROM produkte ORDER BY preis ASC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Teuerste 3 Produkte",
+    description: "Gib die 3 teuersten Produkte aus: `name` und `preis`, absteigend nach Preis.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: shopDataset.id,
+    referenceQuery: "SELECT name, preis FROM produkte ORDER BY preis DESC LIMIT 3;",
+    tags: ["ORDER BY", "LIMIT", "Sortieren"],
+    hints: ["Sortiere absteigend mit `DESC` und verwende `LIMIT 3`."],
+    hiddenTestQuery: "SELECT name, preis FROM produkte ORDER BY preis DESC LIMIT 3;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Bestellungen sortiert nach Datum",
+    description: "Gib alle Bestellungen sortiert nach `datum` aufsteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: shopDataset.id,
+    referenceQuery: "SELECT * FROM bestellungen ORDER BY datum ASC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY datum ASC`."],
+    hiddenTestQuery: "SELECT * FROM bestellungen ORDER BY datum ASC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Mitarbeiter sortiert nach Gehalt",
+    description: "Gib `name` und `gehalt` aller Mitarbeiter aus, sortiert nach `gehalt` absteigend.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: hrDataset.id,
+    referenceQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY gehalt DESC`."],
+    hiddenTestQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Top 3 verdienstlichste Mitarbeiter",
+    description: "Gib die 3 Mitarbeiter mit dem hoechsten Gehalt aus (`name`, `gehalt`).",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: hrDataset.id,
+    referenceQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC LIMIT 3;",
+    tags: ["ORDER BY", "LIMIT"],
+    hints: ["Sortiere absteigend und verwende `LIMIT 3`."],
+    hiddenTestQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC LIMIT 3;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Uebungen sortiert nach Muskelgruppe",
+    description: "Gib alle Uebungen sortiert nach `muskelgruppe` aufsteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: fitnessDataset.id,
+    referenceQuery: "SELECT * FROM uebungen ORDER BY muskelgruppe ASC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY muskelgruppe ASC`."],
+    hiddenTestQuery: "SELECT * FROM uebungen ORDER BY muskelgruppe ASC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Workouts sortiert nach Dauer",
+    description: "Gib alle Workouts sortiert nach `dauer_min` absteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: fitnessDataset.id,
+    referenceQuery: "SELECT * FROM workouts ORDER BY dauer_min DESC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY dauer_min DESC`."],
+    hiddenTestQuery: "SELECT * FROM workouts ORDER BY dauer_min DESC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Tickets sortiert nach Prioritaet",
+    description: "Gib `titel` und `prioritaet` aller Tickets sortiert nach `prioritaet` aufsteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: ticketsDataset.id,
+    referenceQuery: "SELECT titel, prioritaet FROM tickets ORDER BY prioritaet ASC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY prioritaet ASC`."],
+    hiddenTestQuery: "SELECT titel, prioritaet FROM tickets ORDER BY prioritaet ASC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Neueste 5 Tickets",
+    description: "Gib die 5 neuesten Tickets sortiert nach `erstellt_am` absteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: ticketsDataset.id,
+    referenceQuery: "SELECT * FROM tickets ORDER BY erstellt_am DESC LIMIT 5;",
+    tags: ["ORDER BY", "LIMIT"],
+    hints: ["Sortiere nach `erstellt_am DESC` und verwende `LIMIT 5`."],
+    hiddenTestQuery: "SELECT * FROM tickets ORDER BY erstellt_am DESC LIMIT 5;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Transaktionen sortiert nach Betrag",
+    description: "Gib alle Transaktionen sortiert nach `betrag` absteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: bankingDataset.id,
+    referenceQuery: "SELECT * FROM transaktionen ORDER BY betrag DESC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY betrag DESC`."],
+    hiddenTestQuery: "SELECT * FROM transaktionen ORDER BY betrag DESC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Konten sortiert nach Saldo",
+    description: "Gib alle Konten sortiert nach `saldo` absteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: bankingDataset.id,
+    referenceQuery: "SELECT * FROM konten ORDER BY saldo DESC;",
+    tags: ["ORDER BY", "Sortieren"],
+    hints: ["Verwende `ORDER BY saldo DESC`."],
+    hiddenTestQuery: "SELECT * FROM konten ORDER BY saldo DESC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Top 5 hoechste Salden",
+    description: "Gib die 5 Konten mit dem hoechsten Saldo aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: bankingDataset.id,
+    referenceQuery: "SELECT * FROM konten ORDER BY saldo DESC LIMIT 5;",
+    tags: ["ORDER BY", "LIMIT"],
+    hints: ["Sortiere absteigend nach `saldo` und verwende `LIMIT 5`."],
+    hiddenTestQuery: "SELECT * FROM konten ORDER BY saldo DESC LIMIT 5;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Filme sortiert nach Jahr und Dauer",
+    description: "Gib `titel`, `jahr` und `dauer_min` sortiert nach `jahr` aufsteigend, dann nach `dauer_min` absteigend.",
+    difficulty: "junior",
+    category: "ORDER BY / LIMIT",
+    datasetId: streamingDataset.id,
+    referenceQuery: "SELECT titel, jahr, dauer_min FROM filme ORDER BY jahr ASC, dauer_min DESC;",
+    tags: ["ORDER BY", "Mehrspaltig"],
+    hints: ["Trenne mehrere Sortierspalten mit Komma.", "Erst nach `jahr`, dann nach `dauer_min`."],
+    hiddenTestQuery: "SELECT titel, jahr, dauer_min FROM filme ORDER BY jahr ASC, dauer_min DESC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Fehler sortiert nach Schweregrad",
+    description: "Gib alle Fehler sortiert nach `schweregrad` aufsteigend und `fehlercode` aufsteigend.",
+    difficulty: "junior",
+    category: "ORDER BY / LIMIT",
+    datasetId: logsDataset.id,
+    referenceQuery: "SELECT * FROM fehler ORDER BY schweregrad ASC, fehlercode ASC;",
+    tags: ["ORDER BY", "Mehrspaltig"],
+    hints: ["Sortiere nach zwei Spalten: `schweregrad`, dann `fehlercode`."],
+    hiddenTestQuery: "SELECT * FROM fehler ORDER BY schweregrad ASC, fehlercode ASC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Kunden sortiert nach Registrierungsdatum",
+    description: "Gib `name` und `registriert_am` der Kunden sortiert nach `registriert_am` absteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: shopDataset.id,
+    referenceQuery: "SELECT name, registriert_am FROM kunden ORDER BY registriert_am DESC;",
+    tags: ["ORDER BY"],
+    hints: ["Verwende `ORDER BY registriert_am DESC`."],
+    hiddenTestQuery: "SELECT name, registriert_am FROM kunden ORDER BY registriert_am DESC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Bewerbungen sortiert nach Datum",
+    description: "Gib alle Bewerbungen sortiert nach `bewerbungsdatum` absteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: hrDataset.id,
+    referenceQuery: "SELECT * FROM bewerbungen ORDER BY bewerbungsdatum DESC;",
+    tags: ["ORDER BY"],
+    hints: ["Verwende `ORDER BY bewerbungsdatum DESC`."],
+    hiddenTestQuery: "SELECT * FROM bewerbungen ORDER BY bewerbungsdatum DESC;",
+    hiddenTestMode: "exact",
+  }),
+  makeWriteExercise("ord", {
+    title: "Kommentare sortiert nach Erstellungsdatum",
+    description: "Gib die 10 neuesten Kommentare sortiert nach `erstellt_am` absteigend aus.",
+    difficulty: "beginner",
+    category: "ORDER BY / LIMIT",
+    datasetId: ticketsDataset.id,
+    referenceQuery: "SELECT * FROM kommentare ORDER BY erstellt_am DESC LIMIT 10;",
+    tags: ["ORDER BY", "LIMIT"],
+    hints: ["Sortiere absteigend und verwende `LIMIT 10`."],
+    hiddenTestQuery: "SELECT * FROM kommentare ORDER BY erstellt_am DESC LIMIT 10;",
+    hiddenTestMode: "exact",
+  })
+);
