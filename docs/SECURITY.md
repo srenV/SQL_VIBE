@@ -1,0 +1,173 @@
+# Security & Datenschutz — SQL-Trainer
+
+Sicherheits- und Datenschutzkonzept der SQL-Trainer MySQL-Lernplattform.
+
+---
+
+## Inhaltsverzeichnis
+
+1. [Architektur-Sicherheit](#architektur-sicherheit)
+2. [Client-Side Security](#client-side-security)
+3. [Datenschutz (DSGVO)](#datenschutz-dsgvo)
+4. [Datenhaltung](#datenhaltung)
+5. [Supply Chain](#supply-chain)
+6. [Threat Model](#threat-model)
+
+---
+
+## Architektur-Sicherheit
+
+### Zero-Server-Architektur
+
+Der SQL-Trainer ist ein **reiner Static Export** — es gibt:
+
+- ❌ Keine API-Routen
+- ❌ Keine Server-seitige Logik
+- ❌ Keine Datenbank auf dem Server
+- ❌ Keine Authentifizierung
+- ❌ Keine Sessions/Cookies (außer Theme)
+
+**Vorteil:** Keine serverseitigen Angriffsvektoren (SQL Injection, SSRF, RCE, Auth Bypass).
+
+### Deployment
+
+- **Plattform:** Vercel (Static Hosting)
+- **Build:** `next build` mit `output: "export"`
+- **Auslieferung:** Statische HTML/JS/CSS/WASM-Dateien über CDN
+
+---
+
+## Client-Side Security
+
+### XSS Prevention
+
+| Mechanismus | Status |
+|------------|--------|
+| React JSX Escaping | ✅ Standard (alle `{value}` werden escaped) |
+| `dangerouslySetInnerHTML` | ⚠️ Nur in `ThemeScript` (statisches JS, keine User-Inputs) |
+| `eval()` | ❌ Nicht verwendet |
+| `innerHTML` | ❌ Nicht verwendet |
+
+### SQL-Injection im Playground
+
+Der Playground führt **User-SQL** in einer **isolierten In-Memory sql.js-Datenbank** aus:
+
+- Die Datenbank existiert nur im Browser-Tab
+- Keine Verbindung zu externen Datenbanken
+- sql.js ist ein Read-Only-WASM-Modul ohne Netzwerkzugriff
+- `PRAGMA foreign_key_list` und `PRAGMA table_info` sind read-only
+
+**Risiko:** Keines — selbst destruktives SQL (`DROP TABLE`, `DELETE`) betrifft nur die lokale In-Memory-DB.
+
+### WASM Sandbox
+
+sql.js läuft in der Browser-WASM-Sandbox:
+- Kein Dateisystem-Zugriff
+- Kein Netzwerk-Zugriff
+- Kein DOM-Zugriff
+- Speicher ist auf den Tab beschränkt
+
+---
+
+## Datenschutz (DSGVO)
+
+### Personenbezogene Daten
+
+| Daten | Erfasst? | Begründung |
+|-------|---------|-----------|
+| Name | ❌ | Kein Login |
+| E-Mail | ❌ | Kein Login |
+| IP-Adresse | ❌ | Static Hosting (kein Server-Logging) |
+| Standort | ❌ | Kein Geo-Tracking |
+| Geräte-Fingerprint | ❌ | Kein Analytics |
+| Lernfortschritt | ⚠️ | Nur `localStorage` (Client-seitig) |
+
+### Cookies & Tracking
+
+| Typ | Verwendet? |
+|-----|-----------|
+| Session-Cookies | ❌ |
+| Tracking-Cookies | ❌ |
+| Analytics (GA, Plausible) | ❌ |
+| Third-Party CDN | ❌ (Fonts sind lokal) |
+| `localStorage` | ✅ `sql-trainer-progress`, `sql-trainer-theme` |
+
+### Rechtsgrundlage
+
+Da **keine personenbezogenen Daten** verarbeitet werden, ist keine Einwilligung erforderlich. Die `localStorage`-Nutzung fällt unter die **ePrivacy-Ausnahme** für technisch notwendige Speicherung.
+
+---
+
+## Datenhaltung
+
+### localStorage Schema
+
+```typescript
+// sql-trainer-progress
+{
+  exercises: Record<string, {
+    completed: boolean;
+    bestAttempts: number;
+    pointsEarned: number;
+    completedAt: string | null;
+  }>;
+  totalPoints: number;
+  streak: number;
+  lastActiveDate: string | null;
+  achievements: string[];
+}
+
+// sql-trainer-theme
+"dark" | "light"
+```
+
+### Datenlöschung
+
+- **Automatisch:** Browser-Cache-Leerung löscht `localStorage`
+- **Manuell:** `useProgress().resetProgress()` löscht alle Fortschrittsdaten
+- **Theme:** ThemeToggle setzt nur `"dark"` / `"light"`
+
+---
+
+## Supply Chain
+
+### Dependencies
+
+| Kategorie | Pakete | Risiko |
+|-----------|--------|--------|
+| **Framework** | next, react, react-dom | Niedrig (etabliert, Vercel/Meta) |
+| **Styling** | tailwindcss, clsx, tailwind-merge | Niedrig |
+| **Animation** | framer-motion | Niedrig |
+| **SQL** | sql.js | Niedrig (WASM, keine Netzwerk-I/O) |
+| **Graph** | @xyflow/react, dagre | Niedrig |
+| **Testing** | vitest, playwright, testing-library | Dev-only |
+
+### Audit
+
+```bash
+npm audit          # Regelmäßig ausführen
+npm audit fix      # Auto-Fix für bekannte CVEs
+```
+
+---
+
+## Threat Model
+
+### Angriffsvektoren (STRIDE)
+
+| Kategorie | Vektor | Risiko | Mitigation |
+|-----------|--------|--------|-----------|
+| **Spoofing** | — | Kein | Kein Login |
+| **Tampering** | Manipulation localStorage | Niedrig | Nur Client-seitig, kein Schaden |
+| **Repudiation** | — | Kein | Keine Aktionen die Logging erfordern |
+| **Information Disclosure** | Source Code | Niedrig | Keine Secrets im Code |
+| **Denial of Service** | Große WASM-Allokation | Niedrig | Browser-Tab-Limit |
+| **Elevation of Privilege** | — | Kein | Keine Rollen/Rechte |
+
+### Fazit
+
+Der SQL-Trainer hat eine **minimale Angriffsfläche**:
+- Kein Server → keine Server-Angriffe
+- Keine Auth → keine Auth-Angriffe
+- Keine externen APIs → keine Supply-Chain-Angriffe zur Laufzeit
+- WASM-Sandbox → isolierte SQL-Ausführung
