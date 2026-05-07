@@ -1,13 +1,13 @@
 /**
- * Logo – Zeigt das VIBAA-Logo mit optionalem Kompaktmodus.
- * Im Kompaktmodus wird nur der Buchstabe "V" angezeigt.
+ * Logo – Zeigt das SQL-Trainer-Logo mit optionalem Kompaktmodus.
+ * Im Kompaktmodus wird nur "SQL" statt "SQL-Trainer" angezeigt.
  */
 import React from "react";
 import { cn } from "@/lib/utils";
 
 /** Props fuer die Logo-Komponente. */
 export interface LogoProps extends React.HTMLAttributes<HTMLSpanElement> {
-  /** Kompaktmodus: zeigt nur "V" statt "VIBAA". */
+  /** Kompaktmodus: zeigt nur "SQL" statt "SQL-Trainer". */
   compact?: boolean;
 }
 
@@ -23,8 +23,8 @@ export const Logo = React.forwardRef<HTMLSpanElement, LogoProps>(
         )}
         {...props}
       >
-        <span className="text-primary-600">V</span>
-        <span className={cn(compact && "hidden")}>IBAA</span>
+        <span className="text-primary-600">SQL</span>
+        <span className={cn(compact && "hidden")}>-Trainer</span>
       </span>
     );
   }

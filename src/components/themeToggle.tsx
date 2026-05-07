@@ -27,7 +27,7 @@ export function ThemeToggle() {
 
   const toggle = useCallback(() => {
     const nextDark = !document.documentElement.classList.contains("dark");
-    localStorage.setItem("vibaa-theme", nextDark ? "dark" : "light");
+    localStorage.setItem("sql-trainer-theme", nextDark ? "dark" : "light");
     if (nextDark) {
       document.documentElement.classList.add("dark");
     } else {

@@ -26,7 +26,7 @@ import { compareResultsets } from "@/lib/resultsetComparison";
 import { explainError } from "@/lib/errorExplanation";
 import { getStrongerHint, selectHint } from "@/lib/hintEngine";
 import { runHiddenTests } from "@/lib/hiddenTests";
-import { introspectSchema } from "@/lib/schemaExplorer";
+import { introspectSchema, mergeSchemaWithFKs } from "@/lib/schemaExplorer";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
 
 /** Aktuelle Phase einer Playground-Sitzung: idle, running, success, error oder partial. */
@@ -46,6 +46,9 @@ export interface UsePlaygroundReturn {
   setUserQuery: (q: string) => void;
   runUserQuery: () => Promise<void>;
   requestStrongerHint: () => void;
+  showHint: () => void;
+  showSolution: () => void;
+  solutionRevealed: boolean;
   resetSession: () => void;
   referenceResultset?: SqlResultset;
   liveSchema: SchemaTable[];
@@ -64,6 +67,8 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
   const [comparison, setComparison] = useState<ResultsetComparison | undefined>(undefined);
   const [hiddenTestResults, setHiddenTestResults] = useState<HiddenTestResult[] | undefined>(undefined);
   const [hint, setHint] = useState<HintResult | undefined>(undefined);
+  const [hintManuallyRequested, setHintManuallyRequested] = useState(false);
+  const [solutionRevealed, setSolutionRevealed] = useState(false);
   const [errorExplanation, setErrorExplanation] = useState<SqlErrorExplanation | undefined>(undefined);
   const [attemptCount, setAttemptCount] = useState(0);
   const [completed, setCompleted] = useState(false);
@@ -93,10 +98,11 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
     if (ref.success && ref.resultset) {
       setReferenceResultset(ref.resultset);
     }
-    // Live-Schema aus der Datenbank introspektieren
+    // Live-Schema aus der Datenbank introspektieren und FKs aus Dataset-Metadaten mergen
     try {
       const schema = introspectSchema(db);
-      setLiveSchema(schema.length > 0 ? schema : (exercise.schemaTables || []));
+      const merged = mergeSchemaWithFKs(schema, exercise.schemaTables || []);
+      setLiveSchema(merged.length > 0 ? merged : (exercise.schemaTables || []));
     } catch {
       setLiveSchema(exercise.schemaTables || []);
     }
@@ -124,10 +130,11 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
       if (ref.success && ref.resultset) {
         setReferenceResultset(ref.resultset);
       }
-      // Schema nach Neu-Initialisierung erneut introspektieren
+      // Schema nach Neu-Initialisierung erneut introspektieren und FKs mergen
       try {
         const schema = introspectSchema(db!);
-        setLiveSchema(schema.length > 0 ? schema : (exercise.schemaTables || []));
+        const merged = mergeSchemaWithFKs(schema, exercise.schemaTables || []);
+        setLiveSchema(merged.length > 0 ? merged : (exercise.schemaTables || []));
       } catch {
         setLiveSchema(exercise.schemaTables || []);
       }
@@ -148,12 +155,7 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
       const exp = explainError(result.error || "");
       setErrorExplanation(exp);
       setPhase("error");
-      // Hinweis fuer Syntaxfehler suchen
-      const matched = selectHint(exercise.hints || [], result, undefined, nextAttempt);
-      if (matched) {
-        setHint(matched);
-        sessionRef.current.hintsShown.push(matched);
-      }
+      // Kein automatischer Hinweis mehr – User muss manuell anfordern
       return;
     }
 
@@ -197,13 +199,25 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
       setHint(undefined);
     } else {
       setPhase("partial");
-      const matched = selectHint(exercise.hints || [], result, comp, nextAttempt);
-      if (matched) {
-        setHint(matched);
-        sessionRef.current.hintsShown.push(matched);
-      }
+      // Kein automatischer Hinweis mehr – User muss manuell anfordern
     }
   }, [userQuery, attemptCount, exercise, initDb, referenceResultset]);
+
+  /** Manuell einen Hinweis anfordern (nur nach mind. 1 Versuch). */
+  const showHint = useCallback(() => {
+    if (attemptCount < 1 || !exercise.hints) return;
+    const matched = selectHint(
+      exercise.hints,
+      queryResult || { success: true },
+      comparison,
+      attemptCount
+    );
+    if (matched) {
+      setHint(matched);
+      setHintManuallyRequested(true);
+      sessionRef.current.hintsShown.push(matched);
+    }
+  }, [attemptCount, exercise.hints, queryResult, comparison]);
 
   const requestStrongerHint = useCallback(() => {
     if (!hint || !exercise.hints) return;
@@ -220,6 +234,13 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
     }
   }, [hint, exercise.hints, queryResult, comparison, attemptCount]);
 
+  /** Lösung anzeigen (nur ab 5 Fehlversuchen). */
+  const showSolution = useCallback(() => {
+    if (attemptCount < 5) return;
+    setSolutionRevealed(true);
+    setUserQuery(exercise.solutionQuery);
+  }, [attemptCount, exercise.solutionQuery]);
+
   const resetSession = useCallback(() => {
     setUserQuery(exercise.prefillQuery ?? "");
     setPhase("idle");
@@ -227,6 +248,8 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
     setComparison(undefined);
     setHiddenTestResults(undefined);
     setHint(undefined);
+    setHintManuallyRequested(false);
+    setSolutionRevealed(false);
     setErrorExplanation(undefined);
     setAttemptCount(0);
     setCompleted(false);
@@ -260,6 +283,9 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
       setUserQuery,
       runUserQuery,
       requestStrongerHint,
+      showHint,
+      showSolution,
+      solutionRevealed,
       resetSession,
       referenceResultset,
       liveSchema,
@@ -277,6 +303,9 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
       completed,
       runUserQuery,
       requestStrongerHint,
+      showHint,
+      showSolution,
+      solutionRevealed,
       resetSession,
       referenceResultset,
       liveSchema,

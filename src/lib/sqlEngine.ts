@@ -1,10 +1,10 @@
 /**
- * SQL.js-Engine-Wrapper fuer die VIBAA MySQL-Lernplattform.
+ * SQL.js-Engine-Wrapper fuer die SQL-Trainer MySQL-Lernplattform.
  *
  * Laedt sql.js dynamisch im Browser, erstellt In-Memory-Datenbanken,
  * fuehrt Abfragen aus und liefert strukturierte Ergebnismengen zurueck.
  *
- * English: SQL.js engine wrapper for the VIBAA Playground.
+ * English: SQL.js engine wrapper for the SQL-Trainer Playground.
  * Dynamically loads sql.js in the browser, creates in-memory databases,
  * runs queries, and returns structured resultsets.
  */

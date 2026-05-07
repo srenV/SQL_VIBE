@@ -21,7 +21,7 @@ export function Header({
     >
       <Container className="flex items-center justify-between gap-4 py-3">
         <div className="flex items-center gap-3 min-w-0">
-          <Link href="/" className="shrink-0" aria-label="VIBAA Startseite">
+          <Link href="/" className="shrink-0" aria-label="SQL-Trainer Startseite">
             <Logo compact />
           </Link>
           {breadcrumbs && (

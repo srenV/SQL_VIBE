@@ -1,7 +1,7 @@
 /**
  * Zentraler Katalog fuer Lektionen, Uebungen und Datensaetze.
  *
- * Baut die Lernstruktur der VIBAA MySQL-Lernplattform auf:
+ * Baut die Lernstruktur der SQL-Trainer MySQL-Lernplattform auf:
  * Ordnet Uebungen und Datensaetze den jeweiligen Lektionen zu
  * und exportiert die vollstaendige Katalog-Struktur.
  */

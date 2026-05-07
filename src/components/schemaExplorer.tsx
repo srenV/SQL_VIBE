@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import type { SchemaTable, SqlColumn, SqlRow } from "@/types/playground";
 import { peekTableData } from "@/lib/sqlEngine";
 import { Card } from "@/components/card";
+import { SchemaGraph } from "@/components/schemaGraph";
 
 export interface SchemaExplorerProps {
   tables: SchemaTable[];
   db?: import("sql.js").Database | null;
 }
 
-type ViewMode = "schema" | "data";
+type ViewMode = "rm" | "data" | "schema";
 
 interface TableDataCache {
   columns: SqlColumn[];
@@ -19,7 +20,7 @@ interface TableDataCache {
 }
 
 export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) => {
-  const [viewMode, setViewMode] = useState<ViewMode>("schema");
+  const [viewMode, setViewMode] = useState<ViewMode>("rm");
   const [tableData, setTableData] = useState<Record<string, TableDataCache>>({});
   const [loadingTables, setLoadingTables] = useState<Set<string>>(new Set());
 
@@ -64,6 +65,13 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
     }
   }, [db, tables, tableData, loadingTables, loadTableData]);
 
+  // Automatisch Daten laden, wenn "Daten" der aktive View ist
+  useEffect(() => {
+    if (viewMode === "data" && db) {
+      tables.forEach((table) => loadTableData(table.name));
+    }
+  }, [viewMode, db]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (tables.length === 0) {
     return (
       <p className="text-sm text-ink-muted">
@@ -76,14 +84,14 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
     <div className="space-y-4">
       <div className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
         <button
-          onClick={() => setViewMode("schema")}
+          onClick={() => setViewMode("rm")}
           className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-            viewMode === "schema"
+            viewMode === "rm"
               ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
               : "text-ink-muted hover:text-ink"
           }`}
         >
-          Schema
+          RM
         </button>
         <button
           onClick={switchToData}
@@ -95,7 +103,19 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
         >
           Daten
         </button>
+        <button
+          onClick={() => setViewMode("schema")}
+          className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            viewMode === "schema"
+              ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+              : "text-ink-muted hover:text-ink"
+          }`}
+        >
+          Schema
+        </button>
       </div>
+
+      {viewMode === "rm" && <SchemaGraph tables={tables} />}
 
       {viewMode === "schema" &&
         tables.map((table) => (

@@ -8,16 +8,16 @@ import { Logo } from "./logo";
 describe("Logo", () => {
   it("rendert den vollstaendigen Text", () => {
     render(<Logo />);
-    expect(screen.getByText("IBAA")).toBeInTheDocument();
-    expect(screen.getByText("V")).toHaveClass("text-primary-600");
+    expect(screen.getByText("-Trainer")).toBeInTheDocument();
+    expect(screen.getByText("SQL")).toHaveClass("text-primary-600");
   });
 
-  it("zeigt nur V im Kompaktmodus", () => {
+  it("zeigt nur SQL im Kompaktmodus", () => {
     render(<Logo compact />);
-    expect(screen.getByText("V")).toBeInTheDocument();
+    expect(screen.getByText("SQL")).toBeInTheDocument();
     // In jsdom werden Tailwind-Klassen nicht als display:none ausgewertet,
     // daher pruefen wir stattdessen die Klasse des Spans.
-    expect(screen.getByText("IBAA")).toHaveClass("hidden");
+    expect(screen.getByText("-Trainer")).toHaveClass("hidden");
   });
 
   it("wendet custom className an", () => {

@@ -1,6 +1,6 @@
-# VIBAA Design-System
+# SQL-Trainer Design-System
 
-Dieses Dokument beschreibt das Design-System der VIBAA MySQL-Lernplattform. Es ist als **lebendige Referenz** fuer Entwickler und Designer gedacht und wird mit jeder Komponenten-Aenderung aktualisiert.
+Dieses Dokument beschreibt das Design-System der SQL-Trainer MySQL-Lernplattform. Es ist als **lebendige Referenz** fuer Entwickler und Designer gedacht und wird mit jeder Komponenten-Aenderung aktualisiert.
 
 > **Status:** Aktuell | **Sprache:** TypeScript / React / Tailwind CSS v4
 
@@ -135,7 +135,7 @@ Statisches Logo mit kompaktem Modus.
 
 ```tsx
 <Logo compact />   // Zeigt nur "V" (Mobile-Header)
-<Logo />            // Zeigt "VIBAA" (Desktop-Header)
+<Logo />            // Zeigt "SQL-Trainer" (Desktop-Header)
 ```
 
 ---

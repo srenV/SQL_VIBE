@@ -19,7 +19,7 @@ test.describe("Landing Page", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("h1")).toContainText("MySQL");
-    await expect(page.locator("text=VIBAA").first()).toBeVisible();
+    await expect(page.locator("text=SQL-Trainer").first()).toBeVisible();
   });
 
   test("zeigt Statistiken (Übungen, Lektionen, Datensätze)", async ({ page }) => {
@@ -127,7 +127,7 @@ test.describe("Uebungs-Seite (SQL Editor)", () => {
   test("zeigt Logo", async ({ page }) => {
     await page.goto(FIRST_SELECT_URL);
     await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=VIBAA").first()).toBeVisible();
+    await expect(page.locator("text=SQL-Trainer").first()).toBeVisible();
   });
 
   test("zeigt Naechste-Uebung-Link", async ({ page }) => {

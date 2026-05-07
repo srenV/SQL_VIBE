@@ -18,7 +18,7 @@ const DATASET_TABLES = {
     sampleValues: {
       stadt: ["Berlin", "Muenchen", "Hamburg", "Koeln"],
       status: ["abgeschlossen", "versendet", "bearbeitung", "storniert"],
-      zahlungsmittel: ["Kreditkarte", "PayPal", "Ueberweisung"],
+      zahlungsmittel: ["Kreditkarte", "PayFlow", "Ueberweisung"],
     },
   },
   fitness: {

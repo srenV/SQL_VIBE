@@ -1,12 +1,12 @@
 /**
- * Animations-Komponenten fuer die VIBAA MySQL-Lernplattform.
+ * Animations-Komponenten fuer die SQL-Trainer MySQL-Lernplattform.
  *
  * Enthaelt:
  * - FadeIn: Einblend-Animation mit Richtungsoptionen (oben, unten, links, rechts).
  * - ScaleOnHover: Skalierungs-Animation beim Ueberfahren mit der Maus.
  * - AnimatedList: Gestaffelte Einblend-Animation fuer Listen-Items.
  *
- * English: Animation components for the VIBAA MySQL learning platform.
+ * English: Animation components for the SQL-Trainer MySQL learning platform.
  * Includes FadeIn, ScaleOnHover, and AnimatedList.
  */
 "use client";

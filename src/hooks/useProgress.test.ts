@@ -16,7 +16,7 @@ import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useProgress } from "./useProgress";
 
-const STORAGE_KEY = "vibaa-progress";
+const STORAGE_KEY = "sql-trainer-progress";
 
 beforeEach(() => {
   localStorage.clear();

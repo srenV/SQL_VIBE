@@ -36,6 +36,9 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
     setUserQuery,
     runUserQuery,
     requestStrongerHint,
+    showHint,
+    showSolution,
+    solutionRevealed,
     resetSession,
     liveSchema,
     db,
@@ -101,26 +104,63 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
             onSubmit={runUserQuery}
           />
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <Button
-              onClick={runUserQuery}
-              isLoading={phase === "running"}
-              disabled={!userQuery.trim() || phase === "running"}
-            >
-              Abfrage ausführen
-            </Button>
-            <Button variant="ghost" size="sm" onClick={resetSession}>
-              Zurücksetzen
-            </Button>
-            {hint && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <Button
-                variant="secondary"
-                size="sm"
-                onClick={requestStrongerHint}
-                disabled={hint.level >= 3}
+                onClick={runUserQuery}
+                isLoading={phase === "running"}
+                disabled={!userQuery.trim() || phase === "running"}
               >
-                Stärkeren Hinweis anzeigen
+                Abfrage ausführen
               </Button>
+              <Button variant="ghost" size="sm" onClick={resetSession}>
+                Zurücksetzen
+              </Button>
+
+              {/* Hinweis-Icon – nur nach mind. 1 Versuch */}
+              {attemptCount >= 1 && !completed && (
+                <button
+                  onClick={showHint}
+                  disabled={hint && hint.level >= 3}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink hover:bg-surface-dim transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={hint ? "Stärkeren Hinweis anzeigen" : "Hinweis anzeigen"}
+                  aria-label={hint ? "Stärkeren Hinweis anzeigen" : "Hinweis anzeigen"}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  {hint ? `Hinweis ${hint.level}/3` : "Hinweis"}
+                </button>
+              )}
+
+              {/* Lösung-Icon – nur ab 5 Fehlversuchen */}
+              {attemptCount >= 5 && !completed && !solutionRevealed && (
+                <button
+                  onClick={showSolution}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20 transition-colors"
+                  title="Lösung anzeigen"
+                  aria-label="Lösung anzeigen"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Lösung
+                </button>
+              )}
+
+              {solutionRevealed && (
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                  Lösung eingeblendet
+                </span>
+              )}
+            </div>
+
+            {/* Versuch-Count in der unteren rechten Ecke */}
+            {attemptCount > 0 && (
+              <span className="text-xs text-ink-muted tabular-nums">
+                Versuch {attemptCount}
+              </span>
             )}
           </div>
         </Card>
@@ -237,14 +277,6 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
                 <p className="text-sm text-ink">{hint.message}</p>
               </div>
             </div>
-          </Card>
-        </FadeIn>
-      )}
-
-      {attemptCount > 0 && (
-        <FadeIn delay={0.05}>
-          <Card variant="flat" className="p-5">
-            <p className="text-xs text-ink-muted">Versuch {attemptCount}</p>
           </Card>
         </FadeIn>
       )}

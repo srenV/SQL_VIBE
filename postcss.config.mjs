@@ -1,5 +1,5 @@
 /**
- * PostCSS-Konfiguration fuer die VIBAA MySQL-Lernplattform.
+ * PostCSS-Konfiguration fuer die SQL-Trainer MySQL-Lernplattform.
  * Nutzt den Tailwind CSS v4 PostCSS-Plugin.
  */
 const config = {

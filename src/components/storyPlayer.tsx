@@ -22,7 +22,7 @@ import { FadeIn } from "@/components/animations";
 import { SuccessCelebration } from "@/components/successCelebration";
 import { usePlayground } from "@/hooks/usePlayground";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
-import { introspectSchema } from "@/lib/schemaExplorer";
+import { introspectSchema, mergeSchemaWithFKs } from "@/lib/schemaExplorer";
 import type { PlaygroundExercise, PlaygroundStoryChapter, PlaygroundStoryData, SchemaTable } from "@/types/playground";
 
 interface StoryPlayerProps {

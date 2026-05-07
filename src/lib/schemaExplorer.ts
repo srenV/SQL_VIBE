@@ -42,3 +42,37 @@ export function introspectSchema(db: import("sql.js").Database): SchemaTable[] {
     };
   });
 }
+
+/**
+ * Merged das live-introspektierte Schema (Spalten aus der DB) mit den
+ * Fremdschluessel-Definitionen aus den statischen Schema-Tabellen (Dataset-Metadaten).
+ *
+ * SQL-DDL in den Datasets deklariert oft keine FOREIGN KEY Constraints,
+ * sodass PRAGMA foreign_key_list() leer ist. Die FK-Info steckt stattdessen
+ * in den ColumnDef.references der Dataset-Definition.
+ *
+ * @param liveSchema - Von introspectSchema() aus der Live-DB ermittelt.
+ * @param staticSchema - Aus exercise.schemaTables (vom Adapter aus Dataset-Metadaten gebaut).
+ * @returns Gemerged Schema: Spalten aus liveSchema, FKs aus staticSchema.
+ */
+export function mergeSchemaWithFKs(
+  liveSchema: SchemaTable[],
+  staticSchema: SchemaTable[]
+): SchemaTable[] {
+  if (liveSchema.length === 0) return staticSchema;
+
+  const staticFKMap = new Map<string, ForeignKey[]>();
+  for (const t of staticSchema) {
+    if (t.foreignKeys && t.foreignKeys.length > 0) {
+      staticFKMap.set(t.name, t.foreignKeys);
+    }
+  }
+
+  return liveSchema.map((liveTable) => {
+    const fks = staticFKMap.get(liveTable.name);
+    return {
+      ...liveTable,
+      foreignKeys: fks && fks.length > 0 ? fks : liveTable.foreignKeys,
+    };
+  });
+}

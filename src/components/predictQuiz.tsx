@@ -14,7 +14,7 @@ import { SchemaExplorer } from "@/components/schemaExplorer";
 import { useProgress } from "@/hooks/useProgress";
 import type { PlaygroundExercise, QuizOption } from "@/types/playground";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
-import { introspectSchema } from "@/lib/schemaExplorer";
+import { introspectSchema, mergeSchemaWithFKs } from "@/lib/schemaExplorer";
 
 /** Props fuer die PredictQuiz-Komponente. */
 interface PredictQuizProps {
@@ -44,7 +44,8 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
         setDb(db);
         const schema = introspectSchema(db);
         if (mounted) {
-          setLiveSchema(schema.length > 0 ? schema : (exercise.schemaTables || []));
+          const merged = mergeSchemaWithFKs(schema, exercise.schemaTables || []);
+          setLiveSchema(merged.length > 0 ? merged : (exercise.schemaTables || []));
         }
       } catch {
         // Fallback to static schema

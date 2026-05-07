@@ -1,11 +1,11 @@
 /**
- * Beispiel-Uebungsdaten fuer das VIBAA Playground.
+ * Beispiel-Uebungsdaten fuer das SQL-Trainer Playground.
  *
  * Diese Uebungen testen alle Teile der Playground-Infrastruktur:
  * Ergebnismengen-Vergleich, verdeckte Tests, Hinweis-Engine,
  * Schema-Explorer und Fehlererklaerungen.
  *
- * English: Sample exercise data for the VIBAA Playground.
+ * English: Sample exercise data for the SQL-Trainer Playground.
  * These exercises exercise all parts of the playground infrastructure.
  */
 

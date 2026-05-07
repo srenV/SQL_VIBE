@@ -32,7 +32,7 @@ export function SuccessCelebration({
 
   useEffect(() => {
     if (show) {
-      document.dispatchEvent(new CustomEvent("vibaa-success", { detail: { message } }));
+      document.dispatchEvent(new CustomEvent("sql-trainer-success", { detail: { message } }));
     }
   }, [show, message]);
 

@@ -27,7 +27,7 @@ export interface ProgressData {
   achievements: string[];
 }
 
-const STORAGE_KEY = "vibaa-progress";
+const STORAGE_KEY = "sql-trainer-progress";
 
 const initialProgress: ProgressData = {
   exercises: {},

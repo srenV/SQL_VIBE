@@ -55,7 +55,7 @@ test.describe("Fortschrittsverfolgung (Local Storage)", () => {
     await page.goto(EXERCISE_URL);
     await page.waitForLoadState("networkidle");
     const progress = await page.evaluate(() => {
-      return localStorage.getItem("vibaa-progress");
+      return localStorage.getItem("sql-trainer-progress");
     });
     expect(progress).not.toBeNull();
     const parsed = JSON.parse(progress!);
@@ -75,12 +75,12 @@ test.describe("Fortschrittsverfolgung (Local Storage)", () => {
         lastActiveDate: new Date().toISOString().slice(0, 10),
         achievements: [],
       };
-      localStorage.setItem("vibaa-progress", JSON.stringify(progress));
+      localStorage.setItem("sql-trainer-progress", JSON.stringify(progress));
     });
     await page.reload();
     await page.waitForLoadState("networkidle");
     const progress = await page.evaluate(() => {
-      return JSON.parse(localStorage.getItem("vibaa-progress") || "{}");
+      return JSON.parse(localStorage.getItem("sql-trainer-progress") || "{}");
     });
     expect(progress.totalPoints).toBe(10);
     expect(progress.exercises.sel_0001.completed).toBe(true);

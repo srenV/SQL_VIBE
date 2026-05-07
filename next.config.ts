@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 /**
- * Next.js Konfiguration fuer die VIBAA MySQL-Lernplattform.
+ * Next.js Konfiguration fuer die SQL-Trainer MySQL-Lernplattform.
  *
  * - output: 'export' ermoeglicht ein Vercel-faehiges Static-Site-Deployment.
  * - images.unoptimized: bei Static Export notwendig, da kein

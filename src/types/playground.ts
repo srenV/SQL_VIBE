@@ -1,10 +1,10 @@
 /**
- * Zentrale Typen fuer die VIBAA MySQL-Playground-Infrastruktur.
+ * Zentrale Typen fuer die SQL-Trainer MySQL-Playground-Infrastruktur.
  *
  * Umfasst Uebungen, Ergebnismengen, Validierung, Hinweise,
  * Schema-Introspektion und Fehlerbehandlung.
  *
- * English: Core types for the VIBAA MySQL Playground infrastructure.
+ * English: Core types for the SQL-Trainer MySQL Playground infrastructure.
  * Covers exercises, resultsets, validation, hints, schema introspection,
  * and error handling.
  */

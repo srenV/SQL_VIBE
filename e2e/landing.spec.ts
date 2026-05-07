@@ -1,5 +1,5 @@
 /**
- * Smoke-Test: Landing-Page der VIBAA MySQL-Lernplattform.
+ * Smoke-Test: Landing-Page der SQL-Trainer MySQL-Lernplattform.
  *
  * Verifiziert, dass die Hauptseite korrekt laedt, das Logo
  * sichtbar ist und Kern-Links funktionieren.
@@ -16,7 +16,7 @@ test.describe("Landing Page Smoke", () => {
   });
 
   test("zeigt Logo und Hauptueberschrift", async ({ page }) => {
-    await expect(page.locator("text=VIBAA").first()).toBeVisible();
+    await expect(page.locator("text=SQL-Trainer").first()).toBeVisible();
     await expect(page.locator("h1")).toContainText("MySQL");
   });
 

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Playwright-E2E-Konfiguration fuer die VIBAA MySQL-Lernplattform.
+ * Playwright-E2E-Konfiguration fuer die SQL-Trainer MySQL-Lernplattform.
  *
  * - Fuehrt einen visuellen Smoke-Test gegen den statischen Export durch.
  * - Startet automatisch einen lokalen Webserver (`serve`) auf Port 4000.

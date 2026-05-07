@@ -18,7 +18,7 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "VIBAA – Lerne MySQL spielerisch",
+  title: "SQL-Trainer – Lerne MySQL spielerisch",
   description:
     "Interaktive MySQL-Lernplattform mit Uebungen, Erklaerungen und Gamification-Funktionen.",
 };

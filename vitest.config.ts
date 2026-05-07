@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 import path from "path";
 
 /**
- * Vitest-Konfiguration fuer die VIBAA MySQL-Lernplattform.
+ * Vitest-Konfiguration fuer die SQL-Trainer MySQL-Lernplattform.
  *
  * - environment: jsdom (Browser-DOM fuer Unit-Tests ohne echten Browser).
  * - globals: true (describe/it/expect ohne Import verfuegbar).

@@ -1,4 +1,4 @@
-# VIBAA – MySQL-Lernplattform (Deutsche Dokumentation)
+# SQL-Trainer – MySQL-Lernplattform (Deutsche Dokumentation)
 
 Interaktive MySQL-Lernplattform mit Uebungen, Erklaerungen und Gamification-Funktionen. Ohne Login, ohne Server – Fortschritte werden ausschliesslich im Browser-`localStorage` gespeichert.
 
@@ -66,4 +66,4 @@ Konfiguration in `next.config.ts`:
 
 ## Lizenz
 
-Privat – VIBAA Intern.
+Privat – SQL-Trainer Intern.

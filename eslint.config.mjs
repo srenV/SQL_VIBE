@@ -3,7 +3,7 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
 /**
- * ESLint-Flat-Config fuer die VIBAA MySQL-Lernplattform.
+ * ESLint-Flat-Config fuer die SQL-Trainer MySQL-Lernplattform.
  *
  * Baut auf den offiziellen Next.js-Konfigurationen (core-web-vitals,
  * typescript) auf und erweitert sie um zusaetzliche Ignores fuer

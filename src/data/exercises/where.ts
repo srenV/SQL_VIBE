@@ -624,7 +624,7 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM zahlungen WHERE zahlungsmittel = 'Kreditkarte';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `zahlungsmittel` hat Werte: 'Kreditkarte', 'PayPal', 'Ueberweisung'.",
+      "Die Spalte `zahlungsmittel` hat Werte: 'Kreditkarte', 'PayFlow', 'Ueberweisung'.",
       "Verwende `WHERE zahlungsmittel = 'Kreditkarte'`."
     ],
     hiddenTestQuery: "SELECT * FROM zahlungen WHERE zahlungsmittel = 'Kreditkarte';",
