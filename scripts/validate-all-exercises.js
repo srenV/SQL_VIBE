@@ -19,14 +19,34 @@ const path = require("path");
 
 // Read all exercise files and extract exercise data
 const exerciseFiles = [
-  "select", "where", "orderLimit", "aggregation", "join",
-  "subquery", "debug", "predict", "schema", "interview",
-  "cte", "windowFunctions", "dml", "ddl", "story"
+  "select",
+  "where",
+  "orderLimit",
+  "aggregation",
+  "join",
+  "subquery",
+  "debug",
+  "predict",
+  "schema",
+  "interview",
+  "cte",
+  "windowFunctions",
+  "dml",
+  "ddl",
+  "story",
 ];
 
 const datasetFiles = [
-  "shop", "fitness", "hr", "tickets", "banking",
-  "streaming", "logs", "university", "ecommerce", "hospital"
+  "shop",
+  "fitness",
+  "hr",
+  "tickets",
+  "banking",
+  "streaming",
+  "logs",
+  "university",
+  "ecommerce",
+  "hospital",
 ];
 
 async function main() {
@@ -68,8 +88,9 @@ async function main() {
 
     // Parse each exercise from the file
     // We extract makeWriteExercise, makeDebugExercise, makePredictExercise, makeSchemaExercise, makeStoryExercise calls
-    const exercisePattern = /make(Write|Debug|Predict|Schema|Story)Exercise\s*\(\s*"([^"]+)",\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}\s*\)/gs;
-    
+    const exercisePattern =
+      /make(Write|Debug|Predict|Schema|Story)Exercise\s*\(\s*"([^"]+)",\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}\s*\)/gs;
+
     let match;
     while ((match = exercisePattern.exec(content)) !== null) {
       const type = match[1];
@@ -111,9 +132,16 @@ async function main() {
 
       // Extract datasetId from reference (some use dataset.id, some use string)
       let actualDatasetId = datasetId;
-      if (!actualDatasetId || actualDatasetId === "shop" || actualDatasetId === "fitness" || 
-          actualDatasetId === "hr" || actualDatasetId === "tickets" || actualDatasetId === "banking" ||
-          actualDatasetId === "streaming" || actualDatasetId === "logs") {
+      if (
+        !actualDatasetId ||
+        actualDatasetId === "shop" ||
+        actualDatasetId === "fitness" ||
+        actualDatasetId === "hr" ||
+        actualDatasetId === "tickets" ||
+        actualDatasetId === "banking" ||
+        actualDatasetId === "streaming" ||
+        actualDatasetId === "logs"
+      ) {
         // These are already valid dataset keys
       } else if (actualDatasetId && actualDatasetId.includes("Dataset.id")) {
         // Extract the dataset name from something like shopDataset.id
@@ -124,7 +152,9 @@ async function main() {
       const setupSql = datasets[actualDatasetId];
       if (!setupSql) {
         skipped++;
-        console.log(`  [SKIP] ${prefix}:${title} - dataset '${actualDatasetId}' not found`);
+        console.log(
+          `  [SKIP] ${prefix}:${title} - dataset '${actualDatasetId}' not found`
+        );
         continue;
       }
 
@@ -134,7 +164,12 @@ async function main() {
         db.run(setupSql);
 
         // Test 1: Run reference query (for write/debug exercises)
-        if (referenceQuery && type !== "Predict" && type !== "Schema" && type !== "Story") {
+        if (
+          referenceQuery &&
+          type !== "Predict" &&
+          type !== "Schema" &&
+          type !== "Story"
+        ) {
           try {
             const refResult = db.exec(referenceQuery);
             if (!refResult || refResult.length === 0) {
@@ -143,7 +178,7 @@ async function main() {
                 failures.push({
                   exercise: `${prefix}:${title}`,
                   issue: "Reference query returned no results",
-                  query: referenceQuery.substring(0, 100)
+                  query: referenceQuery.substring(0, 100),
                 });
                 failed++;
                 continue;
@@ -153,7 +188,7 @@ async function main() {
             failures.push({
               exercise: `${prefix}:${title}`,
               issue: `Reference query failed: ${e.message}`,
-              query: referenceQuery.substring(0, 100)
+              query: referenceQuery.substring(0, 100),
             });
             failed++;
             continue;
@@ -165,14 +200,20 @@ async function main() {
           try {
             const htResult = db.exec(hiddenTestQuery);
             // For DDL exercises, hidden test checks if table exists - empty result means table doesn't exist
-            if (type === "Write" && hiddenTestQuery.toUpperCase().includes("SELECT") && 
-                (!htResult || htResult.length === 0)) {
+            if (
+              type === "Write" &&
+              hiddenTestQuery.toUpperCase().includes("SELECT") &&
+              (!htResult || htResult.length === 0)
+            ) {
               // Check if this is a DDL exercise (checking sqlite_master)
-              if (!hiddenTestQuery.includes("sqlite_master") && !hiddenTestQuery.includes("PRAGMA")) {
+              if (
+                !hiddenTestQuery.includes("sqlite_master") &&
+                !hiddenTestQuery.includes("PRAGMA")
+              ) {
                 failures.push({
                   exercise: `${prefix}:${title}`,
                   issue: "Hidden test query returned no results",
-                  query: hiddenTestQuery.substring(0, 100)
+                  query: hiddenTestQuery.substring(0, 100),
                 });
                 failed++;
                 continue;
@@ -182,7 +223,7 @@ async function main() {
             failures.push({
               exercise: `${prefix}:${title}`,
               issue: `Hidden test query failed: ${e.message}`,
-              query: hiddenTestQuery.substring(0, 100)
+              query: hiddenTestQuery.substring(0, 100),
             });
             failed++;
             continue;
@@ -197,7 +238,7 @@ async function main() {
             failures.push({
               exercise: `${prefix}:${title}`,
               issue: "Broken query should fail but succeeded",
-              query: brokenQuery.substring(0, 100)
+              query: brokenQuery.substring(0, 100),
             });
             failed++;
             continue;
@@ -231,7 +272,9 @@ async function main() {
         // Test 5: For story exercises, validate each chapter
         if (type === "Story") {
           // Extract chapters
-          const chaptersMatch = optsStr.match(/chapters:\s*\[([\s\S]*?)\],\s*(?:outro|tags|hints)/);
+          const chaptersMatch = optsStr.match(
+            /chapters:\s*\[([\s\S]*?)\],\s*(?:outro|tags|hints)/
+          );
           if (chaptersMatch) {
             const chapterPattern = /referenceQuery:\s*`([^`]*)`/gs;
             let chMatch;
@@ -242,7 +285,7 @@ async function main() {
                 failures.push({
                   exercise: `${prefix}:${title}`,
                   issue: `Story chapter query failed: ${e.message}`,
-                  query: chMatch[1].trim().substring(0, 100)
+                  query: chMatch[1].trim().substring(0, 100),
                 });
                 failed++;
               }

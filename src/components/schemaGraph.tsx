@@ -6,8 +6,8 @@ import {
   ReactFlowProvider,
   Background,
   Controls,
-  useNodesState,
-  useEdgesState,
+  Handle,
+  Position,
   type Node,
   type Edge,
   MarkerType,
@@ -31,7 +31,6 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
 
-  // Build edges first to check if any exist
   const dagreEdges: { source: string; target: string }[] = [];
   for (const table of tables) {
     if (!table.foreignKeys) continue;
@@ -43,7 +42,6 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
 
   const hasEdges = dagreEdges.length > 0;
 
-  // Use TB (top-to-bottom) for isolated nodes, LR for connected graphs
   g.setGraph({
     rankdir: hasEdges ? "LR" : "TB",
     nodesep: hasEdges ? 100 : 140,
@@ -52,24 +50,17 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
     marginy: 60,
   });
 
-  // Register nodes with dagre
   for (const table of tables) {
     const h = getNodeHeight(table);
     g.setNode(table.name, { width: NODE_WIDTH, height: h });
   }
 
-  // Register edges with dagre
-  for (const table of tables) {
-    if (!table.foreignKeys) continue;
-    for (const fk of table.foreignKeys) {
-      if (!tables.find((t) => t.name === fk.referencedTable)) continue;
-      g.setEdge(table.name, fk.referencedTable);
-    }
+  for (const { source, target } of dagreEdges) {
+    g.setEdge(source, target);
   }
 
   dagre.layout(g);
 
-  // Build React Flow nodes from dagre positions
   const nodes: Node[] = tables.map((table) => {
     const dagreNode = g.node(table.name);
     const h = getNodeHeight(table);
@@ -84,7 +75,6 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
     };
   });
 
-  // Build React Flow edges with explicit styling for visibility
   const edges: Edge[] = [];
   for (const table of tables) {
     if (!table.foreignKeys) continue;
@@ -126,40 +116,46 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable } }) => {
       className="rounded-lg border-2 border-primary-300 dark:border-primary-600 bg-white dark:bg-slate-800 shadow-lg overflow-hidden"
       style={{ width: NODE_WIDTH, fontSize: 12 }}
     >
-      {/* Header */}
+      {/* Source handle (right side) — edges go FROM this table */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{ background: "#6366f1", width: 10, height: 10, border: "2px solid white" }}
+      />
+      {/* Target handle (left side) — edges go TO this table */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        style={{ background: "#6366f1", width: 10, height: 10, border: "2px solid white" }}
+      />
+
       <div className="bg-primary-100 dark:bg-primary-500/30 px-3 py-2 border-b border-primary-200 dark:border-primary-400/30">
         <span className="font-bold text-primary-800 dark:text-white text-sm">
           {table.name}
         </span>
       </div>
 
-      {/* Columns */}
       <div className="divide-y divide-slate-100 dark:divide-slate-700">
         {table.columns.map((col) => {
           const isFk = table.foreignKeys?.some((fk) => fk.column === col.name);
           return (
             <div key={col.name} className="flex items-center gap-1.5 px-3 py-1.5">
-              {/* PK badge */}
               {col.isPrimaryKey && (
                 <span className="shrink-0 inline-flex items-center justify-center rounded bg-amber-100 dark:bg-amber-900/50 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300 w-8">
                   PK
                 </span>
               )}
-              {/* FK badge */}
               {isFk && !col.isPrimaryKey && (
                 <span className="shrink-0 inline-flex items-center justify-center rounded bg-indigo-100 dark:bg-indigo-900/50 px-1.5 py-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-300 w-8">
                   FK
                 </span>
               )}
-              {/* Spacer for non-key columns */}
               {!col.isPrimaryKey && !isFk && <span className="shrink-0 w-8" />}
 
-              {/* Column name */}
               <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
                 {col.name}
               </span>
 
-              {/* Column type */}
               <span className="text-slate-400 dark:text-slate-500 ml-auto text-[10px] shrink-0">
                 {col.type}
               </span>
@@ -172,24 +168,6 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable } }) => {
 });
 TableNode.displayName = "TableNode";
 
-// ── Default edge options (fallback) ───────────────────────────
-
-const defaultEdgeOptions = {
-  type: "smoothstep",
-  animated: true,
-  markerEnd: {
-    type: MarkerType.ArrowClosed,
-    width: 22,
-    height: 22,
-    color: "#6366f1",
-  },
-  style: { stroke: "#6366f1", strokeWidth: 2.5 },
-  labelStyle: { fontSize: 10, fill: "#475569", fontWeight: 600 },
-  labelBgStyle: { fill: "#ffffff", fillOpacity: 0.95 },
-  labelBgPadding: [6, 4] as [number, number],
-  labelBgBorderRadius: 3,
-};
-
 // ── Inner Graph Component ─────────────────────────────────────
 
 const nodeTypes = { tableNode: TableNode };
@@ -198,24 +176,20 @@ function SchemaGraphInner({ tables }: { tables: SchemaTable[] }) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = React.useState<any>(null);
 
-  const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
+  const { nodes, edges } = useMemo(
     () => layoutWithDagre(tables),
     [tables]
   );
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  // Force remount when tables change to avoid stale edge state
+  const remountKey = useMemo(
+    () => tables.map(t => t.name).join("|") + "|" + edges.length,
+    [tables, edges.length]
+  );
 
-  // Re-sync when tables change
-  useEffect(() => {
-    setNodes(layoutedNodes);
-    setEdges(layoutedEdges);
-  }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
-
-  // Fit view after nodes are rendered (multiple attempts for timing)
   useEffect(() => {
     if (reactFlowInstance && nodes.length > 0) {
-      const timers = [50, 200, 500].map((delay) =>
+      const timers = [100, 300, 600].map((delay) =>
         setTimeout(() => {
           reactFlowInstance.fitView({ padding: 0.25, duration: 200, maxZoom: 1.2 });
         }, delay)
@@ -231,12 +205,10 @@ function SchemaGraphInner({ tables }: { tables: SchemaTable[] }) {
   return (
     <div ref={reactFlowWrapper} style={{ width: "100%", height: "100%" }}>
       <ReactFlow
+        key={remountKey}
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
-        defaultEdgeOptions={defaultEdgeOptions}
         onInit={onInit}
         minZoom={0.05}
         maxZoom={2}
@@ -253,7 +225,6 @@ function SchemaGraphInner({ tables }: { tables: SchemaTable[] }) {
           gap={20}
           size={1}
           color="#94a3b8"
-          className="dark:!text-slate-600"
         />
         <Controls
           showZoom
