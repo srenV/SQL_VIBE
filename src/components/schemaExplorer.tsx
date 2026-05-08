@@ -112,7 +112,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
               : "text-ink-muted hover:text-ink"
           }`}
         >
-          RM
+          Graph
         </button>
         <button
           onClick={switchToData}
