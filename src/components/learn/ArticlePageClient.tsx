@@ -435,12 +435,13 @@ function renderMarkdown(text: string): string {
   // Extract SQL code blocks first (before other processing)
   let processed = text.replace(/```sql\n([\s\S]*?)```/g, (_match, code) => {
     const idx = codeBlocks.length;
+    const highlighted = highlightSql(escapeHtml(code.trim()));
     codeBlocks.push(
       `<div class="my-5 relative rounded-lg border border-surface-dim dark:border-dark-dim overflow-hidden">` +
       `<div class="flex items-center justify-between bg-accent/10 dark:bg-accent/20 px-3 py-1.5 border-b border-surface-dim dark:border-dark-dim">` +
       `<span class="text-[11px] font-mono font-semibold text-accent uppercase tracking-wider">SQL</span>` +
       `</div>` +
-      `<pre class="bg-surface-dim dark:bg-dark-dim p-4 text-[13px] font-mono leading-relaxed overflow-x-auto"><code>${escapeHtml(code.trim())}</code></pre>` +
+      `<pre class="bg-surface-dim dark:bg-dark-dim p-4 text-[13px] font-mono leading-relaxed overflow-x-auto"><code>${highlighted}</code></pre>` +
       `</div>`
     );
     return `%%CODEBLOCK_${idx}%%`;
@@ -526,6 +527,26 @@ function escapeHtml(text: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function highlightSql(html: string): string {
+  // Highlight SQL single-line comments (-- ...) as prominent labels that stand out from code
+  return html.split('\n').map(line => {
+    const commentIdx = line.indexOf('--');
+    if (commentIdx === -1) return line;
+    // Check if the -- is inside a string literal (count quotes before it)
+    const beforeComment = line.substring(0, commentIdx);
+    const singleQuotes = (beforeComment.match(/'/g) || []).length;
+    if (singleQuotes % 2 !== 0) return line;
+    const before = line.substring(0, commentIdx);
+    const commentText = line.substring(commentIdx + 2).trim();
+    // If the line is ONLY a comment (no code before --), render as a prominent heading-style label
+    if (before.trim() === '') {
+      return `<div class="bg-ink/5 dark:bg-white/10 border-l-[3px] border-accent rounded-r px-3 py-1.5 mt-4 mb-1 text-accent font-bold text-sm tracking-wide underline decoration-accent/40 underline-offset-2">${escapeHtml(commentText)}</div>`;
+    }
+    // If comment is after code, render inline with accent color and separator
+    return `${before}<span class="text-accent/70 font-semibold ml-4 underline decoration-accent/40 underline-offset-2">— ${escapeHtml(commentText)}</span>`;
+  }).join('\n');
 }
 
 function renderTable(lines: string[]): string {
