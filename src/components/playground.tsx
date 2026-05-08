@@ -12,7 +12,6 @@ import { SqlEditor } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
-import { SuccessCelebration } from "@/components/successCelebration";
 import { SqlResultSkeleton } from "@/components/skeleton";
 import { usePlayground } from "@/hooks/usePlayground";
 import type { PlaygroundExercise } from "@/types/playground";
@@ -54,14 +53,10 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
   React.useEffect(() => {
     currentAttemptRef.current = attemptCount;
   }, [attemptCount]);
-  const [showCelebration, setShowCelebration] = React.useState(false);
 
   React.useEffect(() => {
     if (completed && !prevCompletedRef.current && onComplete) {
       onComplete(currentAttemptRef.current);
-      setShowCelebration(true);
-      const timer = setTimeout(() => setShowCelebration(false), 3000);
-      return () => clearTimeout(timer);
     }
     prevCompletedRef.current = completed;
   }, [completed, onComplete]);
@@ -98,8 +93,15 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
 
       <FadeIn delay={0.05}>
         <Card variant="flat" className="p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-ink">Deine SQL-Abfrage</span>
+            {attemptCount > 0 && (
+              <span className="text-xs text-ink-muted tabular-nums">
+                Versuch {attemptCount}
+              </span>
+            )}
+          </div>
           <SqlEditor
-            label="Deine SQL-Abfrage"
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
             error={phase === "error"}
@@ -159,13 +161,8 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
               )}
             </div>
 
-            {/* Navigation + Versuch-Count */}
+            {/* Navigation */}
             <div className="flex items-center gap-2">
-              {attemptCount > 0 && (
-                <span className="text-xs text-ink-muted tabular-nums">
-                  Versuch {attemptCount}
-                </span>
-              )}
               {prevHref && (
                 <a href={prevHref} className="inline-flex items-center justify-center gap-1 font-medium rounded-md px-3 py-1.5 text-sm bg-transparent text-ink hover:bg-surface-dim transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                   &larr; Zurück
@@ -211,6 +208,22 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
         </FadeIn>
       )}
 
+      {phase === "success" && completed && (
+        <FadeIn delay={0.05}>
+          <Card variant="outlined" className="p-5 border-success/40">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-success/10 text-success text-xs font-bold" aria-hidden="true">
+                ✓
+              </span>
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-success">Richtig!</p>
+                <p className="text-sm text-ink">Deine Abfrage liefert das erwartete Ergebnis.</p>
+              </div>
+            </div>
+          </Card>
+        </FadeIn>
+      )}
+
       {(phase === "partial" || phase === "success") && queryResult && queryResult.resultset && (
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
@@ -246,22 +259,6 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
                 <p className="text-sm text-ink">{comparison.details}</p>
               </div>
             </div>
-          </Card>
-        </FadeIn>
-      )}
-
-      {phase === "success" && completed && (
-        <FadeIn delay={0.05}>
-          <Card variant="outlined" className="p-5 border-success/40">
-            <SuccessCelebration
-              message="Richtig!"
-              submessage={
-                hasHiddenFailures === false && hiddenTestResults && hiddenTestResults.length > 0
-                  ? "Deine Abfrage liefert das erwartete Ergebnis. Alle versteckten Tests bestanden."
-                  : "Deine Abfrage liefert das erwartete Ergebnis."
-              }
-              show={showCelebration}
-            />
           </Card>
         </FadeIn>
       )}
