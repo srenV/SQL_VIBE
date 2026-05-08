@@ -8,16 +8,19 @@ import {
   Controls,
   Handle,
   Position,
+  BaseEdge,
+  getBezierPath,
   type Node,
   type Edge,
+  type EdgeProps,
   MarkerType,
   BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "dagre";
-import type { SchemaTable } from "@/types/playground";
+import type { SchemaTable, ForeignKey } from "@/types/playground";
 
-// ── dagre layout ──────────────────────────────────────────────
+// ── constants ─────────────────────────────────────────────────
 
 const NODE_WIDTH = 220;
 const NODE_ROW_HEIGHT = 26;
@@ -26,6 +29,13 @@ const NODE_HEADER_HEIGHT = 32;
 function getNodeHeight(table: SchemaTable): number {
   return NODE_HEADER_HEIGHT + table.columns.length * NODE_ROW_HEIGHT + 4;
 }
+
+/** Y-center of a column row relative to the top of the node. */
+function getColumnY(colIndex: number): number {
+  return NODE_HEADER_HEIGHT + colIndex * NODE_ROW_HEIGHT + NODE_ROW_HEIGHT / 2;
+}
+
+// ── dagre layout ──────────────────────────────────────────────
 
 function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] } {
   const g = new dagre.graphlib.Graph();
@@ -45,7 +55,7 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
   g.setGraph({
     rankdir: hasEdges ? "LR" : "TB",
     nodesep: hasEdges ? 100 : 140,
-    ranksep: hasEdges ? 140 : 100,
+    ranksep: hasEdges ? 160 : 100,
     marginx: 60,
     marginy: 60,
   });
@@ -61,6 +71,19 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
 
   dagre.layout(g);
 
+  // ── Collect which columns are referenced by FKs (need target handles) ──
+  const referencedColumns = new Map<string, Set<string>>();
+  for (const table of tables) {
+    if (!table.foreignKeys) continue;
+    for (const fk of table.foreignKeys) {
+      if (!tables.find((t) => t.name === fk.referencedTable)) continue;
+      if (!referencedColumns.has(fk.referencedTable)) {
+        referencedColumns.set(fk.referencedTable, new Set());
+      }
+      referencedColumns.get(fk.referencedTable)!.add(fk.referencedColumn);
+    }
+  }
+
   const nodes: Node[] = tables.map((table) => {
     const dagreNode = g.node(table.name);
     const h = getNodeHeight(table);
@@ -71,33 +94,61 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
         x: dagreNode.x - NODE_WIDTH / 2,
         y: dagreNode.y - h / 2,
       },
-      data: { table },
+      data: { table, referencedColumns: referencedColumns.get(table.name) ?? new Set<string>() },
     };
   });
 
-  const edges: Edge[] = [];
+  // ── Build edges with per-column handles ──────────────────────
+  // Group parallel edges (same source→target pair) to assign stepPosition offsets
+  const edgeGroups = new Map<string, { fk: ForeignKey; sourceTable: string }[]>();
+
   for (const table of tables) {
     if (!table.foreignKeys) continue;
     for (const fk of table.foreignKeys) {
       if (!tables.find((t) => t.name === fk.referencedTable)) continue;
-      const edgeId = `${table.name}-${fk.column}->${fk.referencedTable}-${fk.referencedColumn}`;
+      const key = `${table.name}->${fk.referencedTable}`;
+      if (!edgeGroups.has(key)) edgeGroups.set(key, []);
+      edgeGroups.get(key)!.push({ fk, sourceTable: table.name });
+    }
+  }
+
+  const edges: Edge[] = [];
+  for (const [, group] of edgeGroups) {
+    const total = group.length;
+    for (let i = 0; i < total; i++) {
+      const { fk, sourceTable } = group[i];
+      const edgeId = `${sourceTable}-${fk.column}->${fk.referencedTable}-${fk.referencedColumn}`;
+
+      // Spread parallel edges by varying curvature
+      // Single edge: slight curve (0.25). Multiple: alternate curvature sign and magnitude
+      let curvature: number;
+      if (total === 1) {
+        curvature = 0.25;
+      } else {
+        // Distribute curvatures symmetrically around 0, e.g. for 3 edges: -0.3, 0, 0.3
+        curvature = ((i + 1) / (total + 1) - 0.5) * 0.6;
+      }
+
       edges.push({
         id: edgeId,
-        source: table.name,
+        source: sourceTable,
+        sourceHandle: `source-${fk.column}`,
         target: fk.referencedTable,
-        type: "smoothstep",
+        targetHandle: `target-${fk.referencedColumn}`,
+        type: "fkEdge",
         animated: true,
-        label: fk.column,
-        style: { stroke: "#6366f1", strokeWidth: 2.5 },
+        label: `${fk.column} → ${fk.referencedColumn}`,
+        data: { curvature },
+        style: { stroke: "#6366f1", strokeWidth: 2 },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          width: 22,
-          height: 22,
+          width: 18,
+          height: 18,
           color: "#6366f1",
         },
-        labelStyle: { fontSize: 10, fill: "#475569", fontWeight: 600 },
-        labelBgStyle: { fill: "#ffffff", fillOpacity: 0.95 },
-        labelBgPadding: [6, 4] as [number, number],
+        labelStyle: { fontSize: 9, fill: "#475569", fontWeight: 600 },
+        labelBgStyle: { fill: "#ffffff", fillOpacity: 0.92 },
+        labelBgPadding: [4, 3] as [number, number],
         labelBgBorderRadius: 3,
       });
     }
@@ -108,26 +159,56 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
 
 // ── Custom Table Node ─────────────────────────────────────────
 
-const TableNode = React.memo(({ data }: { data: { table: SchemaTable } }) => {
-  const { table } = data;
+const TableNode = React.memo(({ data }: { data: { table: SchemaTable; referencedColumns: Set<string> } }) => {
+  const { table, referencedColumns } = data;
+
+  // Pre-compute which columns are FK for badge rendering
+  const fkColumns = new Set(table.foreignKeys?.map((fk) => fk.column));
 
   return (
     <div
-      className="rounded-lg border-2 border-primary-300 dark:border-primary-600 bg-white dark:bg-slate-800 shadow-lg overflow-hidden"
-      style={{ width: NODE_WIDTH, fontSize: 12 }}
+      className="rounded-lg border-2 border-primary-300 dark:border-primary-600 bg-white dark:bg-slate-800 shadow-lg"
+      style={{ width: NODE_WIDTH, fontSize: 12, position: "relative", overflow: "visible" }}
     >
-      {/* Source handle (right side) — edges go FROM this table */}
-      <Handle
-        type="source"
-        position={Position.Right}
-        style={{ background: "#6366f1", width: 10, height: 10, border: "2px solid white" }}
-      />
-      {/* Target handle (left side) — edges go TO this table */}
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{ background: "#6366f1", width: 10, height: 10, border: "2px solid white" }}
-      />
+      {/* ── Handles placed at node level with absolute positioning ── */}
+      {table.columns.map((col, colIndex) => {
+        const yCenter = getColumnY(colIndex);
+        const isFk = fkColumns.has(col.name);
+        return (
+          <React.Fragment key={col.name}>
+            {/* FK source handle on the right — edge goes FROM this FK column */}
+            {isFk && (
+              <Handle
+                type="source"
+                position={Position.Right}
+                id={`source-${col.name}`}
+                style={{
+                  top: yCenter,
+                  background: "#6366f1",
+                  width: 8,
+                  height: 8,
+                  border: "2px solid white",
+                }}
+              />
+            )}
+            {/* PK target handle on the left — edge arrives AT this PK or referenced column */}
+            {(col.isPrimaryKey || referencedColumns.has(col.name)) && (
+              <Handle
+                type="target"
+                position={Position.Left}
+                id={`target-${col.name}`}
+                style={{
+                  top: yCenter,
+                  background: col.isPrimaryKey ? "#f59e0b" : "#6366f1",
+                  width: 8,
+                  height: 8,
+                  border: "2px solid white",
+                }}
+              />
+            )}
+          </React.Fragment>
+        );
+      })}
 
       <div className="bg-primary-100 dark:bg-primary-500/30 px-3 py-2 border-b border-primary-200 dark:border-primary-400/30">
         <span className="font-bold text-primary-800 dark:text-white text-sm">
@@ -137,7 +218,7 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable } }) => {
 
       <div className="divide-y divide-slate-100 dark:divide-slate-700">
         {table.columns.map((col) => {
-          const isFk = table.foreignKeys?.some((fk) => fk.column === col.name);
+          const isFk = fkColumns.has(col.name);
           return (
             <div key={col.name} className="flex items-center gap-1.5 px-3 py-1.5">
               {col.isPrimaryKey && (
@@ -168,9 +249,65 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable } }) => {
 });
 TableNode.displayName = "TableNode";
 
+// ── Custom FK Edge (bezier with configurable curvature for parallel offset) ──
+
+function FkEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  label,
+  labelStyle,
+  labelShowBg,
+  labelBgStyle,
+  labelBgPadding,
+  labelBgBorderRadius,
+  style,
+  markerEnd,
+  markerStart,
+  interactionWidth,
+  data,
+}: EdgeProps) {
+  // curvature from data: 0 = straight, higher = more curve
+  // For parallel edges, each gets a different curvature sign/magnitude
+  const curvature = (data?.curvature as number) ?? 0.25;
+  const [path, labelX, labelY] = getBezierPath({
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+    curvature,
+  });
+
+  return (
+    <BaseEdge
+      id={id}
+      path={path}
+      labelX={labelX}
+      labelY={labelY}
+      label={label}
+      labelStyle={labelStyle}
+      labelShowBg={labelShowBg}
+      labelBgStyle={labelBgStyle}
+      labelBgPadding={labelBgPadding}
+      labelBgBorderRadius={labelBgBorderRadius}
+      style={style}
+      markerEnd={markerEnd}
+      markerStart={markerStart}
+      interactionWidth={interactionWidth}
+    />
+  );
+}
+
 // ── Inner Graph Component ─────────────────────────────────────
 
 const nodeTypes = { tableNode: TableNode };
+const edgeTypes = { fkEdge: FkEdge };
 
 function SchemaGraphInner({ tables }: { tables: SchemaTable[] }) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -209,6 +346,7 @@ function SchemaGraphInner({ tables }: { tables: SchemaTable[] }) {
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onInit={onInit}
         minZoom={0.05}
         maxZoom={2}
