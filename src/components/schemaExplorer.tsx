@@ -17,6 +17,10 @@ export interface SchemaExplorerProps {
   onInsertTemplate?: (tableName: string) => void;
   /** Callback: CREATE TABLE-Template in Editor einfuegen (nur Sandbox). */
   onCreateTableTemplate?: () => void;
+  /** Extern gesteuerter Anzeigemodus (ueberschreibt internen State). */
+  viewMode?: ViewMode;
+  /** Interne Tab-Leiste ausblenden (wenn extern gesteuert). */
+  hideTabs?: boolean;
 }
 
 type ViewMode = "rm" | "data" | "schema";
@@ -27,8 +31,10 @@ interface TableDataCache {
   totalRows?: number;
 }
 
-export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sandboxMode, onDropTable, onInsertTemplate, onCreateTableTemplate }) => {
-  const [viewMode, setViewMode] = useState<ViewMode>("rm");
+export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sandboxMode, onDropTable, onInsertTemplate, onCreateTableTemplate, viewMode: externalViewMode, hideTabs }) => {
+  const [internalViewMode, setInternalViewMode] = useState<ViewMode>("rm");
+  const viewMode = externalViewMode ?? internalViewMode;
+  const setViewMode = hideTabs ? () => {} : setInternalViewMode;
   const [tableData, setTableData] = useState<Record<string, TableDataCache>>({});
   const [loadingTables, setLoadingTables] = useState<Set<string>>(new Set());
 
@@ -103,38 +109,40 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
-        <button
-          onClick={() => setViewMode("rm")}
-          className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-            viewMode === "rm"
-              ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
-              : "text-ink-muted hover:text-ink"
-          }`}
-        >
-          Graph
-        </button>
-        <button
-          onClick={switchToData}
-          className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-            viewMode === "data"
-              ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
-              : "text-ink-muted hover:text-ink"
-          }`}
-        >
-          Daten
-        </button>
-        <button
-          onClick={() => setViewMode("schema")}
-          className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-            viewMode === "schema"
-              ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
-              : "text-ink-muted hover:text-ink"
-          }`}
-        >
-          Schema
-        </button>
-      </div>
+      {!hideTabs && (
+        <div className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
+          <button
+            onClick={() => setViewMode("rm")}
+            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              viewMode === "rm"
+                ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                : "text-ink-muted hover:text-ink"
+            }`}
+          >
+            Graph
+          </button>
+          <button
+            onClick={switchToData}
+            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              viewMode === "data"
+                ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                : "text-ink-muted hover:text-ink"
+            }`}
+          >
+            Daten
+          </button>
+          <button
+            onClick={() => setViewMode("schema")}
+            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              viewMode === "schema"
+                ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                : "text-ink-muted hover:text-ink"
+            }`}
+          >
+            Schema
+          </button>
+        </div>
+      )}
 
       {viewMode === "rm" && <SchemaGraph tables={tables} />}
 

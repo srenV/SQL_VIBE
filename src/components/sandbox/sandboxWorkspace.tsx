@@ -102,7 +102,7 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
 }) => {
   const [userQuery, setUserQuery] = useState("");
   const [showHistory, setShowHistory] = useState(false);
-  const [activeTab, setActiveTab] = useState<"result" | "data" | "schema">("result");
+  const [activeTab, setActiveTab] = useState<"result" | "data" | "graph" | "schema">("result");
 
   const hasNoDb = !db;
 
@@ -117,7 +117,7 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
     setShowHistory(false);
   };
 
-  type TabKey = "result" | "data" | "schema";
+  type TabKey = "result" | "data" | "graph" | "schema";
   const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
     {
       key: "result",
@@ -134,6 +134,15 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
       icon: (
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+        </svg>
+      ),
+    },
+    {
+      key: "graph",
+      label: "Graph",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
         </svg>
       ),
     },
@@ -359,6 +368,34 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
           </>
         )}
 
+        {/* ── Graph Tab ── */}
+        {activeTab === "graph" && (
+          <SchemaExplorer
+            tables={liveSchema}
+            db={db}
+            sandboxMode
+            onDropTable={async (tableName) => {
+              if (confirm(`Tabelle "${tableName}" wirklich löschen?`)) {
+                await onRunQuery(`DROP TABLE IF EXISTS "${tableName}";`);
+                onRefreshSchema();
+              }
+            }}
+            onInsertTemplate={(tableName) => {
+              const cols = liveSchema.find((t) => t.name === tableName)?.columns ?? [];
+              const colNames = cols.map((c) => c.name).join(", ");
+              const placeholders = cols.map(() => "?").join(", ");
+              setUserQuery(`INSERT INTO "${tableName}" (${colNames})\nVALUES (${placeholders});`);
+              setActiveTab("result");
+            }}
+            onCreateTableTemplate={() => {
+              setUserQuery(`CREATE TABLE tabelle_name (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);`);
+              setActiveTab("result");
+            }}
+            viewMode="rm"
+            hideTabs
+          />
+        )}
+
         {/* ── Schema Tab ── */}
         {activeTab === "schema" && (
           <SchemaExplorer
@@ -382,6 +419,8 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
               setUserQuery(`CREATE TABLE tabelle_name (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);`);
               setActiveTab("result");
             }}
+            viewMode="schema"
+            hideTabs
           />
         )}
       </div>
