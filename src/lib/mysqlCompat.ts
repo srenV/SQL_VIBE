@@ -101,6 +101,12 @@ function transformCreateTable(sql: string): string {
   // AUTO_INCREMENT → AUTOINCREMENT (nur innerhalb von CREATE TABLE)
   result = result.replace(/\bAUTO_INCREMENT\b/gi, "AUTOINCREMENT");
 
+  // SQLite verlangt: INTEGER PRIMARY KEY AUTOINCREMENT
+  // MySQL schreibt: INT AUTO_INCREMENT PRIMARY KEY
+  // Nach obiger Transformation: INTEGER AUTOINCREMENT PRIMARY KEY
+  // Muss umsortiert werden zu: INTEGER PRIMARY KEY AUTOINCREMENT
+  result = result.replace(/\bAUTOINCREMENT\s+PRIMARY\s+KEY\b/gi, "PRIMARY KEY AUTOINCREMENT");
+
   // BOOLEAN → INTEGER (SQLite speichert BOOL als INT)
   result = result.replace(/\bBOOLEAN\b/gi, "INTEGER");
 
@@ -116,6 +122,12 @@ function transformCreateTable(sql: string): string {
   result = result.replace(/\bSMALLINT\b(\(\d+\))?/gi, "INTEGER");
   result = result.replace(/\bMEDIUMINT\b(\(\d+\))?/gi, "INTEGER");
   result = result.replace(/\bBIGINT\b(\(\d+\))?/gi, "INTEGER");
+
+  // INT → INTEGER (SQLite verlangt INTEGER PRIMARY KEY für AUTOINCREMENT;
+  // INT PRIMARY KEY AUTOINCREMENT ist ungültig und wird stillschweigend ignoriert)
+  // Muss NACH TINYINT/SMALLINT/MEDIUMINT/BIGINT kommen, da diese bereits
+  // zu INTEGER transformiert wurden und \bINT\b nicht in INTEGER matcht.
+  result = result.replace(/\bINT\b(\(\d+\))?/gi, "INTEGER");
 
   // DECIMAL(n,m) / NUMERIC(n,m) → REAL (SQLite hat kein echtes DECIMAL)
   result = result.replace(/\bDECIMAL\s*\(\s*\d+\s*,\s*\d+\s*\)/gi, "REAL");

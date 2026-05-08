@@ -18,6 +18,67 @@ import { splitSqlStatements } from "./sqlEngine";
 
 describe("mysqlToSqlite", () => {
   // ─── RIGHT JOIN ──────────────────────────────────────────────────────
+  // ─── INT → INTEGER ──────────────────────────────────────────────────────
+  it("transformiert INT zu INTEGER (erforderlich für AUTOINCREMENT)", () => {
+    expect(mysqlToSqlite("CREATE TABLE t (id INT PRIMARY KEY AUTOINCREMENT)")).
+      toContain("id INTEGER PRIMARY KEY AUTOINCREMENT");
+    expect(mysqlToSqlite("CREATE TABLE t (id INT PRIMARY KEY AUTOINCREMENT)")).
+      not.toContain("INT PRIMARY KEY");
+  });
+
+  it("transformiert INT NOT NULL zu INTEGER NOT NULL", () => {
+    expect(mysqlToSqlite("CREATE TABLE t (id INT NOT NULL)")).
+      toContain("id INTEGER NOT NULL");
+  });
+
+  it("transformiert INT(11) zu INTEGER (Größenangabe wird entfernt)", () => {
+    // SQLite ignoriert Größenangaben bei INTEGER, INT(11) → INTEGER
+    expect(mysqlToSqlite("CREATE TABLE t (id INT(11) NOT NULL)")).
+      toContain("id INTEGER NOT NULL");
+    expect(mysqlToSqlite("CREATE TABLE t (id INT(11) NOT NULL)")).
+      not.toContain("INT(11)");
+  });
+
+  it("transformiert INT AUTO_INCREMENT PRIMARY KEY zu INTEGER PRIMARY KEY AUTOINCREMENT", () => {
+    const result = mysqlToSqlite("CREATE TABLE t (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50))");
+    expect(result).toContain("id INTEGER PRIMARY KEY AUTOINCREMENT");
+    expect(result).not.toContain("INT ");
+  });
+
+  it("transformiert INT nicht außerhalb von CREATE TABLE", () => {
+    // INT in INSERT/SELECT sollte nicht transformiert werden
+    expect(mysqlToSqlite("INSERT INTO t VALUES (1, 'INT')")).toContain("INT");
+  });
+
+  it("transformiert komplettes Backshop-Skript korrekt (INT → INTEGER)", () => {
+    const backshopSQL = `CREATE DATABASE IF NOT EXISTS backshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE backshop;
+
+CREATE TABLE IF NOT EXISTS produkte (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    kategorie VARCHAR(50) NOT NULL,
+    preis DECIMAL(6,2) NOT NULL,
+    bestand INT NOT NULL DEFAULT 0
+);`;
+
+    const rawStmts = splitSqlStatements(backshopSQL);
+    const transformedStmts = rawStmts.map(stmt => mysqlToSqlite(stmt.trim()));
+
+    // CREATE DATABASE → Kommentar
+    const createDbComment = transformedStmts.find(s => s.includes("CREATE DATABASE backshop"));
+    expect(createDbComment).toBeDefined();
+    expect(createDbComment!.trim()).toMatch(/^--/);
+
+    // INT → INTEGER in CREATE TABLE
+    const produkteStmt = transformedStmts.find(s => s.includes("produkte") && s.includes("CREATE TABLE"));
+    expect(produkteStmt).toBeDefined();
+    expect(produkteStmt!).toContain("id INTEGER PRIMARY KEY AUTOINCREMENT");
+    expect(produkteStmt!).toContain("bestand INTEGER NOT NULL DEFAULT 0");
+    expect(produkteStmt!).not.toContain("INT ");
+  });
+
   it("transformiert RIGHT JOIN zu LEFT JOIN mit vertauschten Tabellen", () => {
     expect(mysqlToSqlite("SELECT * FROM a RIGHT JOIN b ON a.id = b.a_id"))
       .toBe("SELECT * FROM b LEFT JOIN a ON a.id = b.a_id");
