@@ -422,9 +422,10 @@ function transformDatabaseStatements(sql: string): string {
     (_, name) => `-- MySQL: DROP DATABASE ${name} (SQLite: automatisch ignoriert)`
   );
 
-  // CREATE DATABASE [IF NOT EXISTS] name; → Kommentar (ohne Semikolon im Kommentar!)
+  // CREATE DATABASE [IF NOT EXISTS] name [CHARACTER SET ...] [COLLATE ...] [DEFAULT CHARSET ...]; → Kommentar
+  // MySQL erlaubt: CHARACTER SET, COLLATE, DEFAULT CHARSET nach dem DB-Namen
   result = result.replace(
-    /^\s*CREATE\s+DATABASE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)\s*;?\s*$/gim,
+    /^\s*CREATE\s+DATABASE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)(?:\s+(?:CHARACTER\s+SET|DEFAULT\s+CHARSET|COLLATE)\s+\S+)*\s*;?\s*$/gim,
     (_, name) => `-- MySQL: CREATE DATABASE ${name} (SQLite: automatisch ignoriert)`
   );
 
@@ -594,7 +595,7 @@ export function mapSqliteTypeToMysql(sqliteType: string): string {
  * @returns Der extrahierte Datenbankname oder null
  */
 export function extractDatabaseName(sql: string): string | null {
-  // CREATE DATABASE [IF NOT EXISTS] name
+  // CREATE DATABASE [IF NOT EXISTS] name [CHARACTER SET ...] [COLLATE ...] [DEFAULT CHARSET ...]
   const createMatch = sql.match(/\bCREATE\s+DATABASE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i);
   if (createMatch) {
     return createMatch[1];

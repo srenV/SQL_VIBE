@@ -299,6 +299,25 @@ describe("mysqlToSqlite", () => {
     expect(result.trim()).toMatch(/^--/);
   });
 
+  it("transformiert CREATE DATABASE mit CHARACTER SET und COLLATE", () => {
+    const result = mysqlToSqlite("CREATE DATABASE IF NOT EXISTS backshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+    expect(result).toContain("-- MySQL: CREATE DATABASE backshop");
+    expect(result).toContain("automatisch ignoriert");
+    expect(result.trim()).toMatch(/^--/);
+  });
+
+  it("transformiert CREATE DATABASE mit DEFAULT CHARSET", () => {
+    const result = mysqlToSqlite("CREATE DATABASE mydb DEFAULT CHARSET utf8mb4;");
+    expect(result).toContain("-- MySQL: CREATE DATABASE mydb");
+    expect(result).toContain("automatisch ignoriert");
+  });
+
+  it("transformiert CREATE DATABASE mit CHARACTER SET und COLLATE (ohne IF NOT EXISTS)", () => {
+    const result = mysqlToSqlite("CREATE DATABASE backshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+    expect(result).toContain("-- MySQL: CREATE DATABASE backshop");
+    expect(result.trim()).toMatch(/^--/);
+  });
+
   it("transformiert komplettes Küchen-Skript-Header (DROP + CREATE + USE)", () => {
     const header = [
       "DROP DATABASE IF EXISTS Kuechenstudio;",
@@ -461,6 +480,224 @@ ALTER TABLE hersteller MODIFY COLUMN Name VARCHAR(50) NOT NULL;`;
       expect(comment).not.toMatch(/;\s*\w/); // kein Semikolon gefolgt von Text
     }
   });
+
+  it("transformiert CREATE TABLE IF NOT EXISTS korrekt", () => {
+    const result = mysqlToSqlite("CREATE TABLE IF NOT EXISTS produkte (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL);");
+    expect(result).toContain("CREATE TABLE IF NOT EXISTS produkte");
+    expect(result).toContain("AUTOINCREMENT");
+    expect(result).not.toContain("AUTO_INCREMENT");
+  });
+
+  it("transformiert komplettes Backshop-Skript mit IF NOT EXISTS und CHARACTER SET (Integration)", () => {
+    const backshopScript = `CREATE DATABASE IF NOT EXISTS backshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE backshop;
+
+CREATE TABLE IF NOT EXISTS produkte (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    kategorie VARCHAR(50) NOT NULL,
+    preis DECIMAL(6,2) NOT NULL,
+    bestand INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS kunden (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vorname VARCHAR(50) NOT NULL,
+    nachname VARCHAR(50) NOT NULL,
+    email VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS bestellungen (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kunde_id INT NOT NULL,
+    bestell_datum DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (kunde_id) REFERENCES kunden(id)
+);
+
+CREATE TABLE IF NOT EXISTS bestellpositionen (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bestellung_id INT NOT NULL,
+    produkt_id INT NOT NULL,
+    menge INT NOT NULL,
+    einzelpreis DECIMAL(6,2) NOT NULL,
+    FOREIGN KEY (bestellung_id) REFERENCES bestellungen(id),
+    FOREIGN KEY (produkt_id) REFERENCES produkte(id)
+);
+
+INSERT INTO produkte (name, kategorie, preis, bestand) VALUES
+('Brötchen', 'Backwaren', 0.45, 200),
+('Croissant', 'Gebäck', 1.50, 80),
+('Pide', 'Herzhaftes', 3.50, 40),
+('Kaffee', 'Getränke', 2.20, 100);
+
+INSERT INTO kunden (vorname, nachname, email) VALUES
+('Ali', 'Yilmaz', 'ali.yilmaz@example.com'),
+('Mara', 'Schneider', 'mara.schneider@example.com');
+
+INSERT INTO bestellungen (kunde_id) VALUES
+(1),
+(2);
+
+INSERT INTO bestellpositionen (bestellung_id, produkt_id, menge, einzelpreis) VALUES
+(1, 1, 5, 0.45),
+(1, 4, 2, 2.20),
+(2, 2, 3, 1.50),
+(2, 3, 1, 3.50);`;
+
+    const rawStmts = splitSqlStatements(backshopScript);
+    const transformedStmts = rawStmts.map(stmt => mysqlToSqlite(stmt.trim()));
+
+    // CREATE DATABASE → Kommentar
+    const createDbComment = transformedStmts.find(s => s.includes("CREATE DATABASE backshop"));
+    expect(createDbComment).toBeDefined();
+    expect(createDbComment!.trim()).toMatch(/^--/);
+
+    // USE → Kommentar
+    const useComment = transformedStmts.find(s => s.includes("USE backshop"));
+    expect(useComment).toBeDefined();
+    expect(useComment!.trim()).toMatch(/^--/);
+
+    // CREATE TABLE IF NOT EXISTS bleibt erhalten
+    const produkteStmt = transformedStmts.find(s => s.includes("produkte") && s.includes("CREATE TABLE"));
+    expect(produkteStmt).toBeDefined();
+    expect(produkteStmt!).toContain("IF NOT EXISTS");
+    expect(produkteStmt!).toContain("AUTOINCREMENT");
+    expect(produkteStmt!).not.toContain("AUTO_INCREMENT");
+    expect(produkteStmt!).not.toContain("DECIMAL");
+
+    // DATETIME → TEXT
+    const bestellungenStmt = transformedStmts.find(s => s.includes("bestellungen") && s.includes("CREATE TABLE"));
+    expect(bestellungenStmt).toBeDefined();
+    expect(bestellungenStmt!).toContain("TEXT");
+    expect(bestellungenStmt!).not.toContain("DATETIME");
+
+    // DECIMAL → REAL
+    const bestellpositionenStmt = transformedStmts.find(s => s.includes("bestellpositionen") && s.includes("CREATE TABLE"));
+    expect(bestellpositionenStmt).toBeDefined();
+    expect(bestellpositionenStmt!).not.toContain("DECIMAL");
+
+    // INSERT-Statements bleiben erhalten
+    const insertStmts = transformedStmts.filter(s => s.includes("INSERT INTO"));
+    expect(insertStmts.length).toBeGreaterThanOrEqual(4);
+
+    // Keine Statements sollten Fehler verursachen (alle sind gültiges SQLite)
+    for (const stmt of transformedStmts) {
+      if (stmt.trim().startsWith("--")) continue; // Kommentare überspringen
+      // Alle nicht-Kommentar-Statements sollten mit CREATE TABLE, INSERT INTO, oder PRAGMA beginnen
+      expect(stmt.trim()).toMatch(/^(CREATE TABLE|INSERT INTO|PRAGMA)/i);
+    }
+  });
+
+  it("transformiert Backshop-Skript mit CHARACTER SET und COLLATE korrekt (Integration)", () => {
+    // Das Backshop-Skript wie es ein User eingeben würde
+    const backshopScript = `CREATE DATABASE IF NOT EXISTS backshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE backshop;
+
+CREATE TABLE produkte (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    kategorie VARCHAR(50),
+    preis DECIMAL(6,2) NOT NULL,
+    bestand INT DEFAULT 0
+);
+
+CREATE TABLE kunden (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vorname VARCHAR(50) NOT NULL,
+    nachname VARCHAR(50) NOT NULL,
+    email VARCHAR(100)
+);
+
+CREATE TABLE bestellungen (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kunde_id INT,
+    bestell_datum DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (kunde_id) REFERENCES kunden(id)
+);
+
+CREATE TABLE bestellpositionen (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bestellung_id INT,
+    produkt_id INT,
+    menge INT NOT NULL,
+    einzelpreis DECIMAL(6,2) NOT NULL,
+    FOREIGN KEY (bestellung_id) REFERENCES bestellungen(id),
+    FOREIGN KEY (produkt_id) REFERENCES produkte(id)
+);
+
+INSERT INTO produkte (name, kategorie, preis, bestand)
+VALUES
+('Brötchen', 'Backwaren', 0.45, 200),
+('Croissant', 'Gebäck', 1.50, 80),
+('Pide', 'Herzhaftes', 3.50, 40),
+('Kaffee', 'Getränke', 2.20, 100);
+
+INSERT INTO kunden (vorname, nachname, email)
+VALUES
+('Ali', 'Yilmaz', 'ali.yilmaz@example.com'),
+('Mara', 'Schneider', 'mara.schneider@example.com');
+
+INSERT INTO bestellungen (kunde_id)
+VALUES
+(1),
+(2);
+
+INSERT INTO bestellpositionen (bestellung_id, produkt_id, menge, einzelpreis)
+VALUES
+(1, 1, 5, 0.45),
+(1, 4, 2, 2.20),
+(2, 2, 3, 1.50),
+(2, 3, 1, 3.50);`;
+
+    // Pipeline simulieren: split → transform each
+    const rawStmts = splitSqlStatements(backshopScript);
+    const transformedStmts = rawStmts.map(stmt => mysqlToSqlite(stmt.trim()));
+
+    // CREATE DATABASE und USE → Kommentare
+    const dbComments = transformedStmts.filter(s => s.trim().startsWith("--"));
+    expect(dbComments.length).toBeGreaterThanOrEqual(2); // CREATE DATABASE + USE
+
+    // CREATE DATABASE mit CHARACTER SET/COLLATE wird korrekt transformiert
+    const createDbComment = transformedStmts.find(s => s.includes("CREATE DATABASE backshop"));
+    expect(createDbComment).toBeDefined();
+    expect(createDbComment!.trim()).toMatch(/^--/);
+
+    // USE wird korrekt transformiert
+    const useComment = transformedStmts.find(s => s.includes("USE backshop"));
+    expect(useComment).toBeDefined();
+    expect(useComment!.trim()).toMatch(/^--/);
+
+    // AUTO_INCREMENT → AUTOINCREMENT in CREATE TABLE
+    const produkteStmt = transformedStmts.find(s => s.includes("produkte"));
+    expect(produkteStmt).toBeDefined();
+    expect(produkteStmt!).toContain("AUTOINCREMENT");
+    expect(produkteStmt!).not.toContain("AUTO_INCREMENT");
+
+    // DECIMAL → REAL
+    for (const stmt of transformedStmts) {
+      if (stmt.includes("DECIMAL")) {
+        // DECIMAL sollte nur noch in INSERT-Statements vorkommen (als Wert)
+        // nicht in CREATE TABLE
+        expect(stmt).not.toContain("CREATE TABLE");
+      }
+    }
+
+    // DATETIME → TEXT
+    const bestellungenStmt = transformedStmts.find(s => s.includes("bestellungen") && s.includes("CREATE TABLE"));
+    expect(bestellungenStmt).toBeDefined();
+    expect(bestellungenStmt!).toContain("TEXT");
+    expect(bestellungenStmt!).not.toContain("DATETIME");
+
+    // CURRENT_TIMESTAMP → wird in DEFAULT behalten (SQLite kennt CURRENT_TIMESTAMP)
+    expect(bestellungenStmt!).toContain("CURRENT_TIMESTAMP");
+
+    // Kommentare dürfen keine Semikolons enthalten
+    for (const comment of dbComments) {
+      expect(comment).not.toMatch(/;\s*\w/);
+    }
+  });
 });
 
 describe("mapSqliteErrorToMysql", () => {
@@ -581,6 +818,18 @@ describe("extractDatabaseName", () => {
   it("extrahiert den Namen aus USE wenn kein CREATE DATABASE vorhanden", () => {
     const sql = "USE mydb;\nSELECT * FROM test;";
     expect(extractDatabaseName(sql)).toBe("mydb");
+  });
+
+  it("extrahiert den Namen aus CREATE DATABASE mit CHARACTER SET und COLLATE", () => {
+    expect(extractDatabaseName("CREATE DATABASE IF NOT EXISTS backshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")).toBe("backshop");
+  });
+
+  it("extrahiert den Namen aus CREATE DATABASE mit DEFAULT CHARSET", () => {
+    expect(extractDatabaseName("CREATE DATABASE mydb DEFAULT CHARSET utf8mb4;")).toBe("mydb");
+  });
+
+  it("extrahiert den Namen aus CREATE DATABASE mit CHARACTER SET (ohne IF NOT EXISTS)", () => {
+    expect(extractDatabaseName("CREATE DATABASE backshop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")).toBe("backshop");
   });
 
   it("gibt null zurück wenn kein CREATE DATABASE oder USE vorhanden", () => {

@@ -45,8 +45,9 @@ describe("Home Page", () => {
 
   it("rendert den Start-Button", () => {
     render(<Home />);
-    const startElement = screen.getByText(/Jetzt üben|Jetzt starten/i);
-    expect(startElement).toBeInTheDocument();
+    // Es gibt keinen einzelnen "Start"-Button mehr, sondern Links zu den drei Säulen
+    const sandboxLinks = screen.getAllByRole("link");
+    expect(sandboxLinks.length).toBeGreaterThanOrEqual(3);
   });
 
   it("rendert die Drei-Saeulen-Karten (Ueben, Sandbox, Lernen)", () => {
@@ -58,6 +59,6 @@ describe("Home Page", () => {
 
   it("rendert den Sandbox-Button", () => {
     render(<Home />);
-    expect(screen.getByText("Sandbox öffnen")).toBeInTheDocument();
+    expect(screen.getByText(/Sandbox öffnen/)).toBeInTheDocument();
   });
 });

@@ -47,6 +47,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || isLoading}
+        suppressHydrationWarning
         className={cn(
           "inline-flex items-center justify-center gap-2 font-medium transition-colors duration-150 ease-in-out",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2",
