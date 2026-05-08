@@ -369,13 +369,51 @@ export function useSandbox(): UseSandboxReturn {
       let db = activeDbRef.current;
       let dbId = activeDbIdRef.current;
 
-      // Wenn keine DB offen ist, auto-erstelle eine neue und öffne sie
+      // Wenn keine DB offen ist:
+      // 1. Prüfe ob bereits eine DB mit dem extrahierten Namen existiert → öffne sie & führe SQL aus
+      // 2. Sonst erstelle eine neue DB mit dem extrahierten Namen
       if (!db) {
         try {
-          const now = new Date().toISOString();
-          const newId = crypto.randomUUID();
           // Datenbanknamen aus CREATE DATABASE / USE extrahieren, Fallback "Neue Datenbank"
           const name = extractDatabaseName(sql) || "Neue Datenbank";
+
+          // Prüfe ob bereits eine DB mit diesem Namen existiert
+          const existingDb = dbList.find((d) => d.name.toLowerCase() === name.toLowerCase());
+
+          if (existingDb) {
+            // Bestehende DB öffnen und SQL darauf ausführen
+            await openDatabase(existingDb.id);
+            db = activeDbRef.current!;
+            dbId = existingDb.id;
+
+            // SQL auf der bestehenden DB ausführen
+            const result = runSandboxQuery(db, sql);
+            setQueryResult(result);
+
+            // Auto-Save triggern
+            scheduleAutoSave();
+
+            // Query-History speichern
+            const historyEntry: QueryHistoryEntry = {
+              sql,
+              executedAt: new Date().toISOString(),
+              success: result.success,
+              rowsModified: result.rowsModified,
+              statementType: result.statementType,
+            };
+            setQueryHistory((prev) => [historyEntry, ...prev].slice(0, 50));
+            try {
+              await saveQueryToHistory(dbId, historyEntry);
+            } catch {
+              // History-Save-Fehler nicht kritisch
+            }
+
+            return;
+          }
+
+          // Keine bestehende DB gefunden → neue DB erstellen
+          const now = new Date().toISOString();
+          const newId = crypto.randomUUID();
 
           // Leere DB erstellen, SQL direkt darauf ausführen
           const newDb = await createDatabase(sql);
@@ -476,7 +514,7 @@ export function useSandbox(): UseSandboxReturn {
         scheduleAutoSave();
       }
     },
-    [refreshSchema, scheduleAutoSave, refreshDbList]
+    [refreshSchema, scheduleAutoSave, refreshDbList, dbList, openDatabase]
   );
 
   return {
