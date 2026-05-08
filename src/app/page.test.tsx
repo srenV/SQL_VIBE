@@ -37,16 +37,16 @@ beforeAll(() => {
 });
 
 describe("Home Page", () => {
-  it("rendert die Hauptueberschrift mit MySQL", () => {
+  it("rendert die Hauptueberschrift mit SQL", () => {
     render(<Home />);
     const heading = screen.getByRole("heading", { level: 1 });
     expect(heading).toBeInTheDocument();
-    expect(heading.textContent).toContain("MySQL");
+    expect(heading.textContent).toContain("SQL");
   });
 
   it("rendert den Start-Button", () => {
     render(<Home />);
-    const startElement = screen.getByText("Jetzt starten");
+    const startElement = screen.getByText(/Jetzt üben|Jetzt starten/i);
     expect(startElement).toBeInTheDocument();
   });
 

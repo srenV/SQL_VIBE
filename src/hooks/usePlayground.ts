@@ -107,10 +107,18 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
       setLiveSchema(exercise.schemaTables || []);
     }
     return db;
-  }, [exercise]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Nur bei exercise.id-Wechsel neu initialisieren, nicht bei jedem Render
+  }, [exercise.id, exercise.setupSql, exercise.solutionQuery]);
 
   useEffect(() => {
     initDb();
+    // Cleanup: DB beim Unmount schliessen
+    return () => {
+      if (dbRef.current) {
+        dbRef.current.close();
+        dbRef.current = null;
+      }
+    };
   }, [initDb]);
 
   /** Fuehrt die Benutzerabfrage aus und aktualisiert den Sitzungsstatus. */

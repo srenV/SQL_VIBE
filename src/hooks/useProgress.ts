@@ -25,6 +25,14 @@ export interface ProgressData {
   streak: number;
   lastActiveDate: string | null;
   achievements: string[];
+  /** Lern-Fortschritt: gelesene Artikel pro Modul. */
+  learnProgress: Record<string, LearnModuleProgress>;
+}
+
+/** Lern-Fortschritt pro Modul. */
+export interface LearnModuleProgress {
+  articlesRead: string[];
+  lastReadAt: string | null;
 }
 
 const STORAGE_KEY = "sql-trainer-progress";
@@ -35,6 +43,7 @@ const initialProgress: ProgressData = {
   streak: 0,
   lastActiveDate: null,
   achievements: [],
+  learnProgress: {},
 };
 
 function loadProgress(): ProgressData {
@@ -153,6 +162,37 @@ export function useProgress() {
     [progress]
   );
 
+  /** Markiert einen Lern-Artikel als gelesen. */
+  const markArticleRead = useCallback((moduleId: string, articleId: string) => {
+    setProgress((prev) => {
+      const moduleProgress = prev.learnProgress[moduleId] ?? { articlesRead: [], lastReadAt: null };
+      if (moduleProgress.articlesRead.includes(articleId)) return prev;
+
+      const updated: ProgressData = {
+        ...prev,
+        learnProgress: {
+          ...prev.learnProgress,
+          [moduleId]: {
+            articlesRead: [...moduleProgress.articlesRead, articleId],
+            lastReadAt: new Date().toISOString(),
+          },
+        },
+        lastActiveDate: todayISO(),
+      };
+
+      saveProgress(updated);
+      return updated;
+    });
+  }, []);
+
+  /** Liefert den Lern-Fortschritt fuer ein Modul. */
+  const getLearnModuleProgress = useCallback(
+    (moduleId: string): LearnModuleProgress => {
+      return progress.learnProgress[moduleId] ?? { articlesRead: [], lastReadAt: null };
+    },
+    [progress]
+  );
+
   return {
     progress,
     markExerciseCompleted,
@@ -161,6 +201,8 @@ export function useProgress() {
     resetProgress,
     getExerciseProgress,
     getLessonProgress,
+    markArticleRead,
+    getLearnModuleProgress,
   };
 }
 

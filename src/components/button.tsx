@@ -35,10 +35,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       children,
       className,
-      ...props
+      ...rest
     },
     ref
   ) => {
+    // Explicitly remove disabled from rest to prevent spread override
+    // (TypeScript's ButtonHTMLAttributes includes disabled, and in some
+    // React SSR scenarios the spread can override the explicit prop)
+    const { disabled: _restDisabled, ...safeRest } = rest as Record<string, unknown>;
     return (
       <button
         ref={ref}
@@ -51,7 +55,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           sizeClasses[size],
           className
         )}
-        {...props}
+        {...safeRest}
       >
         {isLoading && (
           <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

@@ -9,6 +9,14 @@ import { SchemaGraph } from "@/components/schemaGraph";
 export interface SchemaExplorerProps {
   tables: SchemaTable[];
   db?: import("sql.js").Database | null;
+  /** Sandbox-Modus: zeigt zusaetzliche Aktionen (Drop Table, Create Table, Insert). */
+  sandboxMode?: boolean;
+  /** Callback: Tabelle droppen (nur Sandbox). */
+  onDropTable?: (tableName: string) => void;
+  /** Callback: INSERT-Template in Editor einfuegen (nur Sandbox). */
+  onInsertTemplate?: (tableName: string) => void;
+  /** Callback: CREATE TABLE-Template in Editor einfuegen (nur Sandbox). */
+  onCreateTableTemplate?: () => void;
 }
 
 type ViewMode = "rm" | "data" | "schema";
@@ -19,7 +27,7 @@ interface TableDataCache {
   totalRows?: number;
 }
 
-export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) => {
+export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sandboxMode, onDropTable, onInsertTemplate, onCreateTableTemplate }) => {
   const [viewMode, setViewMode] = useState<ViewMode>("rm");
   const [tableData, setTableData] = useState<Record<string, TableDataCache>>({});
   const [loadingTables, setLoadingTables] = useState<Set<string>>(new Set());
@@ -74,9 +82,22 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
 
   if (tables.length === 0) {
     return (
-      <p className="text-sm text-ink-muted">
-        Keine Tabellen in der aktuellen Datenbank.
-      </p>
+      <div className="space-y-3">
+        <p className="text-sm text-ink-muted">
+          Keine Tabellen in der aktuellen Datenbank.
+        </p>
+        {sandboxMode && onCreateTableTemplate && (
+          <button
+            onClick={onCreateTableTemplate}
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Tabelle erstellen
+          </button>
+        )}
+      </div>
     );
   }
 
@@ -117,6 +138,19 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
 
       {viewMode === "rm" && <SchemaGraph tables={tables} />}
 
+      {/* Sandbox: Create Table Button */}
+      {sandboxMode && onCreateTableTemplate && viewMode !== "rm" && (
+        <button
+          onClick={onCreateTableTemplate}
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20 transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Tabelle erstellen
+        </button>
+      )}
+
       {viewMode === "schema" &&
         tables.map((table) => (
           <Card key={table.name} variant="flat" className="p-4">
@@ -125,6 +159,32 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
                 Tabelle
               </span>
               <span className="text-sm font-semibold text-ink">{table.name}</span>
+              {sandboxMode && (
+                <div className="ml-auto flex items-center gap-1">
+                  {onInsertTemplate && (
+                    <button
+                      onClick={() => onInsertTemplate(table.name)}
+                      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors"
+                      title="INSERT-Template einfügen"
+                    >
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  )}
+                  {onDropTable && (
+                    <button
+                      onClick={() => onDropTable(table.name)}
+                      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-error/70 hover:text-error hover:bg-error/10 transition-colors"
+                      title="Tabelle löschen"
+                    >
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="overflow-x-auto">
@@ -175,6 +235,32 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
                 Tabelle
               </span>
               <span className="text-sm font-semibold text-ink">{table.name}</span>
+              {sandboxMode && (
+                <div className="ml-auto flex items-center gap-1">
+                  {onInsertTemplate && (
+                    <button
+                      onClick={() => onInsertTemplate(table.name)}
+                      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors"
+                      title="INSERT-Template einfügen"
+                    >
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  )}
+                  {onDropTable && (
+                    <button
+                      onClick={() => onDropTable(table.name)}
+                      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-error/70 hover:text-error hover:bg-error/10 transition-colors"
+                      title="Tabelle löschen"
+                    >
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {!db ? (
@@ -204,7 +290,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db }) =>
                         {tableData[table.name].rows.map((row, rowIdx) => (
                           <tr key={rowIdx} className="border-b border-surface-dim/30 dark:border-dark-dim/30">
                             {tableData[table.name].columns.map((col) => (
-                              <td key={col.name} className="px-2 py-1 text-ink whitespace-nowrap max-w-[200px] truncate">
+                              <td key={col.name} className="px-2 py-1 text-ink whitespace-nowrap max-w-50 truncate">
                                 {row[col.name] != null ? String(row[col.name]) : <span className="text-ink-muted italic">NULL</span>}
                               </td>
                             ))}

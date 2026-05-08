@@ -18,9 +18,9 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "SQL-Trainer – Lerne MySQL spielerisch",
+  title: "SQL-Trainer – Lerne MySQL: Üben, Experimentieren, Verstehen",
   description:
-    "Interaktive MySQL-Lernplattform mit Uebungen, Erklaerungen und Gamification-Funktionen.",
+    "Interaktive MySQL-Lernplattform mit Übungen, freier Sandbox für eigene Datenbanken und Theorie-Hub für Normalisierung, RM, ERM und SQL-Grundlagen. MySQL-Syntax wird vollständig unterstützt.",
 };
 
 export const viewport: Viewport = {

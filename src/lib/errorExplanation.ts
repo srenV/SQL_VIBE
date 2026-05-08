@@ -27,6 +27,13 @@ const patterns: ErrorPattern[] = [
     severity: "error",
     userMessage: "Es gibt einen Syntaxfehler in deiner Abfrage. Prüfe, ob alle Schlüsselwörter (z. B. SELECT, FROM, WHERE) korrekt geschrieben sind und alle Klammern geschlossen sind.",
   },
+  // MySQL-artige Syntaxfehler (vom mysqlCompat Error-Mapper)
+  {
+    pattern: /You have an error in your SQL syntax/i,
+    category: "Syntaxfehler",
+    severity: "error",
+    userMessage: "Es gibt einen Syntaxfehler in deiner Abfrage. Prüfe, ob alle Schlüsselwörter korrekt geschrieben sind, alle Klammern geschlossen sind und Kommas an der richtigen Stelle stehen.",
+  },
   {
     pattern: /unrecognized\s*token/i,
     category: "Syntaxfehler",
@@ -43,9 +50,21 @@ const patterns: ErrorPattern[] = [
     pattern: /RIGHT\s+and\s+FULL\s+OUTER\s+JOINs\s+are\s+not\s+currently\s+supported/i,
     category: "Syntaxfehler",
     severity: "error",
-    userMessage: "SQLite unterstützt kein RIGHT JOIN oder FULL OUTER JOIN. Versuche, die Abfrage mit LEFT JOIN umzuschreiben oder die Tabellen zu tauschen.",
+    userMessage: "RIGHT JOIN wird automatisch zu LEFT JOIN umgeschrieben. FULL OUTER JOIN wird nicht unterstützt — verwende stattdessen einen UNION von zwei LEFT JOINs.",
   },
   // Fehlende/unbekannte Objekte
+  {
+    pattern: /Table\s+'.*?'\s+doesn't\s+exist/i,
+    category: "Objekt nicht gefunden",
+    severity: "error",
+    userMessage: "Die angegebene Tabelle existiert nicht in der aktuellen Datenbank. Prüfe den Tabellennamen auf Tippfehler.",
+  },
+  {
+    pattern: /Unknown\s+column\s+'/i,
+    category: "Objekt nicht gefunden",
+    severity: "error",
+    userMessage: "Die angegebene Spalte existiert nicht in dieser Tabelle. Prüfe den Spaltennamen auf Tippfehler oder verwende einen Alias.",
+  },
   {
     pattern: /no\s+such\s+table/i,
     category: "Objekt nicht gefunden",
@@ -62,7 +81,7 @@ const patterns: ErrorPattern[] = [
     pattern: /no\s+such\s+function/i,
     category: "Objekt nicht gefunden",
     severity: "error",
-    userMessage: "Die verwendete Funktion existiert nicht. Prüfe den Funktionsnamen auf Tippfehler oder ob sie in SQLite verfügbar ist (z. B. heißt es IFNULL, nicht ISNULL).",
+    userMessage: "Die verwendete Funktion existiert nicht. Prüfe den Funktionsnamen auf Tippfehler oder ob sie verfügbar ist.",
   },
   // Datentyp-Fehler
   {
@@ -137,6 +156,24 @@ const patterns: ErrorPattern[] = [
   },
   // Einschraenkung / Fremdschluessel-Fehler (spezifisch vor generisch)
   {
+    pattern: /Duplicate entry for key/i,
+    category: "Einschränkung verletzt",
+    severity: "error",
+    userMessage: "Ein UNIQUE-Constraint oder PRIMARY KEY wurde verletzt. Es gibt bereits einen Datensatz mit dem gleichen Wert. Prüfe, ob du einen doppelten Wert einfügst.",
+  },
+  {
+    pattern: /Column\s+'.*?'\s+cannot\s+be\s+null/i,
+    category: "Einschränkung verletzt",
+    severity: "error",
+    userMessage: "Eine NOT-NULL-Spalte darf nicht leer sein. Stelle sicher, dass du für alle Pflichtspalten einen Wert angibst.",
+  },
+  {
+    pattern: /Cannot add or update a child row.*foreign key/i,
+    category: "Fremdschlüssel-Fehler",
+    severity: "error",
+    userMessage: "Ein Fremdschlüssel wurde verletzt. Stelle sicher, dass der referenzierte Datensatz in der Zieltabelle existiert.",
+  },
+  {
     pattern: /UNIQUE\s+constraint\s+failed/i,
     category: "Einschränkung verletzt",
     severity: "error",
@@ -155,12 +192,24 @@ const patterns: ErrorPattern[] = [
     userMessage: "Ein Fremdschlüssel wurde verletzt. Stelle sicher, dass der referenzierte Datensatz in der Zieltabelle existiert.",
   },
   {
+    pattern: /Check constraint violation/i,
+    category: "Einschränkung verletzt",
+    severity: "error",
+    userMessage: "Ein CHECK-Constraint wurde verletzt. Prüfe, ob der eingefügte Wert die definierte Bedingung erfüllt.",
+  },
+  {
     pattern: /constraint\s+failed/i,
     category: "Einschränkung verletzt",
     severity: "error",
     userMessage: "Eine Regel der Datenbank wurde verletzt (z. B. NOT NULL oder UNIQUE). Prüfe, ob du alle Pflichtspalten mit gültigen Werten versorgst.",
   },
   // DDL-Fehler
+  {
+    pattern: /Table\s+'.*?'\s+already\s+exists/i,
+    category: "DDL-Fehler",
+    severity: "error",
+    userMessage: "Eine Tabelle mit diesem Namen existiert bereits. Verwende einen anderen Namen oder DROP TABLE vor dem Erstellen.",
+  },
   {
     pattern: /table\s+\S+\s+already\s+exists/i,
     category: "DDL-Fehler",
