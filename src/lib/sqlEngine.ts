@@ -10,6 +10,8 @@
  */
 
 import type { SqlColumn, SqlQueryResult, SqlRow } from "@/types/playground";
+import type { SandboxQueryResult } from "@/types/sandbox";
+import { mysqlToSqlite, mapSqliteErrorToMysql, mapSqliteTypeToMysql, getMysqlCompatWarnings } from "@/lib/mysqlCompat";
 
 /** Sql.js-Modultyp – any wegen dynamischem Import. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +37,61 @@ async function loadSqlJs(): Promise<SqlJsModule> {
 }
 
 /**
+ * Teilt ein Multi-Statement-SQL-Skript in einzelne Statements auf.
+ * Berücksichtigt String-Literale (einfache und doppelte Anführungszeichen)
+ * und ignoriert Semikolons innerhalb von Strings.
+ *
+ * @param sql - Das SQL-Skript mit einem oder mehreren Statements.
+ * @returns Array einzelner SQL-Statements (ohne leere Einträge).
+ */
+export function splitSqlStatements(sql: string): string[] {
+  const statements: string[] = [];
+  let current = "";
+  let inString = false;
+  let stringChar = "";
+
+  for (let i = 0; i < sql.length; i++) {
+    const ch = sql[i];
+
+    // String-Literal-Tracking
+    if (inString) {
+      current += ch;
+      if (ch === stringChar && sql[i - 1] !== "\\") {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === "'" || ch === '"') {
+      inString = true;
+      stringChar = ch;
+      current += ch;
+      continue;
+    }
+
+    // Semikolon = Statement-Ende
+    if (ch === ";") {
+      const trimmed = current.trim();
+      if (trimmed) {
+        statements.push(trimmed);
+      }
+      current = "";
+      continue;
+    }
+
+    current += ch;
+  }
+
+  // Letztes Statement (ohne abschließendes Semikolon)
+  const trimmed = current.trim();
+  if (trimmed) {
+    statements.push(trimmed);
+  }
+
+  return statements;
+}
+
+/**
  * Erstellt eine neue In-Memory-Datenbank und fuehrt optionales Setup-SQL aus.
  * @param sql - SQL-Statement(s) zum Initialisieren der Datenbank (DDL + DML).
  * @returns Die geoeffnete sql.js-Datenbankinstanz.
@@ -42,38 +99,44 @@ async function loadSqlJs(): Promise<SqlJsModule> {
 export async function createDatabase(sql: string): Promise<SqlJsModule["Database"]> {
   const SQL = await loadSqlJs();
   const db = new SQL.Database();
+  // Foreign-Key-Constraints aktivieren (SQLite-Default: OFF)
+  db.run("PRAGMA foreign_keys = ON;");
   if (sql.trim()) {
-    db.run(sql);
+    // Zuerst in einzelne Statements aufteilen, dann jedes einzeln transformieren.
+    // Das ist wichtig, weil mysqlToSqlite() nur auf einzelnen Statements korrekt
+    // arbeitet (z.B. transformCreateTable prüft auf /^\s*CREATE\s+TABLE/).
+    const rawStatements = splitSqlStatements(sql);
+    for (const rawStmt of rawStatements) {
+      const trimmed = rawStmt.trim();
+      if (!trimmed) continue;
+
+      // Jedes Statement einzeln transformieren
+      const sqliteStmt = mysqlToSqlite(trimmed);
+
+      // Kommentare überspringen
+      if (sqliteStmt.trim().startsWith("--")) continue;
+
+      try {
+        db.run(sqliteStmt);
+      } catch (err) {
+        // Fehler loggen aber nicht abbrechen — andere Statements sollen weiterlaufen
+        console.warn("SQL-Statement fehlgeschlagen:", sqliteStmt, err);
+      }
+    }
   }
   return db;
 }
 
 /**
- * Wandelt RIGHT JOIN in LEFT JOIN mit vertauschten Tabellen um, da SQLite
- * kein RIGHT JOIN oder FULL OUTER JOIN unterstuetzt.
- * Pattern: A RIGHT JOIN B ON A.x = B.y → B LEFT JOIN A ON A.x = B.y
- * Auch mit Alias: A a RIGHT JOIN B b ON a.x = b.y → B b LEFT JOIN A a ON a.x = b.y
- *
- * English: Transforms RIGHT JOIN into LEFT JOIN with swapped tables so SQLite can execute them.
- */
-export function transformRightJoin(sql: string): string {
-  return sql
-    .replace(/\bRIGHT\s+JOIN\b/gi, "LEFT_JOIN_SWAPPED")
-    .replace(
-      /(\w+)(?:\s+(\w+))?\s+LEFT_JOIN_SWAPPED\s+(\w+)(?:\s+(\w+))?\s+ON\s+/gi,
-      (_, lt, la, rt, ra) => {
-        const left = la ? `${lt} ${la}` : lt;
-        const right = ra ? `${rt} ${ra}` : rt;
-        return `${right} LEFT JOIN ${left} ON `;
-      }
-    );
-}
-
-/**
  * Fuehrt eine SQL-Abfrage auf der Datenbank aus und liefert ein strukturiertes Ergebnis.
- * Unterstuetzt automatisch RIGHT-JOIN-Transformation fuer SQLite-Kompatibilitaet.
+ * MySQL-Syntax wird automatisch zu SQLite übersetzt.
+ *
+ * Unterstützt Multi-Statement-SQL: Mehrere Statements werden einzeln ausgeführt,
+ * das Ergebnis des letzten SELECT/PRAGMA/SHOW-Statements wird zurückgegeben.
+ * DDL/DML-Statements ohne Ergebnismenge werden stillschweigend ausgeführt.
+ *
  * @param db - Die sql.js-Datenbankinstanz.
- * @param sql - Die auszufuehrende SQL-Abfrage.
+ * @param sql - Die auszufuehrende SQL-Abfrage (MySQL-Syntax akzeptiert).
  * @returns Ergebnisobjekt mit Erfolgsstatus, Ergebnismenge oder Fehlertext und Ausfuehrungszeit.
  */
 export function runQuery(
@@ -82,46 +145,123 @@ export function runQuery(
 ): SqlQueryResult {
   const start = performance.now();
   try {
-    const transformedSql = transformRightJoin(sql);
-    const stmt = db.exec(transformedSql);
-    const executionTimeMs = Math.round(performance.now() - start);
+    // Zuerst in einzelne Statements aufteilen, dann jedes einzeln transformieren.
+    // Das ist wichtig, weil mysqlToSqlite() nur auf einzelnen Statements korrekt
+    // arbeitet (z.B. transformCreateTable prüft auf /^\s*CREATE\s+TABLE/).
+    const rawStatements = splitSqlStatements(sql);
 
-    // sql.js liefert { columns: string[], values: unknown[][] }
-    const raw = stmt as unknown as { columns?: string[]; values?: unknown[][] }[];
-    // Falls keine Ergebnisse vorliegen (z. B. CREATE/INSERT ohne SELECT), leere Erfolgsmeldung zurueckgeben
-    if (!raw || raw.length === 0) {
-      return { success: true, resultset: { columns: [], rows: [] }, executionTimeMs };
-    }
+    // Wenn nur ein Statement: direkte Ausführung (bestehendes Verhalten)
+    if (rawStatements.length <= 1) {
+      const singleRaw = rawStatements[0] || sql;
+      const transformedSql = mysqlToSqlite(singleRaw);
+      if (transformedSql.trim().startsWith("--")) {
+        // Nur-Kommentar-Statement: Erfolg ohne Ergebnis
+        const executionTimeMs = Math.round(performance.now() - start);
+        return { success: true, resultset: { columns: [], rows: [] }, executionTimeMs };
+      }
+      const stmt = db.exec(transformedSql);
+      const executionTimeMs = Math.round(performance.now() - start);
 
-    // Erste Anweisung mit Spalten verwenden
-    const resultPart = raw.find((r) => r.columns && r.columns.length > 0);
-    if (!resultPart) {
-      return { success: true, resultset: { columns: [], rows: [] }, executionTimeMs };
-    }
+      const raw = stmt as unknown as { columns?: string[]; values?: unknown[][] }[];
+      if (!raw || raw.length === 0) {
+        return { success: true, resultset: { columns: [], rows: [] }, executionTimeMs };
+      }
 
-    const columns: SqlColumn[] = resultPart.columns!.map((name) => ({
-      name,
-      type: "UNKNOWN", // sql.js gibt Spaltentypen nicht direkt preis
-    }));
+      const resultPart = raw.find((r) => r.columns && r.columns.length > 0);
+      if (!resultPart) {
+        return { success: true, resultset: { columns: [], rows: [] }, executionTimeMs };
+      }
 
-    const rows: SqlRow[] = (resultPart.values || []).map((row) => {
-      const obj: SqlRow = {};
-      resultPart.columns!.forEach((col, idx) => {
-        obj[col] = row[idx];
+      const columns: SqlColumn[] = resultPart.columns!.map((name) => ({
+        name,
+        type: "UNKNOWN",
+      }));
+
+      const rows: SqlRow[] = (resultPart.values || []).map((row) => {
+        const obj: SqlRow = {};
+        resultPart.columns!.forEach((col, idx) => {
+          obj[col] = row[idx];
+        });
+        return obj;
       });
-      return obj;
-    });
 
-    return {
+      return {
+        success: true,
+        resultset: { columns, rows },
+        executionTimeMs,
+      };
+    }
+
+    // Multi-Statement: Jedes einzeln transformieren und ausführen
+    let lastResult: SqlQueryResult | null = null;
+    let lastSelectResult: SqlQueryResult | null = null;
+
+    for (const rawStmt of rawStatements) {
+      const trimmed = rawStmt.trim();
+      if (!trimmed) continue;
+
+      // Jedes Statement einzeln transformieren
+      const sqliteStmt = mysqlToSqlite(trimmed);
+
+      // Kommentare überspringen
+      if (sqliteStmt.trim().startsWith("--")) continue;
+
+      try {
+        const execResult = db.exec(sqliteStmt);
+        const executionTimeMs = Math.round(performance.now() - start);
+
+        const raw = execResult as unknown as { columns?: string[]; values?: unknown[][] }[];
+        if (!raw || raw.length === 0) {
+          lastResult = { success: true, resultset: { columns: [], rows: [] }, executionTimeMs };
+        } else {
+          const resultPart = raw.find((r) => r.columns && r.columns.length > 0);
+          if (resultPart) {
+            const columns: SqlColumn[] = resultPart.columns!.map((name) => ({
+              name,
+              type: "UNKNOWN",
+            }));
+            const rows: SqlRow[] = (resultPart.values || []).map((row) => {
+              const obj: SqlRow = {};
+              resultPart.columns!.forEach((col, idx) => {
+                obj[col] = row[idx];
+              });
+              return obj;
+            });
+            lastResult = { success: true, resultset: { columns, rows }, executionTimeMs };
+            lastSelectResult = lastResult;
+          } else {
+            lastResult = { success: true, resultset: { columns: [], rows: [] }, executionTimeMs };
+          }
+        }
+      } catch (err) {
+        // Bei Fehler: Abbrechen und Fehler zurückgeben
+        const executionTimeMs = Math.round(performance.now() - start);
+        const rawError = err instanceof Error ? err.message : String(err);
+        const mysqlError = mapSqliteErrorToMysql(rawError);
+        return {
+          success: false,
+          error: mysqlError,
+          executionTimeMs,
+        };
+      }
+    }
+
+    // Bevorzugt das letzte SELECT/PRAGMA-Ergebnis zurückgeben,
+    // sonst das letzte Statement-Ergebnis
+    const finalResult = lastSelectResult || lastResult || {
       success: true,
-      resultset: { columns, rows },
-      executionTimeMs,
+      resultset: { columns: [], rows: [] },
+      executionTimeMs: Math.round(performance.now() - start),
     };
+    return finalResult;
   } catch (err) {
     const executionTimeMs = Math.round(performance.now() - start);
+    // SQLite-Fehler zu MySQL-artigen Fehlern übersetzen
+    const rawError = err instanceof Error ? err.message : String(err);
+    const mysqlError = mapSqliteErrorToMysql(rawError);
     return {
       success: false,
-      error: err instanceof Error ? err.message : String(err),
+      error: mysqlError,
       executionTimeMs,
     };
   }
@@ -162,7 +302,7 @@ export function getTableInfo(
   return result.resultset.rows.map((r) => ({
     cid: Number(r.cid),
     name: String(r.name),
-    type: String(r.type),
+    type: mapSqliteTypeToMysql(String(r.type)), // MySQL-artige Typen anzeigen
     notnull: Number(r.notnull),
     dflt_value: r.dflt_value,
     pk: Number(r.pk),
@@ -215,4 +355,121 @@ export function peekTableData(
  */
 export function closeDatabase(db: SqlJsModule["Database"]): void {
   db.close();
+}
+
+/**
+ * Laedt eine sql.js-Datenbank aus einem binaeren SQLite-File (z. B. aus IndexedDB).
+ * @param data - Uint8Array mit den Binaerdaten der SQLite-Datenbank.
+ * @returns Die geoeffnete sql.js-Datenbankinstanz.
+ */
+export async function loadDatabaseFromBinary(data: Uint8Array): Promise<SqlJsModule["Database"]> {
+  const SQL = await loadSqlJs();
+  const db = new SQL.Database(data);
+  // Foreign-Key-Constraints aktivieren (SQLite-Default: OFF)
+  db.run("PRAGMA foreign_keys = ON;");
+  return db;
+}
+
+/**
+ * Exportiert eine sql.js-Datenbank als binaeres SQLite-File fuer Persistenz.
+ *
+ * WARNUNG: db.export() schliesst und oeffnet die DB intern neu (sql.js Issue #159).
+ * Nach dem Aufruf ist die DB-Instanz in einem undefinierten Zustand – Pragmas
+ * sind zurueckgesetzt und weitere Operationen koennen fehlschlagen.
+ *
+ * SICHERE ALTERNATIVE: exportAndCloseDatabase() oder exportDatabaseSafe() verwenden.
+ *
+ * @param db - Die zu exportierende sql.js-Datenbankinstanz.
+ * @returns Uint8Array mit den Binaerdaten der SQLite-Datenbank.
+ * @deprecated Use exportAndCloseDatabase() or exportDatabaseSafe() instead.
+ */
+export function exportDatabase(db: SqlJsModule["Database"]): Uint8Array {
+  return db.export();
+}
+
+/**
+ * Exportiert eine sql.js-Datenbank und schliesst sie anschliessend.
+ *
+ * Da db.export() die DB intern ohnehin schliesst und neu oeffnet (sql.js Issue #159),
+ * ist es sicherer, die DB nach dem Export explizit zu schliessen und die
+ * Instanz nicht weiterzuverwenden.
+ *
+ * @param db - Die zu exportierende und zu schliessende sql.js-Datenbankinstanz.
+ * @returns Uint8Array mit den Binaerdaten der SQLite-Datenbank.
+ */
+export function exportAndCloseDatabase(db: SqlJsModule["Database"]): Uint8Array {
+  const binary = db.export();
+  // Nach export() ist die DB intern neu geoeffnet worden, aber in einem
+  // inkonsistenten Zustand (Pragmas resetted). Explizit schliessen:
+  try {
+    db.close();
+  } catch {
+    // Ignorieren – DB war moeglicherweise schon geschlossen
+  }
+  return binary;
+}
+
+/**
+ * Exportiert eine sql.js-Datenbank sicher und gibt eine FRISCHE Instanz zurueck.
+ *
+ * Da db.export() die DB intern schliesst/neu-oeffnet (sql.js Issue #159),
+ * ist die alte Instanz danach korrupt. Diese Funktion:
+ * 1. Exportiert die DB als Binary
+ * 2. Schliesst die alte (korrupte) Instanz
+ * 3. Erstellt eine neue Instanz aus dem Binary
+ *
+ * @param db - Die zu exportierende sql.js-Datenbankinstanz.
+ * @returns { binary: Uint8Array, freshDb: Database } – Binary + frische DB-Instanz.
+ */
+export async function exportDatabaseSafe(db: SqlJsModule["Database"]): Promise<{
+  binary: Uint8Array;
+  freshDb: SqlJsModule["Database"];
+}> {
+  const binary = exportAndCloseDatabase(db);
+  const freshDb = await loadDatabaseFromBinary(binary);
+  return { binary, freshDb };
+}
+
+/**
+ * Liefert die Anzahl der durch die letzte DML-Anweisung geaenderten Zeilen.
+ * @param db - Die sql.js-Datenbankinstanz.
+ * @returns Anzahl der geaenderten/eingefuegten/geloeschten Zeilen.
+ */
+export function getRowsModified(db: SqlJsModule["Database"]): number {
+  return db.getRowsModified();
+}
+
+/**
+ * Erkennt den Typ einer SQL-Anweisung (DDL, DML, DQL oder OTHER).
+ * @param sql - Die SQL-Anweisung.
+ * @returns Der erkannte Anweisungstyp.
+ */
+export function detectStatementType(sql: string): "DDL" | "DML" | "DQL" | "OTHER" {
+  const trimmed = sql.trim().toUpperCase();
+  if (/^(CREATE|DROP|ALTER|TRUNCATE)\b/.test(trimmed)) return "DDL";
+  if (/^(INSERT|UPDATE|DELETE|REPLACE)\b/.test(trimmed)) return "DML";
+  if (/^(SELECT|WITH|PRAGMA|EXPLAIN|SHOW|DESCRIBE|DESC)\b/.test(trimmed)) return "DQL";
+  return "OTHER";
+}
+
+/**
+ * Fuehrt eine SQL-Abfrage im Sandbox-Modus aus und liefert ein erweitertes Ergebnis
+ * mit rowsModified und statementType.
+ * @param db - Die sql.js-Datenbankinstanz.
+ * @param sql - Die auszufuehrende SQL-Abfrage.
+ * @returns SandboxQueryResult mit Erfolgsstatus, Ergebnismenge, rowsModified und statementType.
+ */
+export function runSandboxQuery(
+  db: SqlJsModule["Database"],
+  sql: string
+): SandboxQueryResult {
+  const statementType = detectStatementType(sql);
+  const result = runQuery(db, sql);
+  const rowsModified = result.success ? getRowsModified(db) : 0;
+
+  return {
+    ...result,
+    rowsModified,
+    statementType,
+  };
 }
