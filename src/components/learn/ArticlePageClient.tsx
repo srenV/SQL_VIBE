@@ -428,28 +428,140 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
 
 /** Einfacher Markdown-Renderer fuer Lern-Inhalte. */
 function renderMarkdown(text: string): string {
-  return text
+  // Pre-process: extract and protect code blocks and tables so they don't get mangled
+  const codeBlocks: string[] = [];
+  const tableBlocks: string[] = [];
+
+  // Extract SQL code blocks first (before other processing)
+  let processed = text.replace(/```sql\n([\s\S]*?)```/g, (_match, code) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push(
+      `<div class="my-5 relative rounded-lg border border-surface-dim dark:border-dark-dim overflow-hidden">` +
+      `<div class="flex items-center justify-between bg-accent/10 dark:bg-accent/20 px-3 py-1.5 border-b border-surface-dim dark:border-dark-dim">` +
+      `<span class="text-[11px] font-mono font-semibold text-accent uppercase tracking-wider">SQL</span>` +
+      `</div>` +
+      `<pre class="bg-surface-dim dark:bg-dark-dim p-4 text-[13px] font-mono leading-relaxed overflow-x-auto"><code>${escapeHtml(code.trim())}</code></pre>` +
+      `</div>`
+    );
+    return `%%CODEBLOCK_${idx}%%`;
+  });
+
+  // Extract other code blocks
+  processed = processed.replace(/```(\w*)\n([\s\S]*?)```/g, (_match, _lang, code) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push(
+      `<div class="my-5 rounded-lg border border-surface-dim dark:border-dark-dim overflow-hidden">` +
+      `<pre class="bg-surface-dim dark:bg-dark-dim p-4 text-[13px] font-mono leading-relaxed overflow-x-auto"><code>${escapeHtml(code.trim())}</code></pre>` +
+      `</div>`
+    );
+    return `%%CODEBLOCK_${idx}%%`;
+  });
+
+  // Extract markdown tables (lines starting with |)
+  const lines = processed.split('\n');
+  const processedLines: string[] = [];
+  let currentTable: string[] = [];
+
+  for (const line of lines) {
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      currentTable.push(line);
+    } else {
+      if (currentTable.length > 0) {
+        const idx = tableBlocks.length;
+        tableBlocks.push(renderTable(currentTable));
+        processedLines.push(`%%TABLEBLOCK_${idx}%%`);
+        currentTable = [];
+      }
+      processedLines.push(line);
+    }
+  }
+  if (currentTable.length > 0) {
+    const idx = tableBlocks.length;
+    tableBlocks.push(renderTable(currentTable));
+    processedLines.push(`%%TABLEBLOCK_${idx}%%`);
+  }
+
+  processed = processedLines.join('\n');
+
+  // Now process the remaining markdown
+  let html = processed
+    // Horizontal rules (---) as visual separators
+    .replace(/^---+$/gm, '<hr class="my-6 border-t-2 border-surface-dim dark:border-dark-dim"/>')
     // Bold
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     // Inline code
-    .replace(/`([^`]+)`/g, '<code class="rounded bg-surface-dim dark:bg-dark-dim px-1 py-0.5 text-xs font-mono">$1</code>')
-    // Code blocks
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="rounded-lg bg-surface-dim dark:bg-dark-dim p-3 text-xs font-mono overflow-x-auto my-2"><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code class="rounded bg-surface-dim dark:bg-dark-dim px-1.5 py-0.5 text-xs font-mono text-accent">$1</code>')
     // Headers
-    .replace(/^### (.+)$/gm, '<h3 class="text-base font-semibold text-ink mt-4 mb-2">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-ink mt-4 mb-2">$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3 class="text-base font-semibold text-ink mt-5 mb-2">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-ink mt-5 mb-2">$1</h2>')
     // Lists
-    .replace(/^- (.+)$/gm, '<li class="ml-4 text-sm text-ink">$1</li>')
-    // Tables (simple)
-    .replace(/^\|(.+)\|$/gm, (match) => {
-      const cells = match.split("|").filter(Boolean).map((c) => c.trim());
-      if (cells.every((c) => c.match(/^[-:]+$/))) return ""; // Separator row
-      return `<tr>${cells.map((c) => `<td class="px-2 py-1 text-sm text-ink border border-surface-dim dark:border-dark-dim">${c}</td>`).join("")}</tr>`;
-    })
+    .replace(/^- (.+)$/gm, '<li class="ml-4 text-sm text-ink leading-relaxed">$1</li>')
     // Paragraphs (double newlines)
-    .replace(/\n\n/g, "</p><p class='text-sm text-ink leading-relaxed'>")
+    .replace(/\n\n/g, "</p><p class='text-sm text-ink leading-relaxed my-2'>")
     // Single newlines within paragraphs
     .replace(/\n/g, "<br/>")
     // Wrap in paragraph
     .replace(/^(.+)$/, "<p class='text-sm text-ink leading-relaxed'>$1</p>");
+
+  // Restore code blocks and tables
+  for (let i = 0; i < codeBlocks.length; i++) {
+    html = html.replace(`%%CODEBLOCK_${i}%%`, codeBlocks[i]);
+  }
+  for (let i = 0; i < tableBlocks.length; i++) {
+    html = html.replace(`%%TABLEBLOCK_${i}%%`, tableBlocks[i]);
+  }
+
+  // Clean up empty paragraphs
+  html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
+  // Clean up paragraphs wrapping block elements
+  html = html.replace(/<p[^>]*>\s*(<div|<hr|<table|<h[23])/g, '$1');
+  html = html.replace(/(<\/div>|<\/hr>|<\/table>|<\/h[23]>)\s*<\/p>/g, '$1');
+
+  return html;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderTable(lines: string[]): string {
+  const rows: string[][] = [];
+  let hasHeader = false;
+
+  for (const line of lines) {
+    const cells = line.split('|').map(c => c.trim()).filter(c => c.length > 0);
+    // Check if this is a separator row (---, :---, ---:, :---:)
+    if (cells.every(c => c.match(/^[-:]+$/))) {
+      hasHeader = true;
+      continue; // Skip separator rows, we use the header flag instead
+    }
+    rows.push(cells);
+  }
+
+  if (rows.length === 0) return '';
+
+  let html = '<div class="my-5 overflow-x-auto rounded-lg border border-surface-dim dark:border-dark-dim">';
+  html += '<table class="w-full border-collapse text-sm">';
+
+  rows.forEach((cells, rowIdx) => {
+    const isHeader = rowIdx === 0 && hasHeader;
+    const tag = isHeader ? 'th' : 'td';
+    const bgClass = isHeader
+      ? 'bg-surface-dim/50 dark:bg-dark-dim/50 font-semibold'
+      : rowIdx % 2 === 0
+        ? 'bg-surface-dim/20 dark:bg-dark-dim/20'
+        : '';
+    html += `<tr class="${bgClass}">`;
+    cells.forEach(cell => {
+      html += `<${tag} class="px-3 py-2 text-left text-ink whitespace-nowrap border-b border-surface-dim dark:border-dark-dim">${cell}</${tag}>`;
+    });
+    html += '</tr>';
+  });
+
+  html += '</table></div>';
+  return html;
 }

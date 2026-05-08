@@ -461,10 +461,14 @@ bestellungen(id, kunde_id, datum, betrag)
 produkte(id, name, preis)
 \`\`\`
 
+---
+
 Denormalisiert für Reporting (1 Tabelle):
 \`\`\`
 bestellreport(id, kunde_name, kunde_stadt, bestelldatum, produkt_name, betrag)
 \`\`\`
+
+---
 
 **Best Practice:**
 1. Zuerst konsequent normalisieren (mindestens 3NF)
@@ -723,12 +727,16 @@ JOIN bestellpositionen bp ON b.id = bp.bestellung_id
 JOIN produkte p ON bp.produkt_id = p.id;
 \`\`\`
 
+---
+
 **Denormalisiert (für Reporting):**
 \`\`\`sql
 -- 1 Tabelle, kein JOIN
 SELECT kunde_name, bestelldatum, produkt_name, menge, einzelpreis
 FROM bestellreport;
 \`\`\`
+
+---
 
 **Wann welche Version?**
 
@@ -751,6 +759,8 @@ BEGIN
   SELECT ... FROM ... ;
 END;
 \`\`\`
+
+---
 
 So bleibt die Denormalisierung konsistent, ohne dass manuelle Updates nötig sind.`,
             keyTakeaways: [
@@ -987,6 +997,8 @@ Beispiel: \`σ_{alter > 25}(π_{name, alter}(Studenten))\` entspricht \`SELECT n
 **1. Entity-Integrität (Entitäts-Integrität):**
 Jede Relation muss einen Primärschlüssel haben, und kein Attribut des Primärschlüssels darf NULL sein.
 
+---
+
 \`\`\`sql
 CREATE TABLE studenten (
   id INTEGER PRIMARY KEY,  -- Darf nicht NULL sein
@@ -994,8 +1006,12 @@ CREATE TABLE studenten (
 );
 \`\`\`
 
+---
+
 **2. Referenzielle Integrität:**
 Ein Fremdschlüssel muss entweder NULL sein oder auf ein existierendes Tupel in der referenzierten Relation verweisen.
+
+---
 
 \`\`\`sql
 CREATE TABLE bestellungen (
@@ -1004,8 +1020,12 @@ CREATE TABLE bestellungen (
 );
 \`\`\`
 
+---
+
 **3. Domänen-Integrität:**
 Jedes Attribut muss Werte aus seiner Domäne annehmen. Constraints wie NOT NULL, CHECK und UNIQUE sichern dies.
+
+---
 
 \`\`\`sql
 CREATE TABLE produkte (
@@ -1060,6 +1080,8 @@ entspricht:
 SELECT name, alter FROM Studenten WHERE alter > 25;
 \`\`\`
 
+---
+
 **Eigenschaften der relationalen Algebra:**
 - **Abgeschlossenheit:** Jede Operation auf einer Relation liefert wieder eine Relation
 - **Komposition:** Operationen können verschachtelt werden (wie in SQL)
@@ -1083,11 +1105,15 @@ SELECT name, alter FROM Studenten WHERE alter > 25;
 SELECT * FROM produkte WHERE preis > 50;
 \`\`\`
 
+---
+
 **2. Projektion (π) — Spalten auswählen:**
 \`π_{name, preis}(Produkte)\` →
 \`\`\`sql
 SELECT name, preis FROM produkte;
 \`\`\`
+
+---
 
 **3. Kreuzprodukt (×) — Alle Kombinationen:**
 \`Kunden × Produkte\` →
@@ -1095,11 +1121,15 @@ SELECT name, preis FROM produkte;
 SELECT * FROM kunden CROSS JOIN produkte;
 \`\`\`
 
+---
+
 **4. Natürlicher Verbund (⋈) — Verbund über gleiche Attribute:**
 \`Kunden ⋈ Bestellungen\` →
 \`\`\`sql
 SELECT * FROM kunden NATURAL JOIN bestellungen;
 \`\`\`
+
+---
 
 **5. Vereinigung (∪) — Ergebnisse zusammenführen:**
 \`Aktive_Kunden ∪ Inaktive_Kunden\` →
@@ -1109,6 +1139,8 @@ UNION
 SELECT * FROM inaktive_kunden;
 \`\`\`
 
+---
+
 **6. Differenz (−) — Ergebnisse abziehen:**
 \`Alle_Kunden − Aktive_Kunden\` →
 \`\`\`sql
@@ -1116,6 +1148,8 @@ SELECT * FROM alle_kunden
 EXCEPT
 SELECT * FROM aktive_kunden;
 \`\`\`
+
+---
 
 **7. Kombiniertes Beispiel:**
 \`π_{name}(σ_{kategorie = 'Elektronik'}(Produkte ⋈ Bestellungen))\` →
@@ -1165,6 +1199,8 @@ Der vom Datenbankdesigner **ausgewählte** Kandidatenschlüssel. In SQL mit \`PR
 **Fremdschlüssel (Foreign Key)**
 Ein Attribut (oder eine Attributkombination), das auf den Primärschlüssel einer anderen Relation verweist.
 
+
+
 \`\`\`sql
 CREATE TABLE bestellungen (
   id INTEGER PRIMARY KEY,
@@ -1172,8 +1208,12 @@ CREATE TABLE bestellungen (
 );
 \`\`\`
 
+---
+
 **Alternativschlüssel (Alternate Key)**
 Alle Kandidatenschlüssel, die nicht als Primärschlüssel ausgewählt wurden. In SQL mit \`UNIQUE\` definiert.
+
+---
 
 \`\`\`sql
 CREATE TABLE studenten (
@@ -1182,8 +1222,12 @@ CREATE TABLE studenten (
 );
 \`\`\`
 
+---
+
 **Zusammengesetzter Schlüssel (Composite Key)**
 Ein Schlüssel, der aus mehreren Attributen besteht.
+
+---
 
 \`\`\`sql
 CREATE TABLE belegungen (
@@ -1269,6 +1313,8 @@ CREATE TABLE bestellungen (
 );
 \`\`\`
 
+---
+
 **Referenzielle Integrität** bedeutet: Ein Fremdschlüsselwert muss entweder NULL sein oder in der referenzierten Tabelle als Primärschlüsselwert existieren.
 
 **Verletzungen der referenziellen Integrität:**
@@ -1310,6 +1356,8 @@ CREATE TABLE bestellungen (
             sectionType: "example",
             content: `**Beispiel: Online-Shop mit referenzieller Integrität**
 
+
+
 \`\`\`sql
 -- Kundentabelle
 CREATE TABLE kunden (
@@ -1347,6 +1395,8 @@ CREATE TABLE bestellpositionen (
     ON DELETE RESTRICT
 );
 \`\`\`
+
+---
 
 **Wann welche Aktion wählen?**
 
@@ -1404,6 +1454,8 @@ CREATE TABLE produkte (
 );
 \`\`\`
 
+---
+
 **Domänen-Integrität durch Datentypen:**
 - \`INTEGER\` — Nur ganze Zahlen
 - \`DECIMAL(10,2)\` — Dezimalzahlen mit 2 Nachkommastellen
@@ -1420,6 +1472,8 @@ CREATE DOMAIN email_type VARCHAR(100)
 CREATE DOMAIN positiv_decimal DECIMAL(10,2)
   CHECK (VALUE > 0);
 \`\`\`
+
+---
 
 In SQLite erreicht man denselben Effekt mit CHECK-Constraints.`,
             keyTakeaways: [
@@ -1507,6 +1561,8 @@ UNION ALL
 SELECT name, stadt FROM lieferanten;
 \`\`\`
 
+---
+
 **INTERSECT — Schnittmenge:**
 \`\`\`sql
 -- Kunden, die auch Lieferanten sind
@@ -1515,6 +1571,8 @@ INTERSECT
 SELECT name, stadt FROM lieferanten;
 \`\`\`
 
+---
+
 **EXCEPT — Differenz:**
 \`\`\`sql
 -- Kunden, die keine Lieferanten sind
@@ -1522,6 +1580,8 @@ SELECT name, stadt FROM kunden
 EXCEPT
 SELECT name, stadt FROM lieferanten;
 \`\`\`
+
+---
 
 **Wichtige Regeln:**
 - Beide Abfragen müssen dieselbe Anzahl Spalten haben
@@ -1550,6 +1610,8 @@ UNION ALL
 SELECT id, name, 'inaktiv' AS status FROM inaktive_kunden;
 \`\`\`
 
+---
+
 **Beispiel 2: Produkte, die in beiden Filialen verfügbar sind**
 \`\`\`sql
 SELECT produkt_id FROM filiale_nord_bestand
@@ -1557,12 +1619,16 @@ INTERSECT
 SELECT produkt_id FROM filiale_sued_bestand;
 \`\`\`
 
+---
+
 **Beispiel 3: Produkte, die nur im Nord-Bestand sind**
 \`\`\`sql
 SELECT produkt_id FROM filiale_nord_bestand
 EXCEPT
 SELECT produkt_id FROM filiale_sued_bestand;
 \`\`\`
+
+---
 
 **UNION vs. JOIN — Wann was verwenden?**
 
@@ -1659,6 +1725,8 @@ CREATE TABLE studenten (
 );
 \`\`\`
 
+---
+
 **Schritt 3: Primärschlüssel definieren**
 \`\`\`sql
 CREATE TABLE studenten (
@@ -1668,6 +1736,8 @@ CREATE TABLE studenten (
   semester INTEGER CHECK (semester > 0)
 );
 \`\`\`
+
+---
 
 **Schritt 4: Fremdschlüssel und Beziehungen**
 \`\`\`sql
@@ -1686,6 +1756,8 @@ CREATE TABLE studenten (
 );
 \`\`\`
 
+---
+
 **Schritt 5: Constraints hinzufügen**
 \`\`\`sql
 CREATE TABLE studenten (
@@ -1699,6 +1771,8 @@ CREATE TABLE studenten (
     ON UPDATE CASCADE
 );
 \`\`\`
+
+---
 
 **Zusammenfassung der Transformation:**
 
@@ -1991,6 +2065,8 @@ Existieren nur in Abhängigkeit von einem anderen (starken) Entitätstyp. Sie ha
 **Identifizierende Beziehung:**
 Die Beziehung, die einen schwachen Entitätstyp mit seinem starken Entitätstyp verbindet. Der Primärschlüssel des starken Entitätstyps wird Teil des Primärschlüssels des schwachen Entitätstyps.
 
+---
+
 \`\`\`sql
 -- Stark: Gebäude
 CREATE TABLE gebaeude (
@@ -2007,6 +2083,8 @@ CREATE TABLE zimmer (
   FOREIGN KEY (gebaeude_id) REFERENCES gebaeude(gebaeude_id)
 );
 \`\`\`
+
+---
 
 **Attributtypen:**
 
@@ -2066,6 +2144,8 @@ CREATE TABLE kunden (
 );
 \`\`\`
 
+---
+
 **Wann 1:1 sinnvoll ist:**
 - Wenn eine Tabelle sehr viele Spalten hätte (horizontale Partitionierung)
 - Wenn bestimmte Attribute selten ausgefüllt sind (NULL-Einsparung)
@@ -2092,6 +2172,8 @@ Eine Entität auf der einen Seite steht mit mehreren Entitäten auf der anderen 
 **Umsetzung im Relationenmodell:**
 Der Primärschlüssel der „1-Seite" wird als Fremdschlüssel auf der „n-Seite" eingefügt.
 
+---
+
 \`\`\`sql
 CREATE TABLE kunden (
   id INTEGER PRIMARY KEY,
@@ -2106,6 +2188,8 @@ CREATE TABLE bestellungen (
   FOREIGN KEY (kunde_id) REFERENCES kunden(id)
 );
 \`\`\`
+
+---
 
 **Wichtig:** Der Fremdschlüssel kommt **immer auf die n-Seite**! Auf der 1-Seite (Kunde) gibt es keine Referenz auf Bestellungen.`,
             keyTakeaways: [
@@ -2129,6 +2213,8 @@ Mehrere Entitäten auf der einen Seite stehen mit mehreren Entitäten auf der an
 **Umsetzung im Relationenmodell:**
 Eine **Verknüpfungstabelle** (Assoziationstabelle) wird erstellt, die die Primärschlüssel beider Entitäten als Fremdschlüssel enthält.
 
+---
+
 \`\`\`sql
 CREATE TABLE studenten (
   id INTEGER PRIMARY KEY,
@@ -2151,6 +2237,8 @@ CREATE TABLE belegungen (
   FOREIGN KEY (kurs_id) REFERENCES kurse(id)
 );
 \`\`\`
+
+---
 
 **Die Verknüpfungstabelle hat:**
 - Zwei Fremdschlüssel (je einen pro Entität)
@@ -2287,6 +2375,8 @@ CREATE TABLE kategorien (
 );
 \`\`\`
 
+---
+
 **Schritt 2: 1:n-Beziehung (Kunde → Bestellung)**
 \`\`\`sql
 CREATE TABLE bestellungen (
@@ -2296,6 +2386,8 @@ CREATE TABLE bestellungen (
   FOREIGN KEY (kunde_id) REFERENCES kunden(id)
 );
 \`\`\`
+
+---
 
 **Schritt 3: n:m-Beziehung (Bestellung ↔ Produkt)**
 \`\`\`sql
@@ -2310,11 +2402,15 @@ CREATE TABLE bestellpositionen (
 );
 \`\`\`
 
+---
+
 **Schritt 4: 1:n-Beziehung (Kategorie → Produkt)**
 \`\`\`sql
 -- Fremdschlüssel in produkte-Tabelle ergänzen
 ALTER TABLE produkte ADD COLUMN kategorie_id INTEGER REFERENCES kategorien(id);
 \`\`\`
+
+---
 
 **Fertig!** Das ERM wurde in ein vollständiges SQL-Schema transformiert.`,
             keyTakeaways: [
@@ -2347,6 +2443,8 @@ ALTER TABLE produkte ADD COLUMN kategorie_id INTEGER REFERENCES kategorien(id);
 - Zimmer (schwach): Hat nur einen partiellen Schlüssel (zimmer_nr)
 - Der Primärschlüssel von Zimmer ist (gebaeude_id, zimmer_nr)
 
+---
+
 \`\`\`sql
 CREATE TABLE gebaeude (
   gebaeude_id INTEGER PRIMARY KEY,
@@ -2363,6 +2461,8 @@ CREATE TABLE zimmer (
     ON DELETE CASCADE  -- Zimmer wird mitgelöscht
 );
 \`\`\`
+
+---
 
 **Weitere Beispiele:**
 - Rechnung (stark) → Rechnungsposition (schwach)
@@ -2472,6 +2572,8 @@ Eine Entität steht in Beziehung zu sich selbst.
 - Teil → besteht aus Teilen (Stückliste)
 - Freund → ist befreundet mit Freund (Netzwerk)
 
+---
+
 \`\`\`sql
 -- Rekursive Beziehung: Mitarbeiter mit Vorgesetztem
 CREATE TABLE mitarbeiter (
@@ -2496,6 +2598,8 @@ CREATE TABLE stueckliste (
   FOREIGN KEY (unterteil_id) REFERENCES teile(id)
 );
 \`\`\`
+
+---
 
 **Ternäre Beziehungen:**
 Beziehungen zwischen drei Entitäten.
@@ -2613,6 +2717,8 @@ Wenn eine schwache Entität ohne ihren Owner nicht existieren kann, muss ON DELE
 
 **Schritt 4: SQL-Schema erstellen**
 
+
+
 \`\`\`sql
 -- Kategorien
 CREATE TABLE kategorien (
@@ -2661,6 +2767,8 @@ CREATE TABLE bestellpositionen (
 );
 \`\`\`
 
+---
+
 **Schritt 5: Schema überprüfen**
 - ✓ Alle Entitäten als Tabellen umgesetzt
 - ✓ 1:n-Beziehungen mit Fremdschlüsseln auf der n-Seite
@@ -2704,11 +2812,15 @@ CREATE TABLE bestellpositionen (
 
 Die Grundstruktur einer SELECT-Anweisung folgt einem festen Muster, das an einen natürlichen Satz erinnert: „Wähle diese Spalten aus dieser Tabelle, wobei diese Bedingung erfüllt ist, sortiert nach dieser Spalte."
 
+---
+
 \`\`\`sql
 SELECT spalte1, spalte2, ...
 FROM tabelle
 WHERE bedingung;
 \`\`\`
+
+---
 
 Jede Klausel hat eine bestimmte Aufgabe: \`SELECT\` bestimmt, welche Spalten im Ergebnis erscheinen. \`FROM\` gibt die Tabelle an, aus der die Daten stammen. \`WHERE\` filtert die Zeilen nach Bedingungen. Darüber hinaus gibt es weitere Klauseln, die du nach und nach kennenlernen wirst.
 
@@ -2750,6 +2862,8 @@ Ein wichtiger Hinweis: \`WHERE\` wird **vor** der Gruppierung (GROUP BY) angewen
 
 **Einfache Abfragen:**
 
+---
+
 \`\`\`sql
 -- Alle Spalten aller Produkte
 SELECT * FROM produkte;
@@ -2761,7 +2875,11 @@ SELECT name, preis FROM produkte;
 SELECT DISTINCT kategorie FROM produkte;
 \`\`\`
 
+---
+
 **WHERE-Filter:**
+
+---
 
 \`\`\`sql
 -- Produkte teurer als 50
@@ -2784,7 +2902,11 @@ WHERE preis BETWEEN 10 AND 50
   AND name IS NOT NULL;
 \`\`\`
 
+---
+
 **Sortierung und Begrenzung:**
+
+---
 
 \`\`\`sql
 -- Produkte nach Preis absteigend sortiert
@@ -2797,6 +2919,8 @@ SELECT name, preis FROM produkte ORDER BY preis DESC LIMIT 5;
 SELECT name, kategorie, preis FROM produkte
 ORDER BY kategorie ASC, preis DESC;
 \`\`\`
+
+---
 
 **Wichtige Hinweise:**
 - \`SELECT *\` ist praktisch für Tests, aber in der Praxis solltest du immer die benötigten Spalten explizit angeben
@@ -2856,6 +2980,8 @@ Stell dir vor, du hast eine Tabelle mit 10.000 Bestellungen und möchtest wissen
 
 **Einfaches GROUP BY:**
 
+---
+
 \`\`\`sql
 -- Anzahl Produkte pro Kategorie
 SELECT kategorie, COUNT(*) AS anzahl
@@ -2873,7 +2999,11 @@ FROM bestellungen
 GROUP BY kunde_id;
 \`\`\`
 
+---
+
 **GROUP BY mit mehreren Spalten:**
+
+---
 
 \`\`\`sql
 -- Anzahl Produkte pro Kategorie und Status
@@ -2882,7 +3012,11 @@ FROM produkte
 GROUP BY kategorie, status;
 \`\`\`
 
+---
+
 **HAVING — Gruppen filtern:**
+
+---
 
 \`\`\`sql
 -- Nur Kategorien mit mehr als 5 Produkten
@@ -2897,6 +3031,8 @@ FROM produkte
 GROUP BY kategorie
 HAVING AVG(preis) > 100;
 \`\`\`
+
+---
 
 **Wichtige Regel:** In der SELECT-Klausel dürfen nach GROUP BY nur Spalten stehen, die entweder in GROUP BY enthalten sind oder von einer Aggregatfunktion umschlossen werden.
 
@@ -2963,6 +3099,8 @@ SQL verwendet eine dreiwertige Logik mit TRUE, FALSE und UNKNOWN (NULL):
 
 **Falle 1: NULL-Vergleiche mit =**
 
+---
+
 \`\`\`sql
 -- FALSCH: Liefert KEINE Zeilen!
 SELECT * FROM kunden WHERE telefon = NULL;
@@ -2971,9 +3109,13 @@ SELECT * FROM kunden WHERE telefon = NULL;
 SELECT * FROM kunden WHERE telefon IS NULL;
 \`\`\`
 
+---
+
 Warum? \`NULL = NULL\` ergibt NULL (unbekannt), nicht TRUE. Nur \`IS NULL\` und \`IS NOT NULL\` funktionieren zuverlässig.
 
 **Falle 2: NULL in Aggregatfunktionen**
+
+---
 
 \`\`\`sql
 -- AVG ignoriert NULL-Werte!
@@ -2983,7 +3125,11 @@ SELECT AVG(preis) FROM produkte;  -- NULL-Werte werden NICHT gezählt
 SELECT AVG(COALESCE(preis, 0)) FROM produkte;
 \`\`\`
 
+---
+
 **Falle 3: NULL in Berechnungen**
+
+---
 
 \`\`\`sql
 -- Jede Berechnung mit NULL ergibt NULL!
@@ -2992,7 +3138,11 @@ SELECT NULL * 2;     -- Ergebnis: NULL
 SELECT NULL = NULL;  -- Ergebnis: NULL
 \`\`\`
 
+---
+
 **Falle 4: NULL in NOT IN**
+
+---
 
 \`\`\`sql
 -- FALSCH: Wenn die Unterabfrage NULL enthält, liefert NOT IN KEINE Zeilen!
@@ -3008,7 +3158,11 @@ WHERE NOT EXISTS (
 );
 \`\`\`
 
+---
+
 **Falle 5: COALESCE und IFNULL**
+
+---
 
 \`\`\`sql
 -- COALESCE: Ersten Nicht-NULL-Wert zurückgeben
@@ -3020,6 +3174,8 @@ SELECT IFNULL(preis, 0) FROM produkte;
 -- NULLIF: NULL erzeugen wenn zwei Werte gleich sind
 SELECT NULLIF(preis, 0) FROM produkte;  -- 0 wird zu NULL
 \`\`\`
+
+---
 
 **Zusammenfassung der NULL-Regeln:**
 - Jede Arithmetik mit NULL ergibt NULL
@@ -3050,6 +3206,8 @@ SELECT NULLIF(preis, 0) FROM produkte;  -- 0 wird zu NULL
 
 Wenn du eine bestimmte Reihenfolge brauchst — etwa die teuersten Produkte zuerst oder Kunden alphabetisch — musst du ORDER BY explizit angeben. Nur so bekommst du eine verlässliche, reproduzierbare Sortierung.
 
+---
+
 \`\`\`sql
 -- Aufsteigend (Standard)
 SELECT name, preis FROM produkte ORDER BY preis ASC;
@@ -3062,6 +3220,8 @@ SELECT name, kategorie, preis FROM produkte
 ORDER BY kategorie ASC, preis DESC;
 \`\`\`
 
+---
+
 Bei mehreren Sortierspalten gilt: Die erste Spalte hat die höchste Priorität. Nur wenn zwei Zeilen in der ersten Spalte denselben Wert haben, entscheidet die zweite Spalte. Stell dir vor, du sortierst eine Liste von Produkten erst nach Kategorie und dann innerhalb jeder Kategorie nach Preis absteigend — genau das macht die obige Abfrage.
 
 **Wichtige Regeln, die du kennen musst:**
@@ -3073,6 +3233,8 @@ Bei mehreren Sortierspalten gilt: Die erste Spalte hat die höchste Priorität. 
 **Sortierung nach berechneten Werten:**
 Oft möchtest du nach einem berechneten Wert sortieren — etwa nach dem Bruttopreis oder nach einem Alias. Das geht, indem du den Alias in der ORDER BY-Klausel verwendest:
 
+---
+
 \`\`\`sql
 -- Nach berechnetem Wert sortieren
 SELECT name, preis * 1.19 AS brutto FROM produkte
@@ -3082,6 +3244,8 @@ ORDER BY brutto DESC;
 SELECT name, preis * 1.19 AS brutto FROM produkte
 ORDER BY 2 DESC;
 \`\`\`
+
+---
 
 **Performance-Hinweis:** ORDER BY muss die gesamte Ergebnismenge sortieren. Bei Millionen Zeilen ohne Index auf der Sortierspalte kann das sehr langsam werden. Kombiniere ORDER BY mit LIMIT, um die Arbeit zu begrenzen.`,
             keyTakeaways: [
@@ -3099,6 +3263,8 @@ ORDER BY 2 DESC;
 
 Warum ist das wichtig? Stell dir vor, eine Suchmaschine würde alle 10 Millionen Ergebnisse auf einmal anzeigen. Das wäre langsam, speicherintensiv und für den Nutzer unbrauchbar. LIMIT und OFFSET lösen dieses Problem, indem sie nur die Zeilen liefern, die gerade benötigt werden.
 
+---
+
 \`\`\`sql
 -- Die 10 teuersten Produkte
 SELECT name, preis FROM produkte
@@ -3109,8 +3275,12 @@ SELECT name, preis FROM produkte
 ORDER BY preis DESC LIMIT 10 OFFSET 10;
 \`\`\`
 
+---
+
 **Paginierung — Seite für Seite anzeigen:**
 Paginierung ist eines der häufigsten Muster in Webanwendungen. Jede Seite zeigt eine feste Anzahl von Einträgen, und OFFSET berechnet den Startpunkt:
+
+---
 
 \`\`\`sql
 -- Seite 1 (Zeilen 1-10)
@@ -3123,8 +3293,12 @@ SELECT * FROM produkte ORDER BY id LIMIT 10 OFFSET 10;
 SELECT * FROM produkte ORDER BY id LIMIT 10 OFFSET (seitennummer - 1) * 10;
 \`\`\`
 
+---
+
 **Top-N-Abfragen — die besten Einträge finden:**
 Eine der nützlichsten Anwendungen von LIMIT ist die Top-N-Abfrage: „Gib mir die 3 umsatzstärksten Kunden" oder „Die 5 neuesten Artikel". Kombiniert mit ORDER BY liefert LIMIT genau die gewünschte Anzahl von Top-Ergebnissen:
+
+---
 
 \`\`\`sql
 -- Die 3 umsatzstärksten Kunden
@@ -3135,6 +3309,8 @@ GROUP BY k.name
 ORDER BY umsatz DESC
 LIMIT 3;
 \`\`\`
+
+---
 
 **Wichtig:** LIMIT ohne ORDER BY liefert **beliebige** Zeilen — die Reihenfolge ist nicht deterministisch. Immer ORDER BY mit LIMIT verwenden!`,
             keyTakeaways: [
@@ -3160,41 +3336,63 @@ LIMIT 3;
 **AND — Alle Bedingungen müssen erfüllt sein:**
 AND ist streng: Beide Bedingungen müssen zutreffen, damit die Zeile ins Ergebnis kommt. Stell dir vor, du suchst nach elektronischen Produkten unter 50 Euro — beide Kriterien müssen gleichzeitig erfüllt sein.
 
+---
+
 \`\`\`sql
 SELECT * FROM produkte WHERE preis > 50 AND kategorie = 'Elektronik';
 \`\`\`
 
+---
+
 **OR — Mindestens eine Bedingung muss erfüllt sein:**
 OR ist großzügig: Es reicht, wenn eine der Bedingungen zutrifft. Du suchst nach Produkten, die entweder elektronisch sind oder ein Buch — beides muss nicht gleichzeitig gelten.
+
+---
 
 \`\`\`sql
 SELECT * FROM produkte WHERE kategorie = 'Elektronik' OR kategorie = 'Buch';
 \`\`\`
 
+---
+
 **NOT — Bedingung umkehren:**
 NOT negiert eine Bedingung. Statt alle Kategorien außer Elektronik aufzuzählen, schreibst du einfach NOT.
+
+---
 
 \`\`\`sql
 SELECT * FROM produkte WHERE NOT kategorie = 'Elektronik';
 \`\`\`
 
+---
+
 **IN — Prüfung gegen eine Werteliste:**
 IN ist die Kurzform für mehrere OR-Bedingungen. Statt \`kategorie = 'A' OR kategorie = 'B' OR kategorie = 'C'\` schreibst du einfach \`kategorie IN ('A', 'B', 'C')\`. Das ist kürzer, lesbarer und weniger fehleranfällig.
+
+---
 
 \`\`\`sql
 SELECT * FROM produkte WHERE kategorie IN ('Elektronik', 'Buch', 'Kleidung');
 \`\`\`
 
+---
+
 **BETWEEN — Bereichsprüfung (inklusive):**
 BETWEEN prüft, ob ein Wert innerhalb eines Bereichs liegt — inklusive der Grenzen. \`preis BETWEEN 10 AND 50\` ist dasselbe wie \`preis >= 10 AND preis <= 50\`. Achtung: Die Grenzen sind immer inklusive!
+
+---
 
 \`\`\`sql
 SELECT * FROM produkte WHERE preis BETWEEN 10 AND 50;
 -- Entspricht: preis >= 10 AND preis <= 50
 \`\`\`
 
+---
+
 **LIKE — Mustersuche:**
 LIKE ermöglicht die Suche nach Mustern in Zeichenketten. Die Platzhalter sind \`%\` (beliebig viele Zeichen) und \`_\` (genau ein Zeichen). LIKE ist mächtig, aber bei führendem \`%\` kann kein Index genutzt werden — die Suche wird langsam.
+
+---
 
 \`\`\`sql
 -- % = beliebig viele Zeichen
@@ -3206,12 +3404,16 @@ SELECT * FROM kunden WHERE name LIKE '%ann%'; -- enthält ann
 SELECT * FROM kunden WHERE name LIKE '_nna';  -- z.B. Anna
 \`\`\`
 
+---
+
 **Operator-Priorität (höchste zuerst):**
 Achtung bei Kombinationen von AND und OR! AND hat eine höhere Priorität als OR. Ohne Klammern kann das zu unerwarteten Ergebnissen führen:
 
 1. NOT (höchste Priorität)
 2. AND
 3. OR (niedrigste Priorität)
+
+---
 
 \`\`\`sql
 -- Achtung: AND hat höhere Priorität als OR!
@@ -3221,6 +3423,8 @@ WHERE kategorie = 'Elektronik' OR kategorie = 'Buch' AND preis > 50
 -- Gewollt: (Elektronik ODER Buch) UND preis > 50
 WHERE (kategorie = 'Elektronik' OR kategorie = 'Buch') AND preis > 50
 \`\`\`
+
+---
 
 **Tipp:** Verwende immer Klammern, wenn du AND und OR kombinierst — auch wenn du dir sicher bist, dass die Priorität stimmt. Klammern machen den Code lesbarer und verhindern Fehler.`,
             keyTakeaways: [
@@ -3245,6 +3449,8 @@ WHERE (kategorie = 'Elektronik' OR kategorie = 'Buch') AND preis > 50
             sectionType: "theory",
             content: `**DISTINCT** entfernt doppelte Zeilen aus der Ergebnismenge. In der Praxis kommt es häufig vor, dass eine Abfrage viele identische Zeilen liefert — etwa wenn du alle Kategorien aus einer Produkttabelle abfragst, in der jede Kategorie mehrfach vorkommt. Ohne DISTINCT bekommst du jede Kategorie so oft, wie es Produkte in ihr gibt. Mit DISTINCT bekommst du jede Kategorie genau einmal.
 
+---
+
 \`\`\`sql
 -- Ohne DISTINCT: Alle Zeilen (inklusive Duplikate)
 SELECT kategorie FROM produkte;
@@ -3256,6 +3462,8 @@ SELECT DISTINCT kategorie FROM produkte;
 SELECT DISTINCT kategorie, status FROM produkte;
 \`\`\`
 
+---
+
 **Wichtige Eigenschaften von DISTINCT:**
 - \`DISTINCT\` bezieht sich auf die **gesamte Zeile**, nicht auf einzelne Spalten — es entfernt also nur Zeilen, die in allen ausgewählten Spalten identisch sind
 - \`DISTINCT\` erfordert eine Sortierung der Ergebnismenge, um Duplikate zu erkennen → bei großen Tabellen kann das langsam sein
@@ -3265,16 +3473,22 @@ SELECT DISTINCT kategorie, status FROM produkte;
 **DISTINCT vs. GROUP BY — wann was verwenden?**
 Beide können doppelte Zeilen entfernen, aber sie haben unterschiedliche Zwecke:
 
+---
+
 \`\`\`sql
 -- Beide liefern dasselbe Ergebnis:
 SELECT DISTINCT kategorie FROM produkte;
 SELECT kategorie FROM produkte GROUP BY kategorie;
 \`\`\`
 
+---
+
 DISTINCT ist die einfachere Wahl, wenn du nur Eindeutigkeit willst. GROUP BY ist mächtiger, weil du es mit Aggregatfunktionen kombinieren kannst — etwa \`SELECT kategorie, COUNT(*) FROM produkte GROUP BY kategorie\`. Als Faustregel: Wenn du nur eindeutige Werte brauchst, nimm DISTINCT. Wenn du aggregieren willst, nimm GROUP BY.
 
 **Spaltenaliase mit AS — Ergebnisse lesbar machen:**
 Aliase geben Spalten oder berechneten Werten einen aussagekräftigen Namen. Das macht die Ergebnisse lesbarer und ermöglicht die Referenzierung in ORDER BY:
+
+---
 
 \`\`\`sql
 -- Spalte umbenennen
@@ -3286,6 +3500,8 @@ SELECT preis * 1.19 AS bruttopreis FROM produkte;
 -- Alias ohne AS (möglich, aber weniger lesbar)
 SELECT name produktname FROM produkte;
 \`\`\`
+
+---
 
 **Aliase in verschiedenen Klauseln:**
 - ORDER BY kann Aliase verwenden: \`ORDER BY bruttopreis DESC\`
@@ -3361,6 +3577,8 @@ SQLite verwendet **dynamische Typisierung** (Type Affinity). Jede Spalte hat ein
             sectionType: "example",
             content: `**CAST** konvertiert einen Wert von einem Datentyp in einen anderen. In der Praxis kommt es häufig vor, dass Daten nicht im gewünschten Format vorliegen — etwa wenn eine Zahl als Text gespeichert wurde oder ein Datum als Zeichenkette. CAST löst dieses Problem, indem es den Typ explizit ändert.
 
+---
+
 \`\`\`sql
 -- Zeichenkette in Zahl umwandeln
 SELECT CAST('42' AS INTEGER);
@@ -3372,14 +3590,20 @@ SELECT CAST(42 AS VARCHAR);
 SELECT CAST(bestelldatum AS VARCHAR) FROM bestellungen;
 \`\`\`
 
+---
+
 **Automatische Typkonvertierung (implizit):**
 SQLite ist nachsichtig mit Typen und konvertiert automatisch, wenn es sinnvoll erscheint. Das ist praktisch, kann aber zu unerwarteten Ergebnissen führen:
+
+---
 
 \`\`\`sql
 -- SQLite konvertiert automatisch:
 SELECT '42' + 8;        -- Ergebnis: 50 (Text → Integer)
 SELECT 42 || ' Stück';  -- Ergebnis: '42 Stück' (Integer → Text)
 \`\`\`
+
+---
 
 **Häufige Konvertierungen im Überblick:**
 
@@ -3426,6 +3650,8 @@ SELECT 42 || ' Stück';  -- Ergebnis: '42 Stück' (Integer → Text)
 | / | Division | \`umsatz / 12\` |
 | % | Modulo (Rest) | \`id % 2\` |
 
+
+
 \`\`\`sql
 -- Bruttopreis berechnen (Netto + 19% MwSt)
 SELECT name, preis, preis * 1.19 AS brutto FROM produkte;
@@ -3434,10 +3660,14 @@ SELECT name, preis, preis * 1.19 AS brutto FROM produkte;
 SELECT name, preis, preis * 0.9 AS rabattpreis FROM produkte;
 \`\`\`
 
+---
+
 **Achtung bei der Division:** In SQL teilt eine Ganzzahl durch eine Ganzzahl wieder eine Ganzzahl — \`5 / 2\` ergibt 2, nicht 2.5! Um Kommastellen zu bekommen, muss mindestens ein Operand eine Kommazahl sein: \`5.0 / 2\` ergibt 2.5.
 
 **CASE-WHEN — Bedingte Berechnungen:**
 CASE-WHEN ist eines der mächtigsten Werkzeuge in SQL. Es erlaubt dir, Werte basierend auf Bedingungen zu berechnen — wie ein if/else in anderen Programmiersprachen, aber direkt in der Abfrage. Die WHEN-Bedingungen werden von oben nach unten ausgewertet — die erste zutreffende Bedingung gewinnt.
+
+---
 
 \`\`\`sql
 -- Preis-Kategorie bestimmen
@@ -3450,6 +3680,8 @@ SELECT name, preis,
   END AS preiskategorie
 FROM produkte;
 \`\`\`
+
+---
 
 CASE-WHEN wird in der Praxis ständig eingesetzt: für Klassifizierungen, bedingte Aggregationen, benutzerdefinierte Sortierungen und vieles mehr.
 
@@ -3465,8 +3697,12 @@ ORDER BY
   END;
 \`\`\`
 
+---
+
 **COALESCE — NULL-Werte ersetzen:**
 COALESCE ist ein praktischer Helfer, der den ersten Nicht-NULL-Wert aus einer Liste zurückgibt. Es ist die Standardmethode, um NULL-Werte durch Standardwerte zu ersetzen:
+
+---
 
 \`\`\`sql
 -- Ersten Nicht-NULL-Wert zurückgeben
@@ -3476,14 +3712,20 @@ SELECT name, COALESCE(telefon, email, 'Keine Kontaktinfo') AS kontakt FROM kunde
 SELECT name, preis * COALESCE(rabatt, 0) AS rabattbetrag FROM produkte;
 \`\`\`
 
+---
+
 **NULLIF — NULL erzeugen bei Gleichheit:**
 NULLIF gibt NULL zurück, wenn beide Argumente gleich sind — andernfalls das erste Argument. Der wichtigste Anwendungsfall: Division durch Null verhindern.
+
+---
 
 \`\`\`sql
 -- Division durch Null vermeiden
 SELECT umsatz / NULLIF(mitarbeiterzahl, 0) AS umsatz_pro_mitarbeiter
 FROM abteilungen;
 \`\`\`
+
+---
 
 Wenn \`mitarbeiterzahl\` 0 ist, wird NULLIF zu NULL — und die Division ergibt NULL statt eines Fehlers.`,
             keyTakeaways: [
@@ -3515,6 +3757,8 @@ UNION
 SELECT name, stadt, 'Lieferant' AS rolle FROM lieferanten;
 \`\`\`
 
+---
+
 **UNION ALL — Mit Duplikaten:**
 \`\`\`sql
 -- Alle Bestellungen beider Jahre (inklusive Duplikate)
@@ -3522,6 +3766,8 @@ SELECT * FROM bestellungen_2023
 UNION ALL
 SELECT * FROM bestellungen_2024;
 \`\`\`
+
+---
 
 **INTERSECT — Schnittmenge:**
 \`\`\`sql
@@ -3531,6 +3777,8 @@ INTERSECT
 SELECT produkt_id FROM bestand_sued;
 \`\`\`
 
+---
+
 **EXCEPT — Differenz:**
 \`\`\`sql
 -- Produkte, die nur im Nord-Bestand sind
@@ -3539,12 +3787,16 @@ EXCEPT
 SELECT produkt_id FROM bestand_sued;
 \`\`\`
 
+---
+
 **Regeln für Mengenoperationen:**
 1. Gleiche Anzahl Spalten in beiden Abfragen
 2. Kompatible Datentypen in entsprechenden Spalten
 3. Spaltennamen stammen aus der ersten Abfrage
 4. UNION entfernt Duplikate, UNION ALL behält sie
 5. ORDER BY gilt für das Gesamtergebnis (nur am Ende)
+
+---
 
 \`\`\`sql
 -- ORDER BY am Ende der gesamten Abfrage
@@ -3647,11 +3899,15 @@ Abgeleitete Tabellen in der FROM-Klausel brauchen immer einen Alias.
 
 Stell dir vor, du hast eine Kundentabelle und eine Bestellungstabelle. Ein INNER JOIN verbindet jeden Kunden mit seinen Bestellungen. Kunden ohne Bestellungen und Bestellungen ohne Kunden erscheinen nicht im Ergebnis — nur die Zeilen, die in beiden Tabellen einen Partner finden.
 
+
+
 \`\`\`sql
 SELECT a.spalte, b.spalte
 FROM tabelle_a a
 INNER JOIN tabelle_b b ON a.fk = b.pk;
 \`\`\`
+
+---
 
 **Venn-Diagramm-Vorstellung:** Stell dir zwei überlappende Kreise vor. INNER JOIN liefert nur die Schnittmenge — den Bereich, in dem beide Kreise überlappen. Alles, was nur in einem Kreis liegt, wird nicht zurückgegeben.
 
@@ -3675,12 +3931,16 @@ INNER JOIN ist der Standard-JOIN — wenn du einfach \`JOIN\` schreibst, meint S
 
 Stell dir vor, du willst alle Kunden auflisten — auch die, die noch nie etwas bestellt haben. Mit einem INNER JOIN würden diese Kunden einfach verschwinden. Mit LEFT JOIN bleiben sie im Ergebnis, und die Bestellspalten zeigen NULL.
 
+---
+
 \`\`\`sql
 -- Alle Kunden mit ihren Bestellungen (auch ohne)
 SELECT k.name, b.datum, b.gesamtbetrag
 FROM kunden k
 LEFT JOIN bestellungen b ON k.id = b.kunde_id;
 \`\`\`
+
+---
 
 **Ergebnis:**
 
@@ -3704,6 +3964,8 @@ LEFT JOIN bestellungen b ON k.id = b.kunde_id
 WHERE b.id IS NULL;
 \`\`\`
 
+---
+
 2. **Zähle mit Null-Werten:**
 \`\`\`sql
 -- Anzahl Bestellungen pro Kunde (auch 0)
@@ -3713,6 +3975,8 @@ LEFT JOIN bestellungen b ON k.id = b.kunde_id
 GROUP BY k.name;
 \`\`\`
 
+---
+
 **Wichtig:** \`COUNT(*)\` zählt alle Zeilen (inklusive NULL-Matches), \`COUNT(b.id)\` zählt nur Nicht-NULL-Werte.
 
 **RIGHT JOIN** ist äquivalent zu LEFT JOIN mit vertauschten Tabellen:
@@ -3721,6 +3985,8 @@ GROUP BY k.name;
 SELECT * FROM a LEFT JOIN b ON a.id = b.a_id;
 SELECT * FROM b RIGHT JOIN a ON a.id = b.a_id;
 \`\`\`
+
+---
 
 In der Praxis wird RIGHT JOIN selten verwendet — man schreibt die Tabelle mit allen Zeilen einfach auf die linke Seite und verwendet LEFT JOIN.`,
             keyTakeaways: [
@@ -3744,6 +4010,8 @@ In der Praxis wird RIGHT JOIN selten verwendet — man schreibt die Tabelle mit 
             sectionType: "theory",
             content: `**RIGHT JOIN** (RIGHT OUTER JOIN) ist das Spiegelbild von LEFT JOIN: Es liefert alle Zeilen der **rechten** Tabelle und die übereinstimmenden Zeilen der linken Tabelle. Wo es keinen Match gibt, werden NULL-Werte eingesetzt. In der Praxis wird RIGHT JOIN selten verwendet — meistens schreibt man die Abfrage einfach mit LEFT JOIN, indem man die Tabellenreihenfolge vertauscht. Das ist lesbarer, weil die „wichtige" Tabelle immer links steht.
 
+---
+
 \`\`\`sql
 -- RIGHT JOIN: Alle Bestellungen, auch ohne Kunden
 SELECT k.name, b.datum
@@ -3756,7 +4024,11 @@ FROM bestellungen b
 LEFT JOIN kunden k ON k.id = b.kunde_id;
 \`\`\`
 
+---
+
 **FULL JOIN** (FULL OUTER JOIN) liefert **alle** Zeilen aus beiden Tabellen. Wo es einen Match gibt, werden die Zeilen verbunden. Wo es keinen Match gibt, werden NULL-Werte eingesetzt. Stell dir vor, du hast zwei Tabellen und willst sehen, welche Zeilen sich entsprechen und welche „verwaist" sind — FULL JOIN zeigt beides.
+
+---
 
 \`\`\`sql
 -- Alle Kunden und alle Bestellungen, auch ohne Match
@@ -3764,6 +4036,8 @@ SELECT k.name, b.datum
 FROM kunden k
 FULL JOIN bestellungen b ON k.id = b.kunde_id;
 \`\`\`
+
+---
 
 **Übersicht der JOIN-Typen:**
 
@@ -3792,11 +4066,15 @@ Typische Anwendungsfälle sind hierarchische Strukturen (Mitarbeiter und ihre Vo
 
 **Syntax:** Man gibt der Tabelle zwei verschiedene Aliase:
 
+---
+
 \`\`\`sql
 SELECT a.name AS mitarbeiter, b.name AS vorgesetzter
 FROM mitarbeiter a
 INNER JOIN mitarbeiter b ON a.vorgesetzter_id = b.id;
 \`\`\`
+
+---
 
 **Beispiel: Organigramm**
 
@@ -3807,6 +4085,8 @@ INNER JOIN mitarbeiter b ON a.vorgesetzter_id = b.id;
 | 3 | Weber | 1 |
 | 4 | Klein | 2 |
 
+
+
 \`\`\`sql
 -- Jeden Mitarbeiter mit seinem Vorgesetzten
 SELECT
@@ -3815,6 +4095,8 @@ SELECT
 FROM mitarbeiter a
 LEFT JOIN mitarbeiter b ON a.vorgesetzter_id = b.id;
 \`\`\`
+
+---
 
 **Ergebnis:**
 
@@ -3835,12 +4117,16 @@ INNER JOIN produkte b ON a.kategorie = b.kategorie AND a.id != b.id
 WHERE ABS(a.preis - b.preis) < 10;
 \`\`\`
 
+---
+
 2. **Aufeinanderfolgende Ereignisse vergleichen:**
 \`\`\`sql
 SELECT a.datum, a.wert AS aktueller_wert, b.wert AS vorheriger_wert
 FROM messungen a
 LEFT JOIN messungen b ON a.datum = DATE(b.datum, '+1 day');
 \`\`\`
+
+---
 
 **Wichtig:** Bei Self-Joins immer einen Alias verwenden (a, b), um die beiden „Kopien" der Tabelle zu unterscheiden. Ohne Alias wäre nicht klar, welche Tabelle gemeint ist.`,
             keyTakeaways: [
@@ -3863,12 +4149,16 @@ LEFT JOIN messungen b ON a.datum = DATE(b.datum, '+1 day');
             sectionType: "theory",
             content: `**CROSS JOIN** verknüpft jede Zeile der ersten Tabelle mit jeder Zeile der zweiten Tabelle. Das Ergebnis ist das **kartesische Produkt** beider Tabellen.
 
+---
+
 \`\`\`sql
 -- Jeden Kunden mit jedem Produkt kombinieren
 SELECT k.name AS kunde, p.name AS produkt
 FROM kunden k
 CROSS JOIN produkte p;
 \`\`\`
+
+---
 
 Bei 5 Kunden und 10 Produkten liefert dieser JOIN 50 Zeilen.
 
@@ -3888,6 +4178,8 @@ Bei 5 Kunden und 10 Produkten liefert dieser JOIN 50 Zeilen.
 SELECT * FROM kunden CROSS JOIN produkte;
 SELECT * FROM kunden, produkte;
 \`\`\`
+
+---
 
 **Praktisches Beispiel — Kalender-Generierung:**
 \`\`\`sql
@@ -3931,6 +4223,8 @@ JOIN produkte p ON bp.produkt_id = p.id
 WHERE b.status = 'versendet';
 \`\`\`
 
+---
+
 **Reihenfolge der JOINs:**
 - SQL verarbeitet JOINs von links nach rechts
 - Die Reihenfolge kann die Performance beeinflussen
@@ -3947,6 +4241,8 @@ LEFT JOIN bestellungen b ON k.id = b.kunde_id
 LEFT JOIN bestellpositionen bp ON b.id = bp.bestellung_id
 LEFT JOIN produkte p ON bp.produkt_id = p.id;
 \`\`\`
+
+---
 
 **Alias-Best Practices:**
 - Kurze, aussagekräftige Aliase (k für kunden, b für bestellungen)
@@ -3972,6 +4268,8 @@ LEFT JOIN produkte p ON bp.produkt_id = p.id;
             sectionType: "theory",
             content: `**Equi-Join** ist ein JOIN mit einer Gleichheitsbedingung (ON a.id = b.id). Das ist der häufigste JOIN-Typ.
 
+---
+
 \`\`\`sql
 -- Equi-Join: Gleichheitsbedingung
 SELECT k.name, b.datum
@@ -3979,7 +4277,11 @@ FROM kunden k
 JOIN bestellungen b ON k.id = b.kunde_id;
 \`\`\`
 
+---
+
 **Theta-Join** ist ein JOIN mit einer beliebigen Vergleichsbedingung (>, <, >=, <=, <>, BETWEEN).
+
+---
 
 \`\`\`sql
 -- Theta-Join: Ungleichheitsbedingung
@@ -3993,6 +4295,8 @@ JOIN (
 ) k ON p.kategorie = k.kategorie AND p.preis > k.avg_preis;
 \`\`\`
 
+---
+
 **USING-Klausel (bei gleichnamigen Spalten):**
 \`\`\`sql
 -- Statt ON kunden.id = bestellungen.kunde_id
@@ -4001,12 +4305,16 @@ JOIN bestellungen USING (kunde_id);
 -- Voraussetzung: Beide Tabellen haben eine Spalte namens kunde_id
 \`\`\`
 
+---
+
 **NATURAL JOIN (Vorsicht!):**
 \`\`\`sql
 -- Verknüpft automatisch über alle gleichnamigen Spalten
 SELECT * FROM kunden
 NATURAL JOIN bestellungen;
 \`\`\`
+
+---
 
 **Warnung:** NATURAL JOIN ist gefährlich, weil er alle gleichnamigen Spalten verknüpft. Wenn versehentlich eine Spalte wie „name" in beiden Tabellen existiert, wird sie als Join-Bedingung verwendet — oft nicht beabsichtigt!`,
             keyTakeaways: [
@@ -4041,6 +4349,8 @@ NATURAL JOIN bestellungen;
 
 **Beispiel — Dasselbe mit JOIN und Subquery:**
 
+---
+
 \`\`\`sql
 -- Mit JOIN
 SELECT k.name, b.datum
@@ -4056,6 +4366,8 @@ WHERE EXISTS (
   WHERE b.kunde_id = k.id AND b.betrag > 100
 );
 \`\`\`
+
+---
 
 **Performance-Regeln:**
 - INNER JOIN ist meist schneller als IN-Subquery
@@ -4090,10 +4402,14 @@ WHERE EXISTS (
 **1. Fehlende Indizes auf Join-Spalten**
 Der häufigste Performance-Killer. Ohne Index auf der Join-Spalte muss die Datenbank jeden Wert in der Tabelle durchsuchen (Full Table Scan).
 
+---
+
 \`\`\`sql
 -- Index auf Fremdschlüssel-Spalte erstellen
 CREATE INDEX idx_bestellungen_kunde_id ON bestellungen(kunde_id);
 \`\`\`
+
+---
 
 **2. Zu viele JOINs**
 Jeder JOIN erhöht die Komplexität. Bei 5+ JOINs sollte man die Abfrage überdenken.
@@ -4122,6 +4438,8 @@ FROM kunden k
 JOIN kundenumsatz ku ON k.id = ku.kunde_id;
 \`\`\`
 
+---
+
 **6. Kartesisches Produkt vermeiden**
 Fehlende JOIN-Bedingung → CROSS JOIN → Millionen Zeilen!
 
@@ -4132,6 +4450,8 @@ SELECT k.name, b.datum
 FROM kunden k
 JOIN bestellungen b ON k.id = b.kunde_id;
 \`\`\`
+
+---
 
 EXPLAIN zeigt, ob Indizes verwendet werden und wie die Abfrage ausgeführt wird.`,
             keyTakeaways: [
@@ -4154,12 +4474,16 @@ EXPLAIN zeigt, ob Indizes verwendet werden und wie die Abfrage ausgeführt wird.
             sectionType: "theory",
             content: `**NATURAL JOIN** verknüpft zwei Tabellen automatisch über alle gleichnamigen Spalten.
 
+---
+
 \`\`\`sql
 -- NATURAL JOIN: Verknüpft über alle gleichnamigen Spalten
 SELECT * FROM kunden
 NATURAL JOIN bestellungen;
 -- Verknüpft über kunde_id (wenn in beiden Tabellen vorhanden)
 \`\`\`
+
+---
 
 **Vorteile:**
 - Kurze Syntax
@@ -4177,6 +4501,8 @@ NATURAL JOIN bestellungen;
 SELECT * FROM kunden
 JOIN bestellungen USING (kunde_id);
 \`\`\`
+
+---
 
 **Vorteile von USING:**
 - Explizit — klar, welche Spalte verknüpft wird
@@ -4199,6 +4525,8 @@ JOIN bestellungen USING (kunde_id);
 SELECT * FROM kunden
 NATURAL JOIN bestellungen;
 \`\`\`
+
+---
 
 **Empfehlung:** ON-Klausel verwenden (am explizitesten), USING bei gleichnamigen Spalten als Alternative. NATURAL JOIN vermeiden.`,
             keyTakeaways: [
@@ -4229,6 +4557,8 @@ SELECT * FROM kunden k
 JOIN bestellungen b ON k.id = b.kunde_id;
 \`\`\`
 
+---
+
 **Fehler 2: Falsche JOIN-Bedingung**
 \`\`\`sql
 -- FALSCH: Falsche Spalte verknüpft
@@ -4239,6 +4569,8 @@ JOIN produkte p ON b.kunde_id = p.id;  -- kunde_id statt produkt_id!
 SELECT * FROM bestellpositionen bp
 JOIN produkte p ON bp.produkt_id = p.id;
 \`\`\`
+
+---
 
 **Fehler 3: LEFT JOIN statt INNER JOIN**
 Wenn man nur übereinstimmende Zeilen braucht, ist LEFT JOIN langsamer und kann NULL-Werte produzieren.
@@ -4258,6 +4590,8 @@ JOIN bestellpositionen bp ON b.id = bp.bestellung_id
 JOIN produkte p ON bp.produkt_id = p.id;
 \`\`\`
 
+---
+
 **Fehler 5: COUNT(*) mit LEFT JOIN**
 \`\`\`sql
 -- FALSCH: Zählt NULL-Werte mit
@@ -4272,6 +4606,8 @@ FROM kunden k
 LEFT JOIN bestellungen b ON k.id = b.kunde_id
 GROUP BY k.name;
 \`\`\`
+
+---
 
 **Fehler 6: OR im JOIN**
 \`\`\`sql
@@ -4318,6 +4654,8 @@ JOIN produkte p ON bp.produkt_id = p.id
 ORDER BY b.datum DESC;
 \`\`\`
 
+---
+
 **Beispiel 2: Universität — Notenübersicht**
 \`\`\`sql
 SELECT
@@ -4332,6 +4670,8 @@ WHERE b.note IS NOT NULL
 ORDER BY s.name, k.name;
 \`\`\`
 
+---
+
 **Beispiel 3: Kunden ohne Bestellungen (LEFT JOIN)**
 \`\`\`sql
 SELECT k.name
@@ -4339,6 +4679,8 @@ FROM kunden k
 LEFT JOIN bestellungen b ON k.id = b.kunde_id
 WHERE b.id IS NULL;
 \`\`\`
+
+---
 
 **Beispiel 4: Umsatz pro Kunde mit NULL-Werten**
 \`\`\`sql
@@ -4351,6 +4693,8 @@ GROUP BY k.name
 ORDER BY umsatz DESC;
 \`\`\`
 
+---
+
 **Beispiel 5: Self-Join — Mitarbeiter mit Vorgesetztem**
 \`\`\`sql
 SELECT
@@ -4359,6 +4703,8 @@ SELECT
 FROM mitarbeiter m
 LEFT JOIN mitarbeiter v ON m.vorgesetzter_id = v.id;
 \`\`\`
+
+---
 
 **Beispiel 6: Produkte, die noch nie bestellt wurden**
 \`\`\`sql
@@ -4400,6 +4746,8 @@ WHERE bp.produkt_id IS NULL;
             sectionType: "theory",
             content: `**CREATE TABLE** erstellt eine neue Tabelle mit Spalten, Datentypen und Constraints.
 
+
+
 \`\`\`sql
 CREATE TABLE tabellenname (
   spalte1 datentyp [constraint],
@@ -4408,6 +4756,8 @@ CREATE TABLE tabellenname (
   [tabellen_constraint]
 );
 \`\`\`
+
+---
 
 **Wichtige Datentypen (MySQL):**
 
@@ -4445,6 +4795,8 @@ CREATE TABLE tabellenname (
             content: `Hier erstellen wir eine vollständige Datenbank mit mehreren Tabellen und Beziehungen:
 
 **Beispiel: Online-Shop-Datenbank**
+
+---
 
 \`\`\`sql
 -- Kundentabelle
@@ -4489,6 +4841,8 @@ CREATE TABLE bestellpositionen (
 );
 \`\`\`
 
+---
+
 **Erklärung der verwendeten Constraints:**
 
 | Constraint | Verwendung | Zweck |
@@ -4528,6 +4882,8 @@ CREATE TABLE bestellpositionen (
             sectionType: "theory",
             content: `**ALTER TABLE** ändert die Struktur einer bestehenden Tabelle, ohne die Daten zu löschen. Es ist das Werkzeug der Wahl, wenn sich Anforderungen ändern und du Spalten hinzufügen, entfernen oder modifizieren musst — ohne die Tabelle neu zu erstellen.
 
+---
+
 \`\`\`sql
 -- Spalte hinzufuegen
 ALTER TABLE kunden ADD COLUMN telefon VARCHAR(20);
@@ -4539,6 +4895,8 @@ ALTER TABLE kunden DROP COLUMN telefon;
 ALTER TABLE kunden MODIFY COLUMN name VARCHAR(100);
 \`\`\`
 
+---
+
 **Wichtige Hinweise zu ALTER TABLE:**
 - Neue Spalten werden am Ende der Tabelle hinzugefügt — die Position kann in SQLite nicht geändert werden
 - In SQLite ist \`DROP COLUMN\` ab Version 3.35.0 verfügbar — ältere Versionen unterstützen es nicht
@@ -4547,15 +4905,23 @@ ALTER TABLE kunden MODIFY COLUMN name VARCHAR(100);
 
 **DROP TABLE** löscht eine gesamte Tabelle inklusive aller Daten und der Tabellenstruktur selbst. Das ist irreversibel — alle Daten gehen unwiderruflich verloren!
 
+---
+
 \`\`\`sql
 DROP TABLE kunden;
 \`\`\`
 
+---
+
 **Achtung:** DROP TABLE ist irreversibel! Alle Daten gehen verloren. Verwende immer \`DROP TABLE IF EXISTS\`, um Fehler zu vermeiden, wenn die Tabelle nicht existiert:
+
+---
 
 \`\`\`sql
 DROP TABLE IF EXISTS kunden;
 \`\`\`
+
+---
 
 **ALTER TABLE vs. DROP TABLE — der wichtige Unterschied:**
 - ALTER TABLE ändert die Struktur, die Daten bleiben erhalten
@@ -4576,6 +4942,8 @@ DROP TABLE IF EXISTS kunden;
 
 Der Preis: Indizes verlangsamen Schreiboperationen (INSERT, UPDATE, DELETE), weil bei jeder Änderung auch der Index aktualisiert werden muss. Und sie verbrauchen zusätzlichen Speicherplatz. Du solltest Indizes also gezielt einsetzen — nicht auf jede Spalte, sondern nur auf die, die häufig durchsucht werden.
 
+---
+
 \`\`\`sql
 -- Index erstellen
 CREATE INDEX idx_kunde_name ON kunden(name);
@@ -4587,6 +4955,8 @@ CREATE UNIQUE INDEX idx_kunde_email ON kunden(email);
 DROP INDEX idx_kunde_name;
 \`\`\`
 
+---
+
 **Wann Indizes sinnvoll sind — und wann nicht:**
 
 Indizes lohnen sich, wenn die Spalte häufig in WHERE-Klauseln, JOIN-Bedingungen oder ORDER BY-Klauseln vorkommt. Sie lohnen sich nicht bei sehr kleinen Tabellen (unter 100 Zeilen — da ist ein Full Table Scan genauso schnell), bei Spalten mit wenigen eindeutigen Werten (z.B. eine boolean-Spalte mit nur true/false) oder bei Spalten, die häufig aktualisiert werden (der Index müsste bei jedem UPDATE mitgeändert werden).
@@ -4596,6 +4966,8 @@ Indizes lohnen sich, wenn die Spalte häufig in WHERE-Klauseln, JOIN-Bedingungen
 EXPLAIN QUERY PLAN
 SELECT * FROM kunden WHERE name = 'Anna';
 \`\`\`
+
+---
 
 Wenn du \`SCAN TABLE kunden\` siehst, wird kein Index genutzt. Wenn du \`SEARCH TABLE kunden USING INDEX idx_kunde_name\` siehst, wird der Index verwendet.`,
           },
@@ -4683,6 +5055,8 @@ CREATE TABLE belegungen (
 );
 \`\`\`
 
+---
+
 **2. NOT NULL — Pflichtfeld**
 \`\`\`sql
 CREATE TABLE produkte (
@@ -4692,6 +5066,8 @@ CREATE TABLE produkte (
 );
 \`\`\`
 
+---
+
 **3. UNIQUE — Eindeutigkeit**
 \`\`\`sql
 CREATE TABLE kunden (
@@ -4700,6 +5076,8 @@ CREATE TABLE kunden (
   benutzername VARCHAR(50) UNIQUE      -- Keine doppelten Benutzernamen
 );
 \`\`\`
+
+---
 
 **4. FOREIGN KEY — Referenzielle Integrität**
 \`\`\`sql
@@ -4712,6 +5090,8 @@ CREATE TABLE bestellungen (
 );
 \`\`\`
 
+---
+
 **5. CHECK — Wertebereiche einschränken**
 \`\`\`sql
 CREATE TABLE produkte (
@@ -4722,6 +5102,8 @@ CREATE TABLE produkte (
 );
 \`\`\`
 
+---
+
 **6. DEFAULT — Standardwerte**
 \`\`\`sql
 CREATE TABLE bestellungen (
@@ -4730,6 +5112,8 @@ CREATE TABLE bestellungen (
   datum DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 \`\`\`
+
+---
 
 **Constraint-Namen für bessere Fehlermeldungen:**
 \`\`\`sql
@@ -4761,6 +5145,8 @@ CREATE TABLE kunden (
             sectionType: "theory",
             content: `**AUTOINCREMENT** generiert automatisch eindeutige IDs für neue Zeilen.
 
+
+
 \`\`\`sql
 CREATE TABLE kunden (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -4771,6 +5157,8 @@ CREATE TABLE kunden (
 INSERT INTO kunden (name) VALUES ('Anna');  -- id = 1
 INSERT INTO kunden (name) VALUES ('Ben');   -- id = 2
 \`\`\`
+
+---
 
 **AUTOINCREMENT vs. ohne AUTOINCREMENT in SQLite:**
 
@@ -4795,6 +5183,8 @@ CREATE TABLE belegungen (
 );
 \`\`\`
 
+---
+
 **UUIDs als Primärschlüssel (Alternative):**
 \`\`\`sql
 -- In SQLite: TEXT-Spalte mit UUID
@@ -4803,6 +5193,8 @@ CREATE TABLE kunden (
   name VARCHAR(100) NOT NULL
 );
 \`\`\`
+
+---
 
 Vorteile von UUIDs: Global eindeutig, kein AUTOINCREMENT nötig, verteilt generierbar.
 Nachteile: Größerer Speicherbedarf, langsamer bei JOINs.`,
@@ -4826,6 +5218,8 @@ Nachteile: Größerer Speicherbedarf, langsamer bei JOINs.`,
             sectionType: "theory",
             content: `Eine **View** (Sicht) ist eine gespeicherte Abfrage, die wie eine Tabelle verwendet werden kann.
 
+---
+
 \`\`\`sql
 -- View erstellen
 CREATE VIEW kunden_umsatz AS
@@ -4841,6 +5235,8 @@ GROUP BY k.name;
 SELECT * FROM kunden_umsatz WHERE gesamtumsatz > 1000;
 \`\`\`
 
+---
+
 **Vorteile von Views:**
 1. **Vereinfachung:** Komplexe Abfragen als View speichern und einfach abfragen
 2. **Sicherheit:** Nur bestimmte Spalten/Zeilen für Benutzer freigeben
@@ -4851,6 +5247,8 @@ SELECT * FROM kunden_umsatz WHERE gesamtumsatz > 1000;
 \`\`\`sql
 DROP VIEW IF EXISTS kunden_umsatz;
 \`\`\`
+
+---
 
 **Einschränkungen von Views:**
 - Views speichern keine Daten (sie sind nur gespeicherte Abfragen)
@@ -4917,6 +5315,8 @@ WHERE kategorie = 'Elektronik' AND preis > 50      -- Ja (beide Spalten)
 WHERE preis > 50                                    -- Nein! (nur rechte Spalte)
 \`\`\`
 
+---
+
 **Regel: Ein zusammengesetzter Index wird von links nach rechts genutzt.** Wenn die linke Spalte nicht in der WHERE-Klausel vorkommt, wird der Index nicht verwendet.
 
 **Wann Indizes erstellen:**
@@ -4965,11 +5365,15 @@ ALTER TABLE kunden ADD COLUMN telefon VARCHAR(20);
 ALTER TABLE kunden ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
 \`\`\`
 
+---
+
 **Spalte entfernen (SQLite-Besonderheit):**
 SQLite unterstützt \`DROP COLUMN\` ab Version 3.35.0 (2021):
 \`\`\`sql
 ALTER TABLE kunden DROP COLUMN telefon;
 \`\`\`
+
+---
 
 In älteren SQLite-Versionen muss man die Tabelle neu erstellen:
 \`\`\`sql
@@ -4990,15 +5394,21 @@ DROP TABLE kunden;
 ALTER TABLE kunden_neu RENAME TO kunden;
 \`\`\`
 
+---
+
 **Tabelle umbenennen:**
 \`\`\`sql
 ALTER TABLE kunden RENAME TO users;
 \`\`\`
 
+---
+
 **Spalte umbenennen (SQLite ab 3.25.0):**
 \`\`\`sql
 ALTER TABLE kunden RENAME COLUMN name TO voller_name;
 \`\`\`
+
+---
 
 **Best Practices für Tabellenänderungen:**
 1. Immer ein Backup erstellen vor ALTER TABLE
@@ -5088,6 +5498,8 @@ CREATE TABLE kunden (name VARCHAR(100), email VARCHAR(100));
 CREATE TABLE kunden (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(100), email VARCHAR(100));
 \`\`\`
 
+---
+
 **Fehler 2: FLOAT für Geldbeträge**
 FLOAT hat Rundungsfehler! 0.1 + 0.2 ≠ 0.3 in Gleitkomma-Arithmetik.
 \`\`\`sql
@@ -5097,6 +5509,8 @@ CREATE TABLE produkte (preis FLOAT);
 -- RICHTIG
 CREATE TABLE produkte (preis DECIMAL(10,2));
 \`\`\`
+
+---
 
 **Fehler 3: Fremdschlüssel ohne Constraints**
 Ohne ON DELETE/ON UPDATE können verwaiste Datensätze entstehen.
@@ -5108,6 +5522,8 @@ FOREIGN KEY (kunde_id) REFERENCES kunden(id)
 FOREIGN KEY (kunde_id) REFERENCES kunden(id) ON DELETE CASCADE
 \`\`\`
 
+---
+
 **Fehler 4: Zu breite VARCHAR-Spalten**
 \`VARCHAR(9999)\` verschwendet Speicher und erschwert die Validierung.
 \`\`\`sql
@@ -5117,6 +5533,8 @@ CREATE TABLE kunden (email VARCHAR(9999));
 -- RICHTIG
 CREATE TABLE kunden (email VARCHAR(255));
 \`\`\`
+
+---
 
 **Fehler 5: Fehlende CHECK-Constraints**
 Wertebereiche sollten auf Datenbankebene gesichert werden.
@@ -5128,6 +5546,8 @@ CREATE TABLE produkte (preis DECIMAL(10,2));
 CREATE TABLE produkte (preis DECIMAL(10,2) CHECK (preis > 0));
 \`\`\`
 
+---
+
 **Fehler 6: DROP TABLE ohne IF EXISTS**
 \`\`\`sql
 -- FALSCH (Fehler wenn Tabelle nicht existiert)
@@ -5136,6 +5556,8 @@ DROP TABLE kunden;
 -- RICHTIG
 DROP TABLE IF EXISTS kunden;
 \`\`\`
+
+---
 
 **Fehler 7: ALTER TABLE ohne Backup**
 Tabellenänderungen können Datenverlust verursachen. Immer Backup erstellen!`,
@@ -5200,6 +5622,8 @@ Tabellenänderungen können Datenverlust verursachen. Immer Backup erstellen!`,
 **1. Skalar-Subquery (ein einzelner Wert):**
 Skalar-Subqueries liefern genau einen Wert und werden mit Vergleichsoperatoren wie =, >, < verwendet. Sie sind besonders nützlich, wenn du einen berechneten Wert als Filter brauchst.
 
+---
+
 \`\`\`sql
 -- Produkte, die teurer als der Durchschnitt sind
 SELECT name, preis
@@ -5207,10 +5631,14 @@ FROM produkte
 WHERE preis > (SELECT AVG(preis) FROM produkte);
 \`\`\`
 
+---
+
 Die innere Abfrage \`SELECT AVG(preis) FROM produkte\` liefert genau einen Wert — den Durchschnittspreis. Die äußere Abfrage vergleicht jeden Preis damit.
 
 **2. Subquery mit IN:**
 IN-Subqueries liefern eine Liste von Werten, die die äußere Abfrage als Filter verwendet. Sie sind nützlich, wenn du Zeilen finden willst, die in einer anderen Tabelle existieren.
+
+---
 
 \`\`\`sql
 -- Kunden, die etwas bestellt haben
@@ -5222,9 +5650,13 @@ SELECT name FROM kunden
 WHERE id NOT IN (SELECT DISTINCT kunde_id FROM bestellungen);
 \`\`\`
 
+---
+
 **Achtung:** \`NOT IN\` mit NULL-Werten in der Unterabfrage liefert **keine** Ergebnisse! Verwende stattdessen \`NOT EXISTS\`.
 
 **3. Subquery mit Vergleichsoperatoren:**
+
+---
 
 \`\`\`sql
 -- Das teuerste Produkt
@@ -5243,7 +5675,11 @@ WHERE kategorie = (
 );
 \`\`\`
 
+---
+
 **4. Subquery in der FROM-Klausel (abgeleitete Tabelle):**
+
+---
 
 \`\`\`sql
 -- Durchschnittsbestellwert pro Kunde
@@ -5256,6 +5692,8 @@ FROM (
 ) AS kundenumsatz
 WHERE avg_total > 100;
 \`\`\`
+
+---
 
 **Wichtig:** Jede abgeleitete Tabelle braucht einen Alias (\`AS kundenumsatz\`).`,
             keyTakeaways: [
@@ -5294,6 +5732,8 @@ WHERE bedingung (
 );
 \`\`\`
 
+---
+
 **Performance-Hinweis:** Korrelierte Subqueries können langsam sein, da sie pro Zeile ausgeführt werden. Oft kann man sie durch JOINs ersetzen.`,
             keyTakeaways: [
               "Korrelierte Subquery bezieht sich auf äußere Abfrage",
@@ -5310,6 +5750,8 @@ WHERE bedingung (
 
 **EXISTS vs. IN — Wann was verwenden?**
 
+---
+
 \`\`\`sql
 -- Mit IN: Kunden, die bestellt haben
 SELECT name FROM kunden
@@ -5322,12 +5764,16 @@ WHERE EXISTS (
 );
 \`\`\`
 
+---
+
 **Wann EXISTS besser ist als IN:**
 - Bei großen Unterabfragen (EXISTS bricht ab, sobald ein Match gefunden wird)
 - Bei NULL-Werten in der Unterabfrage (NOT IN mit NULL liefert keine Ergebnisse!)
 - Bei korrelierten Unterabfragen
 
 **NOT EXISTS — Die sichere Alternative zu NOT IN:**
+
+---
 
 \`\`\`sql
 -- SICHER: Kunden ohne Bestellungen
@@ -5342,7 +5788,11 @@ WHERE id NOT IN (SELECT kunde_id FROM bestellungen);
 -- Wenn kunde_id NULL enthält, liefert das KEINE Ergebnisse!
 \`\`\`
 
+---
+
 **EXISTS mit korrelierter Subquery:**
+
+---
 
 \`\`\`sql
 -- Produkte, die mindestens einmal bestellt wurden
@@ -5359,6 +5809,8 @@ WHERE NOT EXISTS (
   WHERE bp.produkt_id = p.id
 );
 \`\`\`
+
+---
 
 **Performance-Tipp:** EXISTS ist oft schneller als IN, weil die Subquery abbricht, sobald die erste Zeile gefunden wird. IN muss die gesamte Unterabfrage ausführen.`,
             keyTakeaways: [
@@ -5398,6 +5850,8 @@ WHERE id = (
 );
 \`\`\`
 
+---
+
 **In der SELECT-Klausel:**
 \`\`\`sql
 -- Jedes Produkt mit dem Durchschnittspreis zum Vergleich
@@ -5407,6 +5861,8 @@ SELECT name, preis,
 FROM produkte;
 \`\`\`
 
+---
+
 **In der HAVING-Klausel:**
 \`\`\`sql
 -- Kategorien mit überdurchschnittlichem Preis
@@ -5415,6 +5871,8 @@ FROM produkte
 GROUP BY kategorie
 HAVING AVG(preis) > (SELECT AVG(preis) FROM produkte);
 \`\`\`
+
+---
 
 **Wichtig:** Eine Skalar-Subquery MUSS genau einen Wert zurückgeben. Wenn sie keine Zeile liefert, ist das Ergebnis NULL. Wenn sie mehrere Zeilen liefert, gibt es einen Fehler.`,
             keyTakeaways: [
@@ -5439,6 +5897,8 @@ HAVING AVG(preis) > (SELECT AVG(preis) FROM produkte);
 
 **Grundprinzip:** Die innere Abfrage erzeugt eine Ergebnismenge, die die äußere Abfrage wie eine normale Tabelle verwenden kann. Das Ergebnis der inneren Abfrage wird materialisiert — es wird also tatsächlich als temporäre Tabelle im Speicher erstellt.
 
+---
+
 \`\`\`sql
 -- Durchschnittspreis pro Kategorie, gefiltert nach Kategorien mit >5 Produkten
 SELECT kategorie, avg_preis
@@ -5450,9 +5910,13 @@ FROM (
 WHERE anzahl > 5;
 \`\`\`
 
+---
+
 Ohne die abgeleitete Tabelle könntest du nicht nach \`anzahl\` filtern, weil Aggregatfunktionen in der WHERE-Klausel nicht erlaubt sind. Die abgeleitete Tabelle löst dieses Problem, indem sie die Aggregation zuerst durchführt und das Ergebnis als Tabelle zur Verfügung stellt.
 
 **Wichtig:** Jede abgeleitete Tabelle MUSS einen Alias haben!
+
+---
 
 \`\`\`sql
 -- FALSCH: Ohne Alias
@@ -5461,6 +5925,8 @@ SELECT * FROM (SELECT kategorie, AVG(preis) FROM produkte GROUP BY kategorie);
 -- RICHTIG: Mit Alias
 SELECT * FROM (SELECT kategorie, AVG(preis) FROM produkte GROUP BY kategorie) AS stats;
 \`\`\`
+
+---
 
 **Praktisches Beispiel — Top-Kunden:**
 \`\`\`sql
@@ -5474,6 +5940,8 @@ JOIN (
 WHERE ku.gesamtumsatz > 1000
 ORDER BY ku.gesamtumsatz DESC;
 \`\`\`
+
+---
 
 **Abgeleitete Tabellen vs. CTEs:**
 - Abgeleitete Tabelle: Inline in der FROM-Klausel, nicht wiederverwendbar
@@ -5507,6 +5975,8 @@ SELECT name, preis,
 FROM produkte;
 \`\`\`
 
+---
+
 **Beispiel: Rang innerhalb der Kategorie**
 \`\`\`sql
 SELECT p.name, p.kategorie, p.preis,
@@ -5516,12 +5986,16 @@ FROM produkte p
 ORDER BY kategorie, rang;
 \`\`\`
 
+---
+
 **Beispiel: Letzte Bestellung pro Kunde**
 \`\`\`sql
 SELECT k.name,
   (SELECT MAX(b.datum) FROM bestellungen b WHERE b.kunde_id = k.id) AS letzte_bestellung
 FROM kunden k;
 \`\`\`
+
+---
 
 **Performance-Hinweis:** Korrelierte Subqueries in der SELECT-Klausel werden für JEDZE Zeile der äußeren Abfrage ausgeführt. Bei großen Tabellen kann das sehr langsam sein. In solchen Fällen ist ein JOIN oder eine Window Function oft schneller.
 
@@ -5561,6 +6035,8 @@ WHERE preis > ANY (SELECT preis FROM produkte WHERE kategorie = 'Elektronik');
 -- Entspricht: preis > (SELECT MIN(preis) FROM produkte WHERE kategorie = 'Elektronik')
 \`\`\`
 
+---
+
 **ALL — Alle Werte müssen die Bedingung erfüllen:**
 \`\`\`sql
 -- Produkte, die teurer sind als ALLE Produkte in 'Buch'
@@ -5569,6 +6045,8 @@ WHERE preis > ALL (SELECT preis FROM produkte WHERE kategorie = 'Buch');
 
 -- Entspricht: preis > (SELECT MAX(preis) FROM produkte WHERE kategorie = 'Buch')
 \`\`\`
+
+---
 
 **Vergleich:**
 
@@ -5586,6 +6064,8 @@ WHERE preis > ALL (SELECT preis FROM produkte WHERE kategorie = 'Buch');
 SELECT name, preis FROM produkte
 WHERE preis > ALL (SELECT preis FROM produkte WHERE kategorie = 'Buch');
 \`\`\`
+
+---
 
 **Hinweis:** ANY und ALL sind selten und können oft durch MIN/MAX-Subqueries oder JOINs ersetzt werden, die lesbarer sind.`,
             keyTakeaways: [
@@ -5615,11 +6095,15 @@ SELECT name FROM kunden
 WHERE id IN (SELECT kunde_id FROM bestellungen);
 \`\`\`
 
+---
+
 **EXISTS — Prüft auf Existenz mindestens einer Zeile:**
 \`\`\`sql
 SELECT k.name FROM kunden k
 WHERE EXISTS (SELECT 1 FROM bestellungen b WHERE b.kunde_id = k.id);
 \`\`\`
+
+---
 
 **Wann EXISTS besser ist:**
 1. **Große Unterabfragen:** EXISTS bricht nach dem ersten Match ab
@@ -5643,6 +6127,8 @@ SELECT k.name FROM kunden k
 WHERE NOT EXISTS (SELECT 1 FROM bestellungen b WHERE b.kunde_id = k.id);
 -- Funktioniert korrekt, auch mit NULL-Werten
 \`\`\`
+
+---
 
 **Performance-Regel:**
 - Kleine äußere Tabelle, große innere Tabelle → EXISTS
@@ -5684,6 +6170,8 @@ WHERE preis > (
 );
 \`\`\`
 
+---
+
 **Beispiel: Kunden mit überdurchschnittlichen Bestellungen**
 \`\`\`sql
 SELECT k.name FROM kunden k
@@ -5696,6 +6184,8 @@ WHERE k.id IN (
   )
 );
 \`\`\`
+
+---
 
 **Wann verschachtelte Subqueries sinnvoll sind:**
 - Wenn die Logik von innen nach außen natürlich ist
@@ -5764,6 +6254,8 @@ WHERE preis > (SELECT AVG(preis) FROM produkte WHERE kategorie = (SELECT kategor
 
 **Beispiel — Dasselbe mit Subquery und JOIN:**
 
+
+
 \`\`\`sql
 -- Mit Subquery: Kunden mit Bestellungen
 SELECT name FROM kunden
@@ -5773,6 +6265,8 @@ WHERE id IN (SELECT kunde_id FROM bestellungen);
 SELECT DISTINCT k.name FROM kunden k
 JOIN bestellungen b ON k.id = b.kunde_id;
 \`\`\`
+
+---
 
 **Performance-Tipp:** Der Query-Optimizer kann oft Subqueries in JOINs umschreiben. Bei großen Tabellen sollte man beide Varianten mit EXPLAIN vergleichen.`,
             keyTakeaways: [
@@ -5809,6 +6303,8 @@ SELECT name FROM produkte
 WHERE preis > ALL (SELECT preis FROM produkte WHERE kategorie = 'Elektronik');
 \`\`\`
 
+---
+
 **Fehler 2: NOT IN mit NULL**
 \`\`\`sql
 -- FALSCH: Liefert KEINE Ergebnisse wenn kunde_id NULL enthält
@@ -5820,6 +6316,8 @@ SELECT k.name FROM kunden k
 WHERE NOT EXISTS (SELECT 1 FROM bestellungen b WHERE b.kunde_id = k.id);
 \`\`\`
 
+---
+
 **Fehler 3: Fehlender Alias bei abgeleiteter Tabelle**
 \`\`\`sql
 -- FALSCH: Ohne Alias
@@ -5828,6 +6326,8 @@ SELECT * FROM (SELECT kategorie, AVG(preis) FROM produkte GROUP BY kategorie);
 -- RICHTIG: Mit Alias
 SELECT * FROM (SELECT kategorie, AVG(preis) FROM produkte GROUP BY kategorie) AS stats;
 \`\`\`
+
+---
 
 **Fehler 4: Korrelierte Subquery in WHERE statt JOIN**
 \`\`\`sql
@@ -5840,6 +6340,8 @@ SELECT p.name FROM produkte p
 JOIN kategorien k ON p.kategorie_id = k.id
 WHERE k.name = 'Elektronik';
 \`\`\`
+
+---
 
 **Fehler 5: Subquery in GROUP BY**
 Nach GROUP BY dürfen nur GROUP BY-Spalten und Aggregatfunktionen im SELECT stehen. Subqueries im SELECT, die nicht aggregiert sind, verursachen Fehler.`,
@@ -5883,10 +6385,14 @@ INSERT INTO tabelle (spalte1, spalte2)
 VALUES (wert1, wert2);
 \`\`\`
 
+---
+
 **Variante 2: Alle Spalten (Reihenfolge muss stimmen)**
 \`\`\`sql
 INSERT INTO tabelle VALUES (wert1, wert2, wert3);
 \`\`\`
+
+---
 
 **Variante 3: Mehrere Zeilen gleichzeitig**
 \`\`\`sql
@@ -5897,11 +6403,15 @@ VALUES
   (wert1c, wert2c);
 \`\`\`
 
+---
+
 **Variante 4: Aus einer Abfrage**
 \`\`\`sql
 INSERT INTO tabelle (spalte1, spalte2)
 SELECT spalte1, spalte2 FROM andere_tabelle;
 \`\`\`
+
+---
 
 **Wichtig:** Spalten mit DEFAULT-Werten oder NULL können weggelassen werden.`,
             keyTakeaways: [
@@ -5919,6 +6429,8 @@ SELECT spalte1, spalte2 FROM andere_tabelle;
 
 **1. Einzelne Zeile einfügen:**
 
+---
+
 \`\`\`sql
 -- Mit Spaltennamen (Best Practice)
 INSERT INTO kunden (vorname, nachname, email)
@@ -5928,7 +6440,11 @@ VALUES ('Anna', 'Müller', 'anna@beispiel.de');
 INSERT INTO kunden VALUES (1, 'Anna', 'Müller', 'anna@beispiel.de', NULL);
 \`\`\`
 
+---
+
 **2. Mehrere Zeilen gleichzeitig:**
+
+---
 
 \`\`\`sql
 INSERT INTO kunden (vorname, nachname, email)
@@ -5938,7 +6454,11 @@ VALUES
   ('David', 'Klein', 'david@beispiel.de');
 \`\`\`
 
+---
+
 **3. Daten aus einer anderen Tabelle kopieren:**
+
+---
 
 \`\`\`sql
 -- Alle Kunden aus bestellungen übernehmen, die noch nicht in kunden stehen
@@ -5948,7 +6468,11 @@ FROM bestellungen_Import
 WHERE email NOT IN (SELECT email FROM kunden);
 \`\`\`
 
+---
+
 **4. DEFAULT-Werte und NULL:**
+
+---
 
 \`\`\`sql
 -- Spalten mit DEFAULT können weggelassen werden
@@ -5960,6 +6484,8 @@ VALUES ('Neues Produkt', 29.99);
 INSERT INTO kunden (vorname, nachname, email, telefon)
 VALUES ('Eva', 'Braun', 'eva@beispiel.de', NULL);
 \`\`\`
+
+---
 
 **Häufige Fehler:**
 - Spaltenreihenfolge stimmt nicht mit VALUES überein
@@ -5986,11 +6512,15 @@ VALUES ('Eva', 'Braun', 'eva@beispiel.de', NULL);
             sectionType: "theory",
             content: `**UPDATE** ändert bestehende Zeilen in einer Tabelle. Es ist eines der wichtigsten DML-Statements und gleichzeitig eines der gefährlichsten: Ein UPDATE ohne WHERE-Klausel ändert **alle** Zeilen der Tabelle — ein Fehler, der sich nicht ohne Backup rückgängig machen lässt.
 
+---
+
 \`\`\`sql
 UPDATE tabelle
 SET spalte1 = wert1, spalte2 = wert2
 WHERE bedingung;
 \`\`\`
+
+---
 
 **WICHTIG:** Ohne WHERE-Klausel werden **ALLE** Zeilen aktualisiert! Mache immer zuerst ein SELECT mit derselben WHERE-Klausel, um zu prüfen, welche Zeilen betroffen sind, bevor du das UPDATE ausführst.
 
@@ -6003,8 +6533,12 @@ UPDATE kunden SET email = 'neu@mail.de' WHERE id = 1;
 UPDATE produkte SET preis = preis * 1.10;
 \`\`\`
 
+---
+
 **UPDATE mit Unterabfrage:**
 Du kannst UPDATE auch mit einer Unterabfrage kombinieren, um Werte aus einer anderen Tabelle zu übernehmen:
+
+---
 
 \`\`\`sql
 -- Preis aktualisieren basierend auf dem Durchschnitt der Kategorie
@@ -6012,6 +6546,8 @@ UPDATE produkte
 SET preis = (SELECT AVG(preis) FROM produkte p2 WHERE p2.kategorie = produkte.kategorie)
 WHERE preis IS NULL;
 \`\`\`
+
+---
 
 **Best Practices für UPDATE:**
 1. Immer WHERE-Klausel verwenden — sonst werden alle Zeilen geändert
@@ -6031,6 +6567,8 @@ WHERE preis IS NULL;
             sectionType: "example",
             content: `**DELETE** löscht Zeilen aus einer Tabelle. Wie bei UPDATE ist die WHERE-Klausel entscheidend: Ohne sie werden **alle** Zeilen gelöscht — die Tabelle bleibt bestehen, aber sie ist leer. Das ist ein häufiger Fehler, der sich nur mit einem Backup rückgängig machen lässt.
 
+---
+
 \`\`\`sql
 -- Bestimmte Zeilen löschen
 DELETE FROM bestellungen WHERE status = 'storniert';
@@ -6038,6 +6576,8 @@ DELETE FROM bestellungen WHERE status = 'storniert';
 -- Alle Zeilen einer Tabelle löschen (Tabelle bleibt bestehen!)
 DELETE FROM bestellungen;
 \`\`\`
+
+---
 
 **WICHTIG:** Ohne WHERE-Klausel werden **ALLE** Zeilen gelöscht! Führe immer zuerst ein SELECT mit derselben WHERE-Klausel aus, um zu prüfen, welche Zeilen gelöscht werden.
 
@@ -6056,6 +6596,8 @@ DELETE FROM bestellungen;
 
 **Sicheres Löschen mit Unterabfrage:**
 
+---
+
 \`\`\`sql
 -- Alle Bestellungen von Kunden, die seit über 2 Jahren inaktiv sind
 DELETE FROM bestellungen
@@ -6065,7 +6607,11 @@ WHERE kunde_id IN (
 );
 \`\`\`
 
+---
+
 **Tipp:** Vor dem Löschen immer zuerst ein SELECT mit derselben WHERE-Klausel ausführen, um zu prüfen, welche Zeilen betroffen sind:
+
+---
 
 \`\`\`sql
 -- Erst prüfen:
@@ -6100,6 +6646,8 @@ INSERT INTO kunden (name, email) VALUES
   ('Clara', 'clara@beispiel.de');
 \`\`\`
 
+---
+
 **INSERT ... SELECT — Daten aus einer anderen Tabelle kopieren:**
 \`\`\`sql
 -- Alle Kunden aus der Import-Tabelle übernehmen
@@ -6113,6 +6661,8 @@ SELECT * FROM bestellungen
 WHERE datum < DATE('now', '-1 year');
 \`\`\`
 
+---
+
 **INSERT ... SELECT mit Aggregation:**
 \`\`\`sql
 -- Zusammenfassungstabelle befüllen
@@ -6121,6 +6671,8 @@ SELECT kunde_id, SUM(betrag), COUNT(*)
 FROM bestellungen
 GROUP BY kunde_id;
 \`\`\`
+
+---
 
 **Performance-Tipps:**
 - Batch-Inserts sind deutlich schneller als einzelne INSERTs
@@ -6153,6 +6705,8 @@ SET preis = preis * 1.10
 WHERE kategorie_id = (SELECT id FROM kategorien WHERE name = 'Elektronik');
 \`\`\`
 
+---
+
 **UPDATE mit korrelierter Subquery:**
 \`\`\`sql
 -- Rabatt auf 0 setzen für Kunden ohne Bestellungen
@@ -6162,6 +6716,8 @@ WHERE NOT EXISTS (
   SELECT 1 FROM bestellungen WHERE kunde_id = kunden.id
 );
 \`\`\`
+
+---
 
 **UPDATE mit berechnetem Wert:**
 \`\`\`sql
@@ -6174,6 +6730,8 @@ SET gesamtbetrag = (
 );
 \`\`\`
 
+---
+
 **UPDATE mit CASE:**
 \`\`\`sql
 -- Rabatt basierend auf Kundentyp aktualisieren
@@ -6184,6 +6742,8 @@ SET rabatt = CASE
   ELSE 0
 END;
 \`\`\`
+
+---
 
 **SQLite-Besonderheit:** SQLite unterstützt kein \`UPDATE ... JOIN\`. Stattdessen muss man korrelierte Subqueries verwenden.
 
@@ -6215,6 +6775,8 @@ WHERE kunde_id IN (
 );
 \`\`\`
 
+---
+
 **DELETE mit NOT EXISTS:**
 \`\`\`sql
 -- Produkte löschen, die nie bestellt wurden
@@ -6225,12 +6787,16 @@ WHERE NOT EXISTS (
 );
 \`\`\`
 
+---
+
 **DELETE mit korrelierter Subquery:**
 \`\`\`sql
 -- Alle Bestellungen löschen, deren Betrag unter dem Durchschnitt liegt
 DELETE FROM bestellungen
 WHERE betrag < (SELECT AVG(betrag) FROM bestellungen);
 \`\`\`
+
+---
 
 **Sicheres Löschen in 3 Schritten:**
 \`\`\`sql
@@ -6243,6 +6809,8 @@ DELETE FROM bestellungen WHERE status = 'storniert';
 -- 3. Bei Fehler: ROLLBACK; Bei Erfolg: COMMIT;
 COMMIT;
 \`\`\`
+
+---
 
 **Wichtig:** DELETE mit Subquery kann langsam sein, wenn die Unterabfrage viele Zeilen zurückgibt. Bei großen Datenmengen kann es effizienter sein, die zu behaltenden Zeilen in eine neue Tabelle zu kopieren und die alte zu löschen.`,
             keyTakeaways: [
@@ -6265,6 +6833,8 @@ COMMIT;
             sectionType: "theory",
             content: `**UPSERT** (UPDATE or INSERT) fügt eine Zeile ein oder aktualisiert sie, wenn sie bereits existiert.
 
+---
+
 \`\`\`sql
 -- SQLite UPSERT (ab 3.24.0)
 INSERT INTO kunden (id, name, email)
@@ -6273,6 +6843,8 @@ ON CONFLICT(id) DO UPDATE SET
   name = excluded.name,
   email = excluded.email;
 \`\`\`
+
+---
 
 **Wie es funktioniert:**
 1. Versuche INSERT
@@ -6287,6 +6859,8 @@ ON CONFLICT(id) DO UPDATE SET
   preis = excluded.preis;
 \`\`\`
 
+---
+
 **Beispiel — Nur bestimmte Spalten aktualisieren:**
 \`\`\`sql
 -- Nur den Preis aktualisieren, Name bleibt unverändert
@@ -6297,6 +6871,8 @@ ON CONFLICT(id) DO UPDATE SET
 -- name wird NICHT aktualisiert!
 \`\`\`
 
+---
+
 **ON CONFLICT DO NOTHING — Einfügen oder ignorieren:**
 \`\`\`sql
 -- Einfügen, aber bei Konflikt einfach ignorieren (kein Fehler, kein Update)
@@ -6304,6 +6880,8 @@ INSERT INTO kunden (id, name, email)
 VALUES (1, 'Anna', 'anna@beispiel.de')
 ON CONFLICT(id) DO NOTHING;
 \`\`\`
+
+---
 
 **Alternative (älteres SQLite): INSERT OR REPLACE:**
 \`\`\`sql
@@ -6313,6 +6891,8 @@ INSERT OR REPLACE INTO kunden (id, name)
 VALUES (1, 'Anna Updated');
 -- email wird NULL! Vorherige Werte gehen verloren!
 \`\`\`
+
+---
 
 **Empfehlung:** \`ON CONFLICT DO UPDATE\` statt \`INSERT OR REPLACE\` verwenden, da letzteres die gesamte Zeile ersetzt.`,
             keyTakeaways: [
@@ -6336,6 +6916,8 @@ VALUES (1, 'Anna Updated');
             sectionType: "theory",
             content: `Eine **Transaktion** ist eine Folge von SQL-Operationen, die als eine atomare Einheit ausgeführt werden — entweder alle oder keine.
 
+---
+
 \`\`\`sql
 -- Transaktion starten
 BEGIN;
@@ -6352,6 +6934,8 @@ COMMIT;
 -- Fehler aufgetreten? → Änderungen rückgängig machen
 -- ROLLBACK;
 \`\`\`
+
+---
 
 **ACID-Prinzipien:**
 
@@ -6443,6 +7027,8 @@ UPDATE produkte SET preis = 0 WHERE id = 1;
 DELETE FROM bestellungen WHERE status = 'storniert';
 \`\`\`
 
+---
+
 **Fehler 2: Constraint-Verletzung beim INSERT**
 \`\`\`sql
 -- NOT NULL verletzt
@@ -6455,6 +7041,8 @@ INSERT INTO kunden (name, email) VALUES ('Anna', 'anna@beispiel.de');  -- email 
 INSERT INTO bestellungen (kunde_id, datum) VALUES (999, '2024-01-15');  -- kunde_id 999 existiert nicht!
 \`\`\`
 
+---
+
 **Fehler 3: Falsche Spaltenreihenfolge**
 \`\`\`sql
 -- FALSCH: Reihenfolge stimmt nicht mit VALUES überein
@@ -6464,6 +7052,8 @@ INSERT INTO kunden (name, email) VALUES ('anna@beispiel.de', 'Anna');
 INSERT INTO kunden (name, email) VALUES ('Anna', 'anna@beispiel.de');
 \`\`\`
 
+---
+
 **Fehler 4: UPDATE ändert den Primärschlüssel**
 \`\`\`sql
 -- FALSCH: Primärschlüssel ändern kann Fremdschlüssel-Beziehungen zerstören
@@ -6471,6 +7061,8 @@ UPDATE kunden SET id = 999 WHERE id = 1;
 
 -- RICHTIG: Primärschlüssel nie ändern (oder ON UPDATE CASCADE verwenden)
 \`\`\`
+
+---
 
 **Fehler 5: DELETE ohne Transaktion**
 \`\`\`sql
@@ -6482,6 +7074,8 @@ BEGIN;
 DELETE FROM bestellungen WHERE status = 'storniert';
 -- Prüfen, dann COMMIT oder ROLLBACK
 \`\`\`
+
+---
 
 **Fehler 6: INSERT mit falschen Datentypen**
 \`\`\`sql
@@ -6519,6 +7113,8 @@ INSERT INTO kunden VALUES (1, 'Anna', 'anna@beispiel.de');
 INSERT INTO kunden (name, email) VALUES ('Anna', 'anna@beispiel.de');
 \`\`\`
 
+---
+
 **2. Vor UPDATE/DELETE immer SELECT ausführen**
 \`\`\`sql
 -- Erst prüfen
@@ -6526,6 +7122,8 @@ SELECT * FROM bestellungen WHERE status = 'storniert';
 -- Dann ändern
 DELETE FROM bestellungen WHERE status = 'storniert';
 \`\`\`
+
+---
 
 **3. Transaktionen für zusammenhängende Operationen**
 \`\`\`sql
@@ -6535,6 +7133,8 @@ INSERT INTO bestellpositionen (bestellung_id, produkt_id, menge)
   VALUES (last_insert_rowid(), 5, 2);
 COMMIT;
 \`\`\`
+
+---
 
 **4. Batch-Inserts für Performance**
 \`\`\`sql
@@ -6547,6 +7147,8 @@ INSERT INTO kunden (name) VALUES ('Clara');
 INSERT INTO kunden (name) VALUES ('Anna'), ('Ben'), ('Clara');
 \`\`\`
 
+---
+
 **5. UPSERT statt INSERT + UPDATE prüfen**
 \`\`\`sql
 -- Statt: Erst prüfen, dann INSERT oder UPDATE
@@ -6556,12 +7158,16 @@ VALUES (1, 'Anna', 'anna@neu.de')
 ON CONFLICT(id) DO UPDATE SET email = excluded.email;
 \`\`\`
 
+---
+
 **6. LIMIT bei UPDATE/DELETE (Vorsicht!)**
 \`\`\`sql
 -- Nur die ersten 100 Zeilen aktualisieren
 UPDATE produkte SET preis = preis * 1.10
 WHERE preis < 10 LIMIT 100;
 \`\`\`
+
+---
 
 **7. Soft Delete statt Hard Delete**
 \`\`\`sql
@@ -6614,6 +7220,8 @@ WITH cte_name AS (
 SELECT ... FROM cte_name;
 \`\`\`
 
+---
+
 **Vorteile von CTEs gegenüber Subqueries:**
 1. **Lesbarkeit**: Komplexe Abfragen werden in benannte Blöcke aufgeteilt — statt verschachtelter Unterabfragen liest man die Abfrage von oben nach unten
 2. **Wiederverwendbarkeit**: Eine CTE kann mehrfach in derselben Abfrage referenziert werden — keine Duplikation von Code
@@ -6638,6 +7246,8 @@ SELECT ... FROM cte_name;
 
 **1. Einfache CTE — Durchschnittspreis pro Kategorie:**
 
+---
+
 \`\`\`sql
 WITH kategorie_preis AS (
   SELECT kategorie, AVG(preis) AS durchschnitt
@@ -6650,9 +7260,13 @@ JOIN kategorie_preis kp ON p.kategorie = kp.kategorie
 WHERE p.preis > kp.durchschnitt;
 \`\`\`
 
+---
+
 Ohne CTE müsste die Unterabfrage zweimal geschrieben werden — einmal im JOIN und einmal im WHERE.
 
 **2. Mehrere CTEs in einer Abfrage:**
+
+---
 
 \`\`\`sql
 WITH
@@ -6670,6 +7284,8 @@ JOIN kunden_umsatz ku ON k.id = ku.kunde_id
 WHERE k.id IN (SELECT kunde_id FROM top_kunden);
 \`\`\`
 
+---
+
 **3. CTE statt verschachtelter Subqueries:**
 
 Ohne CTE (schwer lesbar):
@@ -6683,6 +7299,8 @@ WHERE kategorie IN (
 );
 \`\`\`
 
+---
+
 Mit CTE (klar strukturiert):
 \`\`\`sql
 WITH grosse_kategorien AS (
@@ -6694,6 +7312,8 @@ WITH grosse_kategorien AS (
 SELECT name FROM produkte
 WHERE kategorie IN (SELECT kategorie FROM grosse_kategorien);
 \`\`\`
+
+---
 
 **Vorteile von CTEs:**
 - Die Abfrage ist von oben nach unten lesbar
@@ -6734,6 +7354,8 @@ WITH RECURSIVE cte_name AS (
 SELECT * FROM cte_name;
 \`\`\`
 
+---
+
 **Bestandteile:**
 1. **Anker-Query**: Der Startpunkt (z.B. der CEO in einem Organigramm)
 2. **UNION ALL**: Verbindet Anker mit rekursivem Teil
@@ -6755,6 +7377,8 @@ SELECT * FROM cte_name;
 
 **Szenario:** Wir haben eine Mitarbeitertabelle mit einem Selbstverweis auf den Vorgesetzten:
 
+---
+
 \`\`\`sql
 CREATE TABLE mitarbeiter (
   id INTEGER PRIMARY KEY,
@@ -6772,7 +7396,11 @@ INSERT INTO mitarbeiter VALUES
   (6, 'Fischer', 3, 'Vertrieb');
 \`\`\`
 
+---
+
 **Rekursive CTE — Alle Untergebenen des CEOs:**
+
+---
 
 \`\`\`sql
 WITH RECURSIVE hierarchie AS (
@@ -6790,6 +7418,8 @@ WITH RECURSIVE hierarchie AS (
 )
 SELECT * FROM hierarchie ORDER BY ebene;
 \`\`\`
+
+---
 
 **Ergebnis:**
 
@@ -6843,6 +7473,8 @@ SELECT * FROM hierarchie ORDER BY ebene;
 
 **Beispiel — Dasselbe mit CTE und Subquery:**
 
+---
+
 \`\`\`sql
 -- Mit Subquery (schwer lesbar)
 SELECT name, preis, kategorie, avg_preis
@@ -6864,6 +7496,8 @@ FROM produkte p
 JOIN kategorie_avg ka ON p.kategorie = ka.kategorie
 WHERE p.preis > ka.avg_preis;
 \`\`\`
+
+---
 
 **Wann CTE verwenden:**
 - Komplexe Abfragen mit mehreren Schritten
@@ -6895,6 +7529,8 @@ WHERE p.preis > ka.avg_preis;
             sectionType: "example",
             content: `Mehrere CTEs werden mit Komma getrennt. Jede CTE kann auf vorherige CTEs zugreifen.
 
+---
+
 \`\`\`sql
 WITH
   -- CTE 1: Umsatz pro Kunde
@@ -6920,6 +7556,8 @@ FROM kunden k
 JOIN top_kunden tk ON k.id = tk.kunde_id
 ORDER BY tk.gesamtumsatz DESC;
 \`\`\`
+
+---
 
 **Reihenfolge ist wichtig:**
 - CTEs werden von oben nach unten definiert
@@ -6987,6 +7625,8 @@ WHERE gesamtumsatz > 500
 ORDER BY gesamtumsatz DESC;
 \`\`\`
 
+---
+
 **Beispiel 2: Kategorien mit Durchschnittspreis und Anzahl**
 \`\`\`sql
 WITH kategorie_stats AS (
@@ -7004,6 +7644,8 @@ FROM kategorie_stats
 WHERE anzahl > 3
 ORDER BY durchschnittspreis DESC;
 \`\`\`
+
+---
 
 **Beispiel 3: Bestellungen pro Monat mit Trend**
 \`\`\`sql
@@ -7023,6 +7665,8 @@ SELECT
 FROM monatlich
 ORDER BY monat;
 \`\`\`
+
+---
 
 **Warum CTE statt direkter Abfrage?**
 - Die Aggregation wird in der CTE berechnet
@@ -7061,6 +7705,8 @@ LEFT JOIN kunden_umsatz ku ON k.id = ku.kunde_id
 ORDER BY ku.gesamtumsatz DESC NULLS LAST;
 \`\`\`
 
+---
+
 **Beispiel: Produkte mit Kategorie-Statistiken**
 \`\`\`sql
 WITH kategorie_stats AS (
@@ -7073,6 +7719,8 @@ FROM produkte p
 JOIN kategorie_stats ks ON p.kategorie = ks.kategorie
 WHERE p.preis > ks.avg_preis;
 \`\`\`
+
+---
 
 **Beispiel: Mehrstufige Analyse**
 \`\`\`sql
@@ -7145,6 +7793,8 @@ WITH RECURSIVE baum AS (
 SELECT * FROM baum ORDER BY pfad;
 \`\`\`
 
+---
+
 **Ergebnis:**
 
 | id | name | ebene | pfad |
@@ -7193,6 +7843,8 @@ INSERT INTO flugrouten VALUES
   ('München', 'Köln', 500);
 \`\`\`
 
+---
+
 **Alle Routen von Berlin:**
 \`\`\`sql
 WITH RECURSIVE routen AS (
@@ -7212,6 +7864,8 @@ WITH RECURSIVE routen AS (
 )
 SELECT * FROM routen ORDER BY distanz;
 \`\`\`
+
+---
 
 **Beispiel: Freundesnetzwerk (Freunde von Freunden)**
 \`\`\`sql
@@ -7234,6 +7888,8 @@ FROM freundeskreis
 GROUP BY freund
 ORDER BY entfernung;
 \`\`\`
+
+---
 
 **Wichtig:** Bei Graphen muss man Zyklen vermeiden! Die \`NOT LIKE\`-Bedingung oder eine Tiefenbegrenzung (\`entfernung < 3\`) verhindert Endlosschleifen.`,
             keyTakeaways: [
@@ -7273,6 +7929,8 @@ SELECT * FROM kunden_umsatz WHERE summe <= 100;
 -- Besser: Temporäre Tabelle oder Window Function
 \`\`\`
 
+---
+
 **2. Einfache Filterungen brauchen keine CTE**
 \`\`\`sql
 -- Überflüssige CTE
@@ -7285,6 +7943,8 @@ SELECT * FROM teure_produkte WHERE kategorie = 'Elektronik';
 SELECT * FROM produkte WHERE preis > 100 AND kategorie = 'Elektronik';
 \`\`\`
 
+---
+
 **3. CTEs für mehrstufige Aggregationen**
 \`\`\`sql
 -- CTE ist hier sinnvoll: Aggregation + Filter auf Aggregation
@@ -7296,12 +7956,16 @@ WITH kategorie_stats AS (
 SELECT * FROM kategorie_stats WHERE anzahl > 5;
 \`\`\`
 
+---
+
 **4. EXPLAIN QUERY PLAN nutzen**
 \`\`\`sql
 EXPLAIN QUERY PLAN
 WITH kunden_umsatz AS (...)
 SELECT * FROM kunden_umsatz;
 \`\`\`
+
+---
 
 **Faustregel:** CTEs verwenden, wenn sie die Lesbarkeit verbessern. Bei Performance-Problemen mit mehrfach referenzierten CTEs in SQLite: Temporäre Tabelle oder Window Function in Betracht ziehen.`,
             keyTakeaways: [
@@ -7335,6 +7999,8 @@ WITH
 SELECT ...
 \`\`\`
 
+---
+
 **Fehler 2: CTE nach der Hauptabfrage**
 \`\`\`sql
 -- FALSCH: CTE nach SELECT
@@ -7345,6 +8011,8 @@ WITH kunden_umsatz AS (...);  -- Syntaxfehler!
 WITH kunden_umsatz AS (...)
 SELECT * FROM kunden_umsatz;
 \`\`\`
+
+---
 
 **Fehler 3: Vorwärtsreferenz auf CTE**
 \`\`\`sql
@@ -7363,6 +8031,8 @@ WITH
 SELECT ...;
 \`\`\`
 
+---
+
 **Fehler 4: Fehlendes UNION ALL bei rekursiver CTE**
 \`\`\`sql
 -- FALSCH: UNION statt UNION ALL
@@ -7379,6 +8049,8 @@ WITH RECURSIVE baum AS (
   SELECT ... FROM kategorien JOIN baum ...
 )
 \`\`\`
+
+---
 
 **Fehler 5: Endlosschleife bei rekursiver CTE**
 Ohne Zyklus-Erkennung oder Tiefenbegrenzung kann eine rekursive CTE endlos laufen. Immer eine Abbruchbedingung einbauen!`,
@@ -7418,11 +8090,15 @@ Ohne Zyklus-Erkennung oder Tiefenbegrenzung kann eine rekursive CTE endlos laufe
 
 Stell dir vor, du willst für jeden Kunden den Umsatz und gleichzeitig den Durchschnittsumsatz aller Kunden anzeigen. Ohne Window Functions müsstest du eine Unterabfrage oder einen JOIN schreiben. Mit Window Functions geht das in einer einzigen Abfrage:
 
+---
+
 \`\`\`sql
 SELECT name, umsatz,
   AVG(umsatz) OVER () AS durchschnitt
 FROM kunden;
 \`\`\`
+
+---
 
 **Der entscheidende Unterschied zu GROUP BY:** GROUP BY verdichtet die Zeilen — du bekommst eine Zeile pro Gruppe. Window Functions berechnen Werte über Gruppen, aber jede Zeile bleibt erhalten. Das ist wie ein Fenster, durch das du die umliegenden Zeilen siehst, ohne sie zu verschmelzen.
 
@@ -7434,6 +8110,8 @@ funktion() OVER (
   ROWS BETWEEN ... AND ...
 )
 \`\`\`
+
+---
 
 - **PARTITION BY**: Teilt die Zeilen in Gruppen (wie GROUP BY, aber ohne Verdichtung)
 - **ORDER BY**: Bestimmt die Reihenfolge innerhalb der Partition
@@ -7461,9 +8139,13 @@ funktion() OVER (
             id: "row-number-rank",
             title: "ROW_NUMBER, RANK und DENSE_RANK",
             sectionType: "example",
-            content: `Die drei Ranking-Funktionen im Vergleich:
+            content: `Die drei Ranking-Funktionen nummerieren Zeilen, aber sie unterscheiden sich im Umgang mit Gleichständen. ROW_NUMBER vergibt immer eine eindeutige Nummer, RANK lässt Lücken bei Gleichstand, und DENSE_RANK nummeriert lückenlos durch.
 
-**ROW_NUMBER()** — Fortlaufende Nummer ohne Ausnahme:
+---
+
+**ROW_NUMBER()** vergibt eine fortlaufende, eindeutige Nummer an jede Zeile — auch bei gleichem Preis bekommt jede Zeile eine andere Nummer:
+
+---
 
 \`\`\`sql
 SELECT name, kategorie, preis,
@@ -7471,9 +8153,11 @@ SELECT name, kategorie, preis,
 FROM produkte;
 \`\`\`
 
-Jede Zeile bekommt eine eindeutige Nummer, auch bei gleichem Preis.
+---
 
-**RANK()** — Rang mit Lücken bei Gleichstand:
+**RANK()** vergibt denselben Rang bei Gleichstand, überspringt aber die folgende Nummer. Das ist wie bei der Olympiade: Zwei Goldmedaillen, dann kommt Bronze:
+
+---
 
 \`\`\`sql
 SELECT name, preis,
@@ -7481,7 +8165,9 @@ SELECT name, preis,
 FROM produkte;
 \`\`\`
 
-Bei gleichem Preis bekommen beide denselben Rang, aber der nächste Rang wird übersprungen.
+---
+
+**DENSE_RANK()** vergibt denselben Rang bei Gleichstand, überspringt aber keine Nummern. Die Platzierung ist immer lückenlos:
 
 | name | preis | rang |
 |------|-------|------|
@@ -7492,11 +8178,15 @@ Bei gleichem Preis bekommen beide denselben Rang, aber der nächste Rang wird ü
 
 **DENSE_RANK()** — Rang ohne Lücken:
 
+---
+
 \`\`\`sql
 SELECT name, preis,
   DENSE_RANK() OVER (ORDER BY preis DESC) AS dichter_rang
 FROM produkte;
 \`\`\`
+
+---
 
 | name | preis | dichter_rang |
 |------|-------|-------------|
@@ -7506,6 +8196,8 @@ FROM produkte;
 | Produkt D | 50 | 3 | ← Kein Sprung!
 
 **Praktische Anwendung: Top-N pro Kategorie**
+
+---
 
 \`\`\`sql
 -- Die 3 teuersten Produkte pro Kategorie
@@ -7517,6 +8209,8 @@ FROM (
 ) ranked
 WHERE rn <= 3;
 \`\`\`
+
+---
 
 **Wann welche Funktion?**
 - **ROW_NUMBER**: Eindeutige Nummerierung, keine Gleichstände möglich
@@ -7544,10 +8238,14 @@ WHERE rn <= 3;
 
 Stell dir vor, du hast eine Tabelle mit monatlichen Umsätzen und willst für jeden Monat den Umsatz des Vormonats anzeigen. Ohne LAG müsstest du die Tabelle mit sich selbst JOINen — eine komplexe und fehleranfällige Operation. Mit LAG geht es in einer einzigen Zeile.
 
+---
+
 \`\`\`sql
 LAG(spalte, offset, standardwert) OVER (ORDER BY ...)
 LEAD(spalte, offset, standardwert) OVER (ORDER BY ...)
 \`\`\`
+
+---
 
 - **offset**: Wie viele Zeilen zurück/vor (Standard: 1)
 - **standardwert**: Wert, wenn keine Zeile existiert (Standard: NULL)
@@ -7560,12 +8258,16 @@ SELECT monat, umsatz,
 FROM monatlicher_umsatz;
 \`\`\`
 
+---
+
 **LEAD — Blick in die Zukunft:**
 \`\`\`sql
 SELECT monat, umsatz,
   LEAD(umsatz, 1) OVER (ORDER BY monat) AS naechster_monat
 FROM monatlicher_umsatz;
 \`\`\`
+
+---
 
 **Wichtige Hinweise:**
 - LAG und LEAD benötigen immer ein ORDER BY im OVER() — sonst ist die Reihenfolge undefiniert
@@ -7577,6 +8279,8 @@ FROM monatlicher_umsatz;
             title: "Laufende Summen und Window Frames",
             sectionType: "practice",
             content: `**Laufende Summen (Running Totals)** berechnen eine kumulative Summe bis zur aktuellen Zeile:
+
+---
 
 \`\`\`sql
 -- Laufende Summe der Bestellbeträge
@@ -7591,6 +8295,8 @@ SELECT
 FROM bestellungen;
 \`\`\`
 
+---
+
 **Ergebnis:**
 
 | bestelldatum | kunde_id | betrag | laufende_summe |
@@ -7602,9 +8308,13 @@ FROM bestellungen;
 
 **Window Frames — Das Fenster definieren:**
 
+---
+
 \`\`\`sql
 ROWS BETWEEN start AND ende
 \`\`\`
+
+---
 
 | Frame | Bedeutung |
 |-------|----------|
@@ -7615,6 +8325,8 @@ ROWS BETWEEN start AND ende
 | n FOLLOWING | n Zeilen nachher |
 
 **Praktische Beispiele:**
+
+---
 
 \`\`\`sql
 -- 3-Zeilen-Durchschnitt (aktuelle + 2 vorherige)
@@ -7637,6 +8349,8 @@ SELECT monat, umsatz,
   umsatz - LAG(umsatz, 1) OVER (ORDER BY monat) AS veraenderung
 FROM monatlicher_umsatz;
 \`\`\`
+
+---
 
 **Wichtig:** Wenn du \`ORDER BY\` ohne expliziten Frame verwendest, ist der Standard-Frame \`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\` — das ergibt eine laufende Summe. Ohne \`ORDER BY\` ist der Frame die gesamte Tabelle.`,
             keyTakeaways: [
@@ -7662,12 +8376,16 @@ FROM monatlicher_umsatz;
 
 Ohne PARTITION BY wird die Window Function über die gesamte Ergebnismenge berechnet. Mit PARTITION BY wird die Ergebnismenge in Gruppen geteilt, und die Berechnung startet für jede Gruppe von vorn. Das ist wie GROUP BY, aber ohne die Zeilen zu verdichten — jede Zeile bleibt erhalten und bekommt ihren gruppenbezogenen Wert.
 
+---
+
 \`\`\`sql
 -- Rang pro Kategorie
 SELECT name, kategorie, preis,
   RANK() OVER (PARTITION BY kategorie ORDER BY preis DESC) AS rang
 FROM produkte;
 \`\`\`
+
+---
 
 **Ergebnis:**
 
@@ -7701,6 +8419,8 @@ SELECT
 FROM produkte;
 \`\`\`
 
+---
+
 **Wichtig:** Jede Window Function hat ihr eigenes OVER() — verschiedene Partitionen und Sortierungen sind möglich!`,
             keyTakeaways: [
               "PARTITION BY teilt die Ergebnismenge in Gruppen",
@@ -7722,6 +8442,8 @@ FROM produkte;
             sectionType: "theory",
             content: `Ein **Window Frame** definiert, welche Zeilen für die Berechnung einer Window Function berücksichtigt werden. Ohne expliziten Frame verwendet SQL einen Standard-Frame, der je nach Funktion unterschiedlich ist. Wenn du die Berechnung genauer steuern willst — etwa eine gleitende Durchschnitt über die letzten 3 Zeilen oder eine laufende Summe — musst du den Frame explizit angeben.
 
+---
+
 \`\`\`sql
 FUNKTION() OVER (
   PARTITION BY spalte
@@ -7729,6 +8451,8 @@ FUNKTION() OVER (
   ROWS BETWEEN start AND ende
 )
 \`\`\`
+
+---
 
 **Frame-Spezifikationen — die wichtigsten Grenzen:**
 
@@ -7749,6 +8473,8 @@ FUNKTION() OVER (
 | GROUPS | Basiert auf Gruppen gleicher ORDER BY-Werte — zählt Gruppen statt Zeilen |
 
 **Praktische Beispiele:**
+
+---
 
 \`\`\`sql
 -- Laufende Summe (Standard bei ORDER BY)
@@ -7773,6 +8499,8 @@ SUM(betrag) OVER (
   ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 )
 \`\`\`
+
+---
 
 **Standard-Frame — was passiert, wenn du keinen Frame angibst:**
 - Mit \`ORDER BY\`: \`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\` — ergibt eine laufende Aggregation
@@ -7812,6 +8540,8 @@ SELECT bestelldatum, kunde_id, betrag,
 FROM bestellungen;
 \`\`\`
 
+---
+
 **AVG als Window Function — Gleitender Durchschnitt:**
 \`\`\`sql
 -- Gleitender 3-Zeilen-Durchschnitt
@@ -7820,6 +8550,8 @@ SELECT datum, umsatz,
     AS gleitender_durchschnitt
 FROM tagesumsatz;
 \`\`\`
+
+---
 
 **COUNT als Window Function — Zeilennummer und Anzahl:**
 \`\`\`sql
@@ -7830,6 +8562,8 @@ SELECT name, kategorie,
 FROM produkte;
 \`\`\`
 
+---
+
 **MIN und MAX als Window Function — Differenz zum Extremwert:**
 \`\`\`sql
 -- Differenz zum günstigsten/teuersten Produkt pro Kategorie
@@ -7838,6 +8572,8 @@ SELECT name, kategorie, preis,
   MAX(preis) OVER (PARTITION BY kategorie) - preis AS differenz_zum_max
 FROM produkte;
 \`\`\`
+
+---
 
 **Prozentualer Anteil:**
 \`\`\`sql
@@ -7874,6 +8610,8 @@ SELECT name, kategorie, preis,
 FROM produkte;
 \`\`\`
 
+---
+
 **LAST_VALUE — Letzter Wert im Frame:**
 \`\`\`sql
 -- ACHTUNG: LAST_VALUE braucht einen expliziten Frame!
@@ -7885,6 +8623,8 @@ SELECT name, kategorie, preis,
   ) AS guenstigster_preis
 FROM produkte;
 \`\`\`
+
+---
 
 **Warum braucht LAST_VALUE einen expliziten Frame?**
 Ohne expliziten Frame ist der Standard \`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\`. LAST_VALUE würde dann immer den aktuellen Wert zurückgeben, nicht den letzten der Partition.
@@ -7900,6 +8640,8 @@ SELECT name, kategorie, preis,
   ) AS zweit_teuerstes
 FROM produkte;
 \`\`\`
+
+---
 
 **Praktisches Beispiel — Erster und letzter Wert pro Kunde:**
 \`\`\`sql
@@ -7939,6 +8681,8 @@ SELECT name, preis,
 FROM produkte;
 \`\`\`
 
+---
+
 **Ergebnis:**
 
 | name | preis | quartil |
@@ -7958,6 +8702,8 @@ SELECT name, preis,
 FROM produkte;
 \`\`\`
 
+---
+
 PERCENT_RANK gibt Werte zwischen 0 und 1 zurück. Der erste Wert ist immer 0.
 
 **CUME_DIST — Kumulative Verteilung:**
@@ -7966,6 +8712,8 @@ SELECT name, preis,
   CUME_DIST() OVER (ORDER BY preis) AS kum_verteilung
 FROM produkte;
 \`\`\`
+
+---
 
 CUME_DIST gibt den Anteil der Zeilen zurück, die kleiner oder gleich der aktuellen Zeile sind.
 
@@ -8014,6 +8762,8 @@ FROM (
 WHERE rn <= 3;
 \`\`\`
 
+---
+
 **2. Running Total (Laufende Summe):**
 \`\`\`sql
 SELECT bestelldatum, betrag,
@@ -8021,6 +8771,8 @@ SELECT bestelldatum, betrag,
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS kumuliert
 FROM bestellungen;
 \`\`\`
+
+---
 
 **3. Gap Analysis (Lücken finden):**
 \`\`\`sql
@@ -8035,6 +8787,8 @@ FROM (
 );
 \`\`\`
 
+---
+
 **4. Jahr-über-Jahr-Vergleich:**
 \`\`\`sql
 SELECT jahr, umsatz,
@@ -8044,6 +8798,8 @@ SELECT jahr, umsatz,
     LAG(umsatz) OVER (ORDER BY jahr), 1) AS wachstum_prozent
 FROM jahresumsatz;
 \`\`\`
+
+---
 
 **5. Median berechnen:**
 \`\`\`sql
@@ -8057,6 +8813,8 @@ SELECT AVG(preis) AS median
 FROM ranked
 WHERE rn IN (total / 2, (total + 1) / 2);
 \`\`\`
+
+---
 
 **6. Deduplizierung (Duplikate entfernen):**
 \`\`\`sql
@@ -8101,6 +8859,8 @@ FROM produkte;
 CREATE INDEX idx_produkte_preis ON produkte(preis);
 \`\`\`
 
+---
+
 **2. PARTITION BY statt Unterabfragen**
 \`\`\`sql
 -- LANGSAM: Korrelierte Unterabfrage
@@ -8113,6 +8873,8 @@ SELECT name, preis,
   AVG(preis) OVER (PARTITION BY kategorie) AS avg_preis
 FROM produkte;
 \`\`\`
+
+---
 
 **3. Window Functions reduzieren**
 \`\`\`sql
@@ -8127,6 +8889,8 @@ FROM produkte;
 -- SCHNELLER: Gleiche Partitionen zusammenfassen
 -- (rn_kat und avg_kat haben dieselbe Partition)
 \`\`\`
+
+---
 
 **4. Filtern VOR der Window Function**
 \`\`\`sql
@@ -8145,6 +8909,8 @@ SELECT * FROM (
   WHERE preis > 0  -- Filter VOR der Window Function
 ) WHERE rn <= 3;
 \`\`\`
+
+---
 
 **5. EXPLAIN QUERY PLAN nutzen**
 \`\`\`sql
@@ -8187,6 +8953,8 @@ SELECT * FROM (
 WHERE rn <= 3;
 \`\`\`
 
+---
+
 **Fehler 2: LAST_VALUE ohne expliziten Frame**
 \`\`\`sql
 -- FALSCH: LAST_VALUE gibt den aktuellen Wert zurück
@@ -8203,6 +8971,8 @@ SELECT name, preis,
 FROM produkte;
 \`\`\`
 
+---
+
 **Fehler 3: RANK vs. ROW_NUMBER verwechseln**
 \`\`\`sql
 -- ROW_NUMBER: Jede Zeile bekommt eine eindeutige Nummer
@@ -8217,6 +8987,8 @@ SELECT * FROM (
 ) WHERE rn <= 3;
 \`\`\`
 
+---
+
 **Fehler 4: PARTITION BY vergessen**
 \`\`\`sql
 -- FALSCH: Rang über alle Produkte (nicht pro Kategorie)
@@ -8229,6 +9001,8 @@ SELECT name, kategorie, preis,
   ROW_NUMBER() OVER (PARTITION BY kategorie ORDER BY preis DESC) AS rang
 FROM produkte;
 \`\`\`
+
+---
 
 **Fehler 5: ORDER BY im OVER() vergessen**
 \`\`\`sql
