@@ -32,7 +32,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Produkte teurer als 50 Euro",
-    description: "Finde alle Produkte mit einem Preis groesser als 50.",
+    description: "Finde die Namen und Preise aller Produkte mit einem Preis groesser als 50.",
     difficulty: "beginner",
     category: "WHERE",
     datasetId: shopDataset.id,
@@ -77,7 +77,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Fitness-Nutzer ueber 80 kg",
-    description: "Zeige alle Nutzer aus dem Fitness-Datensatz, die mehr als 80 kg wiegen.",
+    description: "Zeige Name und Gewicht aller Nutzer, die mehr als 80 kg wiegen.",
     difficulty: "beginner",
     category: "WHERE",
     datasetId: fitnessDataset.id,
@@ -107,7 +107,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Mitarbeiter mit Gehalt ueber 50000",
-    description: "Zeige alle Mitarbeiter, die mehr als 50.000 Euro verdienen.",
+    description: "Zeige Name und Gehalt aller Mitarbeiter, die mehr als 50.000 Euro verdienen.",
     difficulty: "beginner",
     category: "WHERE",
     datasetId: hrDataset.id,
@@ -152,7 +152,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Kritische Tickets",
-    description: "Zeige alle Tickets mit der Prioritaet 'kritisch'.",
+    description: "Zeige Titel und Prioritaet aller Tickets mit der Prioritaet 'kritisch'.",
     difficulty: "beginner",
     category: "WHERE",
     datasetId: ticketsDataset.id,
@@ -212,7 +212,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Drama-Filme",
-    description: "Finde alle Filme des Genres 'Drama'.",
+    description: "Finde Titel und Jahr aller Filme des Genres 'Drama'.",
     difficulty: "beginner",
     category: "WHERE",
     datasetId: streamingDataset.id,
@@ -242,7 +242,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Produkte zwischen 20 und 100 Euro",
-    description: "Finde alle Produkte, deren Preis zwischen 20 und 100 (inklusiv) liegt.",
+    description: "Finde die Namen und Preise aller Produkte, deren Preis zwischen 20 und 100 (inklusiv) liegt.",
     difficulty: "junior",
     category: "WHERE",
     datasetId: shopDataset.id,
@@ -272,7 +272,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Produkte der Kategorien 1 oder 3",
-    description: "Zeige alle Produkte mit kategorie_id 1 oder 3 (Elektronik oder Kleidung).",
+    description: "Zeige Name und kategorie_id aller Produkte mit kategorie_id 1 oder 3 (Elektronik oder Kleidung).",
     difficulty: "junior",
     category: "WHERE",
     datasetId: shopDataset.id,
@@ -287,7 +287,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Kundenname beginnt mit M",
-    description: "Finde alle Kunden, deren Name mit 'M' beginnt.",
+    description: "Finde die Namen aller Kunden, deren Name mit 'M' beginnt.",
     difficulty: "junior",
     category: "WHERE",
     datasetId: shopDataset.id,
@@ -302,7 +302,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Email enthaelt beispiel.de",
-    description: "Finde alle Kunden, deren E-Mail-Adresse 'beispiel.de' enthaelt.",
+    description: "Finde Name und E-Mail-Adresse aller Kunden, deren E-Mail 'beispiel.de' enthaelt.",
     difficulty: "junior",
     category: "WHERE",
     datasetId: shopDataset.id,
@@ -347,7 +347,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Mitarbeiter ohne Manager",
-    description: "Finde alle Mitarbeiter, die keinen Manager haben (manager_id ist NULL).",
+    description: "Finde Name und Position aller Mitarbeiter, die keinen Manager haben (manager_id ist NULL).",
     difficulty: "junior",
     category: "WHERE",
     datasetId: hrDataset.id,
@@ -437,7 +437,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Filme nach 2010",
-    description: "Zeige alle Filme, die nach 2010 erschienen sind.",
+    description: "Zeige Titel und Jahr aller Filme, die nach 2010 erschienen sind.",
     difficulty: "beginner",
     category: "WHERE",
     datasetId: streamingDataset.id,
@@ -497,7 +497,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Produkte unter 30 Euro oder ueber 500 Euro",
-    description: "Finde alle Produkte, die entweder unter 30 Euro oder ueber 500 Euro kosten.",
+    description: "Finde Name und Preis aller Produkte, die entweder unter 30 Euro oder ueber 500 Euro kosten.",
     difficulty: "junior",
     category: "WHERE",
     datasetId: shopDataset.id,
@@ -512,7 +512,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Mitarbeiter der Abteilung 1 oder 2",
-    description: "Zeige alle Mitarbeiter, die in Abteilung 1 oder Abteilung 2 arbeiten.",
+    description: "Zeige Name und abteilung_id aller Mitarbeiter, die in Abteilung 1 oder 2 arbeiten.",
     difficulty: "junior",
     category: "WHERE",
     datasetId: hrDataset.id,
@@ -557,7 +557,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Filme zwischen 120 und 150 Minuten",
-    description: "Finde alle Filme, die zwischen 120 und 150 Minuten dauern.",
+    description: "Finde Titel und Dauer aller Filme, die zwischen 120 und 150 Minuten dauern.",
     difficulty: "junior",
     category: "WHERE",
     datasetId: streamingDataset.id,
@@ -587,7 +587,7 @@ whereExercises.push(
   }),
   makeWriteExercise("whr", {
     title: "Tickets mit hoher oder kritischer Prioritaet",
-    description: "Zeige Tickets mit Prioritaet 'hoch' oder 'kritisch'.",
+    description: "Zeige Titel und Prioritaet der Tickets mit Prioritaet 'hoch' oder 'kritisch'.",
     difficulty: "junior",
     category: "WHERE",
     datasetId: ticketsDataset.id,

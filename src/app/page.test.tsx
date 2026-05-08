@@ -2,8 +2,7 @@
  * Unit-Tests fuer die Home-Page.
  *
  * Testet das Rendern der Landing-Page:
- * - Ueberschrift, Start-Button, Lektionen-Link
- * - Statistiken und Funktionsweise-Sektion
+ * - Ueberschrift, Start-Button, Drei-Saeulen-Karten
  */
 
 import React from "react";
@@ -50,19 +49,15 @@ describe("Home Page", () => {
     expect(startElement).toBeInTheDocument();
   });
 
-  it("rendert den Lektionen-Button in der Navigation", () => {
+  it("rendert die Drei-Saeulen-Karten (Ueben, Sandbox, Lernen)", () => {
     render(<Home />);
-    const lektionenButtons = screen.getAllByText("Lektionen");
-    expect(lektionenButtons.length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: /Üben/ })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sandbox" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Lernen" })).toBeInTheDocument();
   });
 
-  it("zeigt Statistiken an (Uebungen)", () => {
+  it("rendert den Sandbox-Button", () => {
     render(<Home />);
-    expect(screen.getByText("Übungen")).toBeInTheDocument();
-  });
-
-  it("zeigt die Funktionsweise-Sektion", () => {
-    render(<Home />);
-    expect(screen.getByText(/Wie funktioniert/)).toBeInTheDocument();
+    expect(screen.getByText("Sandbox öffnen")).toBeInTheDocument();
   });
 });

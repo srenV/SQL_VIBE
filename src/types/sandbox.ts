@@ -60,6 +60,8 @@ export interface LearnModule {
   title: string;
   description: string;
   icon: string;
+  /** Schwierigkeitsgrad des Moduls. */
+  difficulty: "beginner" | "junior" | "intermediate";
   articles: LearnArticle[];
 }
 
@@ -77,15 +79,15 @@ export interface LearnArticle {
 export interface LearnSection {
   id: string;
   title: string;
+  /** Art des Abschnitts: Theorie, Beispiel, Praxis oder Zusammenfassung. */
+  sectionType?: "theory" | "example" | "practice" | "summary";
   /** HTML-Inhalt oder Markdown-aehnlicher Text. */
   content: string;
-  /** Optional: SQL-Beispiel zum Ausfuehren im eingebetteten Playground. */
-  sqlExample?: string;
-  /** Optional: Setup-SQL fuer den eingebetteten Playground. */
-  setupSql?: string;
+  /** Optional: Kernaussagen als Bullet-Points. */
+  keyTakeaways?: string[];
   /** Optional: Interaktives Widget (ERM-Diagramm, Normalform-Checker etc.). */
   widget?: {
-    type: "erm-diagram" | "nf-checker" | "rm-to-sql" | "mini-playground";
+    type: "erm-diagram" | "nf-checker" | "rm-to-sql";
     data: Record<string, unknown>;
   };
 }
@@ -93,5 +95,7 @@ export interface LearnSection {
 /** Fortschritt im Lern-Bereich. */
 export interface LearnProgress {
   articlesRead: string[];
+  /** Gelesene Sektionen (sectionId-Set). */
+  sectionsRead: string[];
   lastReadAt: string | null;
 }

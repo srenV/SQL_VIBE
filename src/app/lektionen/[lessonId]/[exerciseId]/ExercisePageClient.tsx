@@ -91,8 +91,12 @@ export function ExercisePageClient({
               </p>
             </div>
             {progress.streak > 1 && (
-              <span className="inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-xs font-medium text-accent-700 dark:bg-accent-900/30 dark:text-accent-300">
-                {progress.streak} Tage Streak 🔥
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent-100 px-2 py-0.5 text-xs font-medium text-accent-700 dark:bg-accent-900/30 dark:text-accent-300">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.228 5.228 0 00-1.696-3.396 3.75 3.75 0 00-1.14 4.593A3.75 3.75 0 0012 18z" />
+                </svg>
+                {progress.streak} Tage Streak
               </span>
             )}
           </div>
@@ -112,8 +116,9 @@ export function ExercisePageClient({
                 {diff.label}
               </span>
               {completed && (
-                <span className="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
-                  ✓ Gelöst
+                <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  Gelöst
                 </span>
               )}
             </div>
@@ -164,7 +169,7 @@ export function ExercisePageClient({
                           : "bg-surface-dim text-ink-muted"
                       }`}
                     >
-                      {isCompleted ? "✓" : i + 1}
+                      {isCompleted ? <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> : i + 1}
                     </span>
                     <span className="truncate">
                       {lessonExerciseTitles[i]}

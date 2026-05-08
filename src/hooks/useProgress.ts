@@ -32,6 +32,8 @@ export interface ProgressData {
 /** Lern-Fortschritt pro Modul. */
 export interface LearnModuleProgress {
   articlesRead: string[];
+  /** Gelesene Sektionen (sectionId-Set). */
+  sectionsRead: string[];
   lastReadAt: string | null;
 }
 
@@ -165,7 +167,7 @@ export function useProgress() {
   /** Markiert einen Lern-Artikel als gelesen. */
   const markArticleRead = useCallback((moduleId: string, articleId: string) => {
     setProgress((prev) => {
-      const moduleProgress = prev.learnProgress[moduleId] ?? { articlesRead: [], lastReadAt: null };
+      const moduleProgress = prev.learnProgress[moduleId] ?? { articlesRead: [], sectionsRead: [], lastReadAt: null };
       if (moduleProgress.articlesRead.includes(articleId)) return prev;
 
       const updated: ProgressData = {
@@ -173,6 +175,7 @@ export function useProgress() {
         learnProgress: {
           ...prev.learnProgress,
           [moduleId]: {
+            ...moduleProgress,
             articlesRead: [...moduleProgress.articlesRead, articleId],
             lastReadAt: new Date().toISOString(),
           },
@@ -185,10 +188,43 @@ export function useProgress() {
     });
   }, []);
 
+  /** Markiert eine Sektion als gelesen. */
+  const markSectionRead = useCallback((moduleId: string, sectionId: string) => {
+    setProgress((prev) => {
+      const moduleProgress = prev.learnProgress[moduleId] ?? { articlesRead: [], sectionsRead: [], lastReadAt: null };
+      if (moduleProgress.sectionsRead.includes(sectionId)) return prev;
+
+      const updated: ProgressData = {
+        ...prev,
+        learnProgress: {
+          ...prev.learnProgress,
+          [moduleId]: {
+            ...moduleProgress,
+            sectionsRead: [...moduleProgress.sectionsRead, sectionId],
+            lastReadAt: new Date().toISOString(),
+          },
+        },
+        lastActiveDate: todayISO(),
+      };
+
+      saveProgress(updated);
+      return updated;
+    });
+  }, []);
+
+  /** Prueft, ob eine Sektion gelesen wurde. */
+  const isSectionRead = useCallback(
+    (moduleId: string, sectionId: string): boolean => {
+      const moduleProgress = progress.learnProgress[moduleId];
+      return moduleProgress?.sectionsRead?.includes(sectionId) ?? false;
+    },
+    [progress]
+  );
+
   /** Liefert den Lern-Fortschritt fuer ein Modul. */
   const getLearnModuleProgress = useCallback(
     (moduleId: string): LearnModuleProgress => {
-      return progress.learnProgress[moduleId] ?? { articlesRead: [], lastReadAt: null };
+      return progress.learnProgress[moduleId] ?? { articlesRead: [], sectionsRead: [], lastReadAt: null };
     },
     [progress]
   );
@@ -202,6 +238,8 @@ export function useProgress() {
     getExerciseProgress,
     getLessonProgress,
     markArticleRead,
+    markSectionRead,
+    isSectionRead,
     getLearnModuleProgress,
   };
 }

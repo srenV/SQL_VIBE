@@ -315,8 +315,8 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
             {queryResult && queryResult.success && (queryResult.statementType === "DDL" || queryResult.statementType === "DML") && (!queryResult.resultset || queryResult.resultset.rows.length === 0) && (
               <Card variant="flat" className="p-4">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-success/10 text-success text-xs font-bold" aria-hidden="true">
-                    ✓
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-success/10 text-success" aria-hidden="true">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm text-ink">{getDmlMessage(queryResult)}</p>
                   {queryResult.executionTimeMs != null && (

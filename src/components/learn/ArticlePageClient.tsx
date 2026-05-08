@@ -1,32 +1,45 @@
 /**
  * ArticlePageClient – Client-Komponente fuer die Artikel-Seite.
  *
- * Enthaelt alle interaktiven Elemente (Mini-Playgrounds, Navigation,
- * Inhaltsverzeichnis). Wird von der Server-Component page.tsx gerendert.
+ * Enthaelt alle interaktiven Elemente (Navigation,
+ * Inhaltsverzeichnis, Fortschritts-Tracking, Widgets).
+ * Wird von der Server-Component page.tsx gerendert.
  *
  * English: Client component for the article page.
- * Contains all interactive elements (mini playgrounds, navigation,
- * table of contents). Rendered by the server component page.tsx.
+ * Contains all interactive elements (navigation,
+ * table of contents, progress tracking, widgets).
+ * Rendered by the server component page.tsx.
  */
 
 "use client";
 
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState, use, useCallback, useRef } from "react";
 import Link from "next/link";
 import { getModuleById, getArticle } from "@/data/learnContent";
 import { Card } from "@/components/card";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { Button } from "@/components/button";
-import { SqlEditor } from "@/components/sqlEditor";
-import { ResultsetTable } from "@/components/resultsetTable";
+import { ProgressBar } from "@/components/progressBar";
 import { FadeIn } from "@/components/animations";
-import { createDatabase, runQuery } from "@/lib/sqlEngine";
-import type { SandboxQueryResult } from "@/types/sandbox";
+import { SuccessCelebration } from "@/components/successCelebration";
+import { ErmDiagram } from "@/components/learn/ErmDiagram";
+import { NfChecker } from "@/components/learn/NfChecker";
+import { RmToSql } from "@/components/learn/RmToSql";
+import { getModuleIcon, InlineIcons } from "@/components/learn/moduleIcons";
+import { useProgress } from "@/hooks/useProgress";
 
 export interface ArticlePageClientProps {
   params: Promise<{ moduleId: string; articleId: string }>;
 }
+
+/** Section type badge configuration. */
+const SECTION_TYPE_CONFIG: Record<string, { label: string; icon: React.ReactNode; colorClass: string }> = {
+  theory: { label: "Theorie", icon: InlineIcons.bookOpen, colorClass: "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300" },
+  example: { label: "Beispiel", icon: InlineIcons.lightbulb, colorClass: "bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300" },
+  practice: { label: "Praxis", icon: InlineIcons.pencil, colorClass: "bg-success/10 text-success" },
+  summary: { label: "Zusammenfassung", icon: InlineIcons.clipboard, colorClass: "bg-warning/10 text-warning" },
+};
 
 export function ArticlePageClient({ params }: ArticlePageClientProps) {
   const { moduleId, articleId } = use(params);
@@ -35,66 +48,59 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
   const article = mod ? getArticle(moduleId, articleId) : undefined;
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [miniPlaygrounds, setMiniPlaygrounds] = useState<Record<string, {
-    query: string;
-    result: SandboxQueryResult | null;
-    isLoading: boolean;
-  }>>({});
 
-  // Mini-Playgrounds initialisieren
+  const { markSectionRead, isSectionRead, markArticleRead, getLearnModuleProgress } = useProgress();
+  const moduleProgress = getLearnModuleProgress(moduleId);
+  const sectionsRead = moduleProgress.sectionsRead ?? [];
+
+  // Scroll tracking: IntersectionObserver for active section
   useEffect(() => {
     if (!article) return;
-    const initial: Record<string, { query: string; result: SandboxQueryResult | null; isLoading: boolean }> = {};
-    article.sections.forEach((section) => {
-      if (section.sqlExample) {
-        initial[section.id] = {
-          query: section.sqlExample,
-          result: null,
-          isLoading: false,
-        };
-      }
-    });
-    setMiniPlaygrounds(initial);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries.filter((e) => e.isIntersecting);
+        if (visibleEntries.length > 0) {
+          const sorted = visibleEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          const topSection = sorted[0];
+          if (topSection) {
+            setActiveSection(topSection.target.id.replace("section-", ""));
+          }
+        }
+      },
+      { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
+    );
+
+    const timer = setTimeout(() => {
+      article.sections.forEach((section) => {
+        const el = document.getElementById(`section-${section.id}`);
+        if (el) observer.observe(el);
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [article]);
 
-  const runMiniQuery = async (sectionId: string, setupSql: string | undefined, query: string) => {
-    setMiniPlaygrounds((prev) => ({
-      ...prev,
-      [sectionId]: { ...prev[sectionId], isLoading: true },
-    }));
-
-    try {
-      const db = await createDatabase(setupSql || "");
-      const result = runQuery(db, query);
-      db.close();
-
-      setMiniPlaygrounds((prev) => ({
-        ...prev,
-        [sectionId]: {
-          query,
-          result: {
-            ...result,
-            rowsModified: 0,
-            statementType: "DQL" as const,
-          },
-          isLoading: false,
-        },
-      }));
-    } catch (err) {
-      setMiniPlaygrounds((prev) => ({
-        ...prev,
-        [sectionId]: {
-          query,
-          result: {
-            success: false,
-            error: err instanceof Error ? err.message : String(err),
-            rowsModified: 0,
-          },
-          isLoading: false,
-        },
-      }));
+  // Mark article as read when all sections are read
+  useEffect(() => {
+    if (!article || !mod) return;
+    const allRead = article.sections.every((s) => sectionsRead.includes(s.id));
+    if (allRead && article.sections.length > 0) {
+      markArticleRead(moduleId, articleId);
     }
-  };
+  }, [sectionsRead, article, mod, moduleId, articleId, markArticleRead]);
+
+  const handleSectionReadToggle = useCallback((sectionId: string) => {
+    markSectionRead(moduleId, sectionId);
+  }, [moduleId, markSectionRead]);
+
+  const scrollToSection = useCallback((sectionId: string) => {
+    setActiveSection(sectionId);
+    document.getElementById(`section-${sectionId}`)?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   if (!mod || !article) {
     return (
@@ -116,6 +122,11 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
   const articleIndex = mod.articles.findIndex((a) => a.id === articleId);
   const prevArticle = articleIndex > 0 ? mod.articles[articleIndex - 1] : null;
   const nextArticle = articleIndex < mod.articles.length - 1 ? mod.articles[articleIndex + 1] : null;
+
+  // Calculate progress
+  const totalSections = article.sections.length;
+  const readSections = article.sections.filter((s) => sectionsRead.includes(s.id)).length;
+  const progressPercent = totalSections > 0 ? Math.round((readSections / totalSections) * 100) : 0;
 
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
@@ -140,121 +151,271 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
           <div className="flex gap-8 max-w-5xl mx-auto">
             {/* Sidebar: Inhaltsverzeichnis */}
             <nav className="hidden lg:block w-56 shrink-0">
-              <div className="sticky top-24 space-y-1">
-                <p className="text-xs font-semibold text-ink-muted mb-2">Inhalt</p>
-                {article.sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => {
-                      setActiveSection(section.id);
-                      document.getElementById(`section-${section.id}`)?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    className={`block w-full text-left rounded px-2 py-1 text-xs transition-colors ${
-                      activeSection === section.id
-                        ? "text-primary-600 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20"
-                        : "text-ink-muted hover:text-ink"
-                    }`}
-                  >
-                    {section.title}
-                  </button>
-                ))}
+              <div className="sticky top-24 space-y-4">
+                {/* Progress */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-ink-muted">Fortschritt</p>
+                    <p className="text-xs font-medium text-primary-600 dark:text-primary-400">
+                      {readSections}/{totalSections}
+                    </p>
+                  </div>
+                  <ProgressBar
+                    value={readSections}
+                    max={totalSections}
+                    variant={progressPercent === 100 ? "success" : "primary"}
+                    size="sm"
+                    label={`${progressPercent}% gelesen`}
+                  />
+                </div>
+
+                {/* TOC */}
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-ink-muted mb-2">Inhalt</p>
+                  {article.sections.map((section) => {
+                    const isRead = sectionsRead.includes(section.id);
+                    const isActive = activeSection === section.id;
+
+                    return (
+                      <button
+                        key={section.id}
+                        onClick={() => scrollToSection(section.id)}
+                        className={`block w-full text-left rounded-md px-2 py-1.5 text-xs transition-all duration-150 ${
+                          isActive
+                            ? "text-primary-600 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20 font-medium"
+                            : isRead
+                              ? "text-ink-muted hover:text-ink"
+                              : "text-ink-muted hover:text-ink"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          {isRead ? (
+                            <svg className="w-3.5 h-3.5 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-surface-dim dark:border-dark-dim shrink-0" />
+                          )}
+                          <span className="truncate">{section.title}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </nav>
 
             {/* Article Content */}
-            <div className="flex-1 min-w-0 space-y-8">
+            <div className="flex-1 min-w-0 space-y-6">
               <FadeIn delay={0}>
-                <div className="space-y-2">
-                  <div className="text-2xl" aria-hidden="true">{mod.icon}</div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const IconComponent = getModuleIcon(mod.id);
+                      return <IconComponent className="w-6 h-6 text-primary-500" />;
+                    })()}
+                    <span className="text-xs font-medium text-ink-muted">
+                      {mod.title}
+                    </span>
+                  </div>
                   <h1 className="text-2xl font-bold text-ink">{article.title}</h1>
-                  <p className="text-sm text-ink-muted">
-                    {article.estimatedMinutes} Min. Lesezeit · {article.sections.length} Abschnitte
-                  </p>
+                  <div className="flex items-center gap-3 text-sm text-ink-muted">
+                    <span>{article.estimatedMinutes} Min. Lesezeit</span>
+                    <span>·</span>
+                    <span>{article.sections.length} Abschnitte</span>
+                    {progressPercent === 100 && (
+                      <>
+                        <span>·</span>
+                        <span className="text-success font-medium inline-flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> Gelesen</span>
+                      </>
+                    )}
+                  </div>
+                  {/* Mobile progress bar */}
+                  <div className="lg:hidden">
+                    <ProgressBar
+                      value={readSections}
+                      max={totalSections}
+                      variant={progressPercent === 100 ? "success" : "primary"}
+                      size="sm"
+                      label={`${progressPercent}% gelesen`}
+                    />
+                  </div>
                 </div>
               </FadeIn>
 
-              {article.sections.map((section) => (
-                <FadeIn key={section.id} delay={0.05}>
-                  <section id={`section-${section.id}`} className="scroll-mt-24">
-                    <Card variant="flat" className="p-6">
-                      <h2 className="text-lg font-semibold text-ink mb-3">{section.title}</h2>
-                      <div
-                        className="prose prose-sm dark:prose-invert max-w-none text-ink space-y-3"
-                        dangerouslySetInnerHTML={{
-                          __html: renderMarkdown(section.content),
-                        }}
-                      />
+              {article.sections.map((section) => {
+                const isRead = sectionsRead.includes(section.id);
+                const typeConfig = SECTION_TYPE_CONFIG[section.sectionType ?? "theory"];
 
-                      {/* SQL-Beispiel mit Mini-Playground */}
-                      {section.sqlExample && miniPlaygrounds[section.id] && (
-                        <div className="mt-6 border-t border-surface-dim dark:border-dark-dim pt-4">
-                          <h3 className="text-sm font-semibold text-ink mb-2">SQL-Beispiel ausprobieren</h3>
-                          <SqlEditor
-                            value={miniPlaygrounds[section.id].query}
-                            onChange={(e) =>
-                              setMiniPlaygrounds((prev) => ({
-                                ...prev,
-                                [section.id]: { ...prev[section.id], query: e.target.value },
-                              }))
-                            }
-                            onSubmit={() =>
-                              runMiniQuery(section.id, section.setupSql, miniPlaygrounds[section.id].query)
-                            }
-                            placeholder="SQL eingeben..."
-                          />
-                          <div className="mt-2 flex items-center gap-2">
-                            <Button
-                              size="sm"
-                              onClick={() =>
-                                runMiniQuery(section.id, section.setupSql, miniPlaygrounds[section.id].query)
-                              }
-                              disabled={miniPlaygrounds[section.id].isLoading}
+                return (
+                  <FadeIn key={section.id} delay={0.05}>
+                    <section
+                      id={`section-${section.id}`}
+                      className="scroll-mt-24"
+                    >
+                      <div className={`rounded-xl border-l-4 ${
+                        section.sectionType === "practice"
+                          ? "border-l-success bg-surface"
+                          : section.sectionType === "example"
+                            ? "border-l-accent-500 bg-surface"
+                            : section.sectionType === "summary"
+                              ? "border-l-warning bg-surface"
+                              : "border-l-primary-500 bg-surface"
+                      } shadow-sm dark:bg-dark-dim/30`}>
+                        <div className="p-5 sm:p-6">
+                          {/* Section header with type badge and read toggle */}
+                          <div className="flex items-start justify-between gap-3 mb-4">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <h2 className="text-lg font-semibold text-ink">{section.title}</h2>
+                              {typeConfig && (
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${typeConfig.colorClass}`}>
+                                  {typeConfig.icon} {typeConfig.label}
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => handleSectionReadToggle(section.id)}
+                              className={`shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ${
+                                isRead
+                                  ? "bg-success/10 text-success hover:bg-success/20"
+                                  : "bg-surface-dim dark:bg-dark-dim text-ink-muted hover:text-ink hover:bg-surface-dim/80"
+                              }`}
+                              title={isRead ? "Als ungelesen markieren" : "Als gelesen markieren"}
                             >
-                              Ausführen
-                            </Button>
+                              {isRead ? (
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              ) : (
+                                <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-current" />
+                              )}
+                              {isRead ? "Gelesen" : "Lesen"}
+                            </button>
                           </div>
-                          {miniPlaygrounds[section.id].result && (
-                            <div className="mt-3">
-                              {(() => {
-                                const r = miniPlaygrounds[section.id].result!;
-                                if (r.success && r.resultset && r.resultset.rows.length > 0) {
-                                  return <ResultsetTable columns={r.resultset.columns} rows={r.resultset.rows} />;
-                                }
-                                if (r.success) {
-                                  return <p className="text-xs text-success font-medium">Befehl ausgeführt.</p>;
-                                }
-                                return <p className="text-xs text-error font-medium">{r.error}</p>;
-                              })()}
+
+                          {/* Content */}
+                          <div
+                            className="prose prose-sm dark:prose-invert max-w-none text-ink space-y-3"
+                            dangerouslySetInnerHTML={{
+                              __html: renderMarkdown(section.content),
+                            }}
+                          />
+
+                          {/* Key Takeaways */}
+                          {section.keyTakeaways && section.keyTakeaways.length > 0 && (
+                            <div className="mt-5 p-4 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800">
+                              <h4 className="text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2 flex items-center gap-1.5">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                                </svg>
+                                Kernaussagen
+                              </h4>
+                              <ul className="space-y-1.5">
+                                {section.keyTakeaways.map((takeaway, i) => (
+                                  <li key={i} className="flex items-start gap-2 text-sm text-ink">
+                                    <span className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary-200 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-[10px] font-bold">
+                                      {i + 1}
+                                    </span>
+                                    {takeaway}
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
                           )}
+
+                          {/* Widget rendering */}
+                          {section.widget && (
+                            <div className="mt-5">
+                              {section.widget.type === "erm-diagram" && (
+                                <ErmDiagram data={section.widget.data as unknown as import("@/components/learn/ErmDiagram").ErmDiagramData} />
+                              )}
+                              {section.widget.type === "nf-checker" && (
+                                <NfChecker data={section.widget.data as unknown as import("@/components/learn/NfChecker").NfCheckerData} />
+                              )}
+                              {section.widget.type === "rm-to-sql" && (
+                                <RmToSql data={section.widget.data as unknown as import("@/components/learn/RmToSql").RmToSqlData} />
+                              )}
+                            </div>
+                          )}
+
                         </div>
-                      )}
-                    </Card>
-                  </section>
-                </FadeIn>
-              ))}
+                      </div>
+                    </section>
+                  </FadeIn>
+                );
+              })}
 
               {/* Navigation: Vorheriger/Nächster Artikel */}
-              <div className="flex items-center justify-between pt-6 border-t border-surface-dim dark:border-dark-dim">
+              <div className="grid gap-4 sm:grid-cols-2 pt-6 border-t border-surface-dim dark:border-dark-dim">
                 {prevArticle ? (
                   <Link
                     href={`/lernen/${mod.id}/${prevArticle.id}`}
-                    className="text-sm text-primary-500 hover:text-primary-600 transition-colors"
+                    className="group block"
                   >
-                    &larr; {prevArticle.title}
+                    <Card variant="outlined" className="p-4 h-full transition-all duration-200 group-hover:shadow-md group-hover:border-primary-300">
+                      <div className="flex items-center gap-2 text-xs text-ink-muted mb-1">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Vorheriger Artikel
+                      </div>
+                      <p className="text-sm font-semibold text-ink group-hover:text-primary-500 transition-colors">
+                        {prevArticle.title}
+                      </p>
+                      <p className="text-xs text-ink-muted mt-0.5">
+                        {prevArticle.estimatedMinutes} Min. · {prevArticle.sections.length} Abschnitte
+                      </p>
+                    </Card>
                   </Link>
                 ) : (
-                  <span />
+                  <Link href={`/lernen/${mod.id}`} className="group block">
+                    <Card variant="outlined" className="p-4 h-full transition-all duration-200 group-hover:shadow-md group-hover:border-primary-300">
+                      <div className="flex items-center gap-2 text-xs text-ink-muted mb-1">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Zurück zum Modul
+                      </div>
+                      <p className="text-sm font-semibold text-ink group-hover:text-primary-500 transition-colors">
+                        {mod.title}
+                      </p>
+                    </Card>
+                  </Link>
                 )}
                 {nextArticle ? (
                   <Link
                     href={`/lernen/${mod.id}/${nextArticle.id}`}
-                    className="text-sm text-primary-500 hover:text-primary-600 transition-colors"
+                    className="group block text-right"
                   >
-                    {nextArticle.title} &rarr;
+                    <Card variant="outlined" className="p-4 h-full transition-all duration-200 group-hover:shadow-md group-hover:border-primary-300">
+                      <div className="flex items-center justify-end gap-2 text-xs text-ink-muted mb-1">
+                        Nächster Artikel
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <p className="text-sm font-semibold text-ink group-hover:text-primary-500 transition-colors">
+                        {nextArticle.title}
+                      </p>
+                      <p className="text-xs text-ink-muted mt-0.5">
+                        {nextArticle.estimatedMinutes} Min. · {nextArticle.sections.length} Abschnitte
+                      </p>
+                    </Card>
                   </Link>
                 ) : (
-                  <span />
+                  <Link href={`/lernen/${mod.id}`} className="group block text-right">
+                    <Card variant="outlined" className="p-4 h-full transition-all duration-200 group-hover:shadow-md group-hover:border-primary-300">
+                      <div className="flex items-center justify-end gap-2 text-xs text-ink-muted mb-1">
+                        Zurück zum Modul
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <p className="text-sm font-semibold text-ink group-hover:text-primary-500 transition-colors">
+                        {mod.title}
+                      </p>
+                    </Card>
+                  </Link>
                 )}
               </div>
             </div>
@@ -273,7 +434,7 @@ function renderMarkdown(text: string): string {
     // Inline code
     .replace(/`([^`]+)`/g, '<code class="rounded bg-surface-dim dark:bg-dark-dim px-1 py-0.5 text-xs font-mono">$1</code>')
     // Code blocks
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="rounded-lg bg-surface-dim dark:bg-dark-dim p-3 text-xs font-mono overflow-x-auto"><code>$2</code></pre>')
+    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="rounded-lg bg-surface-dim dark:bg-dark-dim p-3 text-xs font-mono overflow-x-auto my-2"><code>$2</code></pre>')
     // Headers
     .replace(/^### (.+)$/gm, '<h3 class="text-base font-semibold text-ink mt-4 mb-2">$1</h3>')
     .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-ink mt-4 mb-2">$1</h2>')

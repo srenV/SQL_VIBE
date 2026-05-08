@@ -17,7 +17,7 @@ resetCounter();
 subqueryExercises.push(
   makeWriteExercise("sub", {
     title: "Produkte mit EXISTS-Subquery",
-    description: "Zeige alle Zeilen aus `produkte`, fuer die es mindestens eine passende Zeile in `bestellpositionen` gibt.",
+    description: "Zeige Name und Preis aller Produkte, fuer die es mindestens eine passende Zeile in `bestellpositionen` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -33,7 +33,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Produkte",
-    description: "Zeige Zeilen aus `produkte`, deren `id` in einer Liste aus `bestellpositionen` vorkommt.",
+    description: "Zeige Name und Preis der Produkte, deren `id` in einer Liste aus `bestellpositionen` vorkommt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -48,8 +48,8 @@ subqueryExercises.push(
   }),
 
   makeWriteExercise("sub", {
-    title: "Inline-View: Produkte (name)",
-    description: "Nutze eine Subquery als Datenquelle und gib das Ergebnis aus.",
+    title: "Inline-View: Produkte (name und preis)",
+    description: "Nutze eine Subquery, die `name` und `preis` aus `produkte` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -65,7 +65,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Produkte",
-    description: "Zaehle fuer jede Zeile in `produkte` die zugehoerigen Zeilen in `bestellpositionen`.",
+    description: "Zeige Name, Preis und die Anzahl der zugehoerigen Bestellpositionen fuer jedes Produkt.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "shop",
@@ -81,7 +81,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Produkte mit Bestellpositionen per EXISTS (Variante)",
-    description: "Zeige alle Zeilen aus `produkte`, fuer die es mindestens eine passende Zeile in `bestellpositionen` gibt.",
+    description: "Zeige Name und Preis aller Produkte, fuer die es mindestens eine passende Zeile in `bestellpositionen` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -97,7 +97,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Kunden mit EXISTS-Subquery",
-    description: "Zeige alle Zeilen aus `kunden`, fuer die es mindestens eine passende Zeile in `bestellungen` gibt.",
+    description: "Zeige Name und E-Mail aller Kunden, fuer die es mindestens eine passende Zeile in `bestellungen` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -113,7 +113,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Kunden (Shop)",
-    description: "Zeige Zeilen aus `kunden`, deren `id` in einer Liste aus `bestellungen` vorkommt.",
+    description: "Zeige Name und E-Mail der Kunden, deren `id` in einer Liste aus `bestellungen` vorkommt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -129,7 +129,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Kunden (Shop)",
-    description: "Nutze eine Subquery als Datenquelle und gib das Ergebnis aus.",
+    description: "Nutze eine Subquery, die `name` und `email` aus `kunden` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -145,7 +145,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Kunden (Shop)",
-    description: "Zaehle fuer jede Zeile in `kunden` die zugehoerigen Zeilen in `bestellungen`.",
+    description: "Zeige Name, E-Mail und die Anzahl der Bestellungen fuer jeden Kunden.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "shop",
@@ -161,7 +161,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Kunden mit Bestellungen per EXISTS (Shop)",
-    description: "Zeige alle Zeilen aus `kunden`, fuer die es mindestens eine passende Zeile in `bestellungen` gibt.",
+    description: "Zeige Name und E-Mail aller Kunden, fuer die es mindestens eine passende Zeile in `bestellungen` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -177,7 +177,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Nutzer mit EXISTS-Subquery",
-    description: "Zeige alle Zeilen aus `nutzer`, fuer die es mindestens eine passende Zeile in `workouts` gibt.",
+    description: "Zeige die Namen aller Nutzer, fuer die es mindestens eine passende Zeile in `workouts` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "fitness",
@@ -193,7 +193,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Nutzer",
-    description: "Zeige Zeilen aus `nutzer`, deren `id` in einer Liste aus `workouts` vorkommt.",
+    description: "Zeige die Namen der Nutzer, deren `id` in einer Liste aus `workouts` vorkommt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "fitness",
@@ -209,7 +209,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Nutzer (name)",
-    description: "Nutze eine Subquery als Datenquelle und gib das Ergebnis aus.",
+    description: "Nutze eine Subquery, die `name` aus `nutzer` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "fitness",
@@ -225,7 +225,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Nutzer",
-    description: "Zaehle fuer jede Zeile in `nutzer` die zugehoerigen Zeilen in `workouts`.",
+    description: "Zeige den Namen und die Anzahl der Workouts fuer jeden Nutzer.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "fitness",
@@ -241,7 +241,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Nutzer mit Workouts per EXISTS (Variante)",
-    description: "Zeige alle Zeilen aus `nutzer`, fuer die es mindestens eine passende Zeile in `workouts` gibt.",
+    description: "Zeige die Namen aller Nutzer, fuer die es mindestens eine passende Zeile in `workouts` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "fitness",
@@ -257,7 +257,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Abteilungen mit EXISTS-Subquery",
-    description: "Zeige alle Zeilen aus `abteilungen`, fuer die es mindestens eine passende Zeile in `mitarbeiter` gibt.",
+    description: "Zeige Name und Standort aller Abteilungen, fuer die es mindestens eine passende Zeile in `mitarbeiter` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "hr",
@@ -273,7 +273,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Abteilungen",
-    description: "Zeige Zeilen aus `abteilungen`, deren `id` in einer Liste aus `mitarbeiter` vorkommt.",
+    description: "Zeige Name und Standort der Abteilungen, deren `id` in einer Liste aus `mitarbeiter` vorkommt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "hr",
@@ -288,8 +288,8 @@ subqueryExercises.push(
   }),
 
   makeWriteExercise("sub", {
-    title: "Inline-View: Abteilungen (name)",
-    description: "Nutze eine Subquery als Datenquelle und gib das Ergebnis aus.",
+    title: "Inline-View: Abteilungen (name und standort)",
+    description: "Nutze eine Subquery, die `name` und `standort` aus `abteilungen` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "hr",
@@ -305,7 +305,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Abteilungen",
-    description: "Zaehle fuer jede Zeile in `abteilungen` die zugehoerigen Zeilen in `mitarbeiter`.",
+    description: "Zeige Name, Standort und die Anzahl der zugehoerigen Mitarbeiter fuer jede Abteilung.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "hr",
@@ -321,7 +321,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Abteilungen mit Mitarbeitern per EXISTS (Variante)",
-    description: "Zeige alle Zeilen aus `abteilungen`, fuer die es mindestens eine passende Zeile in `mitarbeiter` gibt.",
+    description: "Zeige Name und Standort aller Abteilungen, fuer die es mindestens eine passende Zeile in `mitarbeiter` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "hr",
@@ -337,7 +337,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Agenten mit EXISTS-Subquery",
-    description: "Zeige alle Zeilen aus `agenten`, fuer die es mindestens eine passende Zeile in `tickets` gibt.",
+    description: "Zeige Name und Team aller Agenten, fuer die es mindestens eine passende Zeile in `tickets` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "tickets",
@@ -353,7 +353,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Agenten",
-    description: "Zeige Zeilen aus `agenten`, deren `id` in einer Liste aus `tickets` vorkommt.",
+    description: "Zeige Name und Team der Agenten, deren `id` in einer Liste aus `tickets` vorkommt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "tickets",
@@ -368,8 +368,8 @@ subqueryExercises.push(
   }),
 
   makeWriteExercise("sub", {
-    title: "Inline-View: Agenten (name)",
-    description: "Nutze eine Subquery als Datenquelle und gib das Ergebnis aus.",
+    title: "Inline-View: Agenten (name und team)",
+    description: "Nutze eine Subquery, die `name` und `team` aus `agenten` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "tickets",
@@ -385,7 +385,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Agenten",
-    description: "Zaehle fuer jede Zeile in `agenten` die zugehoerigen Zeilen in `tickets`.",
+    description: "Zeige Name, Team und die Anzahl der zugehoerigen Tickets fuer jeden Agenten.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "tickets",
@@ -401,7 +401,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Agenten mit Tickets per EXISTS (Variante)",
-    description: "Zeige alle Zeilen aus `agenten`, fuer die es mindestens eine passende Zeile in `tickets` gibt.",
+    description: "Zeige Name und Team aller Agenten, fuer die es mindestens eine passende Zeile in `tickets` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "tickets",
@@ -417,7 +417,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Kunden mit Konten per EXISTS",
-    description: "Zeige alle Zeilen aus `kunden`, fuer die es mindestens eine passende Zeile in `konten` gibt.",
+    description: "Zeige die Namen aller Kunden, fuer die es mindestens eine passende Zeile in `konten` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "banking",
@@ -433,7 +433,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Kunden (Banking)",
-    description: "Zeige Zeilen aus `kunden`, deren `id` in einer Liste aus `konten` vorkommt.",
+    description: "Zeige die Namen der Kunden, deren `id` in einer Liste aus `konten` vorkommt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "banking",
@@ -449,7 +449,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Kunden (Banking)",
-    description: "Nutze eine Subquery als Datenquelle und gib das Ergebnis aus.",
+    description: "Nutze eine Subquery, die `name` aus `kunden` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "banking",
@@ -465,7 +465,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Kunden (Banking)",
-    description: "Zaehle fuer jede Zeile in `kunden` die zugehoerigen Zeilen in `konten`.",
+    description: "Zeige den Namen und die Anzahl der Konten fuer jeden Kunden.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "banking",
@@ -481,7 +481,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Kunden mit Konten per EXISTS (Banking)",
-    description: "Zeige alle Zeilen aus `kunden`, fuer die es mindestens eine passende Zeile in `konten` gibt.",
+    description: "Zeige die Namen aller Kunden, fuer die es mindestens eine passende Zeile in `konten` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "banking",
@@ -497,7 +497,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Filme mit EXISTS-Subquery",
-    description: "Zeige alle Zeilen aus `filme`, fuer die es mindestens eine passende Zeile in `watch_history` gibt.",
+    description: "Zeige Titel und Genre aller Filme, fuer die es mindestens eine passende Zeile in `watch_history` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "streaming",
@@ -513,7 +513,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Filme",
-    description: "Zeige Zeilen aus `filme`, deren `id` in einer Liste aus `watch_history` vorkommt.",
+    description: "Zeige Titel und Genre der Filme, deren `id` in einer Liste aus `watch_history` vorkommt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "streaming",
@@ -528,8 +528,8 @@ subqueryExercises.push(
   }),
 
   makeWriteExercise("sub", {
-    title: "Inline-View: Filme (titel)",
-    description: "Nutze eine Subquery als Datenquelle und gib das Ergebnis aus.",
+    title: "Inline-View: Filme (titel und genre)",
+    description: "Nutze eine Subquery, die `titel` und `genre` aus `filme` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "streaming",
@@ -545,7 +545,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Filme",
-    description: "Zaehle fuer jede Zeile in `filme` die zugehoerigen Zeilen in `watch_history`.",
+    description: "Zeige Titel, Genre und die Anzahl der zugehoerigen Watch-History-Eintraege fuer jeden Film.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "streaming",
@@ -561,7 +561,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Filme mit Watch-History per EXISTS (Variante)",
-    description: "Zeige alle Zeilen aus `filme`, fuer die es mindestens eine passende Zeile in `watch_history` gibt.",
+    description: "Zeige Titel und Genre aller Filme, fuer die es mindestens eine passende Zeile in `watch_history` gibt.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "streaming",
