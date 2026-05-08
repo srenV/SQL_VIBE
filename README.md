@@ -524,27 +524,22 @@ npm run build   # Statischer Export nach out/
 
 ---
 
-## Lizenz
-
-&copy; Sören Timo Voigt 2025–2026
-
----
-
 ## Entwicklungsmethodik
 
-Dieses Projekt wurde mit Unterstützung agensbasierter KI-Workflows entwickelt, die verschiedene spezialisierte Tools orchestrieren:
+Die grundlegende Planung, Produktentscheidungen und Architektur stammen vom Entwickler. Die Implementierung wurde überwiegend automatisiert durch [Paperclip AI](https://github.com/paperclipai/paperclip) durchgeführt — ein agensbasiertes KI-Workflow-System, das spezialisierte Sub-Agenten für unterschiedliche Entwicklungsphasen orchestriert.
 
-| Tool | Einsatzbereich |
-|------|---------------|
-| **Cursor (Copilot)** | Hauptsächliche IDE mit Inline-Code-Generierung, Refactoring und kontextbewussten Vorschlägen |
-| **Codex (OpenAI)** | Architektur-Entscheidungen, komplexe Algorithmen und dateiübergreifende Refactorings |
-| **Manus.im** | Tiefgehende Recherche, Prototyping und iterativer Feature-Ausbau |
-| **Stitch** | UI-Komponenten-Generierung und visuelle Integration |
+| Phase | Verantwortung |
+|-------|---------------|
+| **Produktvision & Anforderungsdefinition** | Entwickler |
+| **Architektur-Entscheidungen & Tech-Stack** | Entwickler |
+| **Feature-Design & UX-Konzept** | Entwickler |
+| **Implementierung (Code-Generierung)** | Paperclip AI (agentisch) |
+| **Code-Review & Qualitätssicherung** | Entwickler + automatisierte Tests |
+| **Bugfixes & Iterationen** | Entwickler mit KI-Unterstützung |
 
-Die KI-Agenten wurden als spezialisierte Werkzeuge eingesetzt — nicht als Ersatz für Engineering-Entscheidungen. Jede generierte Lösung wurde manuell verifiziert, auf Konsistenz mit der bestehenden Architektur geprüft und bei Bedarf angepasst. Die finale Code-Verantwortung liegt beim Entwickler.
 
 ---
 
 ## Lizenz
 
-Privat – SQL-Trainer Intern.
+&copy; Sören Timo Voigt 2025–2026 — Privat. Alle Rechte vorbehalten.
