@@ -20,9 +20,12 @@ import type { PlaygroundExercise } from "@/types/playground";
 interface PlaygroundProps {
   exercise: PlaygroundExercise;
   onComplete?: (attemptCount: number) => void;
+  prevHref?: string | null;
+  nextHref?: string | null;
+  finishHref?: string | null;
 }
 
-export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) => {
+export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, prevHref, nextHref, finishHref }) => {
   const {
     phase,
     userQuery,
@@ -121,7 +124,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
               {attemptCount >= 1 && !completed && (
                 <button
                   onClick={showHint}
-                  disabled={hint && hint.level >= 3}
+                  disabled={hint && hint.level >= (exercise.hints?.length ?? 1)}
                   className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink hover:bg-surface-dim transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   title={hint ? "Stärkeren Hinweis anzeigen" : "Hinweis anzeigen"}
                   aria-label={hint ? "Stärkeren Hinweis anzeigen" : "Hinweis anzeigen"}
@@ -129,7 +132,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
-                  {hint ? `Hinweis ${hint.level}/3` : "Hinweis"}
+                  {hint ? `Hinweis ${hint.level}/${exercise.hints?.length ?? 1}` : "Hinweis"}
                 </button>
               )}
 
@@ -156,12 +159,29 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete }) 
               )}
             </div>
 
-            {/* Versuch-Count in der unteren rechten Ecke */}
-            {attemptCount > 0 && (
-              <span className="text-xs text-ink-muted tabular-nums">
-                Versuch {attemptCount}
-              </span>
-            )}
+            {/* Navigation + Versuch-Count */}
+            <div className="flex items-center gap-2">
+              {attemptCount > 0 && (
+                <span className="text-xs text-ink-muted tabular-nums">
+                  Versuch {attemptCount}
+                </span>
+              )}
+              {prevHref && (
+                <a href={prevHref} className="inline-flex items-center justify-center gap-1 font-medium rounded-md px-3 py-1.5 text-sm bg-transparent text-ink hover:bg-surface-dim transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
+                  &larr; Zurück
+                </a>
+              )}
+              {nextHref && (
+                <a href={nextHref} className="inline-flex items-center justify-center gap-1 font-medium rounded-lg px-4 py-2 text-sm bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
+                  Nächste &rarr;
+                </a>
+              )}
+              {!nextHref && finishHref && (
+                <a href={finishHref} className="inline-flex items-center justify-center gap-1 font-medium rounded-lg px-4 py-2 text-sm bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
+                  Zurück zu Lektionen
+                </a>
+              )}
+            </div>
           </div>
         </Card>
       </FadeIn>

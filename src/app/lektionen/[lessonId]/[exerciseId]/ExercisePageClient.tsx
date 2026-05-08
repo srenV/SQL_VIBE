@@ -186,39 +186,16 @@ export function ExercisePageClient({
                 ) : playgroundExercise.exerciseType === "story" ? (
                   <StoryPlayer exercise={playgroundExercise} onComplete={handleComplete} />
                 ) : (
-                  <Playground exercise={playgroundExercise} onComplete={handleComplete} />
+                  <Playground
+                    exercise={playgroundExercise}
+                    onComplete={handleComplete}
+                    prevHref={prevExerciseId ? `/lektionen/${lesson.id}/${prevExerciseId}` : null}
+                    nextHref={nextExerciseId ? `/lektionen/${lesson.id}/${nextExerciseId}` : null}
+                    finishHref={!nextExerciseId ? "/lektionen" : null}
+                  />
                 )}
               </FadeIn>
 
-              <FadeIn delay={0.1}>
-                <nav className="mt-6 flex items-center justify-between" aria-label="Übungsnavigation">
-                  <div>
-                    {prevExerciseId && (
-                      <Link href={`/lektionen/${lesson.id}/${prevExerciseId}`}>
-                        <button className="inline-flex items-center justify-center gap-2 font-medium rounded-md px-3 py-1.5 text-sm bg-transparent text-ink hover:bg-surface-dim transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
-                          &larr; Vorherige
-                        </button>
-                      </Link>
-                    )}
-                  </div>
-                  <div>
-                    {nextExerciseId && (
-                      <Link href={`/lektionen/${lesson.id}/${nextExerciseId}`}>
-                        <button className="inline-flex items-center justify-center gap-2 font-medium rounded-lg px-4 py-2 text-sm bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
-                          Nächste Übung &rarr;
-                        </button>
-                      </Link>
-                    )}
-                    {!nextExerciseId && (
-                      <Link href="/lektionen">
-                        <button className="inline-flex items-center justify-center gap-2 font-medium rounded-lg px-4 py-2 text-sm bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
-                          Zurück zu Lektionen
-                        </button>
-                      </Link>
-                    )}
-                  </div>
-                </nav>
-              </FadeIn>
             </div>
           </div>
         </Container>
