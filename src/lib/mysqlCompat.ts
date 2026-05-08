@@ -584,6 +584,32 @@ export function mapSqliteTypeToMysql(sqliteType: string): string {
 }
 
 /**
+ * Extrahiert den Datenbanknamen aus CREATE DATABASE- oder USE-Statements
+ * in einem SQL-Skript. Wird verwendet, um automatisch erstellte
+ * Datenbanken sinnvoll zu benennen.
+ *
+ * Priorität: CREATE DATABASE > USE > "Neue Datenbank"
+ *
+ * @param sql - Das SQL-Skript
+ * @returns Der extrahierte Datenbankname oder null
+ */
+export function extractDatabaseName(sql: string): string | null {
+  // CREATE DATABASE [IF NOT EXISTS] name
+  const createMatch = sql.match(/\bCREATE\s+DATABASE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i);
+  if (createMatch) {
+    return createMatch[1];
+  }
+
+  // USE name
+  const useMatch = sql.match(/\bUSE\s+(\w+)/i);
+  if (useMatch) {
+    return useMatch[1];
+  }
+
+  return null;
+}
+
+/**
  * Prüft, ob eine SQL-Anweisung MySQL-spezifische Features verwendet,
  * die in SQLite nicht unterstützt werden (auch nicht mit Transpiler).
  * Gibt eine Liste von Warnungen zurück.

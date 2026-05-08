@@ -12,6 +12,7 @@ import {
   mapSqliteErrorToMysql,
   mapSqliteTypeToMysql,
   getMysqlCompatWarnings,
+  extractDatabaseName,
 } from "./mysqlCompat";
 import { splitSqlStatements } from "./sqlEngine";
 
@@ -556,5 +557,42 @@ describe("getMysqlCompatWarnings", () => {
   it("gibt keine Warnungen für RIGHT JOIN (wird vom Transpiler abgefangen)", () => {
     const warnings = getMysqlCompatWarnings("SELECT * FROM a RIGHT JOIN b ON a.id = b.id");
     expect(warnings).toHaveLength(0);
+  });
+});
+
+describe("extractDatabaseName", () => {
+  it("extrahiert den Namen aus CREATE DATABASE", () => {
+    expect(extractDatabaseName("CREATE DATABASE Kuechenstudio;")).toBe("Kuechenstudio");
+  });
+
+  it("extrahiert den Namen aus CREATE DATABASE IF NOT EXISTS", () => {
+    expect(extractDatabaseName("CREATE DATABASE IF NOT EXISTS Kuechenstudio;")).toBe("Kuechenstudio");
+  });
+
+  it("extrahiert den Namen aus USE", () => {
+    expect(extractDatabaseName("USE Kuechenstudio;")).toBe("Kuechenstudio");
+  });
+
+  it("priorisiert CREATE DATABASE über USE", () => {
+    const sql = "DROP DATABASE IF EXISTS Kuechenstudio;\nCREATE DATABASE Kuechenstudio;\nUSE Kuechenstudio;";
+    expect(extractDatabaseName(sql)).toBe("Kuechenstudio");
+  });
+
+  it("extrahiert den Namen aus USE wenn kein CREATE DATABASE vorhanden", () => {
+    const sql = "USE mydb;\nSELECT * FROM test;";
+    expect(extractDatabaseName(sql)).toBe("mydb");
+  });
+
+  it("gibt null zurück wenn kein CREATE DATABASE oder USE vorhanden", () => {
+    expect(extractDatabaseName("SELECT * FROM kunden;")).toBeNull();
+  });
+
+  it("extrahiert den Namen aus einem vollständigen Küchen-Skript", () => {
+    const sql = `DROP DATABASE IF EXISTS Kuechenstudio;
+CREATE DATABASE Kuechenstudio;
+USE Kuechenstudio;
+
+CREATE TABLE Personal (PersonalNr INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Vorname TEXT, Provision INTEGER);`;
+    expect(extractDatabaseName(sql)).toBe("Kuechenstudio");
   });
 });

@@ -23,6 +23,7 @@ import {
   loadDatabaseFromBinary,
   closeDatabase,
 } from "@/lib/sqlEngine";
+import { extractDatabaseName } from "@/lib/mysqlCompat";
 import { introspectSchema } from "@/lib/schemaExplorer";
 import {
   saveDatabase,
@@ -373,7 +374,8 @@ export function useSandbox(): UseSandboxReturn {
         try {
           const now = new Date().toISOString();
           const newId = crypto.randomUUID();
-          const name = "Neue Datenbank";
+          // Datenbanknamen aus CREATE DATABASE / USE extrahieren, Fallback "Neue Datenbank"
+          const name = extractDatabaseName(sql) || "Neue Datenbank";
 
           // Leere DB erstellen, SQL direkt darauf ausführen
           const newDb = await createDatabase(sql);
