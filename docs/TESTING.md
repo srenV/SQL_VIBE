@@ -35,11 +35,11 @@ Test-Strategie, Test-Struktur und Test-Abdeckung der SQL-Trainer MySQL-Lernplatt
 
 | Ebene | Tests | Dateien |
 |-------|-------|---------|
-| Unit (Lib) | 569 | 7 Dateien |
+| Unit (Lib) | 639 | 8 Dateien |
 | Unit (Components) | 34 | 6 Dateien |
-| Integration (Hooks/Adapter) | 36 | 3 Dateien |
-| E2E (Playwright) | 3 | 3 Dateien |
-| **Gesamt** | **642** | **19 Dateien** |
+| Integration (Hooks/Adapter) | 18 | 2 Dateien |
+| E2E (Playwright) | 6 | 6 Dateien |
+| **Gesamt** | **721** | **22 Dateien** |
 
 ---
 
@@ -95,6 +95,13 @@ Testet verdeckte Tests mit allen 5 Compare-Modi:
 - `count`: Zeilenanzahl
 - `contains`: Teilmenge
 
+#### `src/lib/mysqlCompat.test.ts` (70 Tests)
+
+Testet die MySQL→SQLite Kompatibilitätsschicht:
+- `extractDatabaseName()`: CREATE DATABASE, USE, Fallback-Namen
+- MySQL-Kompatibilitätstransformationen
+- Case-Insensitivity, Whitespace-Handling
+
 #### `src/lib/playgroundAdapter.test.ts` (9 Tests)
 
 Testet den Katalog→Playground-Adapter:
@@ -112,13 +119,14 @@ Testet die Schema-Introspektion:
 - Nullable-Erkennung, Foreign Keys
 - Mehrere Tabellen
 
-#### `src/lib/sqlEngine.test.ts` (6 Tests)
+#### `src/lib/sqlEngine.test.ts` (16 Tests)
 
-Testet die RIGHT JOIN Transformation:
-- Mit/ohne Aliase
+Testet die SQL-Engine:
+- RIGHT JOIN Transformation (mit/ohne Aliase)
 - LEFT JOIN unberührt
 - Case-insensitive
 - Mehrere JOINs
+- MySQL-Kompatibilität
 
 #### `src/lib/utils.test.ts` (8 Tests)
 
@@ -198,6 +206,30 @@ Testet den Fortschritts-Hook:
 - "Jetzt starten" Button vorhanden
 - "Alle Lektionen" Button vorhanden
 - Statistiken (Übungen, Lektionen, Datensätze) sichtbar
+
+#### `e2e/navigation.spec.ts`
+
+- Navigation: Lektionen, Übungen, Breadcrumbs
+
+#### `e2e/exercise-interaction.spec.ts`
+
+- Übungs-Interaktion: SQL schreiben, ausführen, Feedback
+
+#### `e2e/lernen.spec.ts`
+
+- Lern-Module: Artikel, Navigation
+
+#### `e2e/ueben.spec.ts`
+
+- Üben-Page: Übungsliste, Filter
+
+#### `e2e/sandbox.spec.ts`
+
+- Sandbox: SQL-Editor, Schema-Explorer
+
+#### `e2e/tab-navigation.spec.ts`
+
+- Tab-Navigation: Schema-Explorer Tabs
 
 #### `e2e/navigation.spec.ts`
 

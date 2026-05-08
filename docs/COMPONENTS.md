@@ -233,12 +233,18 @@ Drei-Tab-View für Datenbank-Schema. Siehe **[SCHEMA_GRAPH.md](./SCHEMA_GRAPH.md
 interface SchemaExplorerProps {
   tables: SchemaTable[];
   db?: import("sql.js").Database | null;
+  sandboxMode?: boolean;                        // Sandbox-Modus (Drop Table, Insert, Create)
+  onDropTable?: (tableName: string) => void;     // Tabelle droppen (nur Sandbox)
+  onInsertTemplate?: (tableName: string) => void; // INSERT-Template in Editor
+  onCreateTableTemplate?: () => void;            // CREATE TABLE-Template in Editor
+  viewMode?: "rm" | "data" | "schema";          // Extern gesteuerter Anzeigemodus
+  hideTabs?: boolean;                            // Tab-Leiste ausblenden (wenn extern gesteuert)
 }
 ```
 
 | Tab | Inhalt |
 |-----|--------|
-| **RM** | `SchemaGraph` — interaktiver ER-Graph |
+| **RM** | `SchemaGraph` — interaktiver ER-Graph mit per-column Bezier-Kanten |
 | **Daten** | Live-Daten-Vorschau (max. 10 Zeilen) |
 | **Schema** | Spalten, Typen, PKs, FKs als Tabelle |
 
@@ -246,7 +252,13 @@ interface SchemaExplorerProps {
 
 ### SchemaGraph
 
-Interaktiver ER-Graph mit React Flow + dagre. Siehe **[SCHEMA_GRAPH.md](./SCHEMA_GRAPH.md)** für Details.
+Interaktiver ER-Graph mit React Flow + dagre + Bezier-Kanten. Siehe **[SCHEMA_GRAPH.md](./SCHEMA_GRAPH.md)** für Details.
+
+**Features:**
+- Per-column Handles: FK-Spalten → Source-Handle (rechts), PK/referenzierte Spalten → Target-Handle (links)
+- Custom `FkEdge` mit `getBezierPath` und konfigurierbarer `curvature`
+- Parallele Kanten zwischen denselben Tabellen werden durch unterschiedliche Krümmung visuell getrennt
+- `referencedColumns` Map für Target-Handles auf Nicht-PK-Spalten
 
 ```typescript
 interface SchemaGraphProps {
@@ -313,6 +325,49 @@ interface SuccessCelebrationProps {
 - 12 Konfetti-Partikel mit zufälligen Farben/Positionen
 - `success-pop` Animation (Scale + Fade)
 - Custom Event `sql-trainer-success` für externe Listener
+
+---
+
+### Sandbox-Komponenten
+
+#### SandboxWorkspace
+
+Hauptarbeitsbereich für die Sandbox (freies SQL-Experimentieren).
+
+```typescript
+interface SandboxWorkspaceProps {
+  // Keine Props — holt State aus useSandbox
+}
+```
+
+**Features:**
+- Vier-Tab-Layout: Ergebnis, Daten, Graph, Schema
+- SQL-Editor mit freier Eingabe
+- SchemaExplorer mit Sandbox-Aktionen (Drop Table, Insert, Create Table)
+
+#### SandboxSidebar
+
+Seitenleiste für die Sandbox mit Datenbank-Aktionen.
+
+---
+
+### Learn-Komponenten
+
+#### ArticlePageClient
+
+Artikel-Renderer für Lern-Module (Normalisierung, ERM, etc.).
+
+#### ErmDiagram
+
+ER-Diagramm-Komponente für Lern-Module.
+
+#### NfChecker
+
+Normalform-Checker für Normalisierungs-Übungen.
+
+#### RmToSql
+
+Relationales Modell → SQL Konverter.
 
 ---
 
@@ -420,7 +475,8 @@ Playground
 │     └── SchemaGraph
 │           ├── ReactFlow
 │           ├── dagre
-│           └── TableNode (custom)
+│           ├── TableNode (custom)
+│           └── FkEdge (custom, Bezier)
 ├── SuccessCelebration
 ├── FadeIn
 └── SqlResultSkeleton
@@ -442,6 +498,16 @@ StoryPlayer
 ├── FadeIn
 ├── SuccessCelebration
 └── usePlayground (Hook)
+
+SandboxWorkspace
+├── useSandbox (Hook)
+├── Card
+├── Button
+├── SqlEditor
+├── ResultsetTable
+├── SchemaExplorer (sandboxMode)
+│     └── SchemaGraph
+└── SandboxSidebar
 
 Header
 ├── Container

@@ -40,6 +40,12 @@ SchemaExplorer
 interface SchemaExplorerProps {
   tables: SchemaTable[];                        // Schema-Daten
   db?: import("sql.js").Database | null;        // Für Daten-Vorschau
+  sandboxMode?: boolean;                        // Sandbox-Modus (Drop Table, Insert, Create)
+  onDropTable?: (tableName: string) => void;    // Tabelle droppen (nur Sandbox)
+  onInsertTemplate?: (tableName: string) => void; // INSERT-Template in Editor
+  onCreateTableTemplate?: () => void;           // CREATE TABLE-Template in Editor
+  viewMode?: "rm" | "data" | "schema";          // Extern gesteuerter Anzeigemodus
+  hideTabs?: boolean;                           // Tab-Leiste ausblenden (wenn extern gesteuert)
 }
 ```
 
@@ -71,7 +77,9 @@ SchemaGraph (Public API)
               ├── layoutWithDagre(tables)
               │     ├── dagre.graphlib.Graph
               │     ├── Nodes registrieren
-              │     ├── Edges registrieren
+              │     ├── referencedColumns Map berechnen
+              │     ├── Edges mit per-column Handles registrieren
+              │     ├── Parallele Edges gruppieren → curvature verteilen
               │     ├── dagre.layout(g)
               │     └── → { nodes: Node[], edges: Edge[] }
               │
@@ -79,64 +87,83 @@ SchemaGraph (Public API)
                     ├── nodes (controlled props)
                     ├── edges (controlled props)
                     ├── nodeTypes: { tableNode: TableNode }
+                    ├── edgeTypes: { fkEdge: FkEdge }
                     ├── Background (Dots)
                     └── Controls (Zoom, Fit)
 ```
 
 ### TableNode (Custom Node)
 
-Jede Tabelle wird als Custom Node mit folgender Struktur gerendert:
+Jede Tabelle wird als Custom Node mit **per-column Handles** gerendert. Jede FK-Spalte bekommt einen eigenen Source-Handle (rechts), jede PK- oder referenzierte Spalte bekommt einen eigenen Target-Handle (links):
 
 ```
 ┌──────────────────────────┐
-│  Handle (source, right)  │  ← Ausgehende Kanten
-├──────────────────────────┤
 │  Tabellenname            │  ← Header (primary-100 bg)
 ├──────────────────────────┤
-│  PK  id        INTEGER   │  ← Spalten mit PK/FK-Badges
-│  FK  kunde_id  INTEGER   │
+│  PK  id        INTEGER   │ ← target-handle "target-id" (links)
+│  FK  kunde_id  INTEGER   │ ← source-handle "source-kunde_id" (rechts)
 │      name      VARCHAR   │
 │      ...                 │
-├──────────────────────────┤
-│  Handle (target, left)   │  ← Eingehende Kanten
 └──────────────────────────┘
 ```
 
-**Handle-Komponenten:**
-- `type="source"`, `position={Position.Right}` — Kanten gehen VON dieser Tabelle aus
-- `type="target"`, `position={Position.Left}` — Kanten gehen ZU dieser Tabelle
-- **Wichtig:** Keine explizite `id` (defaultet auf `null`) — kompatibel mit Edges ohne `sourceHandle`/`targetHandle`
+**Per-Column Handles:**
+- **Source-Handle** (rechts): Für jede FK-Spalte → `id="source-{colName}"`, `position={Position.Right}`
+- **Target-Handle** (links): Für jede PK-Spalte oder referenzierte Spalte → `id="target-{colName}"`, `position={Position.Left}`
+- **Y-Positionierung:** `top: getColumnY(colIndex)` + `transform: "translateY(-50%)"` platziert den Handle exakt auf der Zeilenmitte
+- **CSS-Override:** ReactFlow setzt standardmäßig `transform: translate(±50%, -50%)` auf Handles. Dies wird überschrieben mit `transform: "translateY(-50%)"` und `right: -4` / `left: -4`, damit Handles am Node-Rand ausgerichtet sind.
+
+**referencedColumns Map:**
+Da nicht nur PK-Spalten Ziel von FK-Beziehungen sein können, wird eine `referencedColumns: Map<TableName, Set<string>>` berechnet. Diese Map enthält alle Spalten, die von einer FK-Beziehung referenziert werden, unabhängig davon ob sie PK sind oder nicht.
 
 **Spalten-Badges:**
 - **PK:** Gelb (`amber-100`) — `col.isPrimaryKey === true`
 - **FK:** Indigo (`indigo-100`) — Spalte erscheint in `table.foreignKeys`
 - **Normal:** Kein Badge, Spacer (`w-8`)
 
-### Edge-Styling
+### Custom FkEdge (Bezier mit konfigurierbarer Krümmung)
+
+Statt der Standard-`smoothstep`-Kanten wird eine **eigene Edge-Komponente** (`FkEdge`) verwendet, die `getBezierPath` aus `@xyflow/react` mit konfigurierbarem `curvature`-Parameter nutzt:
 
 ```typescript
+function FkEdge({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, data, ... }: EdgeProps) {
+  const curvature = (data?.curvature as number) ?? 0.25;
+  const [path, labelX, labelY] = getBezierPath({
+    sourceX, sourceY, targetX, targetY,
+    sourcePosition, targetPosition,
+    curvature,
+  });
+  return <BaseEdge path={path} labelX={labelX} labelY={labelY} ... />;
+}
+```
+
+**Parallele Kanten (gleicher Source→Target-Paar):**
+Wenn mehrere FK-Kanten denselben Source-Target-Paar haben, werden sie durch unterschiedliche `curvature`-Werte visuell getrennt:
+- **Einzelne Kante:** `curvature = 0.25` (leichte Kurve)
+- **Mehrere Kanten:** Symmetrische Verteilung, z.B. bei 3 Kanten: `-0.18, 0, 0.18`
+
+**Edge-Definition:**
+```typescript
 {
-  type: "smoothstep",           // Rechtwinklige Kanten mit Kurven
-  animated: true,               // Fließende Animation
-  style: {
-    stroke: "#6366f1",          // Indigo
-    strokeWidth: 2.5            // Dick genug für Sichtbarkeit
-  },
+  id: `${sourceTable}-${fk.column}->${fk.referencedTable}-${fk.referencedColumn}`,
+  type: "fkEdge",                    // Custom Edge-Komponente
+  source: sourceTable,
+  sourceHandle: `source-${fk.column}`,    // Per-Column Handle
+  target: fk.referencedTable,
+  targetHandle: `target-${fk.referencedColumn}`, // Per-Column Handle
+  animated: true,
+  label: `${fk.column} → ${fk.referencedColumn}`,  // "kunde_id → id"
+  data: { curvature },               // Bezier-Krümmung
+  style: { stroke: "#6366f1", strokeWidth: 2 },
   markerEnd: {
     type: MarkerType.ArrowClosed,
-    width: 22, height: 22,     // Pfeilspitze
+    width: 18, height: 18,
     color: "#6366f1"
   },
-  label: fk.column,            // FK-Spaltenname als Label
-  labelStyle: {
-    fontSize: 10,
-    fill: "#475569",
-    fontWeight: 600
-  },
-  labelBgStyle: {
-    fill: "#ffffff",
-    fillOpacity: 0.95           // Halbtransparenter Hintergrund
-  }
+  labelStyle: { fontSize: 9, fill: "#475569", fontWeight: 600 },
+  labelBgStyle: { fill: "#ffffff", fillOpacity: 0.92 },
+  labelBgPadding: [4, 3] as [number, number],
+  labelBgBorderRadius: 3,
 }
 ```
 
@@ -294,7 +321,6 @@ const remountKey = useMemo(
 ## Bekannte Einschränkungen
 
 1. **Keine FK-Constraints in DDL:** FKs kommen aus Metadaten, nicht aus SQLite — `mergeSchemaWithFKs()` fixt das
-2. **Keine Handle-IDs:** Handles ohne `id` (default `null`) — Edges ohne `sourceHandle`/`targetHandle` funktionieren nur so
-3. **Remount bei Tabellen-Wechsel:** `key={remountKey}` verhindert inkrementelle Updates, ist aber robuster
-4. **Kein Dark Mode für Edge-Labels:** `labelBgStyle.fill: "#ffffff"` ist hartkodiert — im Dark Mode leicht inkonsistent
-5. **Keine manuelle Kanten:** `nodesConnectable={false}` — User können keine eigenen Kanten ziehen
+2. **Remount bei Tabellen-Wechsel:** `key={remountKey}` verhindert inkrementelle Updates, ist aber robuster
+3. **Kein Dark Mode für Edge-Labels:** `labelBgStyle.fill: "#ffffff"` ist hartkodiert — im Dark Mode leicht inkonsistent
+4. **Keine manuelle Kanten:** `nodesConnectable={false}` — User können keine eigenen Kanten ziehen

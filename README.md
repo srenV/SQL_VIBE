@@ -3,7 +3,7 @@
 Interaktive MySQL-Lernplattform mit über 500 Übungen, sofortigem Feedback und gamifiziertem Fortschritt — alles direkt im Browser, ohne Anmeldung, ohne Server.
 
 > **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · sql.js (WASM) · React Flow · dagre · Framer Motion  
-> **Tests:** 642 Tests (Vitest + Playwright E2E) · 100% grün  
+> **Tests:** 721 Tests (Vitest + Playwright E2E) · 719 grün, 2 pre-existing Failures  
 > **Deployment:** Vercel (Static Export)
 
 ---
@@ -56,7 +56,7 @@ SQL_VIBE/
 │   │   ├── sqlEditor.tsx             # SQL-Textarea mit Syntax-Highlighting
 │   │   ├── resultsetTable.tsx        # Ergebnistabelle
 │   │   ├── schemaExplorer.tsx        # Schema-Explorer (RM/Data/Schema Tabs)
-│   │   ├── schemaGraph.tsx           # RM-Graph (React Flow + dagre)
+│   │   ├── schemaGraph.tsx           # RM-Graph (React Flow + dagre + Bezier Edges)
 │   │   ├── predictQuiz.tsx           # Multiple-Choice-Quiz
 │   │   ├── storyPlayer.tsx           # Narrativer Spielmodus (SQL Agent)
 │   │   ├── successCelebration.tsx    # Erfolgs-Animation mit Konfetti
@@ -71,11 +71,22 @@ SQL_VIBE/
 │   │   ├── themeProvider.tsx         # Theme-Script (Dark Mode Flash vermeiden)
 │   │   ├── themeToggle.tsx           # Dark/Light Mode Toggle
 │   │   ├── skeleton.tsx              # Skeleton-Loader
-│   │   └── animations.tsx            # FadeIn, AnimatedList, ScaleOnHover
+│   │   ├── animations.tsx            # FadeIn, AnimatedList, ScaleOnHover
+│   │   ├── learn/                    # Lern-Modul Komponenten
+│   │   │   ├── ArticlePageClient.tsx # Artikel-Renderer
+│   │   │   ├── ErmDiagram.tsx        # ER-Diagramm für Lern-Module
+│   │   │   ├── NfChecker.tsx         # Normalform-Checker
+│   │   │   ├── RmToSql.tsx           # RM→SQL Konverter
+│   │   │   └── moduleIcons.tsx       # Modul-Icons
+│   │   ├── sandbox/                  # Sandbox-Komponenten
+│   │   │   ├── sandboxWorkspace.tsx  # Sandbox-Hauptarbeitsbereich
+│   │   │   └── sandboxSidebar.tsx    # Sandbox-Seitenleiste
+│   │   └── ui/                       # (zukünftige UI-Primitives)
 │   │
 │   ├── hooks/                        # Custom Hooks
 │   │   ├── usePlayground.ts          # Playground-Orchestrator (DB, Queries, Tests)
-│   │   └── useProgress.ts            # Lernfortschritt (Local Storage)
+│   │   ├── useProgress.ts            # Lernfortschritt (Local Storage)
+│   │   └── useSandbox.ts             # Sandbox-Orchestrator (DB, Queries, Schema)
 │   │
 │   ├── lib/                          # Utility-Funktionen & Engine
 │   │   ├── sqlEngine.ts              # sql.js WASM Wrapper (DB, Queries, Schema)
@@ -85,7 +96,9 @@ SQL_VIBE/
 │   │   ├── hiddenTests.ts            # Verdeckte Tests
 │   │   ├── hintEngine.ts             # Hinweis-Engine (Trigger-basiert)
 │   │   ├── errorExplanation.ts       # SQL-Fehlererkennung (Deutsch)
+│   │   ├── mysqlCompat.ts            # MySQL→SQLite Kompatibilität (CREATE DATABASE, USE, etc.)
 │   │   ├── exercises.ts              # Beispiel-Übungen (Playground)
+│   │   ├── dbStorage.ts              # IndexedDB-Persistenz für Sandbox
 │   │   └── utils.ts                  # cn() Helper, String-Utils
 │   │
 │   ├── data/                         # Übungskatalog
@@ -131,7 +144,11 @@ SQL_VIBE/
 ├── e2e/                              # Playwright E2E-Tests
 │   ├── landing.spec.ts               # Landing Page Tests
 │   ├── navigation.spec.ts            # Navigation Tests
-│   └── exercise-interaction.spec.ts  # Übungs-Interaktion Tests
+│   ├── exercise-interaction.spec.ts  # Übungs-Interaktion Tests
+│   ├── lernen.spec.ts               # Lern-Modul Tests
+│   ├── ueben.spec.ts                # Üben-Page Tests
+│   ├── sandbox.spec.ts              # Sandbox Tests
+│   └── tab-navigation.spec.ts       # Tab-Navigation Tests
 │
 ├── scripts/                          # Build & Validation Scripts
 │   ├── generate-exercises.js         # Übungs-Generator
@@ -349,12 +366,17 @@ SchemaExplorer (tables, db)
         └── ReactFlowProvider
               └── SchemaGraphInner
                     ├── layoutWithDagre() → { nodes, edges }
-                    └── ReactFlow (nodes, edges, nodeTypes)
+                    │     ├── referencedColumns Map (welche Spalten sind FK-Ziele)
+                    │     ├── Per-column Handles (source-{col}, target-{col})
+                    │     └── Parallele Edges → curvature-Verteilung
+                    └── ReactFlow (nodes, edges, nodeTypes, edgeTypes)
                           ├── TableNode (custom node)
-                          │     ├── Handle (source, Position.Right)
-                          │     ├── Handle (target, Position.Left)
+                          │     ├── Handle (source, Position.Right) — pro FK-Spalte
+                          │     ├── Handle (target, Position.Left) — pro PK/referenzierte Spalte
                           │     ├── Header (Tabellenname)
                           │     └── Columns (PK/FK badges, Name, Typ)
+                          ├── FkEdge (custom edge)
+                          │     └── Bezier-Kurve mit konfigurierbarer curvature
                           ├── Background (Dots)
                           └── Controls (Zoom, Fit)
 ```
@@ -408,7 +430,7 @@ npm test                # Alle Tests mit Coverage
 npx vitest run          # Ohne Coverage (schneller)
 ```
 
-**19 Test-Dateien, 642 Tests, 100% grün:**
+**20 Test-Dateien, 721 Tests:**
 
 | Test-Datei | Tests | Bereich |
 |-----------|-------|---------|
@@ -418,7 +440,8 @@ npx vitest run          # Ohne Coverage (schneller)
 | `hiddenTests.test.ts` | 11 | Verdeckte Tests |
 | `playgroundAdapter.test.ts` | 9 | Katalog→Playground Adapter |
 | `schemaExplorer.test.ts` | 5 | Schema-Introspektion |
-| `sqlEngine.test.ts` | 6 | RIGHT JOIN Transformation |
+| `sqlEngine.test.ts` | 16 | RIGHT JOIN Transformation |
+| `mysqlCompat.test.ts` | 70 | MySQL→SQLite Kompatibilität |
 | `utils.test.ts` | 8 | cn() Helper |
 | `catalog.test.ts` | 9 | Katalog-Validierung |
 | `validate.test.ts` | 500 | Alle 500+ Übungen validiert |
@@ -430,7 +453,7 @@ npx vitest run          # Ohne Coverage (schneller)
 | `container.test.tsx` | 3 | Container-Komponente |
 | `logo.test.tsx` | 3 | Logo-Komponente |
 | `animations.test.tsx` | 7 | Animations-Komponenten |
-| `page.test.tsx` | 5 | Home Page |
+| `page.test.tsx` | 4 | Home Page |
 
 ### E2E Tests (Playwright)
 
@@ -444,6 +467,10 @@ npm run test:e2e:ui     # Mit UI
 | `landing.spec.ts` | Landing Page: Überschrift, Buttons, Navigation |
 | `navigation.spec.ts` | Navigation: Lektionen, Übungen, Breadcrumbs |
 | `exercise-interaction.spec.ts` | Übungs-Interaktion: SQL schreiben, ausführen, Feedback |
+| `lernen.spec.ts` | Lern-Module: Artikel, Navigation |
+| `ueben.spec.ts` | Üben-Page: Übungsliste, Filter |
+| `sandbox.spec.ts` | Sandbox: SQL-Editor, Schema-Explorer |
+| `tab-navigation.spec.ts` | Tab-Navigation: Schema-Explorer Tabs |
 
 ---
 
@@ -500,11 +527,23 @@ npm run build   # Statischer Export nach out/
 ## Lizenz
 
 &copy; Sören Timo Voigt 2025–2026
-- `framer-motion` – Animationen
-- `tailwindcss` – Utility-First CSS
-- `clsx` + `tailwind-merge` – Klassen-String-Verwaltung
-- `vitest` + `@testing-library/jest-dom` – Unit-Tests
-- `@playwright/test` – E2E-Tests
+
+---
+
+## Entwicklungsmethodik
+
+Dieses Projekt wurde mit Unterstützung agensbasierter KI-Workflows entwickelt, die verschiedene spezialisierte Tools orchestrieren:
+
+| Tool | Einsatzbereich |
+|------|---------------|
+| **Cursor (Copilot)** | Hauptsächliche IDE mit Inline-Code-Generierung, Refactoring und kontextbewussten Vorschlägen |
+| **Codex (OpenAI)** | Architektur-Entscheidungen, komplexe Algorithmen und dateiübergreifende Refactorings |
+| **Manus.im** | Tiefgehende Recherche, Prototyping und iterativer Feature-Ausbau |
+| **Stitch** | UI-Komponenten-Generierung und visuelle Integration |
+
+Die KI-Agenten wurden als spezialisierte Werkzeuge eingesetzt — nicht als Ersatz für Engineering-Entscheidungen. Jede generierte Lösung wurde manuell verifiziert, auf Konsistenz mit der bestehenden Architektur geprüft und bei Bedarf angepasst. Die finale Code-Verantwortung liegt beim Entwickler.
+
+---
 
 ## Lizenz
 

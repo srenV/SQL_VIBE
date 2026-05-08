@@ -67,10 +67,11 @@ Der SQL-Trainer ist eine **rein clientseitige** Single-Page-Application (SPA), d
 | Schicht | Verantwortung | Key Files |
 |---------|--------------|-----------|
 | **UI** | Rendering, User-Interaktion, Animationen | `playground.tsx`, `schemaGraph.tsx`, `sqlEditor.tsx` |
-| **Hooks** | State-Management, Lifecycle, Daten-Fetching | `usePlayground.ts`, `useProgress.ts` |
+| **Hooks** | State-Management, Lifecycle, Daten-Fetching | `usePlayground.ts`, `useProgress.ts`, `useSandbox.ts` |
 | **Logic** | Business-Logik: Validierung, Hinweise, Fehler | `resultsetComparison.ts`, `hintEngine.ts` |
 | **Adapter** | Format-Konvertierung Katalog ↔ Playground | `playgroundAdapter.ts` |
 | **Engine** | sql.js WASM Wrapper, Schema-Introspektion | `sqlEngine.ts`, `schemaExplorer.ts` |
+| **Logic** | MySQL-Kompatibilität, DB-Persistenz | `mysqlCompat.ts`, `dbStorage.ts` |
 | **Data** | Übungsdefinitionen, Datasets, Katalog | `catalog.ts`, `datasets/*.ts`, `exercises/*.ts` |
 | **Types** | TypeScript-Typdefinitionen | `exercise.ts`, `playground.ts` |
 
@@ -196,6 +197,7 @@ Der SQL-Trainer verwendet **keinen** globalen State-Manager (Redux, Zustand, Con
 | State | Scope | Persistenz |
 |-------|-------|-----------|
 | `usePlayground` | Pro Übung (Hook) | Nein (flüchtig) |
+| `useSandbox` | Pro Sandbox-Session (Hook) | IndexedDB (DB-Persistenz) |
 | `useProgress` | Global (Hook) | `localStorage` |
 | Theme | Global (DOM-Klasse) | `localStorage` |
 | UI-Zustände | Pro Komponente (`useState`) | Nein |
@@ -241,6 +243,17 @@ transformRightJoin(sql) → string           // RIGHT→LEFT JOIN
 - **FOREIGN KEY Constraints** werden in DDL nicht deklariert (SQLite erfordert `PRAGMA foreign_keys = ON`)
 - FK-Informationen kommen stattdessen aus Dataset-Metadaten (`ColumnDef.references`)
 
+### MySQL-Kompatibilität (`mysqlCompat.ts`)
+
+```typescript
+extractDatabaseName(sql: string) → string | null  // CREATE DATABASE/USE → DB-Name
+```
+
+Behandelt MySQL-spezifische Statements, die SQLite nicht unterstützt:
+- `CREATE DATABASE name` → Extrahiert den Datenbanknamen für die Auto-Erstellung
+- `USE database` → Wechselt den Datenbankkontext
+- Fallback auf "Neue Datenbank" wenn kein Name extrahiert werden kann
+
 ---
 
 ## Routing
@@ -250,7 +263,11 @@ transformRightJoin(sql) → string           // RIGHT→LEFT JOIN
 /lektionen                  Lektionen-Übersicht
 /lektionen/[lessonId]       Lektions-Detail
 /lektionen/[lessonId]/[exerciseId]  Übungsseite
+/lernen                     Lern-Module Übersicht
+/lernen/[moduleId]          Modul-Detail
+/lernen/[moduleId]/[articleId]  Artikel-Detail
 /uebung                     Direkte Übungsseite
+/sandbox                    Freie SQL-Sandbox
 ```
 
 Alle Routen sind **statisch** — keine dynamischen Server-Routen. Next.js `output: "export"` generiert statische HTML-Dateien.
