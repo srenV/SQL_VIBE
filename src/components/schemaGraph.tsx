@@ -184,6 +184,8 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable; referenced
                 id={`source-${col.name}`}
                 style={{
                   top: yCenter,
+                  right: -4,
+                  transform: "translateY(-50%)",
                   background: "#6366f1",
                   width: 8,
                   height: 8,
@@ -191,7 +193,7 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable; referenced
                 }}
               />
             )}
-            {/* PK target handle on the left — edge arrives AT this PK or referenced column */}
+            {/* Target handle on the left — edge arrives AT this PK or referenced column */}
             {(col.isPrimaryKey || referencedColumns.has(col.name)) && (
               <Handle
                 type="target"
@@ -199,6 +201,8 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable; referenced
                 id={`target-${col.name}`}
                 style={{
                   top: yCenter,
+                  left: -4,
+                  transform: "translateY(-50%)",
                   background: col.isPrimaryKey ? "#f59e0b" : "#6366f1",
                   width: 8,
                   height: 8,

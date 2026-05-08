@@ -112,7 +112,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
               <Button
                 onClick={runUserQuery}
                 isLoading={phase === "running"}
-                disabled={!userQuery.trim() || phase === "running"}
+                disabled={!userQuery.trim() || phase === "running" ? true : false}
               >
                 Abfrage ausführen
               </Button>
