@@ -16,7 +16,7 @@ test.describe("Landing Page Smoke", () => {
   });
 
   test("zeigt Logo und Hauptueberschrift", async ({ page }) => {
-    await expect(page.locator("text=SQL-Trainer").first()).toBeVisible();
+    await expect(page.locator("text=SQLVIBE").first()).toBeVisible();
     await expect(page.locator("h1")).toContainText(/SQL/i);
   });
 

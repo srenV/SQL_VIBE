@@ -1,13 +1,13 @@
 /**
- * Logo – Zeigt das SQL-Trainer-Logo mit optionalem Kompaktmodus.
- * Im Kompaktmodus wird nur "SQL" statt "SQL-Trainer" angezeigt.
+ * Logo – Zeigt das SQLVIBE-Logo mit optionalem Kompaktmodus.
+ * Im Kompaktmodus wird nur "SQL" statt "SQLVIBE" angezeigt.
  */
 import React from "react";
 import { cn } from "@/lib/utils";
 
 /** Props fuer die Logo-Komponente. */
 export interface LogoProps extends React.HTMLAttributes<HTMLSpanElement> {
-  /** Kompaktmodus: zeigt nur "SQL" statt "SQL-Trainer". */
+  /** Kompaktmodus: zeigt nur "SQL" statt "SQLVIBE". */
   compact?: boolean;
 }
 
@@ -24,7 +24,7 @@ export const Logo = React.forwardRef<HTMLSpanElement, LogoProps>(
         {...props}
       >
         <span className="text-primary-600">SQL</span>
-        <span className={cn(compact && "hidden")}>-Trainer</span>
+        <span className={cn(compact && "hidden", "text-primary-500")}>VIBE</span>
       </span>
     );
   }
