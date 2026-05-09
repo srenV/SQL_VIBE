@@ -1,26 +1,15 @@
-/**
- * Sandbox-Page – Freies SQL-Experimentier-Labor.
- *
- * Ermöglicht Benutzern, eigene Datenbanken zu erstellen, Tabellen
- * anzulegen/droppen, Daten einzufügen und beliebige SQL-Abfragen
- * auszuführen. Persistenz via IndexedDB.
- *
- * English: Sandbox page – Free SQL experimentation lab.
- * Allows users to create their own databases, create/drop tables,
- * insert data, and run arbitrary SQL queries. Persistence via IndexedDB.
- */
-
 "use client";
 
-import React from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { SandboxSidebar } from "@/components/sandbox/sandboxSidebar";
-import { SandboxWorkspace } from "@/components/sandbox/sandboxWorkspace";
+import { SandboxWorkspace, type SandboxWorkspaceHandle } from "@/components/sandbox/sandboxWorkspace";
 import { useSandbox } from "@/hooks/useSandbox";
 
 export default function SandboxPage() {
   const sandbox = useSandbox();
+  const workspaceRef = useRef<SandboxWorkspaceHandle>(null);
 
   return (
     <>
@@ -29,30 +18,34 @@ export default function SandboxPage() {
         <Header />
 
         <div className="flex-1 flex min-h-0 overflow-hidden">
-          {/* Sidebar: DB-Verwaltung */}
           <SandboxSidebar
-          dbList={sandbox.dbList}
-          activeDbId={sandbox.activeDbId}
-          onCreateNew={sandbox.createNewDatabase}
-          onOpen={sandbox.openDatabase}
-          onDelete={sandbox.deleteDatabase}
-          onRename={sandbox.renameDatabase}
-          onDuplicate={sandbox.duplicateDatabase}
-          isLoading={sandbox.isLoading}
-        />
+            dbList={sandbox.dbList}
+            activeDbId={sandbox.activeDbId}
+            liveSchema={sandbox.liveSchema}
+            onCreateNew={sandbox.createNewDatabase}
+            onOpen={sandbox.openDatabase}
+            onClose={sandbox.closeActiveDatabase}
+            onDelete={sandbox.deleteDatabase}
+            onRename={sandbox.renameDatabase}
+            onDuplicate={sandbox.duplicateDatabase}
+            onTableClick={(tableName) =>
+              void workspaceRef.current?.insertAndRun(`SELECT * FROM \`${tableName}\` LIMIT 50;`)
+            }
+            isLoading={sandbox.isLoading}
+          />
 
-        {/* Workspace: Editor + Schema + Results */}
-        <SandboxWorkspace
-          db={sandbox.activeDb}
-          liveSchema={sandbox.liveSchema}
-          queryResult={sandbox.queryResult}
-          queryHistory={sandbox.queryHistory}
-          onRunQuery={sandbox.runQuery}
-          onRefreshSchema={sandbox.refreshSchema}
-          isLoading={sandbox.isLoading}
-        />
+          <SandboxWorkspace
+            ref={workspaceRef}
+            db={sandbox.activeDb}
+            liveSchema={sandbox.liveSchema}
+            queryResult={sandbox.queryResult}
+            queryHistory={sandbox.queryHistory}
+            onRunQuery={sandbox.runQuery}
+            onRefreshSchema={sandbox.refreshSchema}
+            isLoading={sandbox.isLoading}
+          />
+        </div>
       </div>
-    </div>
 
       {/* Mobile message */}
       <div className="md:hidden min-h-screen flex flex-col" id="main-content-mobile">

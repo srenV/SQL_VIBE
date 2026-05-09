@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useImperativeHandle } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
@@ -11,6 +11,11 @@ import type { SandboxQueryResult, QueryHistoryEntry } from "@/types/sandbox";
 import type { SchemaTable, SqlColumn } from "@/types/playground";
 import { explainError } from "@/lib/errorExplanation";
 import { peekTableData } from "@/lib/sqlEngine";
+
+export interface SandboxWorkspaceHandle {
+  insertQuery: (sql: string) => void;
+  insertAndRun: (sql: string) => Promise<void>;
+}
 
 export interface SandboxWorkspaceProps {
   db: import("sql.js").Database | null;
@@ -78,7 +83,8 @@ const historyVariants = {
   exit: { opacity: 0, height: 0, transition: { duration: 0.15, ease: "easeIn" as const } },
 };
 
-export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
+export const SandboxWorkspace = React.forwardRef<SandboxWorkspaceHandle, SandboxWorkspaceProps>(
+function SandboxWorkspace({
   db,
   liveSchema,
   queryResult,
@@ -86,8 +92,18 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
   onRunQuery,
   onRefreshSchema,
   isLoading,
-}) => {
+}, ref) {
   const [userQuery, setUserQuery] = useState("");
+
+  useImperativeHandle(ref, () => ({
+    insertQuery: setUserQuery,
+    insertAndRun: async (sql: string) => {
+      setUserQuery(sql);
+      await onRunQuery(sql);
+      setQueryVersion((v) => v + 1);
+      setActiveTab("result");
+    },
+  }), [onRunQuery]);
   const [showHistory, setShowHistory] = useState(false);
   const [activeTab, setActiveTab] = useState<"result" | "data" | "graph" | "schema">("result");
   const [queryVersion, setQueryVersion] = useState(0);
@@ -457,4 +473,5 @@ export const SandboxWorkspace: React.FC<SandboxWorkspaceProps> = ({
       </AnimatePresence>
     </motion.div>
   );
-};
+});
+SandboxWorkspace.displayName = "SandboxWorkspace";
