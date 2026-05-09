@@ -59,8 +59,8 @@ export default function SandboxPage() {
         <Header />
         <main className="flex-1 flex items-center justify-center p-8">
           <div className="text-center space-y-4 max-w-sm">
-            <svg className="w-16 h-16 text-ink-muted mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3.249 3.249 0 00-.813 2.846 3.32 3.32 0 01-2.67 2.67 3.249 3.249 0 00-2.846.813M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            <svg className="w-16 h-16 text-ink-muted mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zM12 16v4M8 20h8" />
             </svg>
             <h2 className="text-xl font-bold text-ink">Sandbox nur auf Desktop verfügbar</h2>
             <p className="text-sm text-ink-muted">
