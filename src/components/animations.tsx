@@ -55,7 +55,7 @@ export const FadeIn = React.forwardRef<HTMLDivElement, FadeInProps>(
             observer.disconnect();
           }
         },
-        { rootMargin: "-20px", threshold: 0.1 }
+        { rootMargin: "50px", threshold: 0 }
       );
       observer.observe(el);
       return () => observer.disconnect();
@@ -166,7 +166,7 @@ export const AnimatedList = React.forwardRef<HTMLDivElement, AnimatedListProps>(
             observer.disconnect();
           }
         },
-        { rootMargin: "-20px", threshold: 0.1 }
+        { rootMargin: "50px", threshold: 0 }
       );
       observer.observe(el);
       return () => observer.disconnect();
