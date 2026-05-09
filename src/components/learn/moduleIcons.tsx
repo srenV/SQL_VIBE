@@ -24,11 +24,11 @@ export function RulerIcon({ className = "w-8 h-8" }: ModuleIconProps) {
   );
 }
 
-/** Link icon (Relationenmodell) */
+/** Table/Network icon (Relationenmodell) */
 export function LinkIcon({ className = "w-8 h-8" }: ModuleIconProps) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.54a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.342" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
     </svg>
   );
 }
@@ -64,7 +64,7 @@ export function MergeIcon({ className = "w-8 h-8" }: ModuleIconProps) {
 export function BuildingIcon({ className = "w-8 h-8" }: ModuleIconProps) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-6.75h3.75m-3.75 0V7.5h3.75m-3.75 0V4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125V7.5m0 0h3.75m-3.75 0v6.75m3.75-6.75h3.75m-3.75 0V4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125V7.5m0 0h3.75m-3.75 0v6.75m3.75-6.75h3.75m0 0v6.75" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m6-18v18m6-18v18m6-18v18m-18-6h18m-18-6h18" />
     </svg>
   );
 }
@@ -87,11 +87,38 @@ export function PencilIcon({ className = "w-8 h-8" }: ModuleIconProps) {
   );
 }
 
-/** Refresh icon (CTEs) */
+/** Refresh/Cycle icon (CTEs) */
 export function RefreshIcon({ className = "w-8 h-8" }: ModuleIconProps) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.852c.963 0 1.445.733 1.075 1.638l-2.51 6.024c-.38.907-1.427.907-1.807 0l-2.51-6.024c-.37-.905.112-1.638 1.075-1.638zM7.977 14.652H3.125c-.963 0-1.445-.733-1.075-1.638l2.51-6.024c.38-.907 1.427-.907 1.807 0l2.51 6.024c.37.905-.112 1.638-1.075 1.638z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+    </svg>
+  );
+}
+
+/** Window/Layers icon (Window Functions) */
+export function WindowIcon({ className = "w-8 h-8" }: ModuleIconProps) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0L12 16.5l-5.571-3" />
+    </svg>
+  );
+}
+
+/** Group/Aggregate icon (Gruppierung & Aggregation) */
+export function GroupIcon({ className = "w-8 h-8" }: ModuleIconProps) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+    </svg>
+  );
+}
+
+/** Speed/Lightning icon (Indizes & Performance) */
+export function SpeedIcon({ className = "w-8 h-8" }: ModuleIconProps) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
     </svg>
   );
 }
@@ -159,7 +186,9 @@ export const moduleIconMap: Record<string, React.ComponentType<ModuleIconProps>>
   subqueries: SearchIcon,
   dml: PencilIcon,
   ctes: RefreshIcon,
-  "window-functions": BarChartIcon,
+  "window-functions": WindowIcon,
+  "gruppierung-aggregation": GroupIcon,
+  "indizes-performance": SpeedIcon,
 };
 
 /** Render a module icon by module ID. Falls back to BarChartIcon. */
