@@ -99,3 +99,42 @@ export interface LearnProgress {
   sectionsRead: string[];
   lastReadAt: string | null;
 }
+
+/** Quiz-Frage mit Multiple-Choice-Antworten. */
+export interface QuizQuestion {
+  id: string;
+  /** Der Fragetext. */
+  question: string;
+  /** Die Antwortoptionen. */
+  options: QuizAnswer[];
+  /** Erklaerung, warum die richtige Antwort richtig ist (wird nach dem Beantworten angezeigt). */
+  explanation: string;
+  /** Schwierigkeitsgrad der Frage. */
+  difficulty?: "easy" | "medium" | "hard";
+  /** Optionale SQL-Abfrage, die im Fragekontext relevant ist. */
+  sqlContext?: string;
+}
+
+/** Antwortoption fuer eine Quiz-Frage. */
+export interface QuizAnswer {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+}
+
+/** Ein komplettes Quiz fuer ein Lernmodul. */
+export interface LearnQuiz {
+  moduleId: string;
+  title: string;
+  description: string;
+  questions: QuizQuestion[];
+}
+
+/** Ergebnis eines abgeschlossenen Quiz. */
+export interface QuizResult {
+  moduleId: string;
+  totalQuestions: number;
+  correctAnswers: number;
+  completedAt: string;
+  answers: Record<string, string>; // questionId -> selectedAnswerId
+}
