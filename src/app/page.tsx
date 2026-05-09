@@ -1,9 +1,7 @@
-import Link from "next/link";
-import { Card } from "@/components/card";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
-import { Button } from "@/components/button";
+import { FeatureCard } from "@/components/featureCard";
 
 export default function HomePage() {
   return (
@@ -37,57 +35,42 @@ export default function HomePage() {
               </p>
             </div>
             <div className="grid gap-6 sm:grid-cols-3">
-              <Link href="/lektionen" className="group block">
-                <Card variant="flat" className="p-6 h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-primary-300">
-                  <div className="text-3xl mb-3" aria-hidden="true">
-                    <svg className="w-10 h-10 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-ink text-lg">Üben</h3>
-                  <p className="text-sm text-ink-muted mt-2">
-                    Interaktive Übungen mit sofortigem Feedback, Hinweisen und gamifiziertem Fortschritt.
-                    Von SELECT-Grundlagen bis zu Interview-Challenges.
-                  </p>
-                  <span className="text-primary-500 font-medium text-sm mt-3 inline-block group-hover:translate-x-1 transition-transform">
-                    Zu den Lektionen &rarr;
-                  </span>
-                </Card>
-              </Link>
-              <Link href="/sandbox" className="group block">
-                <Card variant="flat" className="p-6 h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-accent-300">
-                  <div className="text-3xl mb-3" aria-hidden="true">
-                    <svg className="w-10 h-10 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-ink text-lg">Sandbox</h3>
-                  <p className="text-sm text-ink-muted mt-2">
-                    Eigene Datenbanken erstellen, Tabellen anlegen, Daten einfügen und beliebige
-                    SQL-Abfragen ausführen. Alles wird lokal gespeichert.
-                  </p>
-                  <span className="text-accent-500 font-medium text-sm mt-3 inline-block group-hover:translate-x-1 transition-transform">
-                    Sandbox öffnen &rarr;
-                  </span>
-                </Card>
-              </Link>
-              <Link href="/lernen" className="group block">
-                <Card variant="flat" className="p-6 h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-amber-400/50 dark:group-hover:border-amber-400/30">
-                  <div className="text-3xl mb-3" aria-hidden="true">
-                    <svg className="w-10 h-10 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-ink text-lg">Lernen</h3>
-                  <p className="text-sm text-ink-muted mt-2">
-                    Theorie-Hub: Normalisierung, Relationenmodell, ERM, SQL-Grundlagen und mehr.
-                    Mit interaktiven Diagrammen und eingebetteten Beispielen.
-                  </p>
-                  <span className="text-amber-600 dark:text-amber-400 font-medium text-sm mt-3 inline-block group-hover:translate-x-1 transition-transform">
-                    Zum Lern-Hub &rarr;
-                  </span>
-                </Card>
-              </Link>
+              <FeatureCard
+                href="/lektionen"
+                title="Üben"
+                description="Interaktive Übungen mit sofortigem Feedback, Hinweisen und gamifiziertem Fortschritt. Von SELECT-Grundlagen bis zu Interview-Challenges."
+                cta="Zu den Lektionen"
+                colorTheme="primary"
+                icon={
+                  <svg className="w-10 h-10 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                  </svg>
+                }
+              />
+              <FeatureCard
+                href="/sandbox"
+                title="Sandbox"
+                description="Eigene Datenbanken erstellen, Tabellen anlegen, Daten einfügen und beliebige SQL-Abfragen ausführen. Alles wird lokal gespeichert."
+                cta="Sandbox öffnen"
+                colorTheme="accent"
+                icon={
+                  <svg className="w-10 h-10 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                  </svg>
+                }
+              />
+              <FeatureCard
+                href="/lernen"
+                title="Lernen"
+                description="Theorie-Hub: Normalisierung, Relationenmodell, ERM, SQL-Grundlagen und mehr. Mit interaktiven Diagrammen und eingebetteten Beispielen."
+                cta="Zum Lern-Hub"
+                colorTheme="amber"
+                icon={
+                  <svg className="w-10 h-10 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                  </svg>
+                }
+              />
             </div>
           </Container>
         </section>
