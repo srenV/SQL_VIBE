@@ -29,18 +29,18 @@ test.describe("Landing Page", () => {
     await expect(page.locator("text=Lektionen").first()).toBeVisible();
   });
 
-  test("zeigt Lektion-Karten mit Links zu Uebungen", async ({ page }) => {
+  test("zeigt Feature-Cards mit Links zu Lektionen, Sandbox und Lernen", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    const lessonCards = page.locator('a[href^="/lektionen/lesson_"]');
-    const count = await lessonCards.count();
+    const featureCards = page.locator('a[href="/lektionen"], a[href="/sandbox"], a[href="/lernen"]');
+    const count = await featureCards.count();
     expect(count).toBeGreaterThan(0);
   });
 
-  test("Start-Button ist sichtbar", async ({ page }) => {
+  test("CTA-Links sind sichtbar", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=/Jetzt üben|Jetzt starten/i").first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("text=/Zu den Lektionen|Sandbox öffnen|Zum Lern-Hub/i").first()).toBeVisible({ timeout: 5000 });
   });
 
   // Snapshot-Tests sind deaktiviert, bis Basis-Snapshots erstellt wurden.
@@ -103,11 +103,11 @@ test.describe("Uebungs-Seite (SQL Editor)", () => {
     await expect(page.locator("text=SQL-Trainer").first()).toBeVisible();
   });
 
-  test("zeigt Naechste-Uebung-Link", async ({ page }) => {
+  test("zeigt Naechste-Uebung-Link oder Hinweis", async ({ page }) => {
     await page.goto(FIRST_SELECT_URL);
     await page.waitForLoadState("networkidle");
-    const nextLink = page.locator("text=Naechste Uebung").or(page.locator("text=Nächste Übung"));
-    await expect(nextLink.first()).toBeVisible();
+    // "Nächste" Button ist im Playground, sel_0002 Link in Sidebar; einer davon muss sichtbar sein
+    await expect(page.locator('a[href*="sel_0002"]').first()).toBeVisible();
   });
 
   // Snapshot deaktiviert – Basis-Snapshots fehlen

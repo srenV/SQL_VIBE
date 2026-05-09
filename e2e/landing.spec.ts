@@ -25,15 +25,15 @@ test.describe("Landing Page Smoke", () => {
     await expect(page.locator("text=Lektionen").first()).toBeVisible();
   });
 
-  test("zeigt Lektion-Karten mit Links zu Uebungen", async ({ page }) => {
-    const lessonCards = page.locator('a[href^="/lektionen/lesson_"]');
-    const count = await lessonCards.count();
+  test("zeigt Feature-Cards mit Links zu Lektionen, Sandbox und Lernen", async ({ page }) => {
+    const featureCards = page.locator('a[href="/lektionen"], a[href="/sandbox"], a[href="/lernen"]');
+    const count = await featureCards.count();
     expect(count).toBeGreaterThan(0);
   });
 
-  test("Start-Button ist sichtbar", async ({ page }) => {
-    const startButton = page.locator("text=/Jetzt üben|Jetzt starten/i").first();
-    await expect(startButton).toBeVisible({ timeout: 5000 });
+  test("CTA-Links sind sichtbar", async ({ page }) => {
+    const ctaLinks = page.locator("text=/Zu den Lektionen|Sandbox öffnen|Zum Lern-Hub/i").first();
+    await expect(ctaLinks).toBeVisible({ timeout: 5000 });
   });
 
   test("Hauptseite hat keinen Layoutfehler", async ({ page }) => {

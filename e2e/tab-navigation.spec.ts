@@ -15,10 +15,10 @@ test.describe("Tab-Navigation", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
 
-    // Alle 3 Tabs sollten sichtbar sein
-    await expect(page.locator("text=Üben").first()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator("text=Sandbox").first()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator("text=Lernen").first()).toBeVisible({ timeout: 5000 });
+    // Alle 3 Tab-Links sollten sichtbar sein (Icons sind immer sichtbar, Text ab sm)
+    await expect(page.locator('a[href="/lektionen"]').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('a[href="/sandbox"]').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('a[href="/lernen"]').first()).toBeVisible({ timeout: 5000 });
   });
 
   test("Tab-Navigation zu Sandbox", async ({ page }) => {
@@ -69,17 +69,17 @@ test.describe("Landing-Page 3-Saeulen", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
 
-    // 3 Saeulen-CTAs sollten sichtbar sein
-    await expect(page.locator("text=Üben").first()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator("text=Sandbox").first()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator("text=Lernen").first()).toBeVisible({ timeout: 5000 });
+    // 3 Saeulen-CTAs sollten sichtbar sein (Heading-Text ist auf allen Viewports sichtbar)
+    await expect(page.locator("h3", { hasText: "Üben" }).first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("h3", { hasText: "Sandbox" }).first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("h3", { hasText: "Lernen" }).first()).toBeVisible({ timeout: 5000 });
   });
 
-  test("Landing-Page CTA 'Jetzt üben' navigiert zu Lektionen", async ({ page }) => {
+  test("Landing-Page CTA 'Zu den Lektionen' navigiert zu Lektionen", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
 
-    const cta = page.locator('a[href*="/lektionen"], button:has-text("Jetzt üben")').first();
+    const cta = page.locator('a[href="/lektionen"]').first();
     if (await cta.isVisible({ timeout: 3000 }).catch(() => false)) {
       await cta.click();
       await page.waitForLoadState("networkidle");
@@ -113,7 +113,9 @@ test.describe("Landing-Page 3-Saeulen", () => {
 });
 
 test.describe("Cross-Tab Zustand", () => {
-  test("Sandbox-Zustand bleibt nach Tab-Wechsel erhalten", async ({ page }) => {
+  test("Sandbox-Zustand bleibt nach Tab-Wechsel erhalten", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "Sandbox ist nur auf Desktop/Tablet verfuegbar");
+
     // Sandbox oeffnen und DB erstellen
     await page.goto("/sandbox");
     await page.waitForLoadState("networkidle");
