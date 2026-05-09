@@ -368,12 +368,6 @@ function SchemaGraphInner({ tables }: { tables: SchemaTable[] }) {
           size={1}
           color="#94a3b8"
         />
-        <Controls
-          showZoom
-          showFitView
-          showInteractive={false}
-          position="bottom-right"
-        />
       </ReactFlow>
     </div>
   );

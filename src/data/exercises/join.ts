@@ -25,7 +25,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id`",
     ],
     hiddenTestQuery: `SELECT name, gesamtbetrag FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
     hiddenTestMode: "rows",
@@ -41,7 +43,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.id = rechte.fremdschluessel`",
+      "Konkret: `FROM kunden LEFT JOIN bestellungen ON kunden.id = bestellungen.kunde_id`",
     ],
     hiddenTestQuery: `SELECT name, gesamtbetrag FROM kunden LEFT JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
     hiddenTestMode: "rows",
@@ -57,7 +61,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.id = rechte.fremdschluessel`",
+      "Konkret: `FROM kunden RIGHT JOIN bestellungen ON kunden.id = bestellungen.kunde_id`",
     ],
     hiddenTestQuery: `SELECT name, gesamtbetrag FROM kunden RIGHT JOIN bestellungen ON kunden.id = bestellungen.kunde_id;`,
     hiddenTestMode: "rows",
@@ -73,7 +79,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id GROUP BY kunden.id`",
     ],
     hiddenTestQuery: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN bestellungen ON kunden.id = bestellungen.kunde_id GROUP BY kunden.id;`,
     hiddenTestMode: "rows",
@@ -89,7 +97,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.fremdschluessel = tabelle2.schluessel`",
+      "Konkret: `FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id`",
     ],
     hiddenTestQuery: `SELECT produkte.name, kategorien.name FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
     hiddenTestMode: "rows",
@@ -105,7 +115,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM produkte LEFT JOIN kategorien ON produkte.kategorie_id = kategorien.id`",
     ],
     hiddenTestQuery: `SELECT produkte.name, kategorien.name FROM produkte LEFT JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
     hiddenTestMode: "rows",
@@ -121,7 +133,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM produkte RIGHT JOIN kategorien ON produkte.kategorie_id = kategorien.id`",
     ],
     hiddenTestQuery: `SELECT produkte.name, kategorien.name FROM produkte RIGHT JOIN kategorien ON produkte.kategorie_id = kategorien.id;`,
     hiddenTestMode: "rows",
@@ -137,7 +151,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT produkte.id, COUNT(*) AS anzahl FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id GROUP BY produkte.id`",
     ],
     hiddenTestQuery: `SELECT produkte.id, COUNT(*) AS anzahl FROM produkte INNER JOIN kategorien ON produkte.kategorie_id = kategorien.id GROUP BY produkte.id;`,
     hiddenTestMode: "rows",
@@ -153,7 +169,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id`",
     ],
     hiddenTestQuery: `SELECT status, betrag FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
     hiddenTestMode: "rows",
@@ -169,7 +187,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM bestellungen LEFT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id`",
     ],
     hiddenTestQuery: `SELECT status, betrag FROM bestellungen LEFT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
     hiddenTestMode: "rows",
@@ -185,7 +205,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM bestellungen RIGHT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id`",
     ],
     hiddenTestQuery: `SELECT status, betrag FROM bestellungen RIGHT JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id;`,
     hiddenTestMode: "rows",
@@ -201,7 +223,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT bestellungen.id, COUNT(*) AS anzahl FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id GROUP BY bestellungen.id`",
     ],
     hiddenTestQuery: `SELECT bestellungen.id, COUNT(*) AS anzahl FROM bestellungen INNER JOIN zahlungen ON bestellungen.id = zahlungen.bestellung_id GROUP BY bestellungen.id;`,
     hiddenTestMode: "rows",
@@ -217,7 +241,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id`",
     ],
     hiddenTestQuery: `SELECT nutzer.name, dauer_min FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
     hiddenTestMode: "rows",
@@ -233,7 +259,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM nutzer LEFT JOIN workouts ON nutzer.id = workouts.nutzer_id`",
     ],
     hiddenTestQuery: `SELECT nutzer.name, dauer_min FROM nutzer LEFT JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
     hiddenTestMode: "rows",
@@ -249,7 +277,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM nutzer RIGHT JOIN workouts ON nutzer.id = workouts.nutzer_id`",
     ],
     hiddenTestQuery: `SELECT nutzer.name, dauer_min FROM nutzer RIGHT JOIN workouts ON nutzer.id = workouts.nutzer_id;`,
     hiddenTestMode: "rows",
@@ -265,7 +295,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id GROUP BY nutzer.id`",
     ],
     hiddenTestQuery: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN workouts ON nutzer.id = workouts.nutzer_id GROUP BY nutzer.id;`,
     hiddenTestMode: "rows",
@@ -281,7 +313,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id`",
     ],
     hiddenTestQuery: `SELECT datum, wiederholungen FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id;`,
     hiddenTestMode: "rows",
@@ -297,7 +331,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM workouts LEFT JOIN saetze ON workouts.id = saetze.workout_id`",
     ],
     hiddenTestQuery: `SELECT datum, wiederholungen FROM workouts LEFT JOIN saetze ON workouts.id = saetze.workout_id;`,
     hiddenTestMode: "rows",
@@ -313,7 +349,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM workouts RIGHT JOIN saetze ON workouts.id = saetze.workout_id`",
     ],
     hiddenTestQuery: `SELECT datum, wiederholungen FROM workouts RIGHT JOIN saetze ON workouts.id = saetze.workout_id;`,
     hiddenTestMode: "rows",
@@ -329,7 +367,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT workouts.id, COUNT(*) AS anzahl FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id GROUP BY workouts.id`",
     ],
     hiddenTestQuery: `SELECT workouts.id, COUNT(*) AS anzahl FROM workouts INNER JOIN saetze ON workouts.id = saetze.workout_id GROUP BY workouts.id;`,
     hiddenTestMode: "rows",
@@ -345,7 +385,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.fremdschluessel = tabelle2.schluessel`",
+      "Konkret: `FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id`",
     ],
     hiddenTestQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
     hiddenTestMode: "rows",
@@ -361,7 +403,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM mitarbeiter LEFT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id`",
     ],
     hiddenTestQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter LEFT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
     hiddenTestMode: "rows",
@@ -377,7 +421,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM mitarbeiter RIGHT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id`",
     ],
     hiddenTestQuery: `SELECT mitarbeiter.name, abteilungen.name FROM mitarbeiter RIGHT JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id;`,
     hiddenTestMode: "rows",
@@ -393,7 +439,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id GROUP BY mitarbeiter.id`",
     ],
     hiddenTestQuery: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN abteilungen ON mitarbeiter.abteilung_id = abteilungen.id GROUP BY mitarbeiter.id;`,
     hiddenTestMode: "rows",
@@ -409,7 +457,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id`",
     ],
     hiddenTestQuery: `SELECT name, tage FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
     hiddenTestMode: "rows",
@@ -425,7 +475,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM mitarbeiter LEFT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id`",
     ],
     hiddenTestQuery: `SELECT name, tage FROM mitarbeiter LEFT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
     hiddenTestMode: "rows",
@@ -441,7 +493,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM mitarbeiter RIGHT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id`",
     ],
     hiddenTestQuery: `SELECT name, tage FROM mitarbeiter RIGHT JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id;`,
     hiddenTestMode: "rows",
@@ -457,7 +511,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id GROUP BY mitarbeiter.id`",
     ],
     hiddenTestQuery: `SELECT mitarbeiter.id, COUNT(*) AS anzahl FROM mitarbeiter INNER JOIN urlaub ON mitarbeiter.id = urlaub.mitarbeiter_id GROUP BY mitarbeiter.id;`,
     hiddenTestMode: "rows",
@@ -473,7 +529,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.fremdschluessel = tabelle2.schluessel`",
+      "Konkret: `FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id`",
     ],
     hiddenTestQuery: `SELECT tickets.titel, agenten.name FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id;`,
     hiddenTestMode: "rows",
@@ -489,7 +547,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM tickets LEFT JOIN agenten ON tickets.agent_id = agenten.id`",
     ],
     hiddenTestQuery: `SELECT tickets.titel, agenten.name FROM tickets LEFT JOIN agenten ON tickets.agent_id = agenten.id;`,
     hiddenTestMode: "rows",
@@ -505,7 +565,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM tickets RIGHT JOIN agenten ON tickets.agent_id = agenten.id`",
     ],
     hiddenTestQuery: `SELECT tickets.titel, agenten.name FROM tickets RIGHT JOIN agenten ON tickets.agent_id = agenten.id;`,
     hiddenTestMode: "rows",
@@ -521,7 +583,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id GROUP BY tickets.id`",
     ],
     hiddenTestQuery: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN agenten ON tickets.agent_id = agenten.id GROUP BY tickets.id;`,
     hiddenTestMode: "rows",
@@ -537,7 +601,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.fremdschluessel = tabelle2.schluessel`",
+      "Konkret: `FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id`",
     ],
     hiddenTestQuery: `SELECT tickets.titel, kategorien.name FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
     hiddenTestMode: "rows",
@@ -553,7 +619,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM tickets LEFT JOIN kategorien ON tickets.kategorie_id = kategorien.id`",
     ],
     hiddenTestQuery: `SELECT tickets.titel, kategorien.name FROM tickets LEFT JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
     hiddenTestMode: "rows",
@@ -569,7 +637,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.fremdschluessel = rechte.schluessel`",
+      "Konkret: `FROM tickets RIGHT JOIN kategorien ON tickets.kategorie_id = kategorien.id`",
     ],
     hiddenTestQuery: `SELECT tickets.titel, kategorien.name FROM tickets RIGHT JOIN kategorien ON tickets.kategorie_id = kategorien.id;`,
     hiddenTestMode: "rows",
@@ -585,7 +655,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id GROUP BY tickets.id`",
     ],
     hiddenTestQuery: `SELECT tickets.id, COUNT(*) AS anzahl FROM tickets INNER JOIN kategorien ON tickets.kategorie_id = kategorien.id GROUP BY tickets.id;`,
     hiddenTestMode: "rows",
@@ -601,7 +673,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id`",
     ],
     hiddenTestQuery: `SELECT kunden.name, saldo FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id;`,
     hiddenTestMode: "rows",
@@ -617,7 +691,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM kunden LEFT JOIN konten ON kunden.id = konten.kunde_id`",
     ],
     hiddenTestQuery: `SELECT kunden.name, saldo FROM kunden LEFT JOIN konten ON kunden.id = konten.kunde_id;`,
     hiddenTestMode: "rows",
@@ -633,7 +709,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM kunden RIGHT JOIN konten ON kunden.id = konten.kunde_id`",
     ],
     hiddenTestQuery: `SELECT kunden.name, saldo FROM kunden RIGHT JOIN konten ON kunden.id = konten.kunde_id;`,
     hiddenTestMode: "rows",
@@ -649,7 +727,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id GROUP BY kunden.id`",
     ],
     hiddenTestQuery: `SELECT kunden.id, COUNT(*) AS anzahl FROM kunden INNER JOIN konten ON kunden.id = konten.kunde_id GROUP BY kunden.id;`,
     hiddenTestMode: "rows",
@@ -665,7 +745,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id`",
     ],
     hiddenTestQuery: `SELECT kontonummer, betrag FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
     hiddenTestMode: "rows",
@@ -681,7 +763,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM konten LEFT JOIN transaktionen ON konten.id = transaktionen.konto_id`",
     ],
     hiddenTestQuery: `SELECT kontonummer, betrag FROM konten LEFT JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
     hiddenTestMode: "rows",
@@ -697,7 +781,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM konten RIGHT JOIN transaktionen ON konten.id = transaktionen.konto_id`",
     ],
     hiddenTestQuery: `SELECT kontonummer, betrag FROM konten RIGHT JOIN transaktionen ON konten.id = transaktionen.konto_id;`,
     hiddenTestMode: "rows",
@@ -713,7 +799,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT konten.id, COUNT(*) AS anzahl FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id GROUP BY konten.id`",
     ],
     hiddenTestQuery: `SELECT konten.id, COUNT(*) AS anzahl FROM konten INNER JOIN transaktionen ON konten.id = transaktionen.konto_id GROUP BY konten.id;`,
     hiddenTestMode: "rows",
@@ -729,7 +817,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id`",
     ],
     hiddenTestQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
     hiddenTestMode: "rows",
@@ -745,7 +835,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM nutzer LEFT JOIN watch_history ON nutzer.id = watch_history.nutzer_id`",
     ],
     hiddenTestQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer LEFT JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
     hiddenTestMode: "rows",
@@ -761,7 +853,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `RIGHT JOIN ... ON`."
+      "Ein RIGHT JOIN gibt ALLE Zeilen der rechten (zweiten) Tabelle zurueck — das Spiegelbild des LEFT JOIN. Fehlende Werte auf der linken Seite werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle RIGHT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM nutzer RIGHT JOIN watch_history ON nutzer.id = watch_history.nutzer_id`",
     ],
     hiddenTestQuery: `SELECT nutzer.name, fortschritt_prozent FROM nutzer RIGHT JOIN watch_history ON nutzer.id = watch_history.nutzer_id;`,
     hiddenTestMode: "rows",
@@ -777,7 +871,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Kombiniere JOIN mit GROUP BY und COUNT."
+      "Verbinde zuerst die Tabellen mit einem JOIN, dann gruppiere die Ergebniszeilen nach einer Spalte, um pro Gruppe zu zaehlen.",
+      "Kombiniere JOIN mit `GROUP BY spalte` und `COUNT(*) AS alias`.",
+      "Struktur: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id GROUP BY nutzer.id`",
     ],
     hiddenTestQuery: `SELECT nutzer.id, COUNT(*) AS anzahl FROM nutzer INNER JOIN watch_history ON nutzer.id = watch_history.nutzer_id GROUP BY nutzer.id;`,
     hiddenTestMode: "rows",
@@ -793,7 +889,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `INNER JOIN ... ON`."
+      "Ein INNER JOIN verbindet zwei Tabellen und gibt nur Zeilen zurueck, die in BEIDEN Tabellen einen Treffer haben.",
+      "Syntax: `FROM tabelle1 INNER JOIN tabelle2 ON tabelle1.schluessel = tabelle2.fremdschluessel`",
+      "Konkret: `FROM filme INNER JOIN bewertungen ON filme.id = bewertungen.film_id`",
     ],
     hiddenTestQuery: `SELECT filme.titel, sterne FROM filme INNER JOIN bewertungen ON filme.id = bewertungen.film_id;`,
     hiddenTestMode: "rows",
@@ -809,7 +907,9 @@ joinExercises.push(
     expectedResultText: "",
     tags: ["JOIN", "INNER JOIN", "LEFT JOIN"],
     hints: [
-      "Verwende `LEFT JOIN ... ON`."
+      "Ein LEFT JOIN gibt ALLE Zeilen der linken (ersten) Tabelle zurueck — auch wenn es in der rechten Tabelle keine Uebereinstimmung gibt. Fehlende Werte werden als NULL dargestellt.",
+      "Syntax: `FROM linke_tabelle LEFT JOIN rechte_tabelle ON linke.schluessel = rechte.fremdschluessel`",
+      "Konkret: `FROM filme LEFT JOIN bewertungen ON filme.id = bewertungen.film_id`",
     ],
     hiddenTestQuery: `SELECT filme.titel, sterne FROM filme LEFT JOIN bewertungen ON filme.id = bewertungen.film_id;`,
     hiddenTestMode: "rows",

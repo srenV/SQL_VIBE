@@ -31,8 +31,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "COUNT(*) zaehlt alle Zeilen, die die WHERE-Bedingung erfuellen.",
+      "Zaehle alle Produkte in der Tabelle `produkte`, bei denen `preis > 50` gilt.",
+      "Entscheidend: Die `produkte`-Tabelle enthaelt 10 Eintraege, davon haben 6 einen Preis ueber 50 Euro."
     ],
   }),
 
@@ -52,8 +53,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "AVG() berechnet den Durchschnitt aller Werte in einer Spalte.",
+      "Addiere alle `gewicht_kg`-Werte der `nutzer`-Tabelle und teile durch die Anzahl der Nutzer.",
+      "Entscheidend: Die Summe der Gewichte geteilt durch die Anzahl der Nutzer ergibt 70.81 — nahe 70, nicht 65 oder 75."
     ],
   }),
 
@@ -73,8 +75,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "Gehe die `mitarbeiter`-Tabelle durch und markiere alle, deren `gehalt` groesser als 60000 ist.",
+      "COUNT(*) zaehlt nur Zeilen, bei denen die WHERE-Bedingung wahr ist.",
+      "Entscheidend: Von den Mitarbeitern im HR-Datensatz verdienen genau 3 mehr als 60000 Euro."
     ],
   }),
 
@@ -94,8 +97,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "Zaehle in der `tickets`-Tabelle alle Zeilen, bei denen `status = 'offen'` gilt.",
+      "Jede Zeile zaehlt einzeln — es geht darum, wie viele Tickets diesen Status haben.",
+      "Entscheidend: Genau 4 Tickets im Tickets-Datensatz haben den Status 'offen'."
     ],
   }),
 
@@ -115,8 +119,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "SUM() addiert alle Werte einer Spalte, die die WHERE-Bedingung erfuellen.",
+      "Filtere die `transaktionen` auf `typ = 'eingang'` und addiere alle `betrag`-Werte.",
+      "Entscheidend: Die Eingaenge im Banking-Datensatz summieren sich zu 16600.00 — nicht 15600 oder 17000."
     ],
   }),
 
@@ -136,8 +141,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "Zaehle in der `filme`-Tabelle alle Eintraege, bei denen `genre = 'Drama'` gilt.",
+      "Jeder Film wird einzeln gezaehlt — achte auf den exakten Wert 'Drama' (Gross-/Kleinschreibung).",
+      "Entscheidend: Im Streaming-Datensatz sind genau 4 Filme dem Genre 'Drama' zugeordnet."
     ],
   }),
 
@@ -157,8 +163,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "Zaehle in der `fehler`-Tabelle alle Zeilen, bei denen `schweregrad = 'kritisch'` gilt.",
+      "Achte darauf, dass nur Fehler gezaehlt werden — nicht Events oder Sessions.",
+      "Entscheidend: Im Logs-Datensatz gibt es genau 5 Fehler mit dem Schweregrad 'kritisch'."
     ],
   }),
 
@@ -178,8 +185,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "AVG() berechnet den Durchschnitt aller `gesamtbetrag`-Werte in der `bestellungen`-Tabelle.",
+      "Addiere alle Bestellbetrage und teile durch die Anzahl der Bestellungen.",
+      "Entscheidend: Der Durchschnittsbetrag liegt bei 312.13 Euro — nahe 300, nicht 250 oder 400."
     ],
   }),
 
@@ -199,8 +207,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "MAX() findet den groessten Wert in der Spalte `kalorien_verbrannt` ueber alle Workouts.",
+      "Du suchst den einzelnen Workout-Eintrag mit den meisten verbrannten Kalorien.",
+      "Entscheidend: Das Maximum in der `workouts`-Tabelle betraegt 720 Kalorien — nicht 650 oder 750."
     ],
   }),
 
@@ -220,8 +229,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "SUM() addiert alle `tage`-Werte, bei denen `genehmigt = 1` gilt.",
+      "Nur genehmigte Urlaubsantraege zaehlen — filtere die `urlaub`-Tabelle auf `genehmigt = 1`.",
+      "Entscheidend: Die Summe aller genehmigten Urlaubstage im HR-Datensatz betraegt 72 Tage."
     ],
   }),
 
@@ -241,8 +251,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "Zaehle in der `konten`-Tabelle alle Zeilen, bei denen `typ = 'Girokonto'` gilt.",
+      "Achte auf den exakten Wert — Gross-/Kleinschreibung und Schreibweise muessen stimmen.",
+      "Entscheidend: Im Banking-Datensatz gibt es genau 7 Konten vom Typ 'Girokonto'."
     ],
   }),
 
@@ -262,8 +273,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "AVG() berechnet den Durchschnitt der `sterne`-Spalte ueber alle Bewertungen in der `bewertungen`-Tabelle.",
+      "Addiere alle Sternewerte und teile durch die Gesamtanzahl der Bewertungen.",
+      "Entscheidend: Der Durchschnitt der Sternebewertungen im Streaming-Datensatz betraegt 3.85 — nicht 3.5 oder 4.0."
     ],
   }),
 
@@ -283,8 +295,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "MAX() findet den hoechsten `preis`-Wert in der `produkte`-Tabelle — ohne Filterung.",
+      "Gehe alle Preise durch und identifiziere den groessten.",
+      "Entscheidend: Der teuerste Artikel im Shop-Datensatz kostet 899.00 Euro — nicht 599 oder 999."
     ],
   }),
 
@@ -304,8 +317,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "LIKE 'Max%' sucht nach Eintraegen, bei denen `autor` mit 'Max' beginnt.",
+      "Gehe die `kommentare`-Tabelle durch und zaehle alle Autoren, deren Name mit 'Max' anfaengt.",
+      "Entscheidend: Im Tickets-Datensatz gibt es genau 2 Kommentare, bei denen der Autor mit 'Max' beginnt."
     ],
   }),
 
@@ -325,8 +339,9 @@ predictExercises.push(
     expectedResultText: "",
     tags: ["Ergebnis-Vorhersage", "Aggregation"],
     hints: [
-      "Fuehre die Query mental aus oder schreibe sie auf Papier.",
-      "Zaehle Zeilen oder berechne Summen/Durchschnitte."
+      "Zaehle in der `events`-Tabelle alle Zeilen, bei denen `event_typ = 'checkout'` gilt.",
+      "Jeder Event-Eintrag mit diesem Typ wird einzeln gezaehlt.",
+      "Entscheidend: Im Logs-Datensatz gibt es genau 4 Events vom Typ 'checkout'."
     ],
   })
 );
@@ -346,7 +361,11 @@ predictExercises.push(
       { text: "6", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "DISTINCT"],
-    hints: ["Berliner, Hamburger, Muenchener und Koelner."],
+    hints: [
+      "COUNT(DISTINCT ...) zaehlt nur unterschiedliche Werte — Duplikate werden einmal gezaehlt.",
+      "Schau dir die `stadt`-Spalte in `kunden` an und zaehle, wie viele verschiedene Staedte vorkommen.",
+      "Entscheidend: `DISTINCT` entfernt Duplikate — es gibt 4 eindeutige Staedte: Berlin, Hamburg, Muenchen und Koeln."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: MIN Preis",
@@ -362,7 +381,11 @@ predictExercises.push(
       { text: "29.99", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "MIN"],
-    hints: ["Suche den kleinsten Preis in der Tabelle."],
+    hints: [
+      "MIN() gibt den kleinsten Wert in einer Spalte zurueck — ohne Filter ueber alle Zeilen.",
+      "Gehe alle Preise in der `produkte`-Tabelle durch und identifiziere den guenstigsten.",
+      "Entscheidend: Der kleinste Preis in der `produkte`-Tabelle betraegt 14.99 — nicht 19.99 oder 24.99."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: WHERE mit LIKE",
@@ -378,7 +401,11 @@ predictExercises.push(
       { text: "15", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "LIKE"],
-    hints: ["Alle Kunden in diesem Datensatz haben 'beispiel.de' als Domain."],
+    hints: [
+      "LIKE '%beispiel.de' trifft zu, wenn `email` mit 'beispiel.de' endet — das `%` steht fuer beliebig viele Zeichen davor.",
+      "Zaehle alle Kunden in der `kunden`-Tabelle, deren E-Mail auf 'beispiel.de' endet.",
+      "Entscheidend: Alle 10 Kunden im Shop-Datensatz haben eine E-Mail mit der Domain 'beispiel.de' — daher ist das Ergebnis 10."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: WHERE mit IN",
@@ -394,7 +421,11 @@ predictExercises.push(
       { text: "13", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "IN"],
-    hints: ["Zaehle die Zeilen mit Status 'abgeschlossen' oder 'versendet'."],
+    hints: [
+      "IN ('wert1', 'wert2') prueft, ob der Wert in der Liste vorkommt — entspricht einem OR fuer denselben Spaltenwert.",
+      "Zaehle alle Bestellungen in der `bestellungen`-Tabelle mit Status 'abgeschlossen' ODER 'versendet'.",
+      "Entscheidend: Im Shop-Datensatz haben genau 10 Bestellungen den Status 'abgeschlossen' oder 'versendet'."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: Abteilungs-Budget",
@@ -410,7 +441,11 @@ predictExercises.push(
       { text: "800000", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "SUM"],
-    hints: ["Addiere alle Budgets aus der Tabelle `abteilungen`."],
+    hints: [
+      "SUM() addiert alle Werte der `budget`-Spalte — alle Abteilungen, kein Filter.",
+      "Addiere die Budgetwerte aller Zeilen in der `abteilungen`-Tabelle.",
+      "Entscheidend: Die Gesamtsumme aller Abteilungsbudgets im HR-Datensatz betraegt 680000 — nicht 500000 oder 750000."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: Fitness-Workouts",
@@ -426,7 +461,11 @@ predictExercises.push(
       { text: "6", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "COUNT"],
-    hints: ["Zaehle Workouts mit `dauer_min > 60`."],
+    hints: [
+      "COUNT(*) zaehlt alle Zeilen der `workouts`-Tabelle, bei denen die WHERE-Bedingung gilt.",
+      "Zaehle alle Workouts, bei denen `dauer_min > 60` ist — also Workouts laenger als eine Stunde.",
+      "Entscheidend: Im Fitness-Datensatz dauern genau 4 Workouts laenger als 60 Minuten."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: Aktive Agenten",
@@ -442,7 +481,11 @@ predictExercises.push(
       { text: "6", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "COUNT"],
-    hints: ["Zaehle Agenten mit `aktiv = 1`."],
+    hints: [
+      "COUNT(*) zaehlt alle Zeilen der `agenten`-Tabelle, bei denen `aktiv = 1` gilt.",
+      "Aktiv wird als 1 gespeichert (boolescher Wert) — zaehle nur diese Eintraege.",
+      "Entscheidend: Im Tickets-Datensatz sind genau 4 Agenten als aktiv (aktiv = 1) markiert."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: Banking-Summe",
@@ -458,7 +501,11 @@ predictExercises.push(
       { text: "5", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "COUNT"],
-    hints: ["Zaehle die Eintraege in `betrugsfaelle`."],
+    hints: [
+      "COUNT(*) zaehlt alle Zeilen der Tabelle ohne Filterung.",
+      "Zaehle einfach alle Eintraege in der `betrugsfaelle`-Tabelle — kein WHERE noetig.",
+      "Entscheidend: Im Banking-Datensatz gibt es genau 2 Betrugsfaelle in der `betrugsfaelle`-Tabelle."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: LIMIT",
@@ -474,7 +521,11 @@ predictExercises.push(
       { text: "Staubsauger", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "LIMIT", "ORDER BY"],
-    hints: ["LIMIT 1 mit ORDER BY DESC gibt das teuerste Produkt."],
+    hints: [
+      "ORDER BY preis DESC sortiert die Produkte vom teuersten zum guenstigsten, LIMIT 1 gibt nur die erste Zeile zurueck.",
+      "Das Ergebnis ist genau ein Produkt — naemlich das mit dem hoechsten Preis.",
+      "Entscheidend: Das teuerste Produkt im Shop-Datensatz ist der 'Laptop' — er hat den hoechsten Preis und erscheint daher zuerst."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: Streaming-Premium",
@@ -490,7 +541,11 @@ predictExercises.push(
       { text: "5", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "COUNT"],
-    hints: ["Zaehle die Nutzer mit Abonnement 'Premium'."],
+    hints: [
+      "COUNT(*) zaehlt alle Zeilen der `nutzer`-Tabelle im Streaming-Datensatz, wo `abonnement = 'Premium'` gilt.",
+      "Schaue dir die `nutzer`-Tabelle an und zaehle nur die Premium-Eintraege.",
+      "Entscheidend: Im Streaming-Datensatz haben genau 3 Nutzer das Abonnement 'Premium'."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: JOIN-Ergebnisgroesse",
@@ -506,7 +561,11 @@ predictExercises.push(
       { text: "25", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "JOIN", "COUNT"],
-    hints: ["INNER JOIN gibt eine Zeile pro Bestellung, nicht pro Kunde."],
+    hints: [
+      "INNER JOIN erzeugt eine Zeile fuer jede Kombination, die in beiden Tabellen passt — pro Bestellung, nicht pro Kunde.",
+      "Kunden ohne Bestellungen fallen raus, Kunden mit mehreren Bestellungen erscheinen mehrfach.",
+      "Entscheidend: Das Ergebnis zaehlt nach Bestellungen, nicht nach Kunden — es gibt 15 passende Kunden-Bestellungs-Kombinationen."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: GROUP BY Anzahl",
@@ -522,7 +581,11 @@ predictExercises.push(
       { text: "6", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "DISTINCT"],
-    hints: ["Es gibt 5 Kategorien: Elektronik, Buecher, Kleidung, Sport, Haushalt."],
+    hints: [
+      "COUNT(DISTINCT ...) zaehlt jeden unterschiedlichen Wert in der `kategorie_id`-Spalte genau einmal.",
+      "Auch wenn es mehr Produkte gibt — gezaehlt werden nur verschiedene Kategorien.",
+      "Entscheidend: `DISTINCT` entfernt Duplikate — es gibt 5 verschiedene Kategorien in der `produkte`-Tabelle: Elektronik, Buecher, Kleidung, Sport, Haushalt."
+    ],
   }),
   makePredictExercise("prd", {
     title: "Ergebnis vorhersagen: Browser-Verteilung",
@@ -538,6 +601,10 @@ predictExercises.push(
       { text: "6", isCorrect: false }
     ],
     tags: ["Ergebnis-Vorhersage", "DISTINCT"],
-    hints: ["Chrome, Firefox, Safari, Edge."],
+    hints: [
+      "COUNT(DISTINCT browser) zaehlt jeden Browser-Namen in der `sessions`-Tabelle nur einmal.",
+      "Auch wenn ein Browser viele Sessions hat — bei DISTINCT zaehlt er nur einmal.",
+      "Entscheidend: `DISTINCT` entfernt Duplikate — es gibt 4 verschiedene Browser: Chrome, Firefox, Safari und Edge."
+    ],
   })
 );

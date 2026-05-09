@@ -24,8 +24,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM kunden WHERE stadt = 'Berlin';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Verwende `WHERE stadt = 'Berlin'`.",
-      "Textwerte in SQL muessen in einfache Anfuehrungszeichen gesetzt werden."
+      "Du brauchst eine Filterbedingung, um nur Zeilen mit einem bestimmten Stadtnamen zurueckzugeben.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte muessen in einfache Anfuehrungszeichen gesetzt werden.",
+      "Die Query: `SELECT * FROM kunden WHERE stadt = 'Berlin';`",
     ],
     hiddenTestQuery: "SELECT * FROM kunden WHERE stadt = 'Berlin';",
     hiddenTestMode: "rows",
@@ -39,8 +40,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, preis FROM produkte WHERE preis > 50;",
     tags: ["WHERE", "Vergleichsoperator"],
     hints: [
-      "Verwende `WHERE preis > 50`.",
-      "Zahlen brauchen keine Anfuehrungszeichen."
+      "Du moechtest Zeilen anhand eines Zahlenwerts filtern — dafuer gibt es Vergleichsoperatoren.",
+      "Verwende `WHERE spalte > wert` — bei Zahlen braucht man keine Anfuehrungszeichen.",
+      "Die Query: `SELECT name, preis FROM produkte WHERE preis > 50;`",
     ],
     hiddenTestQuery: "SELECT name, preis FROM produkte WHERE preis > 50;",
     hiddenTestMode: "rows",
@@ -54,8 +56,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM bestellungen WHERE status = 'abgeschlossen';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Verwende `WHERE status = 'abgeschlossen'`.",
-      "Achte auf die genaue Schreibweise des Status."
+      "Du willst nur Zeilen sehen, bei denen eine Textspalte einen bestimmten Wert hat.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte gehoeren in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM bestellungen WHERE status = 'abgeschlossen';`",
     ],
     hiddenTestQuery: "SELECT * FROM bestellungen WHERE status = 'abgeschlossen';",
     hiddenTestMode: "rows",
@@ -69,8 +72,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM kunden WHERE stadt <> 'Muenchen';",
     tags: ["WHERE", "Ungleich"],
     hints: [
-      "Verwende `<>` oder `!=` fuer Ungleich.",
-      "Beispiel: `WHERE stadt <> 'Muenchen'`"
+      "Du moechtest alle Zeilen ausschliessen, bei denen eine Spalte einen bestimmten Wert hat — dafuer gibt es einen Ungleich-Operator.",
+      "Verwende `<>` oder `!=` fuer 'ungleich': `WHERE spalte <> 'wert'`",
+      "Die Query: `SELECT * FROM kunden WHERE stadt <> 'Muenchen';`",
     ],
     hiddenTestQuery: "SELECT * FROM kunden WHERE stadt <> 'Muenchen';",
     hiddenTestMode: "rows",
@@ -84,8 +88,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, gewicht_kg FROM nutzer WHERE gewicht_kg > 80;",
     tags: ["WHERE", "Vergleichsoperator"],
     hints: [
-      "Die Spalte heisst `gewicht_kg`.",
-      "Verwende `WHERE gewicht_kg > 80`."
+      "Du moechtest Zeilen nach einem numerischen Schwellenwert filtern.",
+      "Verwende `WHERE spalte > wert` — Zahlen brauchen keine Anfuehrungszeichen.",
+      "Die Query: `SELECT name, gewicht_kg FROM nutzer WHERE gewicht_kg > 80;`",
     ],
     hiddenTestQuery: "SELECT name, gewicht_kg FROM nutzer WHERE gewicht_kg > 80;",
     hiddenTestMode: "rows",
@@ -99,8 +104,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM uebungen WHERE kategorie = 'Cardio';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `kategorie` enthaelt Werte wie 'Kraft', 'Cardio', 'Flexibilitaet'.",
-      "Verwende `WHERE kategorie = 'Cardio'`."
+      "Du willst nur Uebungen einer bestimmten Kategorie sehen — du brauchst eine Filterbedingung auf eine Textspalte.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte muessen in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM uebungen WHERE kategorie = 'Cardio';`",
     ],
     hiddenTestQuery: "SELECT * FROM uebungen WHERE kategorie = 'Cardio';",
     hiddenTestMode: "rows",
@@ -114,8 +120,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, gehalt FROM mitarbeiter WHERE gehalt > 50000;",
     tags: ["WHERE", "Vergleichsoperator"],
     hints: [
-      "Verwende `WHERE gehalt > 50000`.",
-      "Die Spalte `gehalt` ist ein DECIMAL-Wert."
+      "Du moechtest nur Mitarbeiter sehen, deren Gehalt einen bestimmten Wert ueberschreitet.",
+      "Verwende einen Vergleichsoperator: `WHERE spalte > wert` — keine Anfuehrungszeichen bei Zahlen.",
+      "Die Query: `SELECT name, gehalt FROM mitarbeiter WHERE gehalt > 50000;`",
     ],
     hiddenTestQuery: "SELECT name, gehalt FROM mitarbeiter WHERE gehalt > 50000;",
     hiddenTestMode: "rows",
@@ -129,8 +136,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM abteilungen WHERE standort = 'Berlin';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte heisst `standort`.",
-      "Verwende `WHERE standort = 'Berlin'`."
+      "Du willst nur Abteilungen an einem bestimmten Standort sehen — du brauchst eine Filterbedingung.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM abteilungen WHERE standort = 'Berlin';`",
     ],
     hiddenTestQuery: "SELECT * FROM abteilungen WHERE standort = 'Berlin';",
     hiddenTestMode: "rows",
@@ -144,8 +152,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM tickets WHERE status = 'offen';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Der Status kann 'offen', 'bearbeitung' oder 'abgeschlossen' sein.",
-      "Verwende `WHERE status = 'offen'`."
+      "Du moechtest nur Tickets mit einem bestimmten Status-Wert zurueckgeben.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte muessen in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM tickets WHERE status = 'offen';`",
     ],
     hiddenTestQuery: "SELECT * FROM tickets WHERE status = 'offen';",
     hiddenTestMode: "rows",
@@ -159,8 +168,9 @@ whereExercises.push(
     referenceQuery: "SELECT titel, prioritaet FROM tickets WHERE prioritaet = 'kritisch';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Prioritaet heisst `prioritaet`.",
-      "Moegliche Werte: 'kritisch', 'hoch', 'mittel', 'niedrig'."
+      "Du willst nur Tickets einer bestimmten Dringlichkeitsstufe sehen — du brauchst eine Filterbedingung auf die Prioritaetsspalte.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte gehoeren in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT titel, prioritaet FROM tickets WHERE prioritaet = 'kritisch';`",
     ],
     hiddenTestQuery: "SELECT titel, prioritaet FROM tickets WHERE prioritaet = 'kritisch';",
     hiddenTestMode: "rows",
@@ -174,8 +184,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM konten WHERE typ = 'Girokonto';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `typ` hat die Werte 'Girokonto' oder 'Sparkonto'.",
-      "Verwende `WHERE typ = 'Girokonto'`."
+      "Du moechtest nur Konten eines bestimmten Typs anzeigen — du brauchst eine Bedingung auf die Typ-Spalte.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM konten WHERE typ = 'Girokonto';`",
     ],
     hiddenTestQuery: "SELECT * FROM konten WHERE typ = 'Girokonto';",
     hiddenTestMode: "rows",
@@ -189,8 +200,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM transaktionen WHERE typ = 'ausgang';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `typ` hat die Werte 'eingang' oder 'ausgang'.",
-      "Verwende `WHERE typ = 'ausgang'`."
+      "Du willst nur Transaktionen eines bestimmten Typs herausfiltern.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte muessen in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM transaktionen WHERE typ = 'ausgang';`",
     ],
     hiddenTestQuery: "SELECT * FROM transaktionen WHERE typ = 'ausgang';",
     hiddenTestMode: "rows",
@@ -204,8 +216,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM nutzer WHERE abonnement = 'Premium';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `abonnement` hat Werte wie 'Premium', 'Standard', 'Basic'.",
-      "Verwende `WHERE abonnement = 'Premium'`."
+      "Du moechtest nur Nutzer mit einem bestimmten Abonnement-Typ sehen.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte gehoeren in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM nutzer WHERE abonnement = 'Premium';`",
     ],
     hiddenTestQuery: "SELECT * FROM nutzer WHERE abonnement = 'Premium';",
     hiddenTestMode: "rows",
@@ -219,8 +232,9 @@ whereExercises.push(
     referenceQuery: "SELECT titel, jahr FROM filme WHERE genre = 'Drama';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `genre` hat Werte wie 'Drama', 'Sci-Fi', 'Action' etc.",
-      "Verwende `WHERE genre = 'Drama'`."
+      "Du willst nur Filme eines bestimmten Genres zurueckgeben — du brauchst eine Filterbedingung.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte muessen in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT titel, jahr FROM filme WHERE genre = 'Drama';`",
     ],
     hiddenTestQuery: "SELECT titel, jahr FROM filme WHERE genre = 'Drama';",
     hiddenTestMode: "rows",
@@ -234,8 +248,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM sessions WHERE browser = 'Chrome';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `browser` hat Werte wie 'Chrome', 'Firefox', 'Safari', 'Edge'.",
-      "Verwende `WHERE browser = 'Chrome'`."
+      "Du moechtest Sessions nach dem verwendeten Browser filtern.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM sessions WHERE browser = 'Chrome';`",
     ],
     hiddenTestQuery: "SELECT * FROM sessions WHERE browser = 'Chrome';",
     hiddenTestMode: "rows",
@@ -249,8 +264,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, preis FROM produkte WHERE preis BETWEEN 20 AND 100;",
     tags: ["WHERE", "BETWEEN"],
     hints: [
-      "Verwende `BETWEEN 20 AND 100`.",
-      "BETWEEN ist inklusiv – beide Grenzwerte werden eingeschlossen."
+      "Du willst Zeilen filtern, deren Wert innerhalb eines bestimmten Bereichs liegt — es gibt einen Operator genau dafuer.",
+      "`BETWEEN wert1 AND wert2` prueft einen inklusiven Bereich: `WHERE spalte BETWEEN 20 AND 100`",
+      "Die Query: `SELECT name, preis FROM produkte WHERE preis BETWEEN 20 AND 100;`",
     ],
     hiddenTestQuery: "SELECT name, preis FROM produkte WHERE preis BETWEEN 20 AND 100;",
     hiddenTestMode: "rows",
@@ -264,8 +280,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM kunden WHERE stadt IN ('Berlin', 'Hamburg');",
     tags: ["WHERE", "IN"],
     hints: [
-      "Verwende `IN ('Berlin', 'Hamburg')` statt mehrerer OR-Bedingungen.",
-      "Alternative: `WHERE stadt = 'Berlin' OR stadt = 'Hamburg'`."
+      "Du willst Zeilen filtern, die einen von mehreren moeglichen Werten haben — es gibt einen eleganteren Weg als mehrfaches OR.",
+      "`IN (wert1, wert2, ...)` prueft, ob ein Wert in einer Liste vorkommt: `WHERE spalte IN ('a', 'b')`",
+      "Loesung: `SELECT * FROM kunden WHERE stadt IN ('Berlin', 'Hamburg');`",
     ],
     hiddenTestQuery: "SELECT * FROM kunden WHERE stadt IN ('Berlin', 'Hamburg');",
     hiddenTestMode: "rows",
@@ -279,8 +296,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, kategorie_id FROM produkte WHERE kategorie_id IN (1, 3);",
     tags: ["WHERE", "IN"],
     hints: [
-      "Verwende `IN (1, 3)` fuer eine Liste numerischer Werte.",
-      "Zahlen brauchen keine Anfuehrungszeichen."
+      "Du moechtest Produkte aus mehreren Kategorien gleichzeitig abfragen — es gibt einen kompakten Operator dafuer.",
+      "`IN (wert1, wert2)` prueft auf eine Liste von Werten: `WHERE spalte IN (1, 3)` — Zahlen ohne Anfuehrungszeichen.",
+      "Die Query: `SELECT name, kategorie_id FROM produkte WHERE kategorie_id IN (1, 3);`",
     ],
     hiddenTestQuery: "SELECT name, kategorie_id FROM produkte WHERE kategorie_id IN (1, 3);",
     hiddenTestMode: "rows",
@@ -294,8 +312,9 @@ whereExercises.push(
     referenceQuery: "SELECT name FROM kunden WHERE name LIKE 'M%';",
     tags: ["WHERE", "LIKE"],
     hints: [
-      "Verwende `LIKE 'M%'` – das `%` steht fuer beliebige Zeichen danach.",
-      "Das `%` ist ein Platzhalter fuer null oder mehr Zeichen."
+      "Du moechtest Textwerte nach einem Muster filtern — zum Beispiel nach dem Anfangsbuchstaben.",
+      "`LIKE` ermoeglicht Mustervergleiche: `WHERE spalte LIKE 'M%'` — das `%` steht fuer beliebig viele Zeichen.",
+      "Die Query: `SELECT name FROM kunden WHERE name LIKE 'M%';`",
     ],
     hiddenTestQuery: "SELECT name FROM kunden WHERE name LIKE 'M%';",
     hiddenTestMode: "rows",
@@ -309,8 +328,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, email FROM kunden WHERE email LIKE '%beispiel.de';",
     tags: ["WHERE", "LIKE"],
     hints: [
-      "Verwende `LIKE '%beispiel.de'` – das `%` davor steht fuer beliebige Zeichen davor.",
-      "`%` kann am Anfang, in der Mitte oder am Ende stehen."
+      "Du willst E-Mail-Adressen nach einer Endung filtern — dafuer braucht man Mustererkennung in SQL.",
+      "`LIKE` mit `%` als Platzhalter: `WHERE spalte LIKE '%muster'` — `%` steht fuer beliebige Zeichen davor.",
+      "Die Query: `SELECT name, email FROM kunden WHERE email LIKE '%beispiel.de';`",
     ],
     hiddenTestQuery: "SELECT name, email FROM kunden WHERE email LIKE '%beispiel.de';",
     hiddenTestMode: "rows",
@@ -324,8 +344,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM workouts WHERE dauer_min > 60;",
     tags: ["WHERE", "Vergleichsoperator"],
     hints: [
-      "Die Spalte heisst `dauer_min`.",
-      "Verwende `WHERE dauer_min > 60`."
+      "Du moechtest Zeilen nach einem numerischen Mindestwert filtern.",
+      "Verwende einen Vergleichsoperator: `WHERE spalte > wert` — keine Anfuehrungszeichen bei Zahlen.",
+      "Die Query: `SELECT * FROM workouts WHERE dauer_min > 60;`",
     ],
     hiddenTestQuery: "SELECT * FROM workouts WHERE dauer_min > 60;",
     hiddenTestMode: "rows",
@@ -339,8 +360,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM uebungen WHERE muskelgruppe = 'Brust';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `muskelgruppe` hat Werte wie 'Brust', 'Beine', 'Ruecken' etc.",
-      "Verwende `WHERE muskelgruppe = 'Brust'`."
+      "Du willst nur Uebungen fuer eine bestimmte Muskelgruppe sehen — du brauchst eine Filterbedingung.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM uebungen WHERE muskelgruppe = 'Brust';`",
     ],
     hiddenTestQuery: "SELECT * FROM uebungen WHERE muskelgruppe = 'Brust';",
     hiddenTestMode: "rows",
@@ -354,8 +376,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, position FROM mitarbeiter WHERE manager_id IS NULL;",
     tags: ["WHERE", "IS NULL"],
     hints: [
-      "Verwende `IS NULL` – niemals `= NULL`.",
-      "NULL ist kein Wert, sondern die Abwesenheit eines Wertes."
+      "Wenn eine Spalte keinen Wert hat, spricht man von NULL — einem speziellen Zustand, der 'kein Wert' bedeutet.",
+      "Verwende `IS NULL` um auf NULL zu pruefen — niemals `= NULL`, das funktioniert in SQL nicht.",
+      "Die Bedingung: `SELECT name, position FROM mitarbeiter WHERE manager_id IS NULL;`",
     ],
     hiddenTestQuery: "SELECT name, position FROM mitarbeiter WHERE manager_id IS NULL;",
     hiddenTestMode: "rows",
@@ -369,8 +392,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM urlaub WHERE genehmigt = 1;",
     tags: ["WHERE", "Boolescher Wert"],
     hints: [
-      "Die Spalte `genehmigt` ist ein BOOLEAN: 1 = wahr, 0 = falsch.",
-      "Verwende `WHERE genehmigt = 1`."
+      "Du willst nur genehmigte Eintraege sehen — in SQL werden boolesche Werte oft als 1 (wahr) und 0 (falsch) gespeichert.",
+      "Vergleiche eine boolesche Spalte mit einer Zahl: `WHERE spalte = 1` fuer wahr, `WHERE spalte = 0` fuer falsch.",
+      "Die Query: `SELECT * FROM urlaub WHERE genehmigt = 1;`",
     ],
     hiddenTestQuery: "SELECT * FROM urlaub WHERE genehmigt = 1;",
     hiddenTestMode: "rows",
@@ -384,8 +408,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM agenten WHERE aktiv = 0;",
     tags: ["WHERE", "Boolescher Wert"],
     hints: [
-      "Die Spalte `aktiv` ist BOOLEAN: 1 = aktiv, 0 = inaktiv.",
-      "Verwende `WHERE aktiv = 0`."
+      "Du moechtest nur inaktive Eintraege sehen — boolesche Werte werden in SQL oft als 1 oder 0 gespeichert.",
+      "Verwende `WHERE spalte = 0` fuer 'falsch' bzw. inaktiv: kein Text, nur die Zahl 0.",
+      "Die Query: `SELECT * FROM agenten WHERE aktiv = 0;`",
     ],
     hiddenTestQuery: "SELECT * FROM agenten WHERE aktiv = 0;",
     hiddenTestMode: "rows",
@@ -399,8 +424,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM tickets WHERE agent_id IS NULL;",
     tags: ["WHERE", "IS NULL"],
     hints: [
-      "Verwende `WHERE agent_id IS NULL`.",
-      "Ein NULL-Wert in agent_id bedeutet: kein Agent zugewiesen."
+      "Wenn kein Agent zugewiesen ist, fehlt der Wert komplett — in SQL nennt man das NULL.",
+      "Verwende `IS NULL` um fehlende Werte zu finden: `WHERE spalte IS NULL` — `= NULL` funktioniert in SQL nicht.",
+      "Die Query: `SELECT * FROM tickets WHERE agent_id IS NULL;`",
     ],
     hiddenTestQuery: "SELECT * FROM tickets WHERE agent_id IS NULL;",
     hiddenTestMode: "rows",
@@ -414,8 +440,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM konten WHERE typ = 'Sparkonto' AND saldo > 10000;",
     tags: ["WHERE", "AND"],
     hints: [
-      "Kombiniere zwei Bedingungen mit `AND`.",
-      "`WHERE typ = 'Sparkonto' AND saldo > 10000`"
+      "Du moechtest gleichzeitig nach Kontotyp und Saldo filtern — beide Bedingungen muessen zutreffen.",
+      "Verbinde mehrere Bedingungen mit `AND`: `WHERE bedingung1 AND bedingung2`",
+      "Die Query: `SELECT * FROM konten WHERE typ = 'Sparkonto' AND saldo > 10000;`",
     ],
     hiddenTestQuery: "SELECT * FROM konten WHERE typ = 'Sparkonto' AND saldo > 10000;",
     hiddenTestMode: "rows",
@@ -429,8 +456,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM transaktionen WHERE betrag < -1000;",
     tags: ["WHERE", "Vergleichsoperator"],
     hints: [
-      "Negative Betraege sind Abfluesse.",
-      "Verwende `WHERE betrag < -1000`."
+      "Abfluesse werden als negative Zahlen gespeichert — du willst die besonders grossen Abfluesse filtern.",
+      "Verwende `WHERE spalte < wert` — negative Zahlen werden ohne Anfuehrungszeichen geschrieben.",
+      "Die Query: `SELECT * FROM transaktionen WHERE betrag < -1000;`",
     ],
     hiddenTestQuery: "SELECT * FROM transaktionen WHERE betrag < -1000;",
     hiddenTestMode: "rows",
@@ -444,8 +472,9 @@ whereExercises.push(
     referenceQuery: "SELECT titel, jahr FROM filme WHERE jahr > 2010;",
     tags: ["WHERE", "Vergleichsoperator"],
     hints: [
-      "Die Spalte `jahr` ist ein INTEGER.",
-      "Verwende `WHERE jahr > 2010`."
+      "Du moechtest Filme nach ihrem Erscheinungsjahr filtern — dafuer brauchst du einen Vergleichsoperator.",
+      "Verwende `WHERE spalte > wert` fuer 'groesser als': `WHERE jahr > 2010`",
+      "Die Query: `SELECT titel, jahr FROM filme WHERE jahr > 2010;`",
     ],
     hiddenTestQuery: "SELECT titel, jahr FROM filme WHERE jahr > 2010;",
     hiddenTestMode: "rows",
@@ -459,8 +488,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM sessions WHERE nutzer_id IS NULL;",
     tags: ["WHERE", "IS NULL"],
     hints: [
-      "Anonyme Sessions haben keine nutzer_id.",
-      "Verwende `WHERE nutzer_id IS NULL`."
+      "Anonyme Nutzer haben keine ID — der fehlende Wert wird in SQL als NULL dargestellt.",
+      "Verwende `IS NULL` um fehlende Werte zu finden: `WHERE spalte IS NULL` — `= NULL` ist in SQL ungueltig.",
+      "Die Query: `SELECT * FROM sessions WHERE nutzer_id IS NULL;`",
     ],
     hiddenTestQuery: "SELECT * FROM sessions WHERE nutzer_id IS NULL;",
     hiddenTestMode: "rows",
@@ -474,8 +504,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM fehler WHERE schweregrad = 'kritisch';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `schweregrad` hat die Werte 'warnung' oder 'kritisch'.",
-      "Verwende `WHERE schweregrad = 'kritisch'`."
+      "Du willst nur Fehler einer bestimmten Schweregradsstufe sehen — du brauchst eine Filterbedingung.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM fehler WHERE schweregrad = 'kritisch';`",
     ],
     hiddenTestQuery: "SELECT * FROM fehler WHERE schweregrad = 'kritisch';",
     hiddenTestMode: "rows",
@@ -489,8 +520,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM events WHERE event_typ = 'page_view';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `event_typ` hat Werte wie 'page_view', 'click', 'checkout'.",
-      "Verwende `WHERE event_typ = 'page_view'`."
+      "Du moechtest nur Events eines bestimmten Typs herausfiltern.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte gehoeren in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM events WHERE event_typ = 'page_view';`",
     ],
     hiddenTestQuery: "SELECT * FROM events WHERE event_typ = 'page_view';",
     hiddenTestMode: "rows",
@@ -504,8 +536,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, preis FROM produkte WHERE preis < 30 OR preis > 500;",
     tags: ["WHERE", "OR"],
     hints: [
-      "Verwende `OR` um zwei Bedingungen zu kombinieren.",
-      "`WHERE preis < 30 OR preis > 500`"
+      "Du willst Zeilen zurueckgeben, die eine von zwei Bedingungen erfuellen — mindestens eine muss zutreffen.",
+      "Verbinde zwei Bedingungen mit `OR`: `WHERE bedingung1 OR bedingung2` — es genuegt, wenn eine gilt.",
+      "Die Query: `SELECT name, preis FROM produkte WHERE preis < 30 OR preis > 500;`",
     ],
     hiddenTestQuery: "SELECT name, preis FROM produkte WHERE preis < 30 OR preis > 500;",
     hiddenTestMode: "rows",
@@ -519,8 +552,9 @@ whereExercises.push(
     referenceQuery: "SELECT name, abteilung_id FROM mitarbeiter WHERE abteilung_id IN (1, 2);",
     tags: ["WHERE", "IN"],
     hints: [
-      "Verwende `IN (1, 2)` statt `abteilung_id = 1 OR abteilung_id = 2`.",
-      "IN ist kuerzer und uebersichtlicher."
+      "Du moechtest Mitarbeiter aus mehreren Abteilungen gleichzeitig abfragen — es gibt einen kompakten Operator dafuer.",
+      "`IN (wert1, wert2)` prueft auf eine Liste von Werten: `WHERE spalte IN (1, 2)` — eleganter als mehrfaches OR.",
+      "Die Query: `SELECT name, abteilung_id FROM mitarbeiter WHERE abteilung_id IN (1, 2);`",
     ],
     hiddenTestQuery: "SELECT name, abteilung_id FROM mitarbeiter WHERE abteilung_id IN (1, 2);",
     hiddenTestMode: "rows",
@@ -534,8 +568,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM bewerbungen WHERE status = 'gespraech';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `status` hat Werte: 'eingegangen', 'gespraech', 'abgelehnt', 'angebot'.",
-      "Verwende `WHERE status = 'gespraech'`."
+      "Du willst nur Bewerbungen in einem bestimmten Stadium des Prozesses sehen.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte muessen in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM bewerbungen WHERE status = 'gespraech';`",
     ],
     hiddenTestQuery: "SELECT * FROM bewerbungen WHERE status = 'gespraech';",
     hiddenTestMode: "rows",
@@ -549,8 +584,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM bestellungen WHERE status IN ('versendet', 'storniert');",
     tags: ["WHERE", "IN"],
     hints: [
-      "Verwende `IN ('versendet', 'storniert')`.",
-      "Alternative: `WHERE status = 'versendet' OR status = 'storniert'`."
+      "Du willst Bestellungen mit einem von zwei moeglichen Status-Werten finden — es gibt einen eleganten Operator dafuer.",
+      "`IN ('wert1', 'wert2')` prueft auf mehrere Textwerte gleichzeitig: `WHERE spalte IN ('a', 'b')`",
+      "Die Query: `SELECT * FROM bestellungen WHERE status IN ('versendet', 'storniert');`",
     ],
     hiddenTestQuery: "SELECT * FROM bestellungen WHERE status IN ('versendet', 'storniert');",
     hiddenTestMode: "rows",
@@ -564,8 +600,9 @@ whereExercises.push(
     referenceQuery: "SELECT titel, dauer_min FROM filme WHERE dauer_min BETWEEN 120 AND 150;",
     tags: ["WHERE", "BETWEEN"],
     hints: [
-      "Verwende `BETWEEN 120 AND 150`.",
-      "BETWEEN schließt beide Grenzen ein."
+      "Du moechtest Filme filtern, deren Laenge in einem bestimmten Bereich liegt — es gibt einen Operator genau dafuer.",
+      "`BETWEEN wert1 AND wert2` prueft einen inklusiven Bereich: `WHERE spalte BETWEEN 120 AND 150`",
+      "Die Query: `SELECT titel, dauer_min FROM filme WHERE dauer_min BETWEEN 120 AND 150;`",
     ],
     hiddenTestQuery: "SELECT titel, dauer_min FROM filme WHERE dauer_min BETWEEN 120 AND 150;",
     hiddenTestMode: "rows",
@@ -579,8 +616,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM saetze WHERE gewicht_kg IS NULL;",
     tags: ["WHERE", "IS NULL"],
     hints: [
-      "Cardio-Uebungen haben kein Gewicht – `gewicht_kg` ist NULL.",
-      "Verwende `IS NULL`, nicht `= NULL`."
+      "Wenn ein Wert nicht erfasst wurde, ist er NULL — ein spezieller Zustand fuer 'kein Wert vorhanden'.",
+      "Verwende `IS NULL` um fehlende Werte zu finden: `WHERE spalte IS NULL` — `= NULL` ist in SQL ungueltig.",
+      "Die Query: `SELECT * FROM saetze WHERE gewicht_kg IS NULL;`",
     ],
     hiddenTestQuery: "SELECT * FROM saetze WHERE gewicht_kg IS NULL;",
     hiddenTestMode: "rows",
@@ -594,8 +632,9 @@ whereExercises.push(
     referenceQuery: "SELECT titel, prioritaet FROM tickets WHERE prioritaet IN ('hoch', 'kritisch');",
     tags: ["WHERE", "IN"],
     hints: [
-      "Verwende `IN ('hoch', 'kritisch')`.",
-      "Beide Werte sind Text und muessen in Anfuehrungszeichen."
+      "Du willst Tickets aus mehreren Prioritaetsstufen gleichzeitig abfragen.",
+      "`IN ('wert1', 'wert2')` prueft auf eine Liste von Textwerten: `WHERE spalte IN ('a', 'b')`",
+      "Die Query: `SELECT titel, prioritaet FROM tickets WHERE prioritaet IN ('hoch', 'kritisch');`",
     ],
     hiddenTestQuery: "SELECT titel, prioritaet FROM tickets WHERE prioritaet IN ('hoch', 'kritisch');",
     hiddenTestMode: "rows",
@@ -609,8 +648,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM fehler WHERE fehlercode = 'ERR_500';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `fehlercode` hat Werte wie 'ERR_404', 'ERR_500', 'ERR_502'.",
-      "Verwende `WHERE fehlercode = 'ERR_500'`."
+      "Du moechtest nur Fehler mit einem bestimmten Code herausfiltern.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM fehler WHERE fehlercode = 'ERR_500';`",
     ],
     hiddenTestQuery: "SELECT * FROM fehler WHERE fehlercode = 'ERR_500';",
     hiddenTestMode: "rows",
@@ -624,8 +664,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM zahlungen WHERE zahlungsmittel = 'Kreditkarte';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Die Spalte `zahlungsmittel` hat Werte: 'Kreditkarte', 'PayFlow', 'Ueberweisung'.",
-      "Verwende `WHERE zahlungsmittel = 'Kreditkarte'`."
+      "Du willst nur Zahlungen mit einem bestimmten Zahlungsmittel sehen.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte gehoeren in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM zahlungen WHERE zahlungsmittel = 'Kreditkarte';`",
     ],
     hiddenTestQuery: "SELECT * FROM zahlungen WHERE zahlungsmittel = 'Kreditkarte';",
     hiddenTestMode: "rows",
@@ -639,8 +680,9 @@ whereExercises.push(
     referenceQuery: "SELECT * FROM events WHERE event_typ = 'checkout';",
     tags: ["WHERE", "Gleichheit"],
     hints: [
-      "Verwende `WHERE event_typ = 'checkout'`.",
-      "Checkout-Events kennzeichnen Kaufabschluesse."
+      "Du moechtest nur Events eines bestimmten Typs herausfiltern.",
+      "Verwende `WHERE spalte = 'wert'` — Textwerte muessen in einfache Anfuehrungszeichen.",
+      "Die Query: `SELECT * FROM events WHERE event_typ = 'checkout';`",
     ],
     hiddenTestQuery: "SELECT * FROM events WHERE event_typ = 'checkout';",
     hiddenTestMode: "rows",

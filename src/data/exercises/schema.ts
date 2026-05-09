@@ -31,8 +31,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Um vom Kundennamen zum Produktnamen zu gelangen, muss man mehrere Tabellen verknuepfen.",
+      "Schau dir die Fremdschluessel-Beziehungen an: kunden -> bestellungen -> bestellpositionen -> produkte.",
+      "Der Pfad lautet: `kunden` (name) JOIN `bestellungen` (kunde_id) JOIN `bestellpositionen` (bestellung_id, produkt_id) JOIN `produkte` (name)."
     ],
   }),
 
@@ -52,8 +53,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Suche nach einer Tabelle, die Daten zu einzelnen Saetzen eines Workouts speichert.",
+      "Tabellen sind oft nach dem benannt, was sie speichern — 'saetze' klingt nach einzelnen Uebungssaetzen.",
+      "Die Tabelle `saetze` speichert einzelne Uebungseinheiten mit Wiederholungen und Gewicht — sie verweist auf `workouts` und `uebungen`."
     ],
   }),
 
@@ -73,8 +75,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Ein Vorgesetzter ist selbst ein Mitarbeiter — suche nach einer Spalte, die auf dieselbe Tabelle verweist.",
+      "Self-References haben oft den Namen `<singular_tabelle>_id`, also `mitarbeiter_id` oder `manager_id`.",
+      "Die Spalte `manager_id` in der Tabelle `mitarbeiter` verweist auf `mitarbeiter.id` — das ist der Vorgesetzte."
     ],
   }),
 
@@ -94,8 +97,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Kommentare gehoeren zu einem Ticket — suche eine Tabelle, die Nachrichten zu Tickets speichert.",
+      "Tabellen fuer abhaengige Informationen haben oft einen Fremdschluessel auf die Haupttabelle.",
+      "Die Tabelle `kommentare` hat eine `ticket_id`-Spalte, die auf `tickets.id` verweist — dort werden Kommentare gespeichert."
     ],
   }),
 
@@ -115,8 +119,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Eine Transaktion gehoert zu einem Konto — suche den Fremdschluessel, der auf die `konten`-Tabelle verweist.",
+      "Fremdschluessel heissen meist `<tabelle_singular>_id`, also waere der Link zu `konten` eine Spalte namens `konto_id`.",
+      "Die Spalte `konto_id` in der Tabelle `transaktionen` verweist auf `konten.id` — das ist die Verbindung."
     ],
   }),
 
@@ -136,8 +141,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Zwischen Nutzern und Filmen muss eine Zwischentabelle existieren, die beide verbindet.",
+      "Eine Tabelle mit `nutzer_id` und `film_id` als Fremdschluessel stellt die Verbindung her.",
+      "Die Tabelle `watch_history` hat `nutzer_id` und `film_id` — sie verknuepft Nutzer mit gesehenen Filmen."
     ],
   }),
 
@@ -157,8 +163,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Ein Event gehoert zu einer Session — suche den Fremdschluessel, der auf die `sessions`-Tabelle zeigt.",
+      "Fremdschluessel in `events`, die auf `sessions` verweisen, heissen ueblicherweise `session_id`.",
+      "Die Spalte `session_id` in der Tabelle `events` verweist auf `sessions.id` — das ist die Verknuepfung."
     ],
   }),
 
@@ -178,8 +185,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Produkte gehoeren zu einer Kategorie — suche den Fremdschluessel, der auf die `kategorien`-Tabelle zeigt.",
+      "Fremdschluessel heissen ueblicherweise `<tabelle_singular>_id`, also `kategorie_id` fuer den Verweis auf `kategorien`.",
+      "Die Spalte `kategorie_id` in der Tabelle `produkte` verweist auf `kategorien.id`."
     ],
   }),
 
@@ -199,8 +207,9 @@ schemaExercises.push(
     expectedResultText: "",
     tags: ["Schema-Verstaendnis", "Tabellenbeziehungen"],
     hints: [
-      "Schau dir die Tabellen- und Spaltendefinitionen an.",
-      "Achte auf Foreign-Key-Beziehungen."
+      "Urlaubsantraege gehoeren zu Mitarbeitern — suche eine eigene Tabelle fuer Urlaubs-Informationen.",
+      "Separate Entitaeten bekommen eigene Tabellen: Wenn es viele Urlaubsantraege pro Mitarbeiter geben kann, braucht es eine eigene Tabelle.",
+      "Die Tabelle `urlaub` im HR-Datensatz speichert Urlaubsantraege mit `mitarbeiter_id`, `startdatum`, `enddatum` und `genehmigt`."
     ],
   }),
 

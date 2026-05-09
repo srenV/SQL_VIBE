@@ -25,7 +25,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `ORDER BY stadt ASC`."
+      "Du moechtest die Ergebnisse nach einer Spalte sortieren — kleinste bzw. frueheste Werte zuerst.",
+      "`ORDER BY spalte ASC` sortiert aufsteigend (ASC ist der Standard und kann weggelassen werden).",
+      "Loesung: `SELECT * FROM kunden ORDER BY stadt ASC;`",
     ],
     hiddenTestQuery: `SELECT * FROM kunden ORDER BY stadt ASC;`,
     hiddenTestMode: "exact",
@@ -41,7 +43,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `ORDER BY id DESC`."
+      "Du moechtest die Ergebnisse absteigend sortieren — groesste Werte zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT * FROM nutzer ORDER BY id DESC;`",
     ],
     hiddenTestQuery: `SELECT * FROM nutzer ORDER BY id DESC;`,
     hiddenTestMode: "exact",
@@ -57,7 +61,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `LIMIT 5` nach `ORDER BY`."
+      "Du moechtest zuerst sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM uebungen ORDER BY kategorie DESC LIMIT 5;`",
     ],
     hiddenTestQuery: `SELECT * FROM uebungen ORDER BY kategorie DESC LIMIT 5;`,
     hiddenTestMode: "exact",
@@ -73,7 +79,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `LIMIT 3` nach `ORDER BY`."
+      "Du moechtest zuerst sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte ASC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM abteilungen ORDER BY budget ASC LIMIT 3;`",
     ],
     hiddenTestQuery: `SELECT * FROM abteilungen ORDER BY budget ASC LIMIT 3;`,
     hiddenTestMode: "exact",
@@ -89,7 +97,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `ORDER BY position ASC`."
+      "Du moechtest die Ergebnisse nach einer Spalte sortieren — kleinste bzw. alphabetisch frueheste Werte zuerst.",
+      "`ORDER BY spalte ASC` sortiert aufsteigend (ASC ist der Standard und kann weggelassen werden).",
+      "Loesung: `SELECT * FROM mitarbeiter ORDER BY position ASC;`",
     ],
     hiddenTestQuery: `SELECT * FROM mitarbeiter ORDER BY position ASC;`,
     hiddenTestMode: "exact",
@@ -105,7 +115,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `ORDER BY aktiv DESC`."
+      "Du moechtest die Ergebnisse absteigend sortieren — groesste Werte zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT * FROM agenten ORDER BY aktiv DESC;`",
     ],
     hiddenTestQuery: `SELECT * FROM agenten ORDER BY aktiv DESC;`,
     hiddenTestMode: "exact",
@@ -121,7 +133,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `LIMIT 5` nach `ORDER BY`."
+      "Du moechtest zuerst sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM kunden ORDER BY geburtsdatum DESC LIMIT 5;`",
     ],
     hiddenTestQuery: `SELECT * FROM kunden ORDER BY geburtsdatum DESC LIMIT 5;`,
     hiddenTestMode: "exact",
@@ -137,7 +151,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `LIMIT 3` nach `ORDER BY`."
+      "Du moechtest zuerst sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte ASC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM konten ORDER BY kunde_id ASC LIMIT 3;`",
     ],
     hiddenTestQuery: `SELECT * FROM konten ORDER BY kunde_id ASC LIMIT 3;`,
     hiddenTestMode: "exact",
@@ -153,7 +169,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `ORDER BY name ASC`."
+      "Du moechtest die Ergebnisse nach einer Spalte sortieren — alphabetisch kleinste Werte zuerst.",
+      "`ORDER BY spalte ASC` sortiert aufsteigend (ASC ist der Standard und kann weggelassen werden).",
+      "Loesung: `SELECT * FROM nutzer ORDER BY name ASC;`",
     ],
     hiddenTestQuery: `SELECT * FROM nutzer ORDER BY name ASC;`,
     hiddenTestMode: "exact",
@@ -169,7 +187,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `ORDER BY jahr DESC`."
+      "Du moechtest die Ergebnisse absteigend sortieren — groesste Werte zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT * FROM filme ORDER BY jahr DESC;`",
     ],
     hiddenTestQuery: `SELECT * FROM filme ORDER BY jahr DESC;`,
     hiddenTestMode: "exact",
@@ -185,7 +205,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `LIMIT 5` nach `ORDER BY`."
+      "Du moechtest zuerst sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM events ORDER BY session_id DESC LIMIT 5;`",
     ],
     hiddenTestQuery: `SELECT * FROM events ORDER BY session_id DESC LIMIT 5;`,
     hiddenTestMode: "exact",
@@ -201,7 +223,9 @@ orderLimitExercises.push(
     expectedResultText: "",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
     hints: [
-      "Verwende `LIMIT 3` nach `ORDER BY`."
+      "Du moechtest zuerst sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte ASC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM sessions ORDER BY browser ASC LIMIT 3;`",
     ],
     hiddenTestQuery: `SELECT * FROM sessions ORDER BY browser ASC LIMIT 3;`,
     hiddenTestMode: "exact",
@@ -217,7 +241,11 @@ orderLimitExercises.push(
     datasetId: shopDataset.id,
     referenceQuery: "SELECT name, preis FROM produkte ORDER BY preis ASC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY preis ASC`."],
+    hints: [
+      "Du moechtest die Ergebnisse nach einer Spalte sortieren — kleinste Werte zuerst.",
+      "`ORDER BY spalte ASC` sortiert aufsteigend (ASC ist der Standard und kann weggelassen werden).",
+      "Loesung: `SELECT name, preis FROM produkte ORDER BY preis ASC;`",
+    ],
     hiddenTestQuery: "SELECT name, preis FROM produkte ORDER BY preis ASC;",
     hiddenTestMode: "exact",
   }),
@@ -229,7 +257,11 @@ orderLimitExercises.push(
     datasetId: shopDataset.id,
     referenceQuery: "SELECT name, preis FROM produkte ORDER BY preis DESC LIMIT 3;",
     tags: ["ORDER BY", "LIMIT", "Sortieren"],
-    hints: ["Sortiere absteigend mit `DESC` und verwende `LIMIT 3`."],
+    hints: [
+      "Du moechtest zuerst absteigend sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT name, preis FROM produkte ORDER BY preis DESC LIMIT 3;`",
+    ],
     hiddenTestQuery: "SELECT name, preis FROM produkte ORDER BY preis DESC LIMIT 3;",
     hiddenTestMode: "exact",
   }),
@@ -241,7 +273,11 @@ orderLimitExercises.push(
     datasetId: shopDataset.id,
     referenceQuery: "SELECT * FROM bestellungen ORDER BY datum ASC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY datum ASC`."],
+    hints: [
+      "Du moechtest die Ergebnisse nach einer Spalte sortieren — aelteste Eintraege zuerst.",
+      "`ORDER BY spalte ASC` sortiert aufsteigend (ASC ist der Standard und kann weggelassen werden).",
+      "Loesung: `SELECT * FROM bestellungen ORDER BY datum ASC;`",
+    ],
     hiddenTestQuery: "SELECT * FROM bestellungen ORDER BY datum ASC;",
     hiddenTestMode: "exact",
   }),
@@ -253,7 +289,11 @@ orderLimitExercises.push(
     datasetId: hrDataset.id,
     referenceQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY gehalt DESC`."],
+    hints: [
+      "Du moechtest die Ergebnisse absteigend sortieren — groesste Werte zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC;`",
+    ],
     hiddenTestQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC;",
     hiddenTestMode: "exact",
   }),
@@ -265,7 +305,11 @@ orderLimitExercises.push(
     datasetId: hrDataset.id,
     referenceQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC LIMIT 3;",
     tags: ["ORDER BY", "LIMIT"],
-    hints: ["Sortiere absteigend und verwende `LIMIT 3`."],
+    hints: [
+      "Du moechtest zuerst absteigend sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC LIMIT 3;`",
+    ],
     hiddenTestQuery: "SELECT name, gehalt FROM mitarbeiter ORDER BY gehalt DESC LIMIT 3;",
     hiddenTestMode: "exact",
   }),
@@ -277,7 +321,11 @@ orderLimitExercises.push(
     datasetId: fitnessDataset.id,
     referenceQuery: "SELECT * FROM uebungen ORDER BY muskelgruppe ASC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY muskelgruppe ASC`."],
+    hints: [
+      "Du moechtest die Ergebnisse nach einer Spalte sortieren — alphabetisch kleinste Werte zuerst.",
+      "`ORDER BY spalte ASC` sortiert aufsteigend (ASC ist der Standard und kann weggelassen werden).",
+      "Loesung: `SELECT * FROM uebungen ORDER BY muskelgruppe ASC;`",
+    ],
     hiddenTestQuery: "SELECT * FROM uebungen ORDER BY muskelgruppe ASC;",
     hiddenTestMode: "exact",
   }),
@@ -289,7 +337,11 @@ orderLimitExercises.push(
     datasetId: fitnessDataset.id,
     referenceQuery: "SELECT * FROM workouts ORDER BY dauer_min DESC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY dauer_min DESC`."],
+    hints: [
+      "Du moechtest die Ergebnisse absteigend sortieren — groesste Werte zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT * FROM workouts ORDER BY dauer_min DESC;`",
+    ],
     hiddenTestQuery: "SELECT * FROM workouts ORDER BY dauer_min DESC;",
     hiddenTestMode: "exact",
   }),
@@ -301,7 +353,11 @@ orderLimitExercises.push(
     datasetId: ticketsDataset.id,
     referenceQuery: "SELECT titel, prioritaet FROM tickets ORDER BY prioritaet ASC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY prioritaet ASC`."],
+    hints: [
+      "Du moechtest die Ergebnisse nach einer Spalte sortieren — kleinste Werte zuerst.",
+      "`ORDER BY spalte ASC` sortiert aufsteigend (ASC ist der Standard und kann weggelassen werden).",
+      "Loesung: `SELECT titel, prioritaet FROM tickets ORDER BY prioritaet ASC;`",
+    ],
     hiddenTestQuery: "SELECT titel, prioritaet FROM tickets ORDER BY prioritaet ASC;",
     hiddenTestMode: "exact",
   }),
@@ -313,7 +369,11 @@ orderLimitExercises.push(
     datasetId: ticketsDataset.id,
     referenceQuery: "SELECT * FROM tickets ORDER BY erstellt_am DESC LIMIT 5;",
     tags: ["ORDER BY", "LIMIT"],
-    hints: ["Sortiere nach `erstellt_am DESC` und verwende `LIMIT 5`."],
+    hints: [
+      "Du moechtest zuerst absteigend sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM tickets ORDER BY erstellt_am DESC LIMIT 5;`",
+    ],
     hiddenTestQuery: "SELECT * FROM tickets ORDER BY erstellt_am DESC LIMIT 5;",
     hiddenTestMode: "exact",
   }),
@@ -325,7 +385,11 @@ orderLimitExercises.push(
     datasetId: bankingDataset.id,
     referenceQuery: "SELECT * FROM transaktionen ORDER BY betrag DESC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY betrag DESC`."],
+    hints: [
+      "Du moechtest die Ergebnisse absteigend sortieren — groesste Werte zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT * FROM transaktionen ORDER BY betrag DESC;`",
+    ],
     hiddenTestQuery: "SELECT * FROM transaktionen ORDER BY betrag DESC;",
     hiddenTestMode: "exact",
   }),
@@ -337,7 +401,11 @@ orderLimitExercises.push(
     datasetId: bankingDataset.id,
     referenceQuery: "SELECT * FROM konten ORDER BY saldo DESC;",
     tags: ["ORDER BY", "Sortieren"],
-    hints: ["Verwende `ORDER BY saldo DESC`."],
+    hints: [
+      "Du moechtest die Ergebnisse absteigend sortieren — groesste Werte zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT * FROM konten ORDER BY saldo DESC;`",
+    ],
     hiddenTestQuery: "SELECT * FROM konten ORDER BY saldo DESC;",
     hiddenTestMode: "exact",
   }),
@@ -349,7 +417,11 @@ orderLimitExercises.push(
     datasetId: bankingDataset.id,
     referenceQuery: "SELECT * FROM konten ORDER BY saldo DESC LIMIT 5;",
     tags: ["ORDER BY", "LIMIT"],
-    hints: ["Sortiere absteigend nach `saldo` und verwende `LIMIT 5`."],
+    hints: [
+      "Du moechtest zuerst absteigend sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM konten ORDER BY saldo DESC LIMIT 5;`",
+    ],
     hiddenTestQuery: "SELECT * FROM konten ORDER BY saldo DESC LIMIT 5;",
     hiddenTestMode: "exact",
   }),
@@ -361,7 +433,11 @@ orderLimitExercises.push(
     datasetId: streamingDataset.id,
     referenceQuery: "SELECT titel, jahr, dauer_min FROM filme ORDER BY jahr ASC, dauer_min DESC;",
     tags: ["ORDER BY", "Mehrspaltig"],
-    hints: ["Trenne mehrere Sortierspalten mit Komma.", "Erst nach `jahr`, dann nach `dauer_min`."],
+    hints: [
+      "Du moechtest nach mehreren Spalten sortieren — die erste Spalte ist das Hauptkriterium, die zweite bricht Gleichstaende auf.",
+      "Trenne mehrere Sortierspalten mit Komma: `ORDER BY spalte1 ASC, spalte2 DESC`",
+      "Loesung: `SELECT titel, jahr, dauer_min FROM filme ORDER BY jahr ASC, dauer_min DESC;`",
+    ],
     hiddenTestQuery: "SELECT titel, jahr, dauer_min FROM filme ORDER BY jahr ASC, dauer_min DESC;",
     hiddenTestMode: "exact",
   }),
@@ -373,7 +449,11 @@ orderLimitExercises.push(
     datasetId: logsDataset.id,
     referenceQuery: "SELECT * FROM fehler ORDER BY schweregrad ASC, fehlercode ASC;",
     tags: ["ORDER BY", "Mehrspaltig"],
-    hints: ["Sortiere nach zwei Spalten: `schweregrad`, dann `fehlercode`."],
+    hints: [
+      "Du moechtest nach mehreren Spalten sortieren — die erste Spalte ist das Hauptkriterium, die zweite bricht Gleichstaende auf.",
+      "Trenne mehrere Sortierspalten mit Komma: `ORDER BY spalte1 ASC, spalte2 ASC`",
+      "Loesung: `SELECT * FROM fehler ORDER BY schweregrad ASC, fehlercode ASC;`",
+    ],
     hiddenTestQuery: "SELECT * FROM fehler ORDER BY schweregrad ASC, fehlercode ASC;",
     hiddenTestMode: "exact",
   }),
@@ -385,7 +465,11 @@ orderLimitExercises.push(
     datasetId: shopDataset.id,
     referenceQuery: "SELECT name, registriert_am FROM kunden ORDER BY registriert_am DESC;",
     tags: ["ORDER BY"],
-    hints: ["Verwende `ORDER BY registriert_am DESC`."],
+    hints: [
+      "Du moechtest die Ergebnisse absteigend sortieren — neueste Eintraege zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT name, registriert_am FROM kunden ORDER BY registriert_am DESC;`",
+    ],
     hiddenTestQuery: "SELECT name, registriert_am FROM kunden ORDER BY registriert_am DESC;",
     hiddenTestMode: "exact",
   }),
@@ -397,7 +481,11 @@ orderLimitExercises.push(
     datasetId: hrDataset.id,
     referenceQuery: "SELECT * FROM bewerbungen ORDER BY bewerbungsdatum DESC;",
     tags: ["ORDER BY"],
-    hints: ["Verwende `ORDER BY bewerbungsdatum DESC`."],
+    hints: [
+      "Du moechtest die Ergebnisse absteigend sortieren — neueste Eintraege zuerst.",
+      "`ORDER BY spalte DESC` sortiert absteigend.",
+      "Loesung: `SELECT * FROM bewerbungen ORDER BY bewerbungsdatum DESC;`",
+    ],
     hiddenTestQuery: "SELECT * FROM bewerbungen ORDER BY bewerbungsdatum DESC;",
     hiddenTestMode: "exact",
   }),
@@ -409,7 +497,11 @@ orderLimitExercises.push(
     datasetId: ticketsDataset.id,
     referenceQuery: "SELECT * FROM kommentare ORDER BY erstellt_am DESC LIMIT 10;",
     tags: ["ORDER BY", "LIMIT"],
-    hints: ["Sortiere absteigend und verwende `LIMIT 10`."],
+    hints: [
+      "Du moechtest zuerst absteigend sortieren und dann nur die ersten Zeilen sehen — kombiniere Sortierung mit Begrenzung.",
+      "Kombiniere `ORDER BY spalte DESC` mit `LIMIT n` am Ende der Query.",
+      "Loesung: `SELECT * FROM kommentare ORDER BY erstellt_am DESC LIMIT 10;`",
+    ],
     hiddenTestQuery: "SELECT * FROM kommentare ORDER BY erstellt_am DESC LIMIT 10;",
     hiddenTestMode: "exact",
   })

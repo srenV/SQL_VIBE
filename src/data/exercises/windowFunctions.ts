@@ -24,8 +24,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, preis, ROW_NUMBER() OVER (ORDER BY preis DESC) AS rn FROM produkte;",
     tags: ["Window Functions", "ROW_NUMBER"],
     hints: [
-      "Verwende `ROW_NUMBER() OVER (ORDER BY spalte DESC)`, um eine fortlaufende Nummer zu erzeugen.",
-      "ROW_NUMBER() vergibt immer eindeutige Nummern, auch bei gleichen Werten."
+      "Window Functions berechnen einen Wert pro Zeile ohne die Ergebnismenge zu reduzieren — im Gegensatz zu GROUP BY bleiben alle Zeilen erhalten.",
+      "Syntax: `ROW_NUMBER() OVER (ORDER BY spalte DESC) AS rn` — ROW_NUMBER vergibt immer eindeutige, fortlaufende Nummern.",
+      "Fuer diese Aufgabe: `SELECT name, preis, ROW_NUMBER() OVER (ORDER BY preis DESC) AS rn FROM produkte`",
     ],
     hiddenTestQuery: "SELECT name, preis, ROW_NUMBER() OVER (ORDER BY preis DESC) AS rn FROM produkte;",
     hiddenTestMode: "rows",
@@ -39,8 +40,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT * FROM (SELECT kunde_id, datum, gesamtbetrag, ROW_NUMBER() OVER (PARTITION BY kunde_id ORDER BY datum DESC) AS rn FROM bestellungen) sub WHERE rn = 1;",
     tags: ["Window Functions", "ROW_NUMBER", "PARTITION BY"],
     hints: [
-      "Verwende `PARTITION BY kunde_id`, um die Nummerierung pro Kunde neu zu starten.",
-      "Filteere im aeusseren SELECT mit `WHERE rn = 1`, um nur die neueste Bestellung zu behalten."
+      "PARTITION BY teilt die Datenmenge in Gruppen auf und startet die Nummerierung in jeder Gruppe neu — so erhaelt jeder Kunde seine eigene Zeilennummer-Sequenz.",
+      "Syntax: `ROW_NUMBER() OVER (PARTITION BY gruppe_id ORDER BY datum DESC) AS rn` — im aeusseren SELECT dann `WHERE rn = 1` fuer nur die erste Zeile pro Gruppe.",
+      "Fuer diese Aufgabe: `SELECT * FROM (SELECT kunde_id, datum, gesamtbetrag, ROW_NUMBER() OVER (PARTITION BY kunde_id ORDER BY datum DESC) AS rn FROM bestellungen) sub WHERE rn = 1`",
     ],
     hiddenTestQuery: "SELECT * FROM (SELECT kunde_id, datum, gesamtbetrag, ROW_NUMBER() OVER (PARTITION BY kunde_id ORDER BY datum DESC) AS rn FROM bestellungen) sub WHERE rn = 1;",
     hiddenTestMode: "rows",
@@ -54,8 +56,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, gehalt, RANK() OVER (ORDER BY gehalt DESC) AS rang FROM mitarbeiter;",
     tags: ["Window Functions", "RANK"],
     hints: [
-      "RANK() vergibt gleiche Raenge bei gleichen Werten und ueberspringt die naechsten Nummern.",
-      "Verwende `RANK() OVER (ORDER BY gehalt DESC)`."
+      "RANK() ist eine Window Function, die bei gleichen Werten denselben Rang vergibt und anschliessend Nummern ueberspringt (z. B. 1, 1, 3) — so entsteht eine faire Rangliste.",
+      "Syntax: `RANK() OVER (ORDER BY spalte DESC) AS rang` — ohne PARTITION BY wird ueber alle Zeilen rangiert.",
+      "Fuer diese Aufgabe: `SELECT name, gehalt, RANK() OVER (ORDER BY gehalt DESC) AS rang FROM mitarbeiter`",
     ],
     hiddenTestQuery: "SELECT name, gehalt, RANK() OVER (ORDER BY gehalt DESC) AS rang FROM mitarbeiter;",
     hiddenTestMode: "rows",
@@ -69,8 +72,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT titel, bewertung, DENSE_RANK() OVER (ORDER BY bewertung DESC) AS rang FROM filme;",
     tags: ["Window Functions", "DENSE_RANK"],
     hints: [
-      "DENSE_RANK() vergibt gleiche Raenge bei gleichen Werten, ueberspringt aber keine Nummern.",
-      "Verwende `DENSE_RANK() OVER (ORDER BY bewertung DESC)`."
+      "DENSE_RANK() vergibt wie RANK() gleiche Raenge bei Gleichstand — aber ohne Luecken in der Nummerierung (z. B. 1, 1, 2 statt 1, 1, 3).",
+      "Syntax: `DENSE_RANK() OVER (ORDER BY spalte DESC) AS rang` — der Unterschied zu RANK liegt nur darin, dass keine Nummern uebersprungen werden.",
+      "Fuer diese Aufgabe: `SELECT titel, bewertung, DENSE_RANK() OVER (ORDER BY bewertung DESC) AS rang FROM filme`",
     ],
     hiddenTestQuery: "SELECT titel, bewertung, DENSE_RANK() OVER (ORDER BY bewertung DESC) AS rang FROM filme;",
     hiddenTestMode: "rows",
@@ -84,8 +88,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, gehalt, RANK() OVER (ORDER BY gehalt DESC) AS rnk, DENSE_RANK() OVER (ORDER BY gehalt DESC) AS drnk FROM mitarbeiter;",
     tags: ["Window Functions", "RANK", "DENSE_RANK"],
     hints: [
-      "Du kannst mehrere Window Functions in einem SELECT verwenden.",
-      "RANK ueberspringt Nummern bei Gleichstand, DENSE_RANK nicht."
+      "Mehrere Window Functions koennen in einem SELECT nebeneinander stehen — jede hat ihr eigenes OVER() und berechnet ihren Wert unabhaengig pro Zeile.",
+      "Syntax: `RANK() OVER (ORDER BY spalte DESC) AS rnk, DENSE_RANK() OVER (ORDER BY spalte DESC) AS drnk` — beide in derselben SELECT-Liste.",
+      "Fuer diese Aufgabe: `SELECT name, gehalt, RANK() OVER (ORDER BY gehalt DESC) AS rnk, DENSE_RANK() OVER (ORDER BY gehalt DESC) AS drnk FROM mitarbeiter`",
     ],
     hiddenTestQuery: "SELECT name, gehalt, RANK() OVER (ORDER BY gehalt DESC) AS rnk, DENSE_RANK() OVER (ORDER BY gehalt DESC) AS drnk FROM mitarbeiter;",
     hiddenTestMode: "rows",
@@ -99,8 +104,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, gehalt, abteilung_id, RANK() OVER (PARTITION BY abteilung_id ORDER BY gehalt DESC) AS rang FROM mitarbeiter;",
     tags: ["Window Functions", "RANK", "PARTITION BY"],
     hints: [
-      "Verwende `PARTITION BY abteilung_id`, um den Rang pro Abteilung zu berechnen.",
-      "Jede Partitution bekommt ihre eigene Rangfolge, beginnend bei 1."
+      "PARTITION BY in einer Window Function teilt die Daten in Gruppen auf — innerhalb jeder Gruppe beginnt die Rangfolge neu bei 1, unabhaengig von anderen Gruppen.",
+      "Syntax: `RANK() OVER (PARTITION BY gruppe_id ORDER BY wert DESC) AS rang` — jede Gruppe (Abteilung) erhaelt ihre eigene Rangfolge.",
+      "Fuer diese Aufgabe: `SELECT name, gehalt, abteilung_id, RANK() OVER (PARTITION BY abteilung_id ORDER BY gehalt DESC) AS rang FROM mitarbeiter`",
     ],
     hiddenTestQuery: "SELECT name, gehalt, abteilung_id, RANK() OVER (PARTITION BY abteilung_id ORDER BY gehalt DESC) AS rang FROM mitarbeiter;",
     hiddenTestMode: "rows",
@@ -114,8 +120,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, preis, LAG(preis) OVER (ORDER BY id) AS vorheriger_preis FROM produkte;",
     tags: ["Window Functions", "LAG"],
     hints: [
-      "LAG(spalte) greift auf den Wert der vorherigen Zeile innerhalb der Fensterdefinition zu.",
-      "Verwende `LAG(preis) OVER (ORDER BY id)`, um den Preis des vorherigen Produkts zu erhalten."
+      "LAG() ist eine Window Function, die auf den Wert der direkt vorherigen Zeile zugreift — ohne Self-Join und ohne die Ergebnismenge zu veraendern.",
+      "Syntax: `LAG(spalte) OVER (ORDER BY sort_spalte) AS vorheriger_wert` — die erste Zeile hat keinen Vorgaenger und liefert NULL.",
+      "Fuer diese Aufgabe: `SELECT name, preis, LAG(preis) OVER (ORDER BY id) AS vorheriger_preis FROM produkte`",
     ],
     hiddenTestQuery: "SELECT name, preis, LAG(preis) OVER (ORDER BY id) AS vorheriger_preis FROM produkte;",
     hiddenTestMode: "rows",
@@ -129,8 +136,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT nutzer_id, datum, gewicht_kg, gewicht_kg - LAG(gewicht_kg) OVER (PARTITION BY nutzer_id ORDER BY datum) AS diff FROM koerperdaten;",
     tags: ["Window Functions", "LAG", "PARTITION BY"],
     hints: [
-      "Partitioniere nach nutzer_id, damit jeder Nutzer seine eigene Vergleichsbasis hat.",
-      "Subtrahiere `LAG(gewicht_kg)` vom aktuellen Gewicht, um die Differenz zu berechnen."
+      "LAG() mit PARTITION BY stellt sicher, dass der Vorgaengerwert immer aus derselben Gruppe (hier: demselben Nutzer) stammt — so werden keine Werte verschiedener Nutzer verglichen.",
+      "Syntax: `LAG(spalte) OVER (PARTITION BY gruppe_id ORDER BY datum) AS vorheriger_wert` — dann `aktuell - vorheriger_wert AS diff` in der SELECT-Liste.",
+      "Fuer diese Aufgabe: `SELECT nutzer_id, datum, gewicht_kg, gewicht_kg - LAG(gewicht_kg) OVER (PARTITION BY nutzer_id ORDER BY datum) AS diff FROM koerperdaten`",
     ],
     hiddenTestQuery: "SELECT nutzer_id, datum, gewicht_kg, gewicht_kg - LAG(gewicht_kg) OVER (PARTITION BY nutzer_id ORDER BY datum) AS diff FROM koerperdaten;",
     hiddenTestMode: "rows",
@@ -144,8 +152,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT id, konto_id, betrag, datum, LEAD(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS naechster_betrag FROM transaktionen;",
     tags: ["Window Functions", "LEAD", "PARTITION BY"],
     hints: [
-      "LEAD() greift auf den Wert der naechsten Zeile zu, im Gegensatz zu LAG().",
-      "Verwende `PARTITION BY konto_id`, um pro Konto zu vergleichen."
+      "LEAD() ist das Gegenstueck zu LAG() — statt auf die vorherige greift es auf die naechste Zeile zu, ohne Self-Join und ohne die Ergebnismenge zu veraendern.",
+      "Syntax: `LEAD(spalte) OVER (PARTITION BY gruppe_id ORDER BY datum) AS naechster_wert` — die letzte Zeile einer Partition liefert NULL.",
+      "Fuer diese Aufgabe: `SELECT id, konto_id, betrag, datum, LEAD(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS naechster_betrag FROM transaktionen`",
     ],
     hiddenTestQuery: "SELECT id, konto_id, betrag, datum, LEAD(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS naechster_betrag FROM transaktionen;",
     hiddenTestMode: "rows",
@@ -159,8 +168,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT id, datum, gesamtbetrag, SUM(gesamtbetrag) OVER (ORDER BY datum) AS laufende_summe FROM bestellungen;",
     tags: ["Window Functions", "SUM OVER", "Running Total"],
     hints: [
-      "SUM(spalte) OVER (ORDER BY ...) berechnet eine kumulative Summe.",
-      "Ohne PARTITION BY wird die Summe ueber alle Zeilen fortlaufend berechnet."
+      "SUM() OVER() ist eine Window Function, die eine laufende (kumulative) Summe berechnet — jede Zeile erhaelt die Summe aller Zeilen bis einschliesslich der aktuellen.",
+      "Syntax: `SUM(spalte) OVER (ORDER BY sort_spalte) AS laufende_summe` — ohne PARTITION BY laeuft die Summe ueber die gesamte Tabelle.",
+      "Fuer diese Aufgabe: `SELECT id, datum, gesamtbetrag, SUM(gesamtbetrag) OVER (ORDER BY datum) AS laufende_summe FROM bestellungen`",
     ],
     hiddenTestQuery: "SELECT id, datum, gesamtbetrag, SUM(gesamtbetrag) OVER (ORDER BY datum) AS laufende_summe FROM bestellungen;",
     hiddenTestMode: "rows",
@@ -174,8 +184,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT id, konto_id, betrag, datum, SUM(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS laufender_saldo FROM transaktionen;",
     tags: ["Window Functions", "SUM OVER", "PARTITION BY", "Running Total"],
     hints: [
-      "Verwende `PARTITION BY konto_id`, um die laufende Summe pro Konto neu zu starten.",
-      "Die Frame-Definition `ORDER BY datum` sorgt fuer die kumulative Berechnung innerhalb jeder Partitution."
+      "SUM() OVER() mit PARTITION BY startet die laufende Summe fuer jede Gruppe (hier: jedes Konto) neu bei 0 — so entsteht ein kontoindividueller laufender Saldo.",
+      "Syntax: `SUM(spalte) OVER (PARTITION BY gruppe_id ORDER BY datum) AS laufender_wert` — PARTITION BY bestimmt die Gruppe, ORDER BY die Reihenfolge der Kumulation.",
+      "Fuer diese Aufgabe: `SELECT id, konto_id, betrag, datum, SUM(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS laufender_saldo FROM transaktionen`",
     ],
     hiddenTestQuery: "SELECT id, konto_id, betrag, datum, SUM(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS laufender_saldo FROM transaktionen;",
     hiddenTestMode: "rows",
@@ -189,8 +200,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, gehalt, abteilung_id, AVG(gehalt) OVER (PARTITION BY abteilung_id) AS avg_gehalt FROM mitarbeiter;",
     tags: ["Window Functions", "AVG OVER", "PARTITION BY"],
     hints: [
-      "AVG(spalte) OVER (PARTITION BY ...) berechnet den Durchschnitt pro Gruppe.",
-      "Jeder Mitarbeiter in derselben Abteilung erhaelt denselben Durchschnittswert."
+      "AVG() OVER() berechnet einen Durchschnitt pro Partition und zeigt ihn auf jeder Zeile an — ohne die Ergebnismenge zu reduzieren, wie es GROUP BY tun wuerde.",
+      "Syntax: `AVG(spalte) OVER (PARTITION BY gruppe_id) AS avg_wert` — alle Zeilen derselben Gruppe erhalten denselben Durchschnittswert.",
+      "Fuer diese Aufgabe: `SELECT name, gehalt, abteilung_id, AVG(gehalt) OVER (PARTITION BY abteilung_id) AS avg_gehalt FROM mitarbeiter`",
     ],
     hiddenTestQuery: "SELECT name, gehalt, abteilung_id, AVG(gehalt) OVER (PARTITION BY abteilung_id) AS avg_gehalt FROM mitarbeiter;",
     hiddenTestMode: "rows",
@@ -204,8 +216,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT titel, prioritaet, agent_id, COUNT(*) OVER (PARTITION BY agent_id) AS ticket_count FROM tickets WHERE agent_id IS NOT NULL;",
     tags: ["Window Functions", "COUNT OVER", "PARTITION BY"],
     hints: [
-      "COUNT(*) OVER (PARTITION BY ...) zaehlt die Zeilen pro Gruppe.",
-      "Filtere zunaechst mit `WHERE agent_id IS NOT NULL` um nur zugewiesene Tickets zu zaehlen."
+      "COUNT() OVER() zaehlt Zeilen pro Partition und zeigt den Wert auf jeder Zeile an — jedes Ticket erhaelt so die Gesamtzahl aller Tickets seines Agenten als Zusatzspalte.",
+      "Syntax: `COUNT(*) OVER (PARTITION BY gruppe_id) AS anzahl` — kombiniert mit `WHERE gruppe_id IS NOT NULL` fuer nur zugewiesene Datensaetze.",
+      "Fuer diese Aufgabe: `SELECT titel, prioritaet, agent_id, COUNT(*) OVER (PARTITION BY agent_id) AS ticket_count FROM tickets WHERE agent_id IS NOT NULL`",
     ],
     hiddenTestQuery: "SELECT titel, prioritaet, agent_id, COUNT(*) OVER (PARTITION BY agent_id) AS ticket_count FROM tickets WHERE agent_id IS NOT NULL;",
     hiddenTestMode: "rows",
@@ -219,8 +232,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT id, nutzer_id, kalorien_verbrannt, DENSE_RANK() OVER (PARTITION BY nutzer_id ORDER BY kalorien_verbrannt DESC) AS rang FROM workouts;",
     tags: ["Window Functions", "DENSE_RANK", "PARTITION BY"],
     hints: [
-      "Verwende `PARTITION BY nutzer_id`, um fuer jeden Nutzer separat zu rangieren.",
-      "DENSE_RANK() erzeugt keine Luecken in der Nummerierung."
+      "DENSE_RANK() mit PARTITION BY erstellt separate Ranglisten pro Gruppe — jeder Nutzer bekommt seine eigene Rangliste der Workouts nach Kalorien, ohne Luecken bei Gleichstaenden.",
+      "Syntax: `DENSE_RANK() OVER (PARTITION BY gruppe_id ORDER BY wert DESC) AS rang` — die Rangfolge beginnt pro Partition neu bei 1.",
+      "Fuer diese Aufgabe: `SELECT id, nutzer_id, kalorien_verbrannt, DENSE_RANK() OVER (PARTITION BY nutzer_id ORDER BY kalorien_verbrannt DESC) AS rang FROM workouts`",
     ],
     hiddenTestQuery: "SELECT id, nutzer_id, kalorien_verbrannt, DENSE_RANK() OVER (PARTITION BY nutzer_id ORDER BY kalorien_verbrannt DESC) AS rang FROM workouts;",
     hiddenTestMode: "rows",
@@ -234,8 +248,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT * FROM (SELECT name, kategorie_id, preis, ROW_NUMBER() OVER (PARTITION BY kategorie_id ORDER BY preis DESC) AS rn FROM produkte) sub WHERE rn <= 3;",
     tags: ["Window Functions", "ROW_NUMBER", "Top-N", "PARTITION BY"],
     hints: [
-      "Verwende ROW_NUMBER() mit PARTITION BY kategorie_id, um die Produkte pro Kategorie zu nummerieren.",
-      "Setze die Abfrage in einen Subquery und filtere mit `WHERE rn <= 3`."
+      "Das Top-N-pro-Gruppe-Muster nutzt ROW_NUMBER() mit PARTITION BY, um Zeilen innerhalb jeder Gruppe zu nummerieren — anschliessend filtert ein aeusseres SELECT auf die ersten N Nummern.",
+      "Syntax: `SELECT * FROM (SELECT ..., ROW_NUMBER() OVER (PARTITION BY gruppe_id ORDER BY wert DESC) AS rn FROM ...) sub WHERE rn <= N`",
+      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name, kategorie_id, preis, ROW_NUMBER() OVER (PARTITION BY kategorie_id ORDER BY preis DESC) AS rn FROM produkte) sub WHERE rn <= 3`",
     ],
     hiddenTestQuery: "SELECT * FROM (SELECT name, kategorie_id, preis, ROW_NUMBER() OVER (PARTITION BY kategorie_id ORDER BY preis DESC) AS rn FROM produkte) sub WHERE rn <= 3;",
     hiddenTestMode: "rows",
@@ -249,8 +264,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT id, konto_id, betrag, datum, LAG(betrag, 2) OVER (PARTITION BY konto_id ORDER BY datum) AS betrag_vor_2 FROM transaktionen;",
     tags: ["Window Functions", "LAG", "Offset"],
     hints: [
-      "LAG(spalte, n) greift auf die n-te Zeile zuvor zu, nicht nur die direkte Vorgaengerzeile.",
-      "Verwende `LAG(betrag, 2)`, um zwei Zeilen zurueckzugehen."
+      "LAG() akzeptiert einen optionalen Offset als zweiten Parameter — LAG(spalte, 2) greift nicht auf die direkte Vorgaengerzeile, sondern zwei Zeilen zurueck.",
+      "Syntax: `LAG(spalte, 2) OVER (PARTITION BY gruppe_id ORDER BY sort_spalte) AS wert_vor_2` — der Default-Offset ist 1.",
+      "Fuer diese Aufgabe: `SELECT id, konto_id, betrag, datum, LAG(betrag, 2) OVER (PARTITION BY konto_id ORDER BY datum) AS betrag_vor_2 FROM transaktionen`",
     ],
     hiddenTestQuery: "SELECT id, konto_id, betrag, datum, LAG(betrag, 2) OVER (PARTITION BY konto_id ORDER BY datum) AS betrag_vor_2 FROM transaktionen;",
     hiddenTestMode: "rows",
@@ -264,8 +280,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT titel, bewertung, AVG(bewertung) OVER () AS avg_bewertung, bewertung - AVG(bewertung) OVER () AS diff FROM filme;",
     tags: ["Window Functions", "AVG OVER"],
     hints: [
-      "Ohne PARTITION BY und ORDER BY berechnet AVG() OVER () den Gesamtdurchschnitt.",
-      "Du kannst die Window Function auch in Berechnungen verwenden: `spalte - AVG(spalte) OVER ()`."
+      "AVG() OVER() mit leerer OVER-Klausel berechnet den Gesamtdurchschnitt ueber alle Zeilen — ohne PARTITION BY und ohne ORDER BY wird keine Partitionierung vorgenommen.",
+      "Syntax: `AVG(spalte) OVER () AS gesamt_avg` — die Window Function kann auch inline in Berechnungen verwendet werden: `spalte - AVG(spalte) OVER () AS diff`.",
+      "Fuer diese Aufgabe: `SELECT titel, bewertung, AVG(bewertung) OVER () AS avg_bewertung, bewertung - AVG(bewertung) OVER () AS diff FROM filme`",
     ],
     hiddenTestQuery: "SELECT titel, bewertung, AVG(bewertung) OVER () AS avg_bewertung, bewertung - AVG(bewertung) OVER () AS diff FROM filme;",
     hiddenTestMode: "rows",
@@ -279,8 +296,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, gehalt, abteilung_id, RANK() OVER (ORDER BY gehalt DESC) AS gehalts_rang, AVG(gehalt) OVER (PARTITION BY abteilung_id) AS avg_gehalt FROM mitarbeiter;",
     tags: ["Window Functions", "RANK", "AVG OVER", "PARTITION BY"],
     hints: [
-      "Du kannst mehrere Window Functions in einem SELECT verwenden.",
-      "RANK() hat kein PARTITION BY (globaler Rang), AVG() hat PARTITION BY (pro Abteilung)."
+      "Mehrere Window Functions in einem SELECT koennen unterschiedliche OVER-Klauseln haben — z. B. ein globaler Rang ohne PARTITION BY und ein Abteilungsdurchschnitt mit PARTITION BY.",
+      "Syntax: `RANK() OVER (ORDER BY wert DESC) AS rang, AVG(wert) OVER (PARTITION BY gruppe_id) AS avg_wert` — beide in derselben SELECT-Liste, unterschiedliche Fenster.",
+      "Fuer diese Aufgabe: `SELECT name, gehalt, abteilung_id, RANK() OVER (ORDER BY gehalt DESC) AS gehalts_rang, AVG(gehalt) OVER (PARTITION BY abteilung_id) AS avg_gehalt FROM mitarbeiter`",
     ],
     hiddenTestQuery: "SELECT name, gehalt, abteilung_id, RANK() OVER (ORDER BY gehalt DESC) AS gehalts_rang, AVG(gehalt) OVER (PARTITION BY abteilung_id) AS avg_gehalt FROM mitarbeiter;",
     hiddenTestMode: "rows",
@@ -294,8 +312,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT * FROM (SELECT name, preis, ROW_NUMBER() OVER (ORDER BY preis DESC) AS rn FROM produkte) sub WHERE rn BETWEEN 11 AND 20;",
     tags: ["Window Functions", "ROW_NUMBER", "Pagination"],
     hints: [
-      "Nummeriere zuerst mit ROW_NUMBER() im Subquery.",
-      "Filtere dann mit `WHERE rn BETWEEN 11 AND 20` fuer die zweite Seite."
+      "ROW_NUMBER() im Subquery ist eine Alternative zu OFFSET-basierter Pagination — es nummeriert alle Zeilen und der aeussere SELECT filtert auf den gewuenschten Seitenbereich.",
+      "Syntax: `SELECT * FROM (SELECT ..., ROW_NUMBER() OVER (ORDER BY spalte DESC) AS rn FROM ...) sub WHERE rn BETWEEN start AND ende`",
+      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name, preis, ROW_NUMBER() OVER (ORDER BY preis DESC) AS rn FROM produkte) sub WHERE rn BETWEEN 11 AND 20`",
     ],
     hiddenTestQuery: "SELECT * FROM (SELECT name, preis, ROW_NUMBER() OVER (ORDER BY preis DESC) AS rn FROM produkte) sub WHERE rn BETWEEN 11 AND 20;",
     hiddenTestMode: "rows",
@@ -309,8 +328,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT id, konto_id, betrag, datum, LAG(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS prev_betrag, LEAD(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS next_betrag, betrag - LAG(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS aenderung FROM transaktionen;",
     tags: ["Window Functions", "LAG", "LEAD", "PARTITION BY"],
     hints: [
-      "Du kannst LAG() und LEAD() gleichzeitig in einer Abfrage verwenden.",
-      "Beide muessen dieselbe PARTITION BY- und ORDER BY-Klausel haben."
+      "LAG() und LEAD() koennen gleichzeitig in einer Abfrage stehen — LAG holt den Vorgaenger, LEAD den Nachfolger, jeweils partitioniert pro Konto und sortiert nach Datum.",
+      "Syntax: `LAG(spalte) OVER (PARTITION BY gruppe_id ORDER BY datum) AS vorher, LEAD(spalte) OVER (PARTITION BY gruppe_id ORDER BY datum) AS nachher` — gleiche OVER-Klausel fuer Konsistenz.",
+      "Fuer diese Aufgabe: `SELECT id, konto_id, betrag, datum, LAG(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS prev_betrag, LEAD(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS next_betrag, betrag - LAG(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS aenderung FROM transaktionen`",
     ],
     hiddenTestQuery: "SELECT id, konto_id, betrag, datum, LAG(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS prev_betrag, LEAD(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS next_betrag, betrag - LAG(betrag) OVER (PARTITION BY konto_id ORDER BY datum) AS aenderung FROM transaktionen;",
     hiddenTestMode: "rows",
@@ -325,8 +345,9 @@ windowFunctionExercises.push(
     referenceQuery: "SELECT name, gehalt, abteilung_id, RANK() OVER (PARTITION BY abteilung_id ORDER BY gehalt DESC) AS rang FROM mitarbeiter;",
     tags: ["Window Functions", "RANK", "PARTITION BY", "Debugging"],
     hints: [
-      "Ohne PARTITION BY wird der Rang ueber alle Mitarbeiter berechnet, nicht pro Abteilung.",
-      "Fuege `PARTITION BY abteilung_id` zur OVER-Klausel hinzu."
+      "Ohne PARTITION BY berechnet RANK() einen globalen Rang ueber alle Mitarbeiter — fuer einen Rang pro Abteilung muss PARTITION BY in die OVER-Klausel.",
+      "Syntax: `RANK() OVER (PARTITION BY gruppe_id ORDER BY wert DESC)` — PARTITION BY teilt die Daten in Gruppen, jede Gruppe bekommt ihre eigene Rangfolge.",
+      "Fuer diese Aufgabe: `SELECT name, gehalt, abteilung_id, RANK() OVER (PARTITION BY abteilung_id ORDER BY gehalt DESC) AS rang FROM mitarbeiter`",
     ],
     hiddenTestQuery: "SELECT name, gehalt, abteilung_id, RANK() OVER (PARTITION BY abteilung_id ORDER BY gehalt DESC) AS rang FROM mitarbeiter;",
     hiddenTestMode: "rows",
@@ -346,8 +367,9 @@ windowFunctionExercises.push(
     ],
     tags: ["Window Functions", "RANK", "ROW_NUMBER", "Ergebnis-Vorhersage"],
     hints: [
-      "ROW_NUMBER() vergibt immer eindeutige Nummern.",
-      "RANK() vergibt gleiche Raenge bei gleichen Werten und ueberspringt die naechsten Nummern (z.B. 1,1,3)."
+      "ROW_NUMBER() vergibt immer eindeutige, fortlaufende Nummern — auch bei gleichen Werten erhalten zwei Zeilen unterschiedliche Nummern.",
+      "RANK() vergibt denselben Rang an Zeilen mit gleichem Wert und ueberspringt dann Nummern: bei zwei Zeilen mit Rang 1 folgt Rang 3, nicht 2.",
+      "Konkretes Beispiel mit Preis 29.99 zweimal: ROW_NUMBER ergibt 1 und 2; RANK ergibt 1 und 1 — danach kommt Rang 3 (nicht 2), weil Rang 2 uebersprungen wird.",
     ],
   }),
   makePredictExercise("win", {
@@ -365,8 +387,9 @@ windowFunctionExercises.push(
     ],
     tags: ["Window Functions", "SUM OVER", "Ergebnis-Vorhersage"],
     hints: [
-      "Die laufende Summe (Running Total) summiert alle Werte bis zur aktuellen Zeile.",
-      "Bei id=3 waere die Summe: 100 + 200 + 50 = 350."
+      "SUM() OVER (ORDER BY id) berechnet eine laufende Summe — jede Zeile erhaelt die Summe aller Zeilen von der ersten bis zur aktuellen (einschliesslich).",
+      "Merke: Die laufende Summe waechst von Zeile zu Zeile: id=1 → 100, id=2 → 300, id=3 → 350.",
+      "Mit SUM(gesamtbetrag) OVER (ORDER BY id): Zeile id=1 ergibt 100, Zeile id=2 ergibt 100+200=300, Zeile id=3 ergibt 100+200+50=350.",
     ],
   })
 );

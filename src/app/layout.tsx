@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { ThemeScript } from "@/components/themeProvider";
 import { Footer } from "@/components/footer";
+import { IntroOverlay } from "@/components/introOverlay";
 import "./globals.css";
 
 const inter = localFont({
@@ -46,6 +47,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-nav">
           Zum Inhalt springen
         </a>
+        <IntroOverlay />
         {children}
         <Footer />
       </body>

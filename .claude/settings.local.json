@@ -8,7 +8,10 @@
       "Bash(Select-Object Name, FullName)",
       "Bash(ls \"C:/Users/voigt/.claude/skills/ui-ux-pro-max/\" 2>&1)",
       "Read(//c/Users/voigt/.claude/skills/ui-ux-pro-max/**)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(Select-String \"framer-motion\")",
+      "Bash(npx next *)",
+      "Bash(node -e ' *)"
     ]
   }
 }
