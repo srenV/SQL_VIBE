@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { catalog, allLessonIds } from "@/data/catalog";
-import { Card } from "@/components/card";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
+import { AnimatedCard } from "@/components/animatedCard";
 import type { Difficulty, Lesson } from "@/types/exercise";
 
 const difficultyLabels: Record<Difficulty, { label: string; className: string }> = {
@@ -62,10 +62,7 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
       href={`/lektionen/${lesson.id}`}
       className="group block"
     >
-      <Card
-        variant="default"
-        className="h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-primary-300 group-hover:-translate-y-0.5"
-      >
+      <AnimatedCard colorTheme="primary">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2 flex-1">
             <div className="flex items-center gap-2">
@@ -90,15 +87,18 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
           </span>
         </div>
 
-        <div className="mt-4 flex items-center justify-between text-xs text-ink-muted">
+        <div className="mt-auto pt-4 flex items-center justify-between text-xs text-ink-muted">
           <span>
             {exerciseCount} {exerciseCount === 1 ? "Übung" : "Übungen"}
           </span>
-          <span className="text-primary-500 font-medium group-hover:translate-x-1 inline-block transition-transform">
-            Starten &rarr;
+          <span className="text-primary-500 font-medium group-hover:translate-x-1 inline-flex items-center gap-1 transition-transform">
+            Starten
+            <svg className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all duration-300 -ml-1 group-hover:ml-0 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
           </span>
         </div>
-      </Card>
+      </AnimatedCard>
     </Link>
   );
 }
