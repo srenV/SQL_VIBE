@@ -182,6 +182,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
@@ -192,6 +193,7 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   min-height: 100vh;
+  overflow-x: hidden;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
