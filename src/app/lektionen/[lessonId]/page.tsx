@@ -40,14 +40,7 @@ export default async function LessonOverviewPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
-      <Header
-        breadcrumbs={
-          <>
-            <span className="text-ink-muted">/</span>
-            <span className="text-sm font-medium text-ink">{lesson.title}</span>
-          </>
-        }
-      />
+      <Header />
 
       <main className="flex-1 py-8">
         <Container>

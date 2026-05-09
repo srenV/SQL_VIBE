@@ -130,21 +130,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
 
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
-      <Header
-        breadcrumbs={
-          <>
-            <Link href="/lernen" className="text-ink-muted hover:text-ink transition-colors">
-              Lernen
-            </Link>
-            <span className="text-ink-muted">/</span>
-            <Link href={`/lernen/${mod.id}`} className="text-ink-muted hover:text-ink transition-colors">
-              {mod.title}
-            </Link>
-            <span className="text-ink-muted">/</span>
-            <span className="text-sm font-medium text-ink">{article.title}</span>
-          </>
-        }
-      />
+      <Header />
 
       <main className="flex-1 py-8">
         <Container>

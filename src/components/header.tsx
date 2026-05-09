@@ -40,11 +40,10 @@ const NAV_TABS = [
 ] as const;
 
 export interface HeaderProps {
-  breadcrumbs?: React.ReactNode;
   rightSlot?: React.ReactNode;
 }
 
-export function Header({ breadcrumbs, rightSlot }: HeaderProps) {
+export function Header({ rightSlot }: HeaderProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const prefersReduced = useReducedMotion();
@@ -116,11 +115,6 @@ export function Header({ breadcrumbs, rightSlot }: HeaderProps) {
             <Link href="/" className="shrink-0" aria-label="SQLVIBE Startseite">
               <Logo />
             </Link>
-            {breadcrumbs && (
-              <nav className="flex items-center gap-2 overflow-x-auto text-sm" aria-label="Breadcrumb">
-                {breadcrumbs}
-              </nav>
-            )}
           </div>
 
           {/* Tab-Bar — Desktop only */}

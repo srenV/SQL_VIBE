@@ -65,23 +65,6 @@ export function ExercisePageClient({
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
       <Header
-        breadcrumbs={
-          <>
-            <Link
-              href="/lektionen"
-              className="text-ink-muted hover:text-ink transition-colors"
-            >
-              Lektionen
-            </Link>
-            <span className="text-ink-muted" aria-hidden="true">/</span>
-            <Link
-              href={`/lektionen/${lesson.id}`}
-              className="text-ink-muted hover:text-ink transition-colors"
-            >
-              {lesson.title}
-            </Link>
-          </>
-        }
         rightSlot={
           <div className="flex items-center gap-3 shrink-0">
             <div className="text-right hidden sm:block">
