@@ -9024,6 +9024,704 @@ SELECT name, ROW_NUMBER() OVER (ORDER BY name) AS rn FROM produkte;
       },
     ],
   },
+  // ═══════════════════════════════════════════════════════════════
+  // MODUL 11: Gruppierung & Aggregation
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: "gruppierung-aggregation",
+    title: "Gruppierung & Aggregation",
+    description: "GROUP BY, HAVING und Aggregatfunktionen: Daten zusammenfassen und analysieren.",
+    icon: "group",
+    difficulty: "junior",
+    articles: [
+      {
+        id: "aggregatfunktionen",
+        title: "Aggregatfunktionen",
+        estimatedMinutes: 10,
+        sections: [
+          {
+            id: "was-sind-aggregatfunktionen",
+            title: "Was sind Aggregatfunktionen?",
+            sectionType: "theory",
+            content: `Aggregatfunktionen berechnen einen **einzelnen Wert** aus einer Menge von Zeilen. Sie sind das Werkzeug der Wahl, wenn du **Zusammenfassungen** brauchst — wie Durchschnitte, Summen oder Anzahlen.
+
+Die wichtigsten Aggregatfunktionen in SQL:
+
+| Funktion | Beschreibung | Beispiel |
+|----------|-------------|----------|
+| \`COUNT()\` | Anzahl der Zeilen | \`COUNT(*)\` — alle Zeilen zählen |
+| \`SUM()\` | Summe einer Spalte | \`SUM(preis)\` — Gesamtpreis |
+| \`AVG()\` | Durchschnittswert | \`AVG(gehalt)\` — Durchschnittsgehalt |
+| \`MIN()\` | Kleinster Wert | \`MIN(datum)\` — frühestes Datum |
+| \`MAX()\` | Größter Wert | \`MAX(umsatz)\` — höchster Umsatz |
+
+---
+
+\`\`\`sql
+-- Wie viele Mitarbeiter gibt es?
+SELECT COUNT(*) AS anzahl_mitarbeiter
+FROM mitarbeiter;
+
+-- Durchschnittsgehalt und höchstes Gehalt
+SELECT
+  AVG(gehalt) AS durchschnitt,
+  MAX(gehalt) AS maximum
+FROM mitarbeiter;
+\`\`\`
+
+**Wichtig:** \`COUNT(spalte)\` zählt nur Zeilen, in denen die Spalte **nicht NULL** ist. \`COUNT(*)\` zählt alle Zeilen.`,
+            keyTakeaways: [
+              "Aggregatfunktionen berechnen einen Wert aus vielen Zeilen",
+              "COUNT(*) zählt alle Zeilen, COUNT(spalte) ignoriert NULL",
+              "SUM, AVG, MIN, MAX arbeiten mit numerischen Werten",
+              "Aggregatfunktionen ohne GROUP BY berechnen über die gesamte Tabelle",
+            ],
+          },
+          {
+            id: "aggregatfunktionen-null",
+            title: "Aggregatfunktionen und NULL",
+            sectionType: "theory",
+            content: `NULL-Werte verhalten sich bei Aggregatfunktionen **besonders**:
+
+- **\`COUNT(*)\`** zählt alle Zeilen, auch solche mit NULL
+- **\`COUNT(spalte)\`** ignoriert Zeilen, in denen die Spalte NULL ist
+- **\`SUM()\`**, **\`AVG()\`**, **\`MIN()\`**, **\`MAX()\`** ignorieren NULL-Werte komplett
+- **\`AVG()\`** teilt nur durch die Anzahl der Nicht-NULL-Werte
+
+---
+
+\`\`\`sql
+-- Beispiel: commission hat NULL-Werte
+SELECT
+  COUNT(*) AS alle_zeilen,          -- 10 (alle)
+  COUNT(commission) AS mit_wert,    -- 7 (nur Nicht-NULL)
+  AVG(commission) AS durchschnitt,  -- Durchschnitt der 7 Werte
+  SUM(commission) AS summe          -- Summe der 7 Werte
+FROM mitarbeiter;
+\`\`\`
+
+**Fallstrick:** \`AVG()\` berechnet den Durchschnitt nur über Nicht-NULL-Werte. Wenn du NULL als 0 behandeln willst, nutze \`COALESCE\`:
+
+\`\`\`sql
+SELECT AVG(COALESCE(commission, 0)) AS durchschnitt_mit_null
+FROM mitarbeiter;
+\`\`\``,
+            keyTakeaways: [
+              "COUNT(*) zählt alle Zeilen, COUNT(spalte) ignoriert NULL",
+              "SUM, AVG, MIN, MAX ignorieren NULL-Werte",
+              "AVG teilt nur durch Nicht-NULL-Zeilen — COALESCE für NULL=0",
+              "Immer überlegen: Sollen NULL-Werte als 0 gezählt werden?",
+            ],
+          },
+        ],
+      },
+      {
+        id: "group-by",
+        title: "GROUP BY — Daten gruppieren",
+        estimatedMinutes: 12,
+        sections: [
+          {
+            id: "group-by-grundlagen",
+            title: "Grundlagen von GROUP BY",
+            sectionType: "theory",
+            content: `**GROUP BY** gruppiert Zeilen mit gleichen Werten in bestimmten Spalten. Für jede Gruppe wird **eine Ergebniszeile** erzeugt.
+
+\`\`\`sql
+-- Umsatz pro Kategorie
+SELECT kategorie, SUM(umsatz) AS gesamtumsatz
+FROM verkaeufe
+GROUP BY kategorie;
+\`\`\`
+
+Ohne GROUP BY berechnet die Aggregatfunktion einen Wert über **alle** Zeilen. Mit GROUP BY berechnet sie einen Wert pro **Gruppe**.
+
+---
+
+\`\`\`sql
+-- Anzahl Mitarbeiter pro Abteilung
+SELECT abteilung, COUNT(*) AS anzahl
+FROM mitarbeiter
+GROUP BY abteilung
+ORDER BY anzahl DESC;
+\`\`\`
+
+**Regel:** Jede Spalte im SELECT, die **keine** Aggregatfunktion ist, muss auch in GROUP BY stehen.`,
+            keyTakeaways: [
+              "GROUP BY erzeugt eine Zeile pro Gruppe gleicher Werte",
+              "Alle Nicht-Aggregat-Spalten im SELECT müssen in GROUP BY stehen",
+              "GROUP BY kann nach mehreren Spalten gruppieren",
+              "Ohne GROUP BY berechnet die Aggregatfunktion über alle Zeilen",
+            ],
+          },
+          {
+            id: "group-by-mehrere-spalten",
+            title: "Gruppierung nach mehreren Spalten",
+            sectionType: "example",
+            content: `Du kannst nach **mehreren Spalten** gleichzeitig gruppieren. Jede eindeutige Kombination bildet eine Gruppe.
+
+\`\`\`sql
+-- Umsatz pro Kategorie und Jahr
+SELECT
+  kategorie,
+  jahr,
+  SUM(umsatz) AS gesamt,
+  AVG(umsatz) AS durchschnitt
+FROM verkaeufe
+GROUP BY kategorie, jahr
+ORDER BY kategorie, jahr;
+\`\`\`
+
+---
+
+\`\`\`sql
+-- Mitarbeiter-Anzahl pro Abteilung und Standort
+SELECT
+  abteilung,
+  standort,
+  COUNT(*) AS anzahl,
+  AVG(gehalt) AS avg_gehalt
+FROM mitarbeiter
+GROUP BY abteilung, standort
+HAVING COUNT(*) > 1;
+\`\`\`
+
+Die Reihenfolge im GROUP BY bestimmt die Sortierung der Gruppen. Die Gruppierung nach \`kategorie, jahr\` ergibt andere Gruppen als \`jahr, kategorie\` — die Ergebnisse sind aber äquivalent, nur anders sortiert.`,
+            keyTakeaways: [
+              "GROUP BY kann nach mehreren Spalten gruppieren",
+              "Jede eindeutige Kombination der GROUP BY-Spalten bildet eine Gruppe",
+              "Reihenfolge im GROUP BY beeinflusst die Sortierung",
+              "Aggregatfunktionen berechnen pro Gruppe",
+            ],
+          },
+        ],
+      },
+      {
+        id: "having",
+        title: "HAVING — Gruppen filtern",
+        estimatedMinutes: 10,
+        sections: [
+          {
+            id: "having-grundlagen",
+            title: "HAVING vs. WHERE",
+            sectionType: "theory",
+            content: `**HAVING** filtert **Gruppen** nach der Aggregation. **WHERE** filtert **Zeilen** vor der Aggregation.
+
+\`\`\`sql
+-- FALSCH: Aggregatfunktion in WHERE geht nicht!
+SELECT abteilung, COUNT(*) AS anzahl
+FROM mitarbeiter
+WHERE COUNT(*) > 5  -- ❌ Fehler!
+GROUP BY abteilung;
+
+-- RICHTIG: HAVING für Gruppenfilter
+SELECT abteilung, COUNT(*) AS anzahl
+FROM mitarbeiter
+GROUP BY abteilung
+HAVING COUNT(*) > 5;  -- ✅
+\`\`\`
+
+---
+
+**Die SQL-Ausführungsreihenfolge:**
+
+1. \`FROM\` — Tabelle laden
+2. \`WHERE\` — Zeilen filtern
+3. \`GROUP BY\` — Gruppen bilden
+4. \`HAVING\` — Gruppen filtern
+5. \`SELECT\` — Spalten auswählen
+6. \`ORDER BY\` — Sortieren
+
+\`\`\`sql
+-- Kombination: WHERE + GROUP BY + HAVING
+SELECT kategorie, SUM(umsatz) AS gesamt
+FROM verkaeufe
+WHERE jahr = 2024          -- Zeilen vor Gruppierung filtern
+GROUP BY kategorie
+HAVING SUM(umsatz) > 10000; -- Gruppen nach Aggregation filtern
+\`\`\``,
+            keyTakeaways: [
+              "HAVING filtert Gruppen, WHERE filtert Zeilen",
+              "Aggregatfunktionen gehören in HAVING, nicht in WHERE",
+              "Ausführungsreihenfolge: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY",
+              "WHERE und HAVING können kombiniert werden",
+            ],
+          },
+        ],
+      },
+      {
+        id: "group-by-fallen",
+        title: "Häufige Fehler bei GROUP BY",
+        estimatedMinutes: 8,
+        sections: [
+          {
+            id: "group-by-fehler-liste",
+            title: "Die häufigsten GROUP BY-Fehler",
+            sectionType: "theory",
+            content: `**Fehler 1: Spalte im SELECT, aber nicht in GROUP BY**
+
+\`\`\`sql
+-- ❌ FALSCH: name ist nicht in GROUP BY
+SELECT abteilung, name, COUNT(*)
+FROM mitarbeiter
+GROUP BY abteilung;
+
+-- ✅ RICHTIG: name in GROUP BY aufnehmen oder weglassen
+SELECT abteilung, COUNT(*)
+FROM mitarbeiter
+GROUP BY abteilung;
+\`\`\`
+
+---
+
+**Fehler 2: Aggregatfunktion in WHERE**
+
+\`\`\`sql
+-- ❌ FALSCH
+WHERE COUNT(*) > 5
+
+-- ✅ RICHTIG
+HAVING COUNT(*) > 5
+\`\`\`
+
+---
+
+**Fehler 3: NULL-Werte in GROUP BY**
+
+\`\`\`sql
+-- NULL bildet eine eigene Gruppe!
+SELECT abteilung, COUNT(*)
+FROM mitarbeiter
+GROUP BY abteilung;
+-- Wenn abteilung NULL ist → eigene Gruppe "NULL"
+\`\`\`
+
+---
+
+**Fehler 4: Falsche Reihenfolge**
+
+\`\`\`sql
+-- ❌ FALSCH: HAVING vor GROUP BY
+HAVING COUNT(*) > 5
+GROUP BY abteilung
+
+-- ✅ RICHTIG: GROUP BY vor HAVING
+GROUP BY abteilung
+HAVING COUNT(*) > 5
+\`\`\``,
+            keyTakeaways: [
+              "Nicht-Aggregat-Spalten müssen in GROUP BY stehen",
+              "Aggregatfunktionen gehören in HAVING, nicht WHERE",
+              "NULL-Werte bilden eine eigene Gruppe bei GROUP BY",
+              "GROUP BY muss vor HAVING stehen",
+            ],
+          },
+        ],
+      },
+      {
+        id: "aggregation-praxis",
+        title: "Aggregation in der Praxis",
+        estimatedMinutes: 10,
+        sections: [
+          {
+            id: "aggregation-praxis-beispiele",
+            title: "Praktische Beispiele",
+            sectionType: "example",
+            content: `**Beispiel 1: Umsatzanalyse pro Kunde**
+
+\`\`\`sql
+SELECT
+  kunde_id,
+  COUNT(*) AS bestellungen,
+  SUM(gesamtpreis) AS umsatz,
+  AVG(gesamtpreis) AS durchschnittsbestellwert
+FROM bestellungen
+GROUP BY kunde_id
+HAVING SUM(gesamtpreis) > 500
+ORDER BY umsatz DESC;
+\`\`\`
+
+---
+
+**Beispiel 2: Monatlicher Umsatzbericht**
+
+\`\`\`sql
+SELECT
+  strftime('%Y-%m', bestelldatum) AS monat,
+  COUNT(*) AS anzahl_bestellungen,
+  SUM(gesamtpreis) AS monatsumsatz
+FROM bestellungen
+WHERE bestelldatum >= '2024-01-01'
+GROUP BY strftime('%Y-%m', bestelldatum)
+ORDER BY monat;
+\`\`\`
+
+---
+
+**Beispiel 3: Top-Produkte**
+
+\`\`\`sql
+SELECT
+  produktname,
+  kategorie,
+  SUM(menge) AS verkauft,
+  SUM(menge * einzelpreis) AS umsatz
+FROM bestellpositionen
+GROUP BY produktname, kategorie
+ORDER BY umsatz DESC
+LIMIT 10;
+\`\`\``,
+            keyTakeaways: [
+              "Aggregatfunktionen kombinierbar: COUNT + SUM + AVG in einer Abfrage",
+              "strftime() für Datums-Gruppierung nutzen",
+              "HAVING für Gruppenfilter, WHERE für Zeilenfilter",
+              "ORDER BY + LIMIT für Top-N-Abfragen",
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  // ═══════════════════════════════════════════════════════════════
+  // MODUL 12: Indizes & Performance
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: "indizes-performance",
+    title: "Indizes & Performance",
+    description: "Index-Typen, Query-Optimierung und EXPLAIN: Abfragen schneller machen.",
+    icon: "speed",
+    difficulty: "intermediate",
+    articles: [
+      {
+        id: "was-sind-indizes",
+        title: "Was sind Indizes?",
+        estimatedMinutes: 10,
+        sections: [
+          {
+            id: "index-einfuehrung",
+            title: "Indizes — Der Katalog einer Datenbank",
+            sectionType: "theory",
+            content: `Ein **Index** ist wie das Inhaltsverzeichnis eines Buchs: Statt alle Seiten durchzublättern, schlägst du im Verzeichnis nach und weißt sofort, wo du suchen musst.
+
+Ohne Index muss die Datenbank bei einer Suche **jede Zeile** durchgehen (**Full Table Scan**). Mit Index springt sie direkt zur richtigen Stelle.
+
+---
+
+\`\`\`sql
+-- Index erstellen
+CREATE INDEX idx_mitarbeiter_name ON mitarbeiter(name);
+
+-- Index nutzen (die Datenbank entscheidet selbst)
+SELECT * FROM mitarbeiter WHERE name = 'Müller';
+\`\`\`
+
+**Wann Indizes helfen:**
+- Suchen mit \`WHERE\` auf indizierte Spalten
+- \`JOIN\`-Operationen über indizierte Fremdschlüssel
+- \`ORDER BY\` auf indizierte Spalten
+- \`GROUP BY\` auf indizierte Spalten
+
+**Wann Indizes nicht helfen:**
+- Kleine Tabellen (< 100 Zeilen)
+- Abfragen, die die meiste Tabelle zurückgeben
+- Spalten mit sehr wenigen unterschiedlichen Werten (niedrige Selektivität)`,
+            keyTakeaways: [
+              "Ein Index ist wie ein Inhaltsverzeichnis — beschleunigt die Suche",
+              "Ohne Index: Full Table Scan (jede Zeile wird geprüft)",
+              "Indizes helfen bei WHERE, JOIN, ORDER BY, GROUP BY",
+              "Nicht jede Spalte braucht einen Index",
+            ],
+          },
+          {
+            id: "index-vor-nachteile",
+            title: "Vor- und Nachteile von Indizes",
+            sectionType: "theory",
+            content: `**Vorteile von Indizes:**
+- Schnellere \`SELECT\`-Abfragen (Faktor 10-1000x möglich)
+- Schnellere \`JOIN\`-Operationen
+- Eindeutigkeits-Constraint (\`UNIQUE INDEX\`)
+
+**Nachteile von Indizes:**
+- Zusätzlicher Speicherplatz (10-30% der Tabellengröße)
+- Langsamere \`INSERT\`, \`UPDATE\`, \`DELETE\` (Index muss mitgepflegt werden)
+- Overhead bei der Abfrageoptimierung
+
+---
+
+\`\`\`sql
+-- Index mit Eindeutigkeit
+CREATE UNIQUE INDEX idx_email ON benutzer(email);
+
+-- Index wieder löschen
+DROP INDEX idx_email;
+\`\`\`
+
+**Faustregel:** Erstelle Indizes für Spalten, die häufig in \`WHERE\`-Klauseln, \`JOIN\`-Bedingungen oder \`ORDER BY\` vorkommen. Vermeide zu viele Indizes — jeder Index kostet bei Schreiboperationen.`,
+            keyTakeaways: [
+              "Indizes beschleunigen Lesezugriff um Faktor 10-1000x",
+              "Indizes verlangsamen Schreiboperationen (INSERT, UPDATE, DELETE)",
+              "Indizes benötigen zusätzlichen Speicherplatz",
+              "Faustregel: Index für häufig gefilterte/verknüpfte Spalten",
+            ],
+          },
+        ],
+      },
+      {
+        id: "index-typen",
+        title: "Index-Typen",
+        estimatedMinutes: 10,
+        sections: [
+          {
+            id: "index-typen-uebersicht",
+            title: "Arten von Indizes",
+            sectionType: "theory",
+            content: `**B-Tree-Index** (Standard)
+Der häufigste Index-Typ. Geeignet für Gleichheit (\`=\`), Bereich (\`<\`, \`>\`, \`BETWEEN\`) und Präfix-Suchen (\`LIKE 'abc%'\`).
+
+\`\`\`sql
+CREATE INDEX idx_name ON kunden(name);
+\`\`\`
+
+---
+
+**Unique Index**
+Stellt sicher, dass kein doppelter Wert in der Spalte vorkommt.
+
+\`\`\`sql
+CREATE UNIQUE INDEX idx_email ON benutzer(email);
+\`\`\`
+
+---
+
+**Composite Index** (Mehrspaltiger Index)
+Index über mehrere Spalten. Die Reihenfolge der Spalten ist wichtig!
+
+\`\`\`sql
+-- Index über (nachname, vorname)
+CREATE INDEX idx_name ON kunden(nachname, vorname);
+
+-- ✅ Nutzt den Index: WHERE nachname = 'Müller'
+-- ✅ Nutzt den Index: WHERE nachname = 'Müller' AND vorname = 'Anna'
+-- ❌ Nutzt den Index NICHT: WHERE vorname = 'Anna'
+\`\`\`
+
+**Regel:** Die linke Spalte (Leading Column) muss in der WHERE-Klausel vorkommen.
+
+---
+
+**Covering Index**
+Ein Index, der alle abgefragten Spalten enthält — die Datenbank muss gar nicht auf die Tabelle zugreifen.
+
+\`\`\`sql
+CREATE INDEX idx_covering ON bestellungen(kunde_id, bestelldatum, gesamtpreis);
+
+-- Diese Abfrage wird komplett aus dem Index beantwortet:
+SELECT bestelldatum, gesamtpreis
+FROM bestellungen
+WHERE kunde_id = 42;
+\`\`\``,
+            keyTakeaways: [
+              "B-Tree: Standard-Index für =, <, >, BETWEEN, LIKE-Präfix",
+              "Unique Index: Verhindert doppelte Werte",
+              "Composite Index: Mehrere Spalten, Reihenfolge wichtig",
+              "Covering Index: Alle abgefragten Spalten im Index",
+            ],
+          },
+        ],
+      },
+      {
+        id: "explain-analyse",
+        title: "EXPLAIN — Abfragen analysieren",
+        estimatedMinutes: 10,
+        sections: [
+          {
+            id: "explain-grundlagen",
+            title: "EXPLAIN und EXPLAIN QUERY PLAN",
+            sectionType: "theory",
+            content: `**EXPLAIN** zeigt dir, wie die Datenbank eine Abfrage ausführt — bevor sie wirklich ausgeführt wird.
+
+\`\`\`sql
+-- SQLite: Query-Plan anzeigen
+EXPLAIN QUERY PLAN
+SELECT * FROM mitarbeiter WHERE abteilung = 'IT';
+\`\`\`
+
+**Mögliche Ausgabe:**
+
+| id | parent | notused | detail |
+|----|--------|---------|--------|
+| 2 | 0 | 0 | SEARCH mitarbeiter USING INDEX idx_abteilung |
+| 3 | 0 | 0 | **SCAN** mitarbeiter |
+
+---
+
+**Wichtige Begriffe:**
+
+- **SCAN** = Full Table Scan (kein Index genutzt) — langsam bei großen Tabellen
+- **SEARCH** = Index wird genutzt — schnell
+- **USING INDEX** = Welcher Index verwendet wird
+
+\`\`\`sql
+-- Ohne Index: SCAN
+EXPLAIN QUERY PLAN SELECT * FROM kunden WHERE stadt = 'Berlin';
+-- → SCAN TABLE kunden
+
+-- Mit Index: SEARCH
+CREATE INDEX idx_stadt ON kunden(stadt);
+EXPLAIN QUERY PLAN SELECT * FROM kunden WHERE stadt = 'Berlin';
+-- → SEARCH TABLE kunden USING INDEX idx_stadt
+\`\`\`
+
+**Tipp:** Nutze EXPLAIN QUERY PLAN regelmäßig, um zu prüfen, ob deine Indizes auch wirklich verwendet werden.`,
+            keyTakeaways: [
+              "EXPLAIN QUERY PLAN zeigt den Ausführungsplan einer Abfrage",
+              "SCAN = Full Table Scan (langsam), SEARCH = Index genutzt (schnell)",
+              "Indizes werden nicht immer automatisch genutzt",
+              "EXPLAIN regelmäßig nutzen, um Abfragen zu optimieren",
+            ],
+          },
+        ],
+      },
+      {
+        id: "index-best-practices",
+        title: "Index-Best-Practices",
+        estimatedMinutes: 10,
+        sections: [
+          {
+            id: "index-tipps",
+            title: "Tipps für den Umgang mit Indizes",
+            sectionType: "theory",
+            content: `**1. Indexe für WHERE-Klauseln erstellen**
+
+\`\`\`sql
+-- Häufige Abfrage:
+SELECT * FROM bestellungen WHERE status = 'offen';
+-- → Index erstellen:
+CREATE INDEX idx_status ON bestellungen(status);
+\`\`\`
+
+---
+
+**2. Fremdschlüssel indizieren**
+
+\`\`\`sql
+-- JOIN über kunde_id → Index auf kunde_id
+CREATE INDEX idx_bestellung_kunde ON bestellungen(kunde_id);
+\`\`\`
+
+---
+
+**3. Selektivität beachten**
+
+Ein Index ist am effektivsten, wenn die Spalte viele **verschiedene** Werte hat. Eine Spalte mit nur 2 Werten (z.B. \`geschlecht\`) profitiert kaum von einem Index.
+
+---
+
+**4. Nicht zu viele Indizes**
+
+Jeder Index kostet bei \`INSERT\`, \`UPDATE\` und \`DELETE\`. Als Faustregel: **3-5 Indizes pro Tabelle** sind meist ausreichend.
+
+---
+
+**5. Composite Index: Reihenfolge beachten**
+
+\`\`\`sql
+-- Index: (nachname, vorname)
+-- ✅ WHERE nachname = 'Müller' → nutzt Index
+-- ✅ WHERE nachname = 'Müller' AND vorname = 'Anna' → nutzt Index
+-- ❌ WHERE vorname = 'Anna' → nutzt Index NICHT
+\`\`\`
+
+Die **linke** Spalte muss immer in der WHERE-Klausel vorkommen (Leftmost Prefix Rule).`,
+            keyTakeaways: [
+              "Indizes für häufige WHERE-Klauseln und JOIN-Spalten erstellen",
+              "Fremdschlüssel sollten immer indiziert sein",
+              "Hohe Selektivität = guter Index (viele verschiedene Werte)",
+              "3-5 Indizes pro Tabelle als Faustregel",
+              "Bei Composite Index: Reihenfolge beachten (Leftmost Prefix Rule)",
+            ],
+          },
+        ],
+      },
+      {
+        id: "performance-fehler",
+        title: "Häufige Performance-Fallen",
+        estimatedMinutes: 8,
+        sections: [
+          {
+            id: "performance-anti-patterns",
+            title: "Performance-Anti-Patterns",
+            sectionType: "theory",
+            content: `**Anti-Pattern 1: Funktion auf indizierte Spalte**
+
+\`\`\`sql
+-- ❌ Index wird NICHT genutzt
+SELECT * FROM kunden WHERE LOWER(name) = 'müller';
+
+-- ✅ Index wird genutzt
+SELECT * FROM kunden WHERE name = 'Müller';
+\`\`\`
+
+---
+
+**Anti-Pattern 2: LIKE mit Wildcard am Anfang**
+
+\`\`\`sql
+-- ❌ Index wird NICHT genutzt
+SELECT * FROM kunden WHERE name LIKE '%ller';
+
+-- ✅ Index wird genutzt (Präfix-Suche)
+SELECT * FROM kunden WHERE name LIKE 'Mül%';
+\`\`\`
+
+---
+
+**Anti-Pattern 3: OR mit verschiedenen Spalten**
+
+\`\`\`sql
+-- ❌ Oft langsamer als UNION
+SELECT * FROM kunden WHERE stadt = 'Berlin' OR plz = '10115';
+
+-- ✅ Besser: UNION ALL
+SELECT * FROM kunden WHERE stadt = 'Berlin'
+UNION ALL
+SELECT * FROM kunden WHERE plz = '10115' AND stadt != 'Berlin';
+\`\`\`
+
+---
+
+**Anti-Pattern 4: SELECT \***
+
+\`\`\`sql
+-- ❌ Alle Spalten laden (auch ungenutzte)
+SELECT * FROM kunden WHERE stadt = 'Berlin';
+
+-- ✅ Nur benötigte Spalten laden
+SELECT id, name, email FROM kunden WHERE stadt = 'Berlin';
+\`\`\`
+
+---
+
+**Anti-Pattern 5: Implizite Typumwandlung**
+
+\`\`\`sql
+-- ❌ Spalte ist INTEGER, Vergleich mit STRING → kein Index
+SELECT * FROM bestellungen WHERE kunde_id = '42';
+
+-- ✅ Richtiger Typ
+SELECT * FROM bestellungen WHERE kunde_id = 42;
+\`\`\``,
+            keyTakeaways: [
+              "Keine Funktionen auf indizierte Spalten in WHERE anwenden",
+              "LIKE '%...' nutzt keinen Index — LIKE 'prefix%' schon",
+              "SELECT * vermeiden — nur benötigte Spalten abfragen",
+              "Implizite Typumwandlung verhindert Index-Nutzung",
+              "OR mit verschiedenen Spalten oft durch UNION ALL lösbar",
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 /** Alle Modul-IDs. */
