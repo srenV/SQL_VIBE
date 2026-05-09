@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\SQL_VIBE\\\\src\\\\app\\\\\" -File | Select-Object Name)",
+      "Bash(Get-Content package.json)",
+      "Bash(Select-String -Pattern \"\\(framer-motion|animation\\)\" -Context 2)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\voigt\\\\.claude\\\\skills\\\\ui-ux-pro-max\")",
+      "Bash(Select-Object Name, FullName)",
+      "Bash(ls \"C:/Users/voigt/.claude/skills/ui-ux-pro-max/\" 2>&1)",
+      "Read(//c/Users/voigt/.claude/skills/ui-ux-pro-max/**)"
+    ]
+  }
+}
