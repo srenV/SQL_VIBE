@@ -1,16 +1,48 @@
 /**
- * Lernen-Uebersichtsseite – Zeigt alle Lernmodule als Card-Grid an.
+ * Lernen-Uebersichtsseite – Zeigt alle Lernmodule als Card-Grid an,
+ * mit Tabs fuer Lernen (Artikel) und Testen (Quizze).
  *
- * English: Learning overview page – Shows all learning modules as a card grid.
+ * English: Learning overview page with tabs for Learning (articles) and Testing (quizzes).
  */
+"use client";
 
+import React from "react";
 import Link from "next/link";
 import { learnModules, totalArticles } from "@/data/learnContent";
+import { learnQuizzes } from "@/data/learnQuizzes";
 import { Card } from "@/components/card";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { getModuleIcon } from "@/components/learn/moduleIcons";
+import { QuizClient } from "@/components/learn/QuizClient";
+
+/** Book-open SVG icon for Lernen tab */
+function BookOpenIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    </svg>
+  );
+}
+
+/** Clipboard-check SVG icon for Testen tab */
+function ClipboardCheckIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.977 1.057 1.977 2.193V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
+    </svg>
+  );
+}
+
+/** Arrow-left SVG icon for back button */
+function ArrowLeftIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+    </svg>
+  );
+}
 
 const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = {
   beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
@@ -18,7 +50,41 @@ const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = 
   intermediate: { label: "Fortgeschritten", className: "bg-warning/10 text-warning" },
 };
 
+type Tab = "lernen" | "testen";
+
 export default function LernenPage() {
+  const [activeTab, setActiveTab] = React.useState<Tab>("lernen");
+  const [selectedQuizModule, setSelectedQuizModule] = React.useState<string | null>(null);
+
+  // Quiz mode: show quiz for selected module
+  if (activeTab === "testen" && selectedQuizModule) {
+    const quiz = learnQuizzes.find((q) => q.moduleId === selectedQuizModule);
+    const mod = learnModules.find((m) => m.id === selectedQuizModule);
+    if (quiz && mod) {
+      return (
+        <div className="min-h-screen flex flex-col" id="main-content">
+          <Header />
+          <main className="flex-1 py-12">
+            <Container className="space-y-6">
+              <button
+                onClick={() => setSelectedQuizModule(null)}
+                className="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors"
+              >
+                <ArrowLeftIcon />
+                Zurück zur Modulauswahl
+              </button>
+              <QuizClient
+                questions={quiz.questions}
+                moduleTitle={quiz.title}
+                onComplete={() => {}}
+              />
+            </Container>
+          </main>
+        </div>
+      );
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
       <Header />
@@ -34,61 +100,155 @@ export default function LernenPage() {
                 Verstehe die Theorie hinter den Datenbanken: Normalisierung, Relationenmodell,
                 ERM, SQL-Grundlagen und mehr — mit interaktiven Beispielen und Übungen.
               </p>
-              <p className="text-sm text-ink-muted">
-                {learnModules.length} Module · {totalArticles} Artikel
-              </p>
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.1}>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {learnModules.map((mod) => {
-                const totalMin = mod.articles.reduce((sum, a) => sum + a.estimatedMinutes, 0);
-                const diffConfig = DIFFICULTY_CONFIG[mod.difficulty] ?? DIFFICULTY_CONFIG.beginner;
+          {/* Tab navigation */}
+          <FadeIn delay={0.05}>
+            <div className="flex justify-center">
+              <div className="inline-flex rounded-lg border border-surface-dim p-1 bg-surface-dim/30">
+                <button
+                  onClick={() => { setActiveTab("lernen"); setSelectedQuizModule(null); }}
+                  className={`inline-flex items-center gap-2 px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    activeTab === "lernen"
+                      ? "bg-surface shadow-sm text-ink"
+                      : "text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  <BookOpenIcon />
+                  Lernen
+                </button>
+                <button
+                  onClick={() => { setActiveTab("testen"); setSelectedQuizModule(null); }}
+                  className={`inline-flex items-center gap-2 px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    activeTab === "testen"
+                      ? "bg-surface shadow-sm text-ink"
+                      : "text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  <ClipboardCheckIcon />
+                  Testen
+                </button>
+              </div>
+            </div>
+          </FadeIn>
 
-                return (
-                  <Link
-                    key={mod.id}
-                    href={`/lernen/${mod.id}`}
-                    className="group block"
-                  >
-                    <Card
-                      variant="default"
-                      className="h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-primary-300 group-hover:-translate-y-0.5"
+          {/* Lernen tab */}
+          {activeTab === "lernen" && (
+            <FadeIn delay={0.1}>
+              <div className="text-center mb-2">
+                <p className="text-sm text-ink-muted">
+                  {learnModules.length} Module · {totalArticles} Artikel
+                </p>
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {learnModules.map((mod) => {
+                  const totalMin = mod.articles.reduce((sum, a) => sum + a.estimatedMinutes, 0);
+                  const diffConfig = DIFFICULTY_CONFIG[mod.difficulty] ?? DIFFICULTY_CONFIG.beginner;
+
+                  return (
+                    <Link
+                      key={mod.id}
+                      href={`/lernen/${mod.id}`}
+                      className="group block"
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        {(() => {
-                          const IconComponent = getModuleIcon(mod.id);
-                          return <IconComponent className="w-8 h-8 text-primary-500" />;
-                        })()}
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${diffConfig.className}`}>
-                          {diffConfig.label}
-                        </span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-ink group-hover:text-primary-500 transition-colors mt-3">
-                        {mod.title}
-                      </h3>
-                      <p className="text-sm text-ink-muted mt-2 line-clamp-3">
-                        {mod.description}
-                      </p>
-                      <div className="mt-4 flex items-center justify-between text-xs text-ink-muted">
-                        <div className="flex items-center gap-3">
-                          <span>
-                            {mod.articles.length} {mod.articles.length === 1 ? "Artikel" : "Artikel"}
+                      <Card
+                        variant="default"
+                        className="h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-primary-300 group-hover:-translate-y-0.5"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          {(() => {
+                            const IconComponent = getModuleIcon(mod.id);
+                            return <IconComponent className="w-8 h-8 text-primary-500" />;
+                          })()}
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${diffConfig.className}`}>
+                            {diffConfig.label}
                           </span>
-                          <span>·</span>
-                          <span>~{totalMin} Min.</span>
                         </div>
-                        <span className="text-primary-500 font-medium group-hover:translate-x-1 inline-block transition-transform">
-                          Lesen &rarr;
-                        </span>
-                      </div>
-                    </Card>
-                  </Link>
-                );
-              })}
-            </div>
-          </FadeIn>
+                        <h3 className="text-lg font-semibold text-ink group-hover:text-primary-500 transition-colors mt-3">
+                          {mod.title}
+                        </h3>
+                        <p className="text-sm text-ink-muted mt-2 line-clamp-3">
+                          {mod.description}
+                        </p>
+                        <div className="mt-4 flex items-center justify-between text-xs text-ink-muted">
+                          <div className="flex items-center gap-3">
+                            <span>
+                              {mod.articles.length} {mod.articles.length === 1 ? "Artikel" : "Artikel"}
+                            </span>
+                            <span>·</span>
+                            <span>~{totalMin} Min.</span>
+                          </div>
+                          <span className="text-primary-500 font-medium group-hover:translate-x-1 inline-block transition-transform">
+                            Lesen &rarr;
+                          </span>
+                        </div>
+                      </Card>
+                    </Link>
+                  );
+                })}
+              </div>
+            </FadeIn>
+          )}
+
+          {/* Testen tab */}
+          {activeTab === "testen" && (
+            <FadeIn delay={0.1}>
+              <div className="text-center mb-2">
+                <p className="text-sm text-ink-muted">
+                  {learnQuizzes.length} Quizze · Je {learnQuizzes[0]?.questions.length ?? 15} Fragen pro Modul
+                </p>
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {learnModules.map((mod) => {
+                  const quiz = learnQuizzes.find((q) => q.moduleId === mod.id);
+                  const diffConfig = DIFFICULTY_CONFIG[mod.difficulty] ?? DIFFICULTY_CONFIG.beginner;
+                  const questionCount = quiz?.questions.length ?? 0;
+
+                  return (
+                    <button
+                      key={mod.id}
+                      onClick={() => setSelectedQuizModule(mod.id)}
+                      className="group block text-left w-full"
+                    >
+                      <Card
+                        variant="default"
+                        className="h-full transition-all duration-200 group-hover:shadow-lg group-hover:border-accent/50 group-hover:-translate-y-0.5"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          {(() => {
+                            const IconComponent = getModuleIcon(mod.id);
+                            return <IconComponent className="w-8 h-8 text-accent" />;
+                          })()}
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${diffConfig.className}`}>
+                            {diffConfig.label}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-ink group-hover:text-accent transition-colors mt-3">
+                          {mod.title}
+                        </h3>
+                        <p className="text-sm text-ink-muted mt-2 line-clamp-3">
+                          {quiz?.description ?? mod.description}
+                        </p>
+                        <div className="mt-4 flex items-center justify-between text-xs text-ink-muted">
+                          <div className="flex items-center gap-3">
+                            <span className="inline-flex items-center gap-1">
+                              {questionCount} Fragen
+                            </span>
+                            <span>·</span>
+                            <span>Multiple Choice</span>
+                          </div>
+                          <span className="text-accent font-medium group-hover:translate-x-1 inline-block transition-transform">
+                            Starten &rarr;
+                          </span>
+                        </div>
+                      </Card>
+                    </button>
+                  );
+                })}
+              </div>
+            </FadeIn>
+          )}
         </Container>
       </main>
     </div>
