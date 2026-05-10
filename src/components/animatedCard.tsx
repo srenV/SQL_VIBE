@@ -19,8 +19,8 @@ import React, { useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export interface AnimatedCardProps {
-  /** Farbthema: primary (indigo), accent (teal), amber */
-  colorTheme?: "primary" | "accent" | "amber";
+  /** Farbthema: primary (indigo), accent (teal), amber, violet */
+  colorTheme?: "primary" | "accent" | "amber" | "violet";
   className?: string;
   children?: React.ReactNode;
 }
@@ -47,6 +47,13 @@ const themeConfig = {
     gradientFrom: "from-amber-500/5",
     gradientTo: "to-amber-500/0",
     shimmerColor: "bg-gradient-to-r from-transparent via-amber-400 to-transparent",
+  },
+  violet: {
+    glowBorder: "group-hover:border-violet-400/60 dark:group-hover:border-violet-400/40",
+    glowShadow: "group-hover:shadow-[0_8px_30px_-8px_rgba(139,92,246,0.35)] dark:group-hover:shadow-[0_8px_30px_-8px_rgba(139,92,246,0.25)]",
+    gradientFrom: "from-violet-500/5",
+    gradientTo: "to-violet-500/0",
+    shimmerColor: "bg-gradient-to-r from-transparent via-violet-400 to-transparent",
   },
 } as const;
 

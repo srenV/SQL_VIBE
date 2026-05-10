@@ -28,6 +28,9 @@ export function Footer() {
               <Link href="/lektionen" className="text-ink-muted hover:text-primary-500 transition-colors">
                 Üben
               </Link>
+              <Link href="/story" className="text-ink-muted hover:text-primary-500 transition-colors">
+                Story
+              </Link>
               <Link href="/sandbox" className="text-ink-muted hover:text-primary-500 transition-colors">
                 Sandbox
               </Link>

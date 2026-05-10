@@ -22,8 +22,8 @@ export interface FeatureCardProps {
   description: string;
   /** CTA-Text */
   cta: string;
-  /** Farbthema: primary (indigo), accent (teal), amber */
-  colorTheme?: "primary" | "accent" | "amber";
+  /** Farbthema: primary (indigo), accent (teal), amber, violet */
+  colorTheme?: "primary" | "accent" | "amber" | "violet";
   className?: string;
 }
 
@@ -32,6 +32,7 @@ const ctaColors = {
   primary: "text-primary-500",
   accent: "text-accent-500",
   amber: "text-amber-600 dark:text-amber-400",
+  violet: "text-violet-500 dark:text-violet-400",
 } as const;
 
 /** Icon-Hover-Klasse. */

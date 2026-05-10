@@ -25,16 +25,16 @@ export default function HomePage() {
           </Container>
         </section>
 
-        {/* Drei-Säulen-Feature-Cards */}
+        {/* Feature-Cards */}
         <section className="py-16 bg-surface-dim/30">
-          <Container className="space-y-8 max-w-4xl mx-auto">
+          <Container className="space-y-8 max-w-6xl mx-auto">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-ink">Drei Wege, SQL zu meistern</h2>
+              <h2 className="text-3xl font-bold text-ink">SQL meistern — auf deine Art</h2>
               <p className="mt-2 text-ink-muted">
-                Ob gezielte Übungen, freies Experimentieren oder Theorie-Nachhilfe
+                Gezielte Übungen, spannende Story-Missionen, freies Experimentieren oder Theorie-Nachhilfe
               </p>
             </div>
-            <div className="grid gap-6 sm:grid-cols-3">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               <FeatureCard
                 href="/lektionen"
                 title="Üben"
@@ -44,6 +44,22 @@ export default function HomePage() {
                 icon={
                   <svg className="w-10 h-10 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                  </svg>
+                }
+              />
+              <FeatureCard
+                href="/story"
+                title="Story"
+                description="Löse spannende SQL-Kriminalfälle und Missionen mit steigender Schwierigkeit. Narrative Abenteuer, bei denen jede Abfrage zählt."
+                cta="Zur Story"
+                colorTheme="violet"
+                icon={
+                  <svg className="w-10 h-10 text-violet-500 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 2v2" />
+                    <path d="M17.915 22a6 6 0 0 0-12 0" />
+                    <path d="M8 2v2" />
+                    <circle cx="12" cy="12" r="4" />
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
                   </svg>
                 }
               />
