@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { ThemeScript } from "@/components/themeProvider";
 import { Footer } from "@/components/footer";
 import { IntroOverlay } from "@/components/introOverlay";
+import { AchievementToastProvider } from "@/components/achievementToast";
 import "./globals.css";
 
 const inter = localFont({
@@ -44,12 +45,14 @@ export default function RootLayout({
         <ThemeScript />
       </head>
       <body className="min-h-full flex flex-col">
-        <a href="#main-content" className="skip-nav">
-          Zum Inhalt springen
-        </a>
-        <IntroOverlay />
-        {children}
-        <Footer />
+        <AchievementToastProvider>
+          <a href="#main-content" className="skip-nav">
+            Zum Inhalt springen
+          </a>
+          <IntroOverlay />
+          {children}
+          <Footer />
+        </AchievementToastProvider>
       </body>
     </html>
   );

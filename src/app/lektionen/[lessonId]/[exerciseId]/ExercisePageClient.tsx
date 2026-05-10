@@ -15,6 +15,7 @@ import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { ProgressBar } from "@/components/progressBar";
 import { useProgress } from "@/hooks/useProgress";
+import { LevelBadge } from "@/components/levelBadge";
 import { storyExercises } from "@/data/exercises";
 import { getUnlockStatus } from "@/lib/storyUnlock";
 import type { Lesson as LessonType, Exercise as ExerciseType } from "@/types/exercise";
@@ -55,8 +56,11 @@ export function ExercisePageClient({
   const lessonProgress = getLessonProgress(lesson.exercises);
 
   const handleComplete = React.useCallback((attemptCount: number) => {
-    markExerciseCompleted(exercise.id, attemptCount, exercise.points);
-  }, [exercise.id, exercise.points, markExerciseCompleted]);
+    markExerciseCompleted(exercise.id, attemptCount, exercise.points, {
+      exerciseType: exercise.type,
+      difficulty: exercise.difficulty,
+    });
+  }, [exercise.id, exercise.points, exercise.type, exercise.difficulty, markExerciseCompleted]);
   const completedExCount = lessonProgress.completed;
   const totalExCount = lessonProgress.total;
   const progressPercent = totalExCount > 0 ? Math.round((completedExCount / totalExCount) * 100) : 0;
@@ -66,34 +70,7 @@ export function ExercisePageClient({
 
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
-      <Header
-        rightSlot={
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="text-right hidden sm:block">
-              <p className="text-xs text-ink-muted">Gesamtfortschritt</p>
-              <p className="text-sm font-semibold text-ink">
-                {progress.totalPoints} Punkte
-              </p>
-            </div>
-            {progress.streak > 1 && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
-                <svg
-                  className="w-3.5 h-3.5 animate-flame"
-                  style={{ transformOrigin: "50% 80%" }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.228 5.228 0 00-1.696-3.396 3.75 3.75 0 00-1.14 4.593A3.75 3.75 0 0012 18z" />
-                </svg>
-                {progress.streak}
-              </span>
-            )}
-          </div>
-        }
-      />
+      <Header rightSlot={<LevelBadge />} />
 
       <div className="border-b border-surface-dim bg-surface/50 backdrop-blur-sm">
         <Container className="py-2">

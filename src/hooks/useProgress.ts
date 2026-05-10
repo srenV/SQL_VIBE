@@ -1,22 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-
-/**
- * Progress-Datenstruktur fuer Local-Storage-Persistenz.
- *
- * Speichert den Lernfortschritt eines Benutzers lokal:
- * - Welche Uebungen wurden bereits geloest (completed)?
- * - Wie viele Versuche (attempts) pro Uebung?
- * - Gesammelte Punkte (totalPoints)?
- * - Aktueller Streak (streak)?
- */
+import { useCallback, useEffect, useRef, useState } from "react";
+import { checkAchievements } from "@/lib/levelSystem";
+import { useAchievementToast } from "@/components/achievementToast";
+import { storyExercises } from "@/data/exercises";
+import { catalog, allLessonIds } from "@/data/catalog";
 
 export interface ExerciseProgress {
   completed: boolean;
   bestAttempts: number;
   pointsEarned: number;
   completedAt: string | null;
+  exerciseType?: string;
+  difficulty?: string;
 }
 
 export interface ProgressData {
@@ -25,19 +21,34 @@ export interface ProgressData {
   streak: number;
   lastActiveDate: string | null;
   achievements: string[];
-  /** Lern-Fortschritt: gelesene Artikel pro Modul. */
   learnProgress: Record<string, LearnModuleProgress>;
 }
 
-/** Lern-Fortschritt pro Modul. */
 export interface LearnModuleProgress {
   articlesRead: string[];
-  /** Gelesene Sektionen (sectionId-Set). */
   sectionsRead: string[];
   lastReadAt: string | null;
 }
 
 const STORAGE_KEY = "sql-trainer-progress";
+
+const STORY_TOTAL = storyExercises.length;
+
+const LESSON_EXERCISE_IDS: Record<string, string[]> = (() => {
+  const result: Record<string, string[]> = {};
+  for (const id of allLessonIds) {
+    const lesson = catalog.lessons[id];
+    if (lesson && lesson.id !== "lesson_story") {
+      result[lesson.id] = lesson.exercises;
+    }
+  }
+  return result;
+})();
+
+const ACHIEVEMENT_TOTALS = {
+  storyCount: STORY_TOTAL,
+  lessonExerciseIds: LESSON_EXERCISE_IDS,
+};
 
 const initialProgress: ProgressData = {
   exercises: {},
@@ -72,13 +83,30 @@ function todayISO(): string {
 
 export function useProgress() {
   const [progress, setProgress] = useState<ProgressData>(initialProgress);
+  const { triggerAchievement } = useAchievementToast();
+  const pendingAchievementsRef = useRef<string[]>([]);
 
   useEffect(() => {
     setProgress(loadProgress());
   }, []);
 
+  // Flush queued achievements after state settles
+  const achievementsKey = progress.achievements.join(",");
+  useEffect(() => {
+    const pending = pendingAchievementsRef.current;
+    if (pending.length === 0) return;
+    pendingAchievementsRef.current = [];
+    pending.forEach((id) => triggerAchievement(id));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [achievementsKey, triggerAchievement]);
+
   const markExerciseCompleted = useCallback(
-    (exerciseId: string, attempts: number, points: number) => {
+    (
+      exerciseId: string,
+      attempts: number,
+      points: number,
+      meta?: { exerciseType?: string; difficulty?: string }
+    ) => {
       setProgress((prev) => {
         const existing = prev.exercises[exerciseId];
         if (existing?.completed) return prev;
@@ -92,12 +120,23 @@ export function useProgress() {
               bestAttempts: attempts,
               pointsEarned: points,
               completedAt: new Date().toISOString(),
+              exerciseType: meta?.exerciseType,
+              difficulty: meta?.difficulty,
             },
           },
           totalPoints: prev.totalPoints + points,
           lastActiveDate: todayISO(),
           streak: calculateStreak(prev),
         };
+
+        const newAchievements = checkAchievements(prev, updated, ACHIEVEMENT_TOTALS);
+        if (newAchievements.length > 0) {
+          updated.achievements = [...updated.achievements, ...newAchievements];
+          pendingAchievementsRef.current = [
+            ...pendingAchievementsRef.current,
+            ...newAchievements,
+          ];
+        }
 
         saveProgress(updated);
         return updated;
@@ -164,7 +203,6 @@ export function useProgress() {
     [progress]
   );
 
-  /** Markiert einen Lern-Artikel als gelesen. */
   const markArticleRead = useCallback((moduleId: string, articleId: string) => {
     setProgress((prev) => {
       const moduleProgress = prev.learnProgress[moduleId] ?? { articlesRead: [], sectionsRead: [], lastReadAt: null };
@@ -188,7 +226,6 @@ export function useProgress() {
     });
   }, []);
 
-  /** Markiert eine Sektion als gelesen. */
   const markSectionRead = useCallback((moduleId: string, sectionId: string) => {
     setProgress((prev) => {
       const moduleProgress = prev.learnProgress[moduleId] ?? { articlesRead: [], sectionsRead: [], lastReadAt: null };
@@ -212,7 +249,6 @@ export function useProgress() {
     });
   }, []);
 
-  /** Prueft, ob eine Sektion gelesen wurde. */
   const isSectionRead = useCallback(
     (moduleId: string, sectionId: string): boolean => {
       const moduleProgress = progress.learnProgress[moduleId];
@@ -221,7 +257,6 @@ export function useProgress() {
     [progress]
   );
 
-  /** Liefert den Lern-Fortschritt fuer ein Modul. */
   const getLearnModuleProgress = useCallback(
     (moduleId: string): LearnModuleProgress => {
       return progress.learnProgress[moduleId] ?? { articlesRead: [], sectionsRead: [], lastReadAt: null };

@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Container } from "@/components/container";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/themeToggle";
+import { useProgress } from "@/hooks/useProgress";
 
 /** Haupt-Navigations-Tabs. */
 const NAV_TABS = [
@@ -59,6 +60,7 @@ export interface HeaderProps {
 export function Header({ rightSlot }: HeaderProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { progress } = useProgress();
   const prefersReduced = useReducedMotion();
 
   const isActive = (href: string) => {
@@ -126,8 +128,8 @@ export function Header({ rightSlot }: HeaderProps) {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-surface-dim bg-surface/80 backdrop-blur-md supports-backdrop-filter:bg-surface/60 transition-colors duration-200">
-        <Container className="flex items-center justify-between gap-4 py-3">
-          <div className="flex items-center gap-3 min-w-0">
+        <Container className="flex items-center py-3">
+          <div className="flex-1 flex items-center gap-3 min-w-0">
             <Link href="/" className="shrink-0" aria-label="SQLVIBE Startseite">
               <Logo />
             </Link>
@@ -155,7 +157,16 @@ export function Header({ rightSlot }: HeaderProps) {
             })}
           </nav>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex-1 flex items-center justify-end gap-2">
+            {progress.streak > 1 && (
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
+                <svg className="w-3.5 h-3.5 animate-flame" style={{ transformOrigin: "50% 80%" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.228 5.228 0 00-1.696-3.396 3.75 3.75 0 00-1.14 4.593A3.75 3.75 0 0012 18z" />
+                </svg>
+                {progress.streak}
+              </span>
+            )}
             {rightSlot}
             <span className="hidden sm:block">
               <ThemeToggle />
