@@ -132,11 +132,19 @@ export function ExercisePageClient({
 
       <main className="flex-1 py-6">
         <Container>
-          <div className="flex gap-6">
-            <nav className="w-56 shrink-0 hidden lg:block space-y-1" aria-label="Übungsnavigation">
-              <p className="text-xs font-semibold text-ink-muted mb-2 uppercase tracking-wide">
+          <div className="relative lg:pl-62">
+            <nav
+              className="hidden lg:flex absolute left-0 top-0 bottom-0 w-56 flex-col gap-2 p-2 rounded-lg border border-surface-dim dark:border-dark-dim"
+              aria-label="Übungsnavigation"
+            >
+              <p className="shrink-0 px-1 text-xs font-semibold text-ink-muted uppercase tracking-wide">
                 {lesson.title}
               </p>
+              <div
+                className="flex-1 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:var(--color-violet-500)_transparent] [&::-webkit-scrollbar]:w-0.75 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-surface-dim/50 dark:[&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-violet-500 [&::-webkit-scrollbar-thumb]:max-h-8 [&::-webkit-scrollbar-thumb]:[box-shadow:0_0_8px_--theme(--color-violet-500/0.8)]"
+                style={{ direction: "rtl" }}
+              >
+                <div className="space-y-1 pl-3" style={{ direction: "ltr" }}>
               {lessonExerciseIds.map((exId, i) => {
                 const isCompleted = progress.exercises[exId]?.completed ?? lessonExerciseCompleted[i];
                 const isCurrent = exId === exercise.id;
@@ -194,6 +202,8 @@ export function ExercisePageClient({
                   </Link>
                 );
               })}
+                </div>
+              </div>
             </nav>
 
             <div className="flex-1 min-w-0">

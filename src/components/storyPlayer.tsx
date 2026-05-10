@@ -195,9 +195,9 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
       </FadeIn>
 
       <FadeIn delay={0.1}>
-        <Card variant="flat" className="p-5">
+        <fieldset className="bg-surface rounded-xl border border-surface-dim dark:border-dark-dim p-5 min-w-0">
+          <legend className="px-2 -ml-1 text-sm font-medium text-ink">Deine SQL-Abfrage</legend>
           <SqlEditor
-            label="Deine SQL-Abfrage"
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
             error={phase === "error"}
@@ -227,7 +227,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
               </Button>
             )}
           </div>
-        </Card>
+        </fieldset>
       </FadeIn>
 
       {phase === "error" && errorExplanation && (

@@ -92,15 +92,15 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
       </FadeIn>
 
       <FadeIn delay={0.05}>
-        <Card variant="flat" className="p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-ink">Deine SQL-Abfrage</span>
+        <fieldset className="bg-surface rounded-xl border border-surface-dim dark:border-dark-dim p-5 min-w-0">
+          <legend className="px-2 -ml-1 text-sm font-medium text-ink flex items-center gap-3">
+            Deine SQL-Abfrage
             {attemptCount > 0 && (
               <span className="text-xs text-ink-muted tabular-nums">
                 Versuch {attemptCount}
               </span>
             )}
-          </div>
+          </legend>
           <SqlEditor
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
@@ -180,7 +180,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
               )}
             </div>
           </div>
-        </Card>
+        </fieldset>
       </FadeIn>
 
       {phase === "running" && (
