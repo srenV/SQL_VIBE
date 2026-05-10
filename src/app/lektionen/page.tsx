@@ -17,7 +17,7 @@ const difficultyLabels: Record<Difficulty, { label: string; className: string }>
 export default function LektionenPage() {
   const sortedLessons = allLessonIds
     .map((id) => catalog.lessons[id])
-    .filter(Boolean)
+    .filter((l): l is NonNullable<typeof l> => !!l && l.id !== "lesson_story")
     .sort((a, b) => a.order - b.order);
 
   return (

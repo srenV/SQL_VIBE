@@ -64,7 +64,10 @@ export function Header({ rightSlot }: HeaderProps) {
   const isActive = (href: string) => {
     if (!pathname) return false;
     if (href === "/lektionen") {
-      return pathname.startsWith("/lektionen") || pathname.startsWith("/uebung");
+      return (pathname.startsWith("/lektionen") && !pathname.startsWith("/lektionen/lesson_story")) || pathname.startsWith("/uebung");
+    }
+    if (href === "/story") {
+      return pathname.startsWith("/story") || pathname.startsWith("/lektionen/lesson_story");
     }
     return pathname.startsWith(href);
   };
