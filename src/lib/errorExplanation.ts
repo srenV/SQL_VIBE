@@ -54,6 +54,12 @@ const patterns: ErrorPattern[] = [
   },
   // Fehlende/unbekannte Objekte
   {
+    pattern: /Unknown\s+column\s+'[^']*kunden_id[^']*'/i,
+    category: "Objekt nicht gefunden",
+    severity: "error",
+    userMessage: "Die Spalte 'kunden_id' existiert nicht. Der korrekte Fremdschlüsselname lautet 'kunde_id' (ohne 'n') – prüfe deinen JOIN-Ausdruck.",
+  },
+  {
     pattern: /Table\s+'.*?'\s+doesn't\s+exist/i,
     category: "Objekt nicht gefunden",
     severity: "error",

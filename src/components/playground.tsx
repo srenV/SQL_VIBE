@@ -125,7 +125,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
               {/* Hinweis-Icon – nur nach mind. 1 Versuch */}
               {attemptCount >= 1 && !completed && (
                 <button
-                  onClick={showHint}
+                  onClick={hint ? requestStrongerHint : showHint}
                   disabled={hint && hint.level >= (exercise.hints?.length ?? 1)}
                   className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink hover:bg-surface-dim transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   title={hint ? "Stärkeren Hinweis anzeigen" : "Hinweis anzeigen"}

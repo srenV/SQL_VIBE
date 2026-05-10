@@ -515,9 +515,9 @@ export function mapSqliteErrorToMysql(sqliteError: string): string {
     (_, table) => `Table '${table}' doesn't exist`
   );
 
-  // "no such column" → "Unknown column 'x'"
+  // "no such column" → "Unknown column 'x'" ([\w.]+ erfasst qualifizierte Namen wie tabelle.spalte)
   error = error.replace(
-    /no such column:\s*(\w+)/gi,
+    /no such column:\s*([\w.]+)/gi,
     (_, col) => `Unknown column '${col}'`
   );
 

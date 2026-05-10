@@ -1,243 +1,222 @@
-/**
- * Beispiel-Uebungsdaten fuer das SQL-Trainer Playground.
- *
- * Diese Uebungen testen alle Teile der Playground-Infrastruktur:
- * Ergebnismengen-Vergleich, verdeckte Tests, Hinweis-Engine,
- * Schema-Explorer und Fehlererklaerungen.
- *
- * English: Sample exercise data for the SQL-Trainer Playground.
- * These exercises exercise all parts of the playground infrastructure.
- */
+import type { Exercise } from "@/types/exercise";
 
-import type { PlaygroundExercise } from "@/types/playground";
+import * as selectModule from "@/data/exercises/select";
+import * as whereModule from "@/data/exercises/where";
+import * as joinModule from "@/data/exercises/join";
+import * as aggregationModule from "@/data/exercises/aggregation";
+import * as orderLimitModule from "@/data/exercises/orderLimit";
+import * as cteModule from "@/data/exercises/cte";
+import * as windowFunctionsModule from "@/data/exercises/windowFunctions";
+import * as subqueryModule from "@/data/exercises/subquery";
+import * as debugModule from "@/data/exercises/debug";
+import * as predictModule from "@/data/exercises/predict";
+import * as schemaModule from "@/data/exercises/schema";
+import * as interviewModule from "@/data/exercises/interview";
+import * as dmlModule from "@/data/exercises/dml";
+import * as ddlModule from "@/data/exercises/ddl";
+import * as storyModule from "@/data/exercises/story";
 
-/** Beispiel-Uebungen fuer den Playground-Modus. */
-export const sampleExercises: PlaygroundExercise[] = [
+type ExerciseModule = Record<string, unknown>;
+
+export interface ExerciseLesson {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  category: string;
+  exercises: Exercise[];
+}
+
+function isExerciseArray(value: unknown): value is Exercise[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => item && typeof item === "object" && "title" in item)
+  );
+}
+
+function getFirstExerciseArray(moduleRecord: ExerciseModule): Exercise[] {
+  for (const value of Object.values(moduleRecord)) {
+    if (isExerciseArray(value)) {
+      return value.map((exercise) => ({
+        ...exercise,
+        hints: Array.isArray(exercise.hints) ? exercise.hints.filter(Boolean) : [],
+      }));
+    }
+  }
+  return [];
+}
+
+const lessonSources = [
   {
-    id: "select-all-users",
-    title: "Alle Benutzer anzeigen",
-    description: "Lerne, wie man alle Zeilen aus einer Tabelle abfragt.",
-    difficulty: "easy",
+    id: "select",
+    slug: "select",
+    title: "SELECT-GRUNDLAGEN",
+    subtitle: "SELECTS",
     category: "SELECT",
-    setupSql: `
-      CREATE TABLE users (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        email TEXT,
-        age INTEGER
-      );
-      INSERT INTO users (id, name, email, age) VALUES
-        (1, 'Alice', 'alice@example.com', 30),
-        (2, 'Bob', 'bob@example.com', 25),
-        (3, 'Charlie', 'charlie@example.com', 35);
-    `,
-    solutionQuery: `SELECT id, name, email, age FROM users;`,
-    task: "Schreibe eine Abfrage, die alle Spalten und alle Zeilen der Tabelle users zurückgibt.",
-    hiddenTests: [
-      {
-        id: "ht1-no-limit",
-        name: "Kein LIMIT",
-        query: `SELECT COUNT(*) AS cnt FROM users;`,
-        failureMessage: "Stelle sicher, dass du alle Benutzer zurückgibst (kein LIMIT).",
-      },
-      {
-        id: "ht2-all-columns",
-        name: "Alle Spalten",
-        query: `SELECT id, name, email, age FROM users;`,
-        expectedResultset: {
-          columns: [
-            { name: "id", type: "INTEGER" },
-            { name: "name", type: "TEXT" },
-            { name: "email", type: "TEXT" },
-            { name: "age", type: "INTEGER" },
-          ],
-          rows: [
-            { id: 1, name: "Alice", email: "alice@example.com", age: 30 },
-            { id: 2, name: "Bob", email: "bob@example.com", age: 25 },
-            { id: 3, name: "Charlie", email: "charlie@example.com", age: 35 },
-          ],
-        },
-        failureMessage: "Die Spalten müssen id, name, email und age sein.",
-      },
-    ],
-    hints: [
-      {
-        level: 1,
-        trigger: { type: "syntax_error" },
-        message: "Stelle sicher, dass du SELECT und FROM richtig schreibst.",
-      },
-      {
-        level: 1,
-        trigger: { type: "wrong_result", comparisonStatus: "column_mismatch" },
-        message: "Achte darauf, alle vier Spalten (id, name, email, age) auszuwählen.",
-      },
-      {
-        level: 1,
-        trigger: { type: "wrong_result", comparisonStatus: "row_count_mismatch" },
-        message: "Es gibt 3 Benutzer. Achte darauf, kein LIMIT oder WHERE zu verwenden.",
-      },
-      {
-        level: 2,
-        trigger: { type: "repeated_failures", threshold: 3 },
-        message: "Die korrekte Abfrage lautet: SELECT * FROM users;",
-      },
-      {
-        level: 3,
-        trigger: { type: "always" },
-        message: "Lösung: SELECT id, name, email, age FROM users;",
-      },
-    ],
-    schemaTables: [
-      {
-        name: "users",
-        columns: [
-          { name: "id", type: "INTEGER", nullable: false, isPrimaryKey: true },
-          { name: "name", type: "TEXT", nullable: false },
-          { name: "email", type: "TEXT", nullable: true },
-          { name: "age", type: "INTEGER", nullable: true },
-        ],
-        foreignKeys: [],
-      },
-    ],
+    moduleRecord: selectModule,
   },
   {
-    id: "filter-adult-users",
-    title: "Benutzer über 30 filtern",
-    description: "Lerne, wie man mit WHERE Daten filtert.",
-    difficulty: "easy",
+    id: "where",
+    slug: "where",
+    title: "FILTERN",
+    subtitle: "WHERE",
     category: "WHERE",
-    setupSql: `
-      CREATE TABLE users (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        age INTEGER
-      );
-      INSERT INTO users (id, name, age) VALUES
-        (1, 'Alice', 30),
-        (2, 'Bob', 25),
-        (3, 'Charlie', 35);
-    `,
-    solutionQuery: `SELECT name, age FROM users WHERE age > 30;`,
-    task: "Schreibe eine Abfrage, die den Namen und das Alter aller Benutzer über 30 zurückgibt.",
-    hiddenTests: [
-      {
-        id: "ht1-exact-rows",
-        name: "Genau 1 Zeile",
-        query: `SELECT COUNT(*) AS cnt FROM users WHERE age > 30;`,
-        expectedResultset: {
-          columns: [{ name: "cnt", type: "INTEGER" }],
-          rows: [{ cnt: 1 }],
-        },
-        failureMessage: "Es sollte genau ein Benutzer über 30 zurückgegeben werden.",
-      },
-    ],
-    hints: [
-      {
-        level: 1,
-        trigger: { type: "syntax_error", pattern: "SLECT" },
-        message: "Du hast SELECT falsch geschrieben. Prüfe die Schreibweise.",
-      },
-      {
-        level: 1,
-        trigger: { type: "wrong_result" },
-        message: "Vergiss nicht die WHERE-Klausel mit age > 30.",
-      },
-      {
-        level: 2,
-        trigger: { type: "repeated_failures", threshold: 3 },
-        message: "Versuche: SELECT name, age FROM users WHERE age > 30;",
-      },
-      {
-        level: 3,
-        trigger: { type: "always" },
-        message: "Lösung: SELECT name, age FROM users WHERE age > 30;",
-      },
-    ],
-    schemaTables: [
-      {
-        name: "users",
-        columns: [
-          { name: "id", type: "INTEGER", nullable: false, isPrimaryKey: true },
-          { name: "name", type: "TEXT", nullable: false },
-          { name: "age", type: "INTEGER", nullable: true },
-        ],
-      },
-    ],
+    moduleRecord: whereModule,
   },
   {
-    id: "join-orders-users",
-    title: "Bestellungen mit Benutzern verknüpfen",
-    description: "Lerne, wie man JOIN verwendet, um Daten aus zwei Tabellen zu kombinieren.",
-    difficulty: "medium",
+    id: "joins",
+    slug: "joins",
+    title: "TABELLEN VERBINDEN",
+    subtitle: "JOINS",
     category: "JOIN",
-    setupSql: `
-      CREATE TABLE users (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL
-      );
-      CREATE TABLE orders (
-        id INTEGER PRIMARY KEY,
-        user_id INTEGER NOT NULL,
-        total REAL
-      );
-      INSERT INTO users (id, name) VALUES
-        (1, 'Alice'),
-        (2, 'Bob');
-      INSERT INTO orders (id, user_id, total) VALUES
-        (101, 1, 49.99),
-        (102, 1, 19.99),
-        (103, 2, 99.99);
-    `,
-    solutionQuery: `SELECT users.name, orders.total FROM users JOIN orders ON users.id = orders.user_id;`,
-    task: "Schreibe eine Abfrage, die den Benutzernamen und den Bestellbetrag für jede Bestellung zurückgibt.",
-    hiddenTests: [
-      {
-        id: "ht1-no-cartesian",
-        name: "Kein Kreuzprodukt",
-        query: `SELECT COUNT(*) AS cnt FROM users JOIN orders ON users.id = orders.user_id;`,
-        expectedResultset: {
-          columns: [{ name: "cnt", type: "INTEGER" }],
-          rows: [{ cnt: 3 }],
-        },
-        failureMessage: "Stelle sicher, dass du die Tabellen über die user_id verknüpfst.",
-      },
-    ],
-    hints: [
-      {
-        level: 1,
-        trigger: { type: "wrong_result", comparisonStatus: "row_count_mismatch" },
-        message: "Es gibt 3 Bestellungen insgesamt. Prüfe, ob alle Bestellungen erfasst werden.",
-      },
-      {
-        level: 2,
-        trigger: { type: "repeated_failures", threshold: 3 },
-        message: "Verwende JOIN mit ON users.id = orders.user_id.",
-      },
-      {
-        level: 3,
-        trigger: { type: "always" },
-        message: "Lösung: SELECT users.name, orders.total FROM users JOIN orders ON users.id = orders.user_id;",
-      },
-    ],
-    schemaTables: [
-      {
-        name: "users",
-        columns: [
-          { name: "id", type: "INTEGER", nullable: false, isPrimaryKey: true },
-          { name: "name", type: "TEXT", nullable: false },
-        ],
-      },
-      {
-        name: "orders",
-        columns: [
-          { name: "id", type: "INTEGER", nullable: false, isPrimaryKey: true },
-          { name: "user_id", type: "INTEGER", nullable: false },
-          { name: "total", type: "REAL", nullable: true },
-        ],
-        foreignKeys: [
-          { column: "user_id", referencedTable: "users", referencedColumn: "id" },
-        ],
-      },
-    ],
+    moduleRecord: joinModule,
   },
-];
+  {
+    id: "aggregation",
+    slug: "aggregation",
+    title: "AGGREGATIONEN",
+    subtitle: "GROUP BY, HAVING, COUNT",
+    category: "Aggregation",
+    moduleRecord: aggregationModule,
+  },
+  {
+    id: "order-limit",
+    slug: "order-limit",
+    title: "SORTIEREN UND BEGRENZEN",
+    subtitle: "ORDER BY / LIMIT",
+    category: "ORDER BY / LIMIT",
+    moduleRecord: orderLimitModule,
+  },
+  {
+    id: "cte",
+    slug: "cte",
+    title: "COMMON TABLE EXPRESSIONS",
+    subtitle: "CTE",
+    category: "CTE",
+    moduleRecord: cteModule,
+  },
+  {
+    id: "window-functions",
+    slug: "window-functions",
+    title: "WINDOW FUNCTIONS",
+    subtitle: "OVER, RANK, LAG",
+    category: "Window Functions",
+    moduleRecord: windowFunctionsModule,
+  },
+  {
+    id: "subquery",
+    slug: "subquery",
+    title: "UNTERABFRAGEN",
+    subtitle: "SUBQUERIES",
+    category: "Subquery",
+    moduleRecord: subqueryModule,
+  },
+  {
+    id: "debug",
+    slug: "debug",
+    title: "SQL DEBUGGING",
+    subtitle: "FEHLER FINDEN",
+    category: "Debug",
+    moduleRecord: debugModule,
+  },
+  {
+    id: "predict",
+    slug: "predict",
+    title: "ERGEBNISSE VORHERSAGEN",
+    subtitle: "PREDICT",
+    category: "Predict",
+    moduleRecord: predictModule,
+  },
+  {
+    id: "schema",
+    slug: "schema",
+    title: "SCHEMA VERSTEHEN",
+    subtitle: "TABELLEN & BEZIEHUNGEN",
+    category: "Schema",
+    moduleRecord: schemaModule,
+  },
+  {
+    id: "interview",
+    slug: "interview",
+    title: "INTERVIEW-FRAGEN",
+    subtitle: "SQL INTERVIEW",
+    category: "Interview",
+    moduleRecord: interviewModule,
+  },
+  {
+    id: "dml",
+    slug: "dml",
+    title: "DATEN MANIPULIEREN",
+    subtitle: "DML",
+    category: "DML",
+    moduleRecord: dmlModule,
+  },
+  {
+    id: "ddl",
+    slug: "ddl",
+    title: "SCHEMA AENDERN",
+    subtitle: "DDL",
+    category: "DDL",
+    moduleRecord: ddlModule,
+  },
+  {
+    id: "story",
+    slug: "story",
+    title: "STORY-MODUS",
+    subtitle: "MISSIONEN",
+    category: "Story",
+    moduleRecord: storyModule,
+  },
+] as const;
+
+export const exerciseLessons: ExerciseLesson[] = lessonSources.map((lesson) => ({
+  id: lesson.id,
+  slug: lesson.slug,
+  title: lesson.title,
+  subtitle: lesson.subtitle,
+  category: lesson.category,
+  exercises: getFirstExerciseArray(lesson.moduleRecord),
+}));
+
+export const lessons = exerciseLessons;
+export const lessonGroups = exerciseLessons;
+export const exerciseGroups = exerciseLessons;
+
+export const allExercises: Exercise[] = exerciseLessons.flatMap((lesson) =>
+  lesson.exercises.map((exercise) => ({
+    ...exercise,
+    hints: Array.isArray(exercise.hints) ? exercise.hints.filter(Boolean) : [],
+  }))
+);
+
+export const exercises = allExercises;
+
+export const exercisesByLesson = Object.fromEntries(
+  exerciseLessons.map((lesson) => [lesson.slug, lesson.exercises])
+);
+
+export function getAllExercises(): Exercise[] {
+  return allExercises;
+}
+
+export function getExerciseById(id: string): Exercise | undefined {
+  return allExercises.find((exercise) => exercise.id === id);
+}
+
+export function findExerciseById(id: string): Exercise | undefined {
+  return getExerciseById(id);
+}
+
+export function getLessonBySlug(slug: string): ExerciseLesson | undefined {
+  return exerciseLessons.find((lesson) => lesson.slug === slug);
+}
+
+export function getExercisesByLesson(slug: string): Exercise[] {
+  return getLessonBySlug(slug)?.exercises ?? [];
+}
+
+export function getExercisesByCategory(category: string): Exercise[] {
+  return allExercises.filter((exercise) => exercise.category === category);
+}
+
+export default exerciseLessons;
