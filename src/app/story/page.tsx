@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { storyExercises } from "@/data/exercises";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { useProgress } from "@/hooks/useProgress";
-import type { Exercise } from "@/types/exercise";
+import { DIFFICULTY_ORDER, LOCK_HINT, getUnlockStatus } from "@/lib/storyUnlock";
 
 // ---------------------------------------------------------------------------
 // Static lookup tables
@@ -34,56 +33,6 @@ const datasetLabels: Record<string, string> = {
   fitness:    "BioTrack",
 };
 
-const FILTER_OPTIONS = ["Alle", "Einsteiger", "Grundlagen", "Fortgeschritten", "Experte", "Interview"];
-const DIFFICULTY_ORDER = ["beginner", "junior", "intermediate", "advanced", "interview"];
-
-// Maps filter pill label → difficulty key (undefined = "Alle")
-const FILTER_TO_DIFFICULTY: Record<string, string | undefined> = {
-  Alle:           undefined,
-  Einsteiger:     "beginner",
-  Grundlagen:     "junior",
-  Fortgeschritten:"intermediate",
-  Experte:        "advanced",
-  Interview:      "interview",
-};
-
-// Human-readable hint shown on locked cards
-const LOCK_HINT: Record<string, string> = {
-  intermediate: "Schließe alle Grundlagen- & Einsteiger-Fälle ab",
-  advanced:     "Schließe alle Fortgeschritten-Fälle ab",
-  interview:    "Schließe alle Experten-Fälle ab",
-};
-
-// ---------------------------------------------------------------------------
-// Unlock logic
-// ---------------------------------------------------------------------------
-
-function getUnlockStatus(
-  exercise: Exercise,
-  allStory: Exercise[],
-  progress: ReturnType<typeof useProgress>["progress"]
-): "unlocked" | "locked" {
-  const diff = exercise.difficulty;
-  if (diff === "beginner" || diff === "junior") return "unlocked";
-  // Already-completed cases stay accessible for existing users
-  if (progress.exercises[exercise.id]?.completed) return "unlocked";
-
-  const isCompleted = (id: string) => progress.exercises[id]?.completed ?? false;
-
-  if (diff === "intermediate") {
-    const tier1 = allStory.filter(e => e.difficulty === "beginner" || e.difficulty === "junior");
-    return tier1.every(e => isCompleted(e.id)) ? "unlocked" : "locked";
-  }
-  if (diff === "advanced") {
-    const tier2 = allStory.filter(e => e.difficulty === "intermediate");
-    return tier2.every(e => isCompleted(e.id)) ? "unlocked" : "locked";
-  }
-  if (diff === "interview") {
-    const tier3 = allStory.filter(e => e.difficulty === "advanced");
-    return tier3.every(e => isCompleted(e.id)) ? "unlocked" : "locked";
-  }
-  return "unlocked";
-}
 
 // ---------------------------------------------------------------------------
 // Page
@@ -91,22 +40,13 @@ function getUnlockStatus(
 
 export default function StoryPage() {
   const { progress } = useProgress();
-  const [filter, setFilter] = useState<string>("Alle");
 
-  // Sort by difficulty tier
-  const sorted = [...storyExercises].sort(
+  const displayed = [...storyExercises].sort(
     (a, b) => DIFFICULTY_ORDER.indexOf(a.difficulty) - DIFFICULTY_ORDER.indexOf(b.difficulty)
   );
 
-  // Apply filter
-  const filterDiff = FILTER_TO_DIFFICULTY[filter];
-  const displayed = filterDiff
-    ? sorted.filter(e => e.difficulty === filterDiff)
-    : sorted;
-
-  // Progress counts (over ALL story cases, not just the filtered view)
-  const completedCount = sorted.filter(e => progress.exercises[e.id]?.completed).length;
-  const totalCount = sorted.length;
+  const completedCount = displayed.filter(e => progress.exercises[e.id]?.completed).length;
+  const totalCount = displayed.length;
   const progressPct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
@@ -172,33 +112,10 @@ export default function StoryPage() {
         <section className="py-10">
           <Container className="max-w-4xl mx-auto space-y-6">
 
-            {/* Filter pills */}
-            <FadeIn delay={0.14}>
-              <div className="flex flex-wrap gap-2">
-                {FILTER_OPTIONS.map((option) => {
-                  const active = filter === option;
-                  return (
-                    <button
-                      key={option}
-                      onClick={() => setFilter(option)}
-                      className={
-                        "inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-150 " +
-                        (active
-                          ? "bg-violet-500 text-white shadow-sm"
-                          : "bg-surface-dim dark:bg-dark-dim text-ink-muted hover:text-ink hover:bg-surface dark:hover:bg-dark border border-surface-dim dark:border-dark-dim")
-                      }
-                    >
-                      {option}
-                    </button>
-                  );
-                })}
-              </div>
-            </FadeIn>
-
             {/* Count label */}
-            <FadeIn delay={0.16}>
+            <FadeIn delay={0.14}>
               <h2 className="text-sm font-semibold uppercase tracking-wider text-ink-muted">
-                {displayed.length} {displayed.length === 1 ? "Fall" : "Fälle"}{filter !== "Alle" ? ` · ${filter}` : " verfügbar"}
+                {displayed.length} {displayed.length === 1 ? "Fall" : "Fälle"} verfügbar
               </h2>
             </FadeIn>
 
@@ -212,8 +129,7 @@ export default function StoryPage() {
                 const unlockStatus = getUnlockStatus(exercise, storyExercises, progress);
                 const locked = unlockStatus === "locked";
 
-                // Global index for stable case number (use position in sorted, not filtered)
-                const globalIndex = sorted.indexOf(exercise);
+                const globalIndex = displayed.indexOf(exercise);
 
                 if (locked) {
                   return (

@@ -205,7 +205,12 @@ const lessonsArray: Lesson[] = [
     description: "Loese spannende Kriminalfaelle mit SQL! Finde Hinweise, verdaechtige Muster und klaere Faelle auf.",
     difficulty: "junior",
     category: "Story",
-    exercises: storyExercises.map((e) => e.id),
+    exercises: [...storyExercises]
+      .sort((a, b) =>
+        ["beginner", "junior", "intermediate", "advanced", "interview"].indexOf(a.difficulty) -
+        ["beginner", "junior", "intermediate", "advanced", "interview"].indexOf(b.difficulty)
+      )
+      .map((e) => e.id),
     order: 15,
   },
 ];

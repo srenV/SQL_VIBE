@@ -15,6 +15,8 @@ import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { ProgressBar } from "@/components/progressBar";
 import { useProgress } from "@/hooks/useProgress";
+import { storyExercises } from "@/data/exercises";
+import { getUnlockStatus } from "@/lib/storyUnlock";
 import type { Lesson as LessonType, Exercise as ExerciseType } from "@/types/exercise";
 import type { PlaygroundExercise } from "@/types/playground";
 
@@ -138,6 +140,31 @@ export function ExercisePageClient({
               {lessonExerciseIds.map((exId, i) => {
                 const isCompleted = progress.exercises[exId]?.completed ?? lessonExerciseCompleted[i];
                 const isCurrent = exId === exercise.id;
+
+                const storyEx = lesson.id === "lesson_story"
+                  ? storyExercises.find(e => e.id === exId)
+                  : undefined;
+                const isLocked = storyEx
+                  ? getUnlockStatus(storyEx, storyExercises, progress) === "locked"
+                  : false;
+
+                if (isLocked) {
+                  return (
+                    <div
+                      key={exId}
+                      className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm opacity-40 cursor-not-allowed"
+                    >
+                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full text-xs bg-surface-dim text-ink-muted">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                        </svg>
+                      </span>
+                      <span className="truncate text-ink-muted">
+                        {lessonExerciseTitles[i]}
+                      </span>
+                    </div>
+                  );
+                }
 
                 return (
                   <Link
