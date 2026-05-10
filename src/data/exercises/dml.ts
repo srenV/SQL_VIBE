@@ -17,7 +17,7 @@ resetCounter();
 dmlExercises.push(
   makeWriteExercise("dml", {
     title: "INSERT: Neuen Kunden hinzufuegen",
-    description: "Fuege einen neuen Kunden mit dem Namen 'Max Mustermann', der E-Mail 'max@beispiel.de' und der Stadt 'Berlin' in die Tabelle `kunden` ein.",
+    description: "Ein neuer Kunde soll in der Datenbank gespeichert werden: Name = 'Max Mustermann', E-Mail = 'max@beispiel.de', Stadt = 'Berlin'.",
     difficulty: "junior",
     category: "DML",
     datasetId: shopDataset.id,
@@ -32,7 +32,7 @@ dmlExercises.push(
   }),
   makeWriteExercise("dml", {
     title: "INSERT: Neuen Mitarbeiter anlegen",
-    description: "Fuege einen neuen Mitarbeiter 'Anna Schmidt' in Abteilung 2 mit der Position 'Entwickler' und einem Gehalt von 55000 ein.",
+    description: "Lege einen neuen Mitarbeiter in der Datenbank an: Name = 'Anna Schmidt', Abteilung 2, Position = 'Entwickler', Gehalt = 55000.",
     difficulty: "junior",
     category: "DML",
     datasetId: hrDataset.id,
@@ -47,7 +47,7 @@ dmlExercises.push(
   }),
   makeWriteExercise("dml", {
     title: "INSERT: Neues Produkt erfassen",
-    description: "Fuege das Produkt 'Bluetooth Lautsprecher' in Kategorie 1 mit Preis 79.99 und Lagerbestand 50 ein.",
+    description: "Erfasse ein neues Produkt in der Datenbank: Name = 'Bluetooth Lautsprecher', Kategorie 1, Preis = 79.99, Lagerbestand = 50.",
     difficulty: "junior",
     category: "DML",
     datasetId: shopDataset.id,
@@ -62,7 +62,7 @@ dmlExercises.push(
   }),
   makeWriteExercise("dml", {
     title: "INSERT: Neues Fitness-Workout eintragen",
-    description: "Trage ein neues Workout fuer Nutzer 1 am heutigen Datum mit 45 Minuten Dauer und 320 verbrannten Kalorien ein.",
+    description: "Speichere ein neues Workout fuer Nutzer 1 in der Datenbank: Datum = heute, Dauer = 45 Minuten, Kalorien verbrannt = 320.",
     difficulty: "junior",
     category: "DML",
     datasetId: fitnessDataset.id,
@@ -242,7 +242,7 @@ dmlExercises.push(
   }),
   makeWriteExercise("dml", {
     title: "INSERT mit SELECT: Produkte kopieren",
-    description: "Erstelle Kopien aller Produkte mit kategorie_id 1 und aendere den Namen zu 'Kopie von <originalname>'. Hinweis: Verwende INSERT ... SELECT.",
+    description: "Erstelle Kopien aller Produkte aus Kategorie 1 als neue Eintraege in der Datenbank. Der Name jeder Kopie soll 'Kopie von <originalname>' lauten.",
     difficulty: "intermediate",
     category: "DML",
     datasetId: shopDataset.id,
@@ -272,7 +272,7 @@ dmlExercises.push(
   }),
   makeWriteExercise("dml", {
     title: "UPDATE basierend auf JOIN: Rabatt fuer Bestandskunden",
-    description: "Erhoehe den Lagerbestand aller Produkte um 20, die in mindestens einer Bestellposition vorkommen. Verwende UPDATE mit Unterabfrage.",
+    description: "Erhoehe den Lagerbestand aller Produkte um 20, die in mindestens einer Bestellposition vorkommen.",
     difficulty: "intermediate",
     category: "DML",
     datasetId: shopDataset.id,
@@ -287,7 +287,7 @@ dmlExercises.push(
   }),
   makeWriteExercise("dml", {
     title: "DELETE mit Unterabfrage: Tickets ohne Kommentare",
-    description: "Loesche alle Tickets, die keine Kommentare haben. Verwende eine Unterabfrage mit NOT IN.",
+    description: "Entferne alle Tickets aus der Datenbank, die keine Kommentare haben.",
     difficulty: "intermediate",
     category: "DML",
     datasetId: ticketsDataset.id,

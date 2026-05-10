@@ -17,7 +17,7 @@ resetCounter();
 orderLimitExercises.push(
   makeWriteExercise("ord", {
     title: "kunden sortieren nach stadt",
-    description: "Gib alle Zeilen aus `kunden` aus, sortiert nach `stadt` aufsteigend.",
+    description: "Zeige alle Kunden alphabetisch nach ihrer Stadt geordnet, von A bis Z.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "shop",
@@ -35,7 +35,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "nutzer absteigend sortieren",
-    description: "Gib alle Zeilen aus `nutzer` aus, sortiert nach `id` absteigend.",
+    description: "Zeige alle Nutzer so geordnet, dass die hoechsten ID-Nummern zuerst erscheinen.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "fitness",
@@ -53,7 +53,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "Top 5 aus uebungen",
-    description: "Gib die ersten 5 Zeilen aus `uebungen` aus, sortiert nach `kategorie` absteigend.",
+    description: "Zeige nur die 5 Uebungen, deren Kategoriebezeichnung alphabetisch am weitesten hinten liegt.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "fitness",
@@ -71,7 +71,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "Erste 3 Eintraege aus abteilungen",
-    description: "Gib die ersten 3 Zeilen aus `abteilungen` aus, sortiert nach `budget` aufsteigend.",
+    description: "Zeige die 3 Abteilungen mit dem niedrigsten Budget.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "hr",
@@ -89,7 +89,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "mitarbeiter sortieren nach position",
-    description: "Gib alle Zeilen aus `mitarbeiter` aus, sortiert nach `position` aufsteigend.",
+    description: "Zeige alle Mitarbeiter alphabetisch nach ihrer Position geordnet, von A bis Z.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "hr",
@@ -107,7 +107,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "agenten absteigend sortieren",
-    description: "Gib alle Zeilen aus `agenten` aus, sortiert nach `aktiv` absteigend.",
+    description: "Zeige alle Agenten so geordnet, dass die aktiven Eintraege zuerst erscheinen.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "tickets",
@@ -125,7 +125,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "Top 5 aus kunden",
-    description: "Gib die ersten 5 Zeilen aus `kunden` aus, sortiert nach `geburtsdatum` absteigend.",
+    description: "Zeige die 5 juengsten Kunden nach Geburtsdatum.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "banking",
@@ -143,7 +143,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "Erste 3 Eintraege aus konten",
-    description: "Gib die ersten 3 Zeilen aus `konten` aus, sortiert nach `kunde_id` aufsteigend.",
+    description: "Zeige die 3 Konten mit den niedrigsten Kunden-Nummern.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "banking",
@@ -161,7 +161,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "nutzer sortieren nach name",
-    description: "Gib alle Zeilen aus `nutzer` aus, sortiert nach `name` aufsteigend.",
+    description: "Zeige alle Nutzer in alphabetischer Reihenfolge nach ihrem Namen.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "streaming",
@@ -179,7 +179,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "filme absteigend sortieren",
-    description: "Gib alle Zeilen aus `filme` aus, sortiert nach `jahr` absteigend.",
+    description: "Zeige alle Filme so geordnet, dass die neuesten Produktionsjahre zuerst erscheinen.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "streaming",
@@ -197,7 +197,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "Top 5 aus events",
-    description: "Gib die ersten 5 Zeilen aus `events` aus, sortiert nach `session_id` absteigend.",
+    description: "Zeige die 5 Events mit den hoechsten Sitzungs-Nummern.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "logs",
@@ -215,7 +215,7 @@ orderLimitExercises.push(
 
   makeWriteExercise("ord", {
     title: "Erste 3 Eintraege aus sessions",
-    description: "Gib die ersten 3 Zeilen aus `sessions` aus, sortiert nach `browser` aufsteigend.",
+    description: "Zeige die 3 Sitzungen, deren Browsername alphabetisch am weitesten vorne liegt.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: "logs",
@@ -235,7 +235,7 @@ orderLimitExercises.push(
 orderLimitExercises.push(
   makeWriteExercise("ord", {
     title: "Produkte sortiert nach Preis",
-    description: "Gib `name` und `preis` aller Produkte aus, sortiert nach `preis` aufsteigend.",
+    description: "Zeige Name und Preis aller Produkte vom guenstigsten zum teuersten.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: shopDataset.id,
@@ -251,7 +251,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Teuerste 3 Produkte",
-    description: "Gib die 3 teuersten Produkte aus: `name` und `preis`, absteigend nach Preis.",
+    description: "Zeige Name und Preis der drei teuersten Produkte, das teuerste zuerst.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: shopDataset.id,
@@ -267,7 +267,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Bestellungen sortiert nach Datum",
-    description: "Gib alle Bestellungen sortiert nach `datum` aufsteigend aus.",
+    description: "Zeige alle Bestellungen chronologisch, beginnend mit der aeltesten.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: shopDataset.id,
@@ -283,7 +283,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Mitarbeiter sortiert nach Gehalt",
-    description: "Gib `name` und `gehalt` aller Mitarbeiter aus, sortiert nach `gehalt` absteigend.",
+    description: "Zeige Name und Gehalt aller Mitarbeiter, den bestbezahlten zuerst.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: hrDataset.id,
@@ -299,7 +299,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Top 3 verdienstlichste Mitarbeiter",
-    description: "Gib die 3 Mitarbeiter mit dem hoechsten Gehalt aus (`name`, `gehalt`).",
+    description: "Zeige Name und Gehalt der drei Mitarbeiter mit dem hoechsten Gehalt.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: hrDataset.id,
@@ -315,7 +315,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Uebungen sortiert nach Muskelgruppe",
-    description: "Gib alle Uebungen sortiert nach `muskelgruppe` aufsteigend aus.",
+    description: "Zeige alle Uebungen alphabetisch nach Muskelgruppe geordnet.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: fitnessDataset.id,
@@ -331,7 +331,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Workouts sortiert nach Dauer",
-    description: "Gib alle Workouts sortiert nach `dauer_min` absteigend aus.",
+    description: "Zeige alle Workouts so geordnet, dass die laengsten zuerst erscheinen.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: fitnessDataset.id,
@@ -347,7 +347,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Tickets sortiert nach Prioritaet",
-    description: "Gib `titel` und `prioritaet` aller Tickets sortiert nach `prioritaet` aufsteigend aus.",
+    description: "Zeige Titel und Prioritaet aller Tickets, die niedrigste Prioritaet zuerst.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: ticketsDataset.id,
@@ -363,7 +363,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Neueste 5 Tickets",
-    description: "Gib die 5 neuesten Tickets sortiert nach `erstellt_am` absteigend aus.",
+    description: "Zeige die 5 zuletzt erstellten Tickets, das neueste zuerst.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: ticketsDataset.id,
@@ -379,7 +379,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Transaktionen sortiert nach Betrag",
-    description: "Gib alle Transaktionen sortiert nach `betrag` absteigend aus.",
+    description: "Zeige alle Transaktionen so geordnet, dass die hoechsten Betraege zuerst erscheinen.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: bankingDataset.id,
@@ -395,7 +395,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Konten sortiert nach Saldo",
-    description: "Gib alle Konten sortiert nach `saldo` absteigend aus.",
+    description: "Zeige alle Konten so geordnet, dass das hoechste Guthaben zuerst erscheint.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: bankingDataset.id,
@@ -427,7 +427,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Filme sortiert nach Jahr und Dauer",
-    description: "Gib `titel`, `jahr` und `dauer_min` sortiert nach `jahr` aufsteigend, dann nach `dauer_min` absteigend.",
+    description: "Zeige Titel, Erscheinungsjahr und Laufzeit aller Filme, chronologisch geordnet und bei gleichem Jahr die laengsten zuerst.",
     difficulty: "junior",
     category: "ORDER BY / LIMIT",
     datasetId: streamingDataset.id,
@@ -443,7 +443,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Fehler sortiert nach Schweregrad",
-    description: "Gib alle Fehler sortiert nach `schweregrad` aufsteigend und `fehlercode` aufsteigend.",
+    description: "Zeige alle Fehler, beginnend mit dem geringsten Schweregrad, und bei gleichem Schweregrad nach Fehlercode aufsteigend.",
     difficulty: "junior",
     category: "ORDER BY / LIMIT",
     datasetId: logsDataset.id,
@@ -459,7 +459,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Kunden sortiert nach Registrierungsdatum",
-    description: "Gib `name` und `registriert_am` der Kunden sortiert nach `registriert_am` absteigend aus.",
+    description: "Zeige Name und Registrierungsdatum der Kunden, die zuletzt registrierten zuerst.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: shopDataset.id,
@@ -475,7 +475,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Bewerbungen sortiert nach Datum",
-    description: "Gib alle Bewerbungen sortiert nach `bewerbungsdatum` absteigend aus.",
+    description: "Zeige alle Bewerbungen so geordnet, dass die neuesten zuerst erscheinen.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: hrDataset.id,
@@ -491,7 +491,7 @@ orderLimitExercises.push(
   }),
   makeWriteExercise("ord", {
     title: "Kommentare sortiert nach Erstellungsdatum",
-    description: "Gib die 10 neuesten Kommentare sortiert nach `erstellt_am` absteigend aus.",
+    description: "Zeige die 10 zuletzt verfassten Kommentare, den neuesten zuerst.",
     difficulty: "beginner",
     category: "ORDER BY / LIMIT",
     datasetId: ticketsDataset.id,

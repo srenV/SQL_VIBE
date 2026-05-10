@@ -35,7 +35,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Produkte",
-    description: "Zeige Name und Preis der Produkte, deren `id` in einer Liste aus `bestellpositionen` vorkommt.",
+    description: "Zeige Name und Preis aller Produkte, die mindestens einmal in einer Bestellposition auftauchen.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -53,7 +53,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Produkte (name und preis)",
-    description: "Nutze eine Subquery, die `name` und `preis` aus `produkte` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
+    description: "Gib Name und Preis aller Produkte aus, indem du eine zwischengeschaltete Abfrage als Datenquelle verwendest.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -71,7 +71,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Produkte",
-    description: "Zeige Name, Preis und die Anzahl der zugehoerigen Bestellpositionen fuer jedes Produkt.",
+    description: "Zeige Name und Preis jedes Produkts zusammen mit der Zahl, wie oft es in Bestellpositionen vorkommt.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "shop",
@@ -125,7 +125,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Kunden (Shop)",
-    description: "Zeige Name und E-Mail der Kunden, deren `id` in einer Liste aus `bestellungen` vorkommt.",
+    description: "Zeige Name und E-Mail aller Kunden, die mindestens eine Bestellung aufgegeben haben.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -143,7 +143,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Kunden (Shop)",
-    description: "Nutze eine Subquery, die `name` und `email` aus `kunden` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
+    description: "Gib Name und E-Mail aller Kunden aus, indem du eine zwischengeschaltete Abfrage als Datenquelle verwendest.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "shop",
@@ -161,7 +161,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Kunden (Shop)",
-    description: "Zeige Name, E-Mail und die Anzahl der Bestellungen fuer jeden Kunden.",
+    description: "Zeige Name und E-Mail jedes Kunden zusammen mit der Zahl seiner bisherigen Bestellungen.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "shop",
@@ -215,7 +215,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Nutzer",
-    description: "Zeige die Namen der Nutzer, deren `id` in einer Liste aus `workouts` vorkommt.",
+    description: "Zeige die Namen aller Nutzer, die mindestens ein Workout absolviert haben.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "fitness",
@@ -233,7 +233,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Nutzer (name)",
-    description: "Nutze eine Subquery, die `name` aus `nutzer` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
+    description: "Gib die Namen aller Nutzer aus, indem du eine zwischengeschaltete Abfrage als Datenquelle verwendest.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "fitness",
@@ -251,7 +251,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Nutzer",
-    description: "Zeige den Namen und die Anzahl der Workouts fuer jeden Nutzer.",
+    description: "Zeige den Namen jedes Nutzers zusammen mit der Zahl seiner absolvierten Workouts.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "fitness",
@@ -305,7 +305,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Abteilungen",
-    description: "Zeige Name und Standort der Abteilungen, deren `id` in einer Liste aus `mitarbeiter` vorkommt.",
+    description: "Zeige Name und Standort aller Abteilungen, denen mindestens ein Mitarbeiter zugeordnet ist.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "hr",
@@ -323,7 +323,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Abteilungen (name und standort)",
-    description: "Nutze eine Subquery, die `name` und `standort` aus `abteilungen` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
+    description: "Gib Name und Standort aller Abteilungen aus, indem du eine zwischengeschaltete Abfrage als Datenquelle verwendest.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "hr",
@@ -341,7 +341,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Abteilungen",
-    description: "Zeige Name, Standort und die Anzahl der zugehoerigen Mitarbeiter fuer jede Abteilung.",
+    description: "Zeige Name und Standort jeder Abteilung zusammen mit der Zahl ihrer Mitarbeiter.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "hr",
@@ -395,7 +395,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Agenten",
-    description: "Zeige Name und Team der Agenten, deren `id` in einer Liste aus `tickets` vorkommt.",
+    description: "Zeige Name und Team aller Agenten, die mindestens einem Ticket zugewiesen sind.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "tickets",
@@ -413,7 +413,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Agenten (name und team)",
-    description: "Nutze eine Subquery, die `name` und `team` aus `agenten` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
+    description: "Gib Name und Team aller Agenten aus, indem du eine zwischengeschaltete Abfrage als Datenquelle verwendest.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "tickets",
@@ -431,7 +431,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Agenten",
-    description: "Zeige Name, Team und die Anzahl der zugehoerigen Tickets fuer jeden Agenten.",
+    description: "Zeige Name und Team jedes Agenten zusammen mit der Gesamtzahl seiner zugewiesenen Tickets.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "tickets",
@@ -485,7 +485,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Kunden (Banking)",
-    description: "Zeige die Namen der Kunden, deren `id` in einer Liste aus `konten` vorkommt.",
+    description: "Zeige die Namen aller Kunden, die mindestens ein Konto besitzen.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "banking",
@@ -503,7 +503,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Kunden (Banking)",
-    description: "Nutze eine Subquery, die `name` aus `kunden` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
+    description: "Gib die Namen aller Kunden aus, indem du eine zwischengeschaltete Abfrage als Datenquelle verwendest.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "banking",
@@ -521,7 +521,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Kunden (Banking)",
-    description: "Zeige den Namen und die Anzahl der Konten fuer jeden Kunden.",
+    description: "Zeige den Namen jedes Kunden zusammen mit der Zahl seiner Konten.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "banking",
@@ -575,7 +575,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "IN-Subquery auf Filme",
-    description: "Zeige Titel und Genre der Filme, deren `id` in einer Liste aus `watch_history` vorkommt.",
+    description: "Zeige Titel und Genre aller Filme, die mindestens einmal angeschaut wurden.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "streaming",
@@ -593,7 +593,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Inline-View: Filme (titel und genre)",
-    description: "Nutze eine Subquery, die `titel` und `genre` aus `filme` auswaehlt, als Datenquelle und gib das Ergebnis aus.",
+    description: "Gib Titel und Genre aller Filme aus, indem du eine zwischengeschaltete Abfrage als Datenquelle verwendest.",
     difficulty: "intermediate",
     category: "Subquery",
     datasetId: "streaming",
@@ -611,7 +611,7 @@ subqueryExercises.push(
 
   makeWriteExercise("sub", {
     title: "Korrelierte Subquery auf Filme",
-    description: "Zeige Titel, Genre und die Anzahl der zugehoerigen Watch-History-Eintraege fuer jeden Film.",
+    description: "Zeige Titel und Genre jedes Films zusammen mit der Zahl, wie oft er in der Wiedergabeliste auftaucht.",
     difficulty: "advanced",
     category: "Subquery",
     datasetId: "streaming",

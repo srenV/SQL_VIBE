@@ -17,7 +17,7 @@ resetCounter();
 windowFunctionExercises.push(
   makeWriteExercise("win", {
     title: "ROW_NUMBER: Produkte nach Preis nummerieren",
-    description: "Nummerniere alle Produkte nach ihrem Preis absteigend. Zeige den Produktnamen, den Preis und die Zeilennummer.",
+    description: "Zeige alle Produkte sortiert nach Preis von teuer nach guenstig, mit einer fortlaufenden Positionsnummer pro Zeile. Die Ausgabe enthaelt Produktname, Preis und die Positionsnummer.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: shopDataset.id,
@@ -33,7 +33,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "ROW_NUMBER mit Partition: Neueste Bestellung pro Kunde",
-    description: "Zeige fuer jeden Kunden nur die neueste Bestellung an. Verwende ROW_NUMBER und partitioniere nach kunde_id, sortiert nach datum absteigend.",
+    description: "Zeige pro Kunde genau eine Zeile mit seiner neuesten Bestellung — also das aktuellste Datum je Kunde. Die Ausgabe enthaelt Kunden-ID, Datum und Gesamtbetrag.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: shopDataset.id,
@@ -49,7 +49,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "RANK: Mitarbeiter-Rangliste nach Gehalt",
-    description: "Erstelle eine Rangliste aller Mitarbeiter nach Gehalt absteigend. Verwende RANK() und zeige Name, Gehalt und den Rang.",
+    description: "Erstelle eine Rangliste aller Mitarbeiter nach Gehalt, wobei gleiche Gehaelter denselben Rang erhalten und die naechste Nummer danach uebersprungen wird. Die Ausgabe zeigt Name, Gehalt und den Rang.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: hrDataset.id,
@@ -65,7 +65,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "DENSE_RANK: Filme nach Bewertung",
-    description: "Erstelle eine Rangliste der Filme nach Bewertung absteigend. Verwende DENSE_RANK(), um keine Luecken in der Nummerierung zu haben.",
+    description: "Erstelle eine lueckenlose Rangliste aller Filme nach Bewertung, bei der gleiche Bewertungen denselben Rang erhalten und die naechste Nummer direkt folgt — ohne uebersprungene Nummern. Die Ausgabe zeigt Titel, Bewertung und den Rang.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: streamingDataset.id,
@@ -81,7 +81,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "RANK vs DENSE_RANK: Vergleich bei Gehalt",
-    description: "Zeige Name, Gehalt, RANK() und DENSE_RANK() nebeneinander, sortiert nach Gehalt absteigend. So kannst du den Unterschied sehen.",
+    description: "Zeige jeden Mitarbeiter mit Name, Gehalt und zwei verschiedenen Rangwerten nebeneinander: einem Rang, bei dem Nummern nach Gleichstand uebersprungen werden, und einem lueckenlosen Rang. So wird der Unterschied zwischen beiden Verfahren direkt sichtbar.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: hrDataset.id,
@@ -97,7 +97,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "RANK partitioniert: Gehaltsrang pro Abteilung",
-    description: "Erstelle einen Rang der Mitarbeiter nach Gehalt innerhalb jeder Abteilung. Zeige Name, Gehalt, Abteilungs-ID und den Rang.",
+    description: "Erstelle eine separate Gehaltsrangliste pro Abteilung, sodass der bestbezahlte Mitarbeiter jeder Abteilung den Rang 1 erhaelt. Die Ausgabe zeigt Name, Gehalt, Abteilungs-ID und den Rang innerhalb der Abteilung.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: hrDataset.id,
@@ -113,7 +113,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "LAG: Preisvergleich mit vorherigem Produkt",
-    description: "Zeige den Namen und Preis jedes Produkts sowie den Preis des vorherigen Produkts (nach id sortiert). Verwende LAG().",
+    description: "Zeige fuer jedes Produkt seinen Namen und Preis sowie den Preis des nach ID vorherigen Produkts in einer zusaetzlichen Spalte. Das erste Produkt hat keinen Vorgaenger und zeigt dort NULL.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: shopDataset.id,
@@ -129,7 +129,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "LAG: Gewichtsdifferenz zum vorherigen Eintrag",
-    description: "Zeige fuer jeden Koerperdaten-Eintrag das Gewicht und die Differenz zum vorherigen Gewicht desselben Nutzers. Verwende LAG().",
+    description: "Zeige pro Koerperdaten-Eintrag das aktuelle Gewicht und wie viel Kilogramm es gegenueber der vorherigen Messung desselben Nutzers veraendert hat. Positive Werte bedeuten Gewichtszunahme, negative Abnahme — beim ersten Eintrag eines Nutzers erscheint NULL.",
     difficulty: "advanced",
     category: "Window Functions",
     datasetId: fitnessDataset.id,
@@ -145,7 +145,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "LEAD: Naechste Transaktion anzeigen",
-    description: "Zeige fuer jede Transaktion auf einem Konto den Betrag und den Betrag der naechsten Transaktion (nach Datum sortiert). Verwende LEAD().",
+    description: "Zeige fuer jede Transaktion auf einem Konto den Betrag und den Betrag der zeitlich naechsten Transaktion desselben Kontos als Vorschau. Bei der letzten Transaktion eines Kontos erscheint NULL.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: bankingDataset.id,
@@ -161,7 +161,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "SUM OVER: Laufende Summe der Bestellbetraege",
-    description: "Berechne die laufende Summe (Running Total) der Gesamtbetraege aller Bestellungen, sortiert nach Datum.",
+    description: "Zeige jede Bestellung mit ihrem Betrag sowie dem kumulierten Gesamtbetrag aller Bestellungen bis einschliesslich dieser Zeile, chronologisch sortiert. Die letzte Zeile zeigt damit den Gesamtumsatz aller Bestellungen.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: shopDataset.id,
@@ -177,7 +177,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "SUM OVER partitioniert: Laufende Summe pro Konto",
-    description: "Berechne die laufende Summe der Transaktionsbetraege pro Konto, sortiert nach Datum.",
+    description: "Zeige fuer jede Transaktion den aufgelaufenen Kontosaldo bis zu diesem Zeitpunkt — jedes Konto hat dabei seine eigene laufende Summe, die bei seiner ersten Transaktion beginnt.",
     difficulty: "advanced",
     category: "Window Functions",
     datasetId: bankingDataset.id,
@@ -193,7 +193,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "AVG OVER: Durchschnittsgehalt pro Abteilung",
-    description: "Zeige jeden Mitarbeiter mit seinem Gehalt und dem Durchschnittsgehalt seiner Abteilung als zustzliche Spalte.",
+    description: "Zeige jeden Mitarbeiter mit seinem individuellen Gehalt und dem Durchschnittsgehalt seiner Abteilung in derselben Zeile, sodass der Vergleich direkt ablesbar ist. Alle Mitglieder einer Abteilung haben denselben Durchschnittswert in der Zusatzspalte.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: hrDataset.id,
@@ -209,7 +209,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "COUNT OVER: Ticket-Anzahl pro Agent",
-    description: "Zeige jedes Ticket mit Titel und Prioritaet sowie die Gesamtanzahl der Tickets des zugewiesenen Agenten als Zustzspalte.",
+    description: "Zeige alle zugewiesenen Tickets mit Titel und Prioritaet, ergaenzt um die Gesamtzahl der Tickets, die dem jeweiligen Agenten insgesamt zugewiesen sind. Jede Zeile desselben Agenten zeigt dabei dieselbe Gesamtzahl.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: ticketsDataset.id,
@@ -225,7 +225,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "DENSE_RANK partitioniert: Workout-Rang pro Nutzer",
-    description: "Erstelle eine Rangliste der Workouts nach verbrannten Kalorien pro Nutzer. Verwende DENSE_RANK() mit PARTITION BY.",
+    description: "Erstelle pro Nutzer eine lueckenlose Rangliste seiner Workouts nach verbrannten Kalorien, sodass das intensivste Workout jedes Nutzers den Rang 1 erhaelt. Gleiche Kalorienanzahl ergibt denselben Rang ohne uebersprungene Nummern.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: fitnessDataset.id,
@@ -241,7 +241,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "Top-N pro Gruppe: Die 3 teuersten Produkte pro Kategorie",
-    description: "Finde die 3 teuersten Produkte pro Kategorie. Verwende ROW_NUMBER() mit PARTITION BY und filtere auf rn <= 3.",
+    description: "Zeige die drei teuersten Produkte jeder Kategorie — also maximal drei Eintraege pro Kategorie, absteigend nach Preis. Die Ausgabe enthaelt Produktname, Kategorie-ID, Preis und die Position innerhalb der Kategorie.",
     difficulty: "advanced",
     category: "Window Functions",
     datasetId: shopDataset.id,
@@ -257,7 +257,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "LAG mit Offset: Vergleich mit dem vorvorherigen Wert",
-    description: "Zeige fuer jeden Kontostand den Saldo und den Saldo von zwei Transaktionen zuvor (LEAD/LAG mit Offset 2). Verwende LAG mit Offset 2.",
+    description: "Zeige fuer jede Transaktion den aktuellen Betrag und den Betrag der uebernuechsten vorherigen Transaktion desselben Kontos. Die ersten beiden Transaktionen eines Kontos haben keinen solchen Vergleichswert und zeigen NULL.",
     difficulty: "advanced",
     category: "Window Functions",
     datasetId: bankingDataset.id,
@@ -273,7 +273,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "AVG OVER: Vergleich mit dem Durchschnitt",
-    description: "Zeige jeden Film mit seiner Bewertung und dem Durchschnittsbewertungswert aller Filme. Wie weit weicht der Film vom Durchschnitt ab?",
+    description: "Zeige jeden Film mit seiner Bewertung, dem Gesamtdurchschnitt aller Filme und der Abweichung dieses Films vom Durchschnitt. Positive Werte bedeuten besser als der Schnitt, negative schlechter.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: streamingDataset.id,
@@ -289,7 +289,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "Mehrere Window Functions: Rang und Durchschnitt",
-    description: "Zeige Name, Gehalt, den Rang nach Gehalt und das Durchschnittsgehalt der Abteilung in einer Abfrage.",
+    description: "Zeige jeden Mitarbeiter mit seinem globalen Gehaltsrang unter allen Mitarbeitern und dem Durchschnittsgehalt seiner Abteilung in einer einzigen Ausgabe. So ist auf einen Blick ersichtlich, wo jemand im Gesamtunternehmen und innerhalb der eigenen Abteilung steht.",
     difficulty: "advanced",
     category: "Window Functions",
     datasetId: hrDataset.id,
@@ -305,7 +305,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "ROW_NUMBER: Pagination – Seite 2",
-    description: "Simuliere Pagination: Zeige die Produkte auf Seite 2 (Elemente 11-20), sortiert nach Preis absteigend. Verwende ROW_NUMBER().",
+    description: "Zeige genau die Produkte auf den Plaetzen 11 bis 20 der nach Preis absteigend sortierten Gesamtliste — also die zweite Seite einer paginierten Ansicht. Die Ausgabe enthaelt Produktname, Preis und die globale Positionsnummer.",
     difficulty: "advanced",
     category: "Window Functions",
     datasetId: shopDataset.id,
@@ -321,7 +321,7 @@ windowFunctionExercises.push(
   }),
   makeWriteExercise("win", {
     title: "LAG und LEAD kombiniert: Transaktionsanalyse",
-    description: "Zeige jede Transaktion mit dem vorherigen und dem naechsten Betrag auf demselben Konto. Berechne auch die Aenderung zum Vorgaenger.",
+    description: "Zeige jede Transaktion mit dem Betrag der zeitlich vorherigen und der naechsten Transaktion desselben Kontos sowie der Differenz zum Vorgaenger. So ist auf einen Blick erkennbar, in welche Richtung sich die Betraege bewegen.",
     difficulty: "advanced",
     category: "Window Functions",
     datasetId: bankingDataset.id,
@@ -337,7 +337,7 @@ windowFunctionExercises.push(
   }),
   makeDebugExercise("win", {
     title: "Debug: Fehlendes PARTITION BY",
-    description: "Diese Abfrage soll den Gehaltsrang pro Abteilung berechnen, aber das PARTITION BY fehlt. Korrigiere die Abfrage.",
+    description: "Die Abfrage soll fuer jede Abteilung eine eigene Gehaltsrangliste ausgeben, aber im Ergebnis sieht man einen einzigen globalen Rang fuer alle Mitarbeiter. Finde und korrigiere den Fehler in der Abfrage.",
     difficulty: "intermediate",
     category: "Window Functions",
     datasetId: hrDataset.id,

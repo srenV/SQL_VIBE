@@ -212,7 +212,7 @@ ddlExercises.push(
   }),
   makeWriteExercise("ddl", {
     title: "DROP TABLE IF EXISTS: Sicher loeschen",
-    description: "Loesche die Tabelle `temp_import` nur, wenn sie existiert. Verwende DROP TABLE IF EXISTS.",
+    description: "Entferne die Tabelle `temp_import` aus der Datenbank — aber nur, wenn sie tatsaechlich existiert, ohne Fehler falls sie fehlt.",
     difficulty: "junior",
     category: "DDL",
     datasetId: shopDataset.id,

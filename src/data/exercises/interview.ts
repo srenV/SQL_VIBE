@@ -20,7 +20,7 @@ resetCounter();
 interviewExercises.push(
   makeWriteExercise("int", {
     title: "Top 3 umsatzstaerkste Kunden",
-    description: "Finde die 3 Kunden mit dem hoechsten Gesamtumsatz ueber alle Bestellungen. Gib den Namen und die Summe aus.",
+    description: "Finde die 3 Kunden mit dem hoechsten Gesamtumsatz ueber alle Bestellungen. Gib `name` und den Gesamtumsatz als `umsatz` aus.",
     difficulty: "intermediate",
     category: "Interview-Challenge",
     datasetId: "shop",

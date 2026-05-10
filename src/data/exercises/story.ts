@@ -216,7 +216,7 @@ storyExercises.push(
       {
         title: "Das Alibi pruefen",
         narrative:
-          "Um Max' Schuld zu beweisen oder zu widerlegen: Zeige alle Tickets mit ihren Kommentaren, sortiert nach Ticket-ID. Welche Tickets haben Kommentare von Max?",
+          "Um Tom Billings Schuld zu beweisen oder zu widerlegen: Zeige alle Tickets mit ihren Kommentaren (LEFT JOIN), sortiert nach Ticket-ID. Welche Tickets haben Kommentare von Tom?",
         referenceQuery:
           "SELECT t.id AS ticket_id, t.titel, t.status, k.autor, k.nachricht FROM tickets t LEFT JOIN kommentare k ON t.id = k.ticket_id ORDER BY t.id, k.id;",
         hiddenTestQuery:

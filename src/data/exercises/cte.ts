@@ -17,7 +17,7 @@ resetCounter();
 cteExercises.push(
   makeWriteExercise("cte", {
     title: "Einfache CTE: Kunden mit Bestellungen",
-    description: "Verwende eine CTE, um alle Kunden zu finden, die mindestens eine Bestellung aufgegeben haben. Zeige den Kundennamen und die Anzahl der Bestellungen.",
+    description: "Zeige alle Kunden, die mindestens eine Bestellung aufgegeben haben, zusammen mit der Anzahl ihrer Bestellungen. Die Liste ist absteigend nach Bestellanzahl sortiert.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: shopDataset.id,
@@ -33,7 +33,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Mitarbeiter mit hoechstem Gehalt pro Abteilung",
-    description: "Nutze eine CTE, um den bestbezahlten Mitarbeiter je Abteilung zu finden.",
+    description: "Finde pro Abteilung den Mitarbeiter mit dem hoechsten Gehalt und zeige dessen Namen, Gehalt und Abteilungsname. Jede Abteilung erscheint genau einmal mit ihrem Topverdiener.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: hrDataset.id,
@@ -49,7 +49,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Durchschnittsbewertung pro Film",
-    description: "Verwende eine CTE, um die Durchschnittsbewertung pro Film zu berechnen und filme mit Bewertung ueber 4.0 anzuzeigen.",
+    description: "Zeige alle Filme, deren durchschnittliche Nutzerbewertung ueber 4,0 Sternen liegt, sortiert nach der besten Bewertung zuerst. Die Ausgabe enthaelt Filmtitel und den berechneten Bewertungsdurchschnitt.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: streamingDataset.id,
@@ -65,7 +65,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Kunden und ihr Gesamtumsatz",
-    description: "Nutze eine CTE, um den Gesamtumsatz je Kunde zu berechnen, und zeige Kunden mit Umsatz ueber 500.",
+    description: "Zeige alle Kunden, deren Bestellungen zusammen mehr als 500 ergeben, absteigend nach Gesamtumsatz sortiert. Die Ausgabe enthaelt den Kundennamen und den summierten Bestellbetrag.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: shopDataset.id,
@@ -81,7 +81,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Sessions mit mehr als 5 Events",
-    description: "Verwende eine CTE, um die Anzahl von Events pro Session zu zaehlen und Sessions mit mehr als 5 Events anzuzeigen.",
+    description: "Zeige alle Sessions, in denen mehr als 5 Events aufgezeichnet wurden, absteigend nach Event-Anzahl sortiert. Die Ausgabe enthaelt Session-ID, verwendeten Browser und die Anzahl der Events.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: logsDataset.id,
@@ -97,7 +97,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Agenten und Ticket-Statistiken",
-    description: "Nutze eine CTE, um die Anzahl und den Durchschnittspriority-Wert der Tickets pro Agent zu berechnen.",
+    description: "Zeige alle Agenten mit der Anzahl ihrer zugewiesenen Tickets, absteigend sortiert — Agenten ohne Tickets erscheinen mit dem Wert 0. Die Ausgabe enthaelt Name, Team und Ticket-Anzahl.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: ticketsDataset.id,
@@ -113,7 +113,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Gesamtsaldo pro Kunde",
-    description: "Verwende eine CTE, um den Gesamtsaldo pro Kunde ueber alle Konten zu berechnen.",
+    description: "Zeige jeden Kunden mit dem summierten Saldo ueber alle seine Konten hinweg, absteigend sortiert nach Gesamtsaldo. Die Ausgabe enthaelt den Kundennamen und den kontenuebergreifenden Gesamtsaldo.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: bankingDataset.id,
@@ -129,7 +129,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Workout-Dauer pro Nutzer",
-    description: "Nutze eine CTE, um die Gesamtdauer der Workouts pro Nutzer zu berechnen.",
+    description: "Zeige jeden Nutzer mit der Gesamtanzahl an Trainingsminuten, die er in allen Workouts zusammen absolviert hat, absteigend sortiert. Die Ausgabe enthaelt den Nutzernamen und die kumulierte Trainingsdauer in Minuten.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: fitnessDataset.id,
@@ -145,7 +145,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Urlaubsantraege nach Monat",
-    description: "Verwende eine CTE, um die Anzahl der Urlaubsantraege pro Monat zu zaehlen.",
+    description: "Zeige pro Kalendermonat, wie viele Urlaubsantraege in diesem Monat beginnen, chronologisch sortiert. Die Ausgabe enthaelt den Monat im Format YYYY-MM und die Anzahl der Antraege.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: hrDataset.id,
@@ -161,7 +161,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "Mehrere CTEs: Produkte und Bestellstatistiken",
-    description: "Verwende zwei CTEs: eine fuer Produktstatistiken (anzahl bestellungen pro produkt) und eine fuer die Bestellsumme pro produkt. Zeige Produktname, Anzahl und Summe.",
+    description: "Zeige fuer jedes Produkt den Namen, die bestellte Gesamtmenge und den erzielten Gesamtumsatz, absteigend nach Umsatz sortiert. Produkte ohne Bestellungen erscheinen ebenfalls in der Liste.",
     difficulty: "advanced",
     category: "CTE",
     datasetId: shopDataset.id,
@@ -177,7 +177,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE vs Subquery: Kundenumsatz",
-    description: "Schreibe die gleiche Abfrage einmal mit CTE und einmal als Subquery. Zeige Kunden mit Gesamtbestellsumme ueber 500.",
+    description: "Zeige alle Kunden, deren Bestellungen zusammen mehr als 500 ergeben, absteigend sortiert nach Gesamtbetrag. Die Ausgabe enthaelt den Kundennamen und den summierten Bestellbetrag.",
     difficulty: "advanced",
     category: "CTE",
     datasetId: shopDataset.id,
@@ -193,7 +193,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Betrugsfaelle mit Transaktionsdetails",
-    description: "Nutze eine CTE mit den Betrugsfaellen und joine sie mit Transaktions- und Kontodetails, um die Betrugsbeschreibung, den Betrag und den Kontotyp anzuzeigen.",
+    description: "Zeige alle erfassten Betrugsfaelle mit Grund, Status, dem betroffenen Transaktionsbetrag und dem Typ des zugehoerigen Kontos in einer einzigen Ausgabe. Die Daten stammen aus mehreren verknuepften Tabellen.",
     difficulty: "advanced",
     category: "CTE",
     datasetId: bankingDataset.id,
@@ -209,7 +209,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Fehlerquote pro Browser",
-    description: "Berechne mit einer CTE die Fehlerquote (Anteil der Events mit Fehlern) pro Browser.",
+    description: "Zeige fuer jeden Browser die Gesamtzahl der Events, die Anzahl fehlerhafter Events und den prozentualen Fehleranteil, absteigend nach Fehlerquote sortiert. So ist erkennbar, welcher Browser die meisten Probleme verursacht.",
     difficulty: "advanced",
     category: "CTE",
     datasetId: logsDataset.id,
@@ -225,7 +225,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Nutzer mit durchschnittlich hoechstem Kalorienverbrauch",
-    description: "Nutze eine CTE, um pro Nutzer die durchschnittlichen Kalorien pro Workout zu berechnen und den Nutzer mit dem hoechsten Durchschnitt anzuzeigen.",
+    description: "Finde den Nutzer, der pro Workout im Durchschnitt die meisten Kalorien verbrennt, und zeige seinen Namen und den Durchschnittswert. Es wird genau eine Zeile ausgegeben.",
     difficulty: "advanced",
     category: "CTE",
     datasetId: fitnessDataset.id,
@@ -241,7 +241,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Produkterloes pro Kategorie",
-    description: "Berechne mit einer CTE den Gesamtumsatz pro Produkt (Menge * Einzelpreis) und zeige dann den Umsatz pro Produktkategorie.",
+    description: "Zeige den erzielten Gesamtumsatz pro Produktkategorie, absteigend sortiert nach Umsatz. Der Umsatz je Kategorie ergibt sich aus der Summe aller verkauften Mengen multipliziert mit dem jeweiligen Einzelpreis.",
     difficulty: "advanced",
     category: "CTE",
     datasetId: shopDataset.id,
@@ -257,7 +257,7 @@ cteExercises.push(
   }),
   makeWriteExercise("cte", {
     title: "CTE: Abteilungen mit mehr als 3 Mitarbeitern",
-    description: "Verwende eine CTE, um die Anzahl der Mitarbeiter pro Abteilung zu zaehlen und nur Abteilungen mit mehr als 3 Mitarbeitern anzuzeigen.",
+    description: "Zeige alle Abteilungen mit mehr als drei Mitarbeitern, absteigend nach Mitarbeiteranzahl sortiert. Die Ausgabe enthaelt den Abteilungsnamen und die genaue Mitarbeiterzahl.",
     difficulty: "intermediate",
     category: "CTE",
     datasetId: hrDataset.id,
