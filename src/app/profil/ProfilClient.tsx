@@ -6,6 +6,7 @@ import { Container } from "@/components/container";
 import { FadeIn } from "@/components/animations";
 import { useProgress } from "@/hooks/useProgress";
 import { ACHIEVEMENTS, LEVELS, getLevel } from "@/lib/levelSystem";
+import { AchievementIcon } from "@/components/achievementIcon";
 
 interface LessonMeta {
   id: string;
@@ -111,7 +112,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                       Noch <strong className="text-white">{xpToNext} XP</strong> bis Level {info.level + 1}
                     </p>
                   ) : (
-                    <p className="text-xs text-white/60 font-semibold">Maximales Level erreicht 🏆</p>
+                    <p className="text-xs text-white/60 font-semibold">Maximales Level erreicht</p>
                   )}
                 </div>
               </div>
@@ -122,8 +123,9 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
               <StatItem label="Aufgaben gelöst" value={totalSolved} />
               <StatItem label="Gesamte XP" value={progress.totalPoints} />
               <StatItem
-                label={progress.streak > 1 ? "Tage-Streak 🔥" : "Aktiv heute"}
+                label={progress.streak > 1 ? "Tage-Streak" : "Aktiv heute"}
                 value={progress.streak}
+                flame={progress.streak > 1}
               />
             </div>
           </div>
@@ -154,7 +156,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                     <div
                       className={`relative rounded-2xl p-3 text-center border transition-all duration-200 ${
                         unlocked
-                          ? "border-amber-400/30 bg-gradient-to-b from-amber-50/80 to-yellow-50/40 dark:from-amber-900/20 dark:to-yellow-900/10"
+                          ? "border-amber-400/30 bg-linear-to-b from-amber-50/80 to-yellow-50/40 dark:from-amber-900/20 dark:to-yellow-900/10"
                           : "border-surface-dim bg-surface-dim/40 dark:border-dark-dim dark:bg-dark-dim/30 opacity-50"
                       }`}
                     >
@@ -164,11 +166,8 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                           style={{ boxShadow: "0 0 16px rgba(251,191,36,0.15)" }}
                         />
                       )}
-                      <div
-                        className={`text-2xl mb-1.5 ${unlocked ? "" : "grayscale"}`}
-                        aria-hidden="true"
-                      >
-                        {ach.icon}
+                      <div className={`flex justify-center mb-1.5 ${unlocked ? "text-amber-600 dark:text-amber-400" : "text-ink-muted grayscale"}`}>
+                        <AchievementIcon icon={ach.icon} className="w-7 h-7" />
                       </div>
                       <p className={`text-[11px] font-semibold leading-tight ${unlocked ? "text-ink" : "text-ink-muted"}`}>
                         {ach.name}
@@ -280,7 +279,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
   );
 }
 
-function StatItem({ label, value }: { label: string; value: number }) {
+function StatItem({ label, value, flame }: { label: string; value: number; flame?: boolean }) {
   return (
     <div>
       <motion.p
@@ -291,7 +290,15 @@ function StatItem({ label, value }: { label: string; value: number }) {
       >
         {value.toLocaleString("de-DE")}
       </motion.p>
-      <p className="text-xs text-white/60 mt-0.5">{label}</p>
+      <p className="text-xs text-white/60 mt-0.5 flex items-center justify-center gap-1">
+        {flame && (
+          <svg className="w-3 h-3 text-orange-300 animate-flame shrink-0" style={{ transformOrigin: "50% 80%" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.048 8.287 8.287 0 0 1 9 9.6a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 1 3 2.48z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.228 5.228 0 0 0-1.696-3.396 3.75 3.75 0 0 0-1.14 4.593A3.75 3.75 0 0 0 12 18z" />
+          </svg>
+        )}
+        {label}
+      </p>
     </div>
   );
 }

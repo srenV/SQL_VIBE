@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ACHIEVEMENTS, type AchievementDef } from "@/lib/levelSystem";
+import { AchievementIcon } from "@/components/achievementIcon";
 
 /* ─── Context ───────────────────────────────────────────────────────────── */
 
@@ -65,7 +66,7 @@ export function AchievementToastProvider({ children }: { children: React.ReactNo
     <AchievementToastContext.Provider value={{ triggerAchievement }}>
       {children}
       <div
-        className="fixed bottom-6 right-6 z-[200] flex flex-col-reverse gap-3 pointer-events-none"
+        className="fixed bottom-6 right-6 z-200 flex flex-col-reverse gap-3 pointer-events-none"
         aria-live="polite"
         aria-label="Erfolge"
       >
@@ -174,7 +175,7 @@ function AchievementToastItem({
       role="alert"
     >
       <div
-        className="relative overflow-hidden rounded-2xl border border-amber-400/40 bg-[#0f172a]/92 dark:bg-[#080c18]/94 backdrop-blur-xl shadow-2xl"
+        className="relative overflow-hidden rounded-2xl border border-amber-400/40 bg-ink/92 dark:bg-[#080c18]/94 backdrop-blur-xl shadow-2xl"
         style={{ boxShadow: "0 0 0 1px rgba(251,191,36,0.15), 0 8px 40px rgba(251,191,36,0.18), 0 2px 8px rgba(0,0,0,0.45)" }}
       >
         {/* Ambient golden gradient */}
@@ -202,7 +203,7 @@ function AchievementToastItem({
                   style={{ background: "radial-gradient(circle, rgba(251,191,36,0.45) 0%, transparent 70%)" }}
                 />
                 <motion.div
-                  className="absolute inset-[-4px] rounded-full"
+                  className="absolute -inset-1 rounded-full"
                   animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
                   transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
                   style={{ background: "radial-gradient(circle, rgba(251,191,36,0.25) 0%, transparent 65%)" }}
@@ -239,7 +240,7 @@ function AchievementToastItem({
                 boxShadow: "0 0 16px rgba(251,191,36,0.6), inset 0 1px 0 rgba(255,255,255,0.3)",
               }}
             >
-              {item.def.icon}
+              <AchievementIcon icon={item.def.icon} className="w-7 h-7 text-amber-900" />
             </motion.div>
           </div>
 

@@ -15,7 +15,6 @@ import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { ProgressBar } from "@/components/progressBar";
 import { useProgress } from "@/hooks/useProgress";
-import { LevelBadge } from "@/components/levelBadge";
 import { storyExercises } from "@/data/exercises";
 import { getUnlockStatus } from "@/lib/storyUnlock";
 import type { Lesson as LessonType, Exercise as ExerciseType } from "@/types/exercise";
@@ -70,7 +69,7 @@ export function ExercisePageClient({
 
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
-      <Header rightSlot={<LevelBadge />} />
+      <Header />
 
       <div className="border-b border-surface-dim bg-surface/50 backdrop-blur-sm">
         <Container className="py-2">

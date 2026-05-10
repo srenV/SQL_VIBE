@@ -108,7 +108,9 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
           <Card variant="outlined" className="p-6 border-primary-200 bg-gradient-to-br from-primary-50/50 to-accent-50/30">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <span className="text-2xl" role="img" aria-label="Detektiv">&#128373;</span>
+                <svg className="w-6 h-6 text-primary-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
                 <h2 className="text-xl font-bold text-ink">{story.scenarioTitle}</h2>
               </div>
               <div className="text-sm text-ink whitespace-pre-line leading-relaxed">
@@ -135,10 +137,12 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
     return (
       <div className="space-y-6">
         <FadeIn delay={0}>
-          <Card variant="outlined" className="p-6 border-success/40 bg-gradient-to-br from-success/5 to-accent-50/30">
+          <Card variant="outlined" className="p-6 border-success/40 bg-linear-to-br from-success/5 to-accent-50/30">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <span className="text-2xl" role="img" aria-label="Abgeschlossen">&#9989;</span>
+                <svg className="w-6 h-6 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                </svg>
                 <h2 className="text-xl font-bold text-success">Fall geloest!</h2>
               </div>
               <div className="text-sm text-ink whitespace-pre-line leading-relaxed">
@@ -161,10 +165,12 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
   return (
     <div className="space-y-6">
       <FadeIn delay={0}>
-        <Card variant="flat" className="p-4 bg-gradient-to-r from-primary-50/50 to-accent-50/30 border border-primary-200">
+        <Card variant="flat" className="p-4 bg-linear-to-r from-primary-50/50 to-accent-50/30 border border-primary-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg" role="img" aria-label="Detektiv">&#128373;</span>
+              <svg className="w-4 h-4 text-primary-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
               <span className="text-xs font-semibold text-primary-700 uppercase tracking-wide">
                 Kapitel {chapter.chapterNumber} von {story.chapters.length}
               </span>
@@ -286,7 +292,9 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
           <Card variant="outlined" className="p-5 border-success/40 bg-success/5">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-lg" role="img" aria-label="Erfolg">&#128270;</span>
+                <svg className="w-4 h-4 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
                 <p className="text-sm font-semibold text-success">Hinweis gefunden!</p>
               </div>
               <p className="text-sm text-ink whitespace-pre-line leading-relaxed">

@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Container } from "@/components/container";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/themeToggle";
+import { LevelBadge } from "@/components/levelBadge";
 import { useProgress } from "@/hooks/useProgress";
 
 /** Haupt-Navigations-Tabs. */
@@ -157,20 +158,21 @@ export function Header({ rightSlot }: HeaderProps) {
             })}
           </nav>
 
-          <div className="flex-1 flex items-center justify-end gap-2">
-            {progress.streak > 1 && (
-              <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
-                <svg className="w-3.5 h-3.5 animate-flame" style={{ transformOrigin: "50% 80%" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.228 5.228 0 00-1.696-3.396 3.75 3.75 0 00-1.14 4.593A3.75 3.75 0 0012 18z" />
-                </svg>
-                {progress.streak}
-              </span>
-            )}
+          <div className="flex-1 flex items-center justify-end gap-3">
             {rightSlot}
-            <span className="hidden sm:block">
+            <LevelBadge />
+            <div className="hidden sm:flex flex-col items-center gap-1">
               <ThemeToggle />
-            </span>
+              {progress.streak > 1 && (
+                <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 px-1.5 text-[10px] font-bold text-orange-600 dark:text-orange-400 leading-4 h-4">
+                  <svg className="w-2.5 h-2.5 animate-flame shrink-0" style={{ transformOrigin: "50% 80%" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.048 8.287 8.287 0 0 1 9 9.6a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 1 3 2.48z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.228 5.228 0 0 0-1.696-3.396 3.75 3.75 0 0 0-1.14 4.593A3.75 3.75 0 0 0 12 18z" />
+                  </svg>
+                  {progress.streak}
+                </span>
+              )}
+            </div>
 
             {/* Hamburger Button — Mobile only */}
             <button
@@ -180,7 +182,7 @@ export function Header({ rightSlot }: HeaderProps) {
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
             >
-              <span className="relative flex flex-col justify-between w-5 h-[14px]">
+              <span className="relative flex flex-col justify-between w-5 h-3.5">
                 <motion.span
                   className="block w-full h-0.5 bg-current rounded-full origin-center"
                   animate={{ rotate: isOpen ? 45 : 0, y: isOpen ? 6 : 0 }}
@@ -218,11 +220,11 @@ export function Header({ rightSlot }: HeaderProps) {
           >
             {/* Floating Gradient Orbs */}
             <div
-              className="absolute top-[-60px] right-[-60px] w-80 h-80 rounded-full bg-primary-500/15 blur-3xl pointer-events-none"
+              className="absolute -top-15 -right-15 w-80 h-80 rounded-full bg-primary-500/15 blur-3xl pointer-events-none"
               style={{ animation: "float-a 9s ease-in-out infinite" }}
             />
             <div
-              className="absolute bottom-[-40px] left-[-40px] w-64 h-64 rounded-full bg-accent-500/10 blur-3xl pointer-events-none"
+              className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full bg-accent-500/10 blur-3xl pointer-events-none"
               style={{ animation: "float-b 11s ease-in-out infinite" }}
             />
 
@@ -267,7 +269,7 @@ export function Header({ rightSlot }: HeaderProps) {
                         href={tab.href}
                         onClick={() => setIsOpen(false)}
                         aria-current={active ? "page" : undefined}
-                        className={`flex items-center gap-4 w-full px-5 rounded-2xl min-h-[72px] border transition-colors duration-150 ${
+                        className={`flex items-center gap-4 w-full px-5 rounded-2xl min-h-18 border transition-colors duration-150 ${
                           active
                             ? "bg-primary-500/15 border-primary-400/40 text-ink"
                             : "bg-white/5 border-white/10 text-ink-muted hover:text-ink hover:bg-white/10"

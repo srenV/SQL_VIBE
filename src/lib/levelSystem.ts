@@ -54,22 +54,22 @@ export interface AchievementDef {
 }
 
 export const ACHIEVEMENTS: AchievementDef[] = [
-  { id: "first_solve",     name: "Erste Lösung",        description: "Erste Aufgabe erfolgreich gelöst",          icon: "🎯" },
-  { id: "streak_3",        name: "Auf Kurs",             description: "3 Tage in Folge gelernt",                   icon: "🔥" },
-  { id: "streak_7",        name: "Wochensträhne",        description: "7 Tage am Stück aktiv gewesen",             icon: "⚡" },
-  { id: "streak_30",       name: "Unaufhaltbar",         description: "30 Tage ohne Unterbrechung",                icon: "💪" },
-  { id: "exercises_10",    name: "Fleißig",              description: "10 Aufgaben gelöst",                        icon: "📚" },
-  { id: "exercises_50",    name: "Erfahren",             description: "50 Aufgaben gelöst",                        icon: "🎓" },
-  { id: "exercises_100",   name: "Hundert Prozent",      description: "100 Aufgaben gelöst",                       icon: "💯" },
-  { id: "exercises_250",   name: "Maschinenraum",        description: "250 Aufgaben gelöst",                       icon: "🤖" },
-  { id: "story_first",     name: "Ermittler",            description: "Ersten Story-Fall abgeschlossen",           icon: "🕵️" },
-  { id: "story_all",       name: "Meisterermittler",     description: "Alle Story-Fälle gelöst",                   icon: "👑" },
-  { id: "lesson_complete", name: "Lektionsmeister",      description: "Eine Lektion zu 100 % abgeschlossen",       icon: "✅" },
-  { id: "debug_10",        name: "Debugger",             description: "10 Debug-Aufgaben gefixed",                 icon: "🐛" },
-  { id: "interview_10",    name: "Gesprächsbereit",      description: "10 Interview-Aufgaben gelöst",              icon: "💼" },
-  { id: "level_5",         name: "Aufsteiger",           description: "Level 5 erreicht",                          icon: "⭐" },
-  { id: "level_10",        name: "Meister der Abfragen", description: "Level 10 erreicht – du bist ein SQL-Profi", icon: "🏆" },
-  { id: "all_lessons",     name: "Vollständig",          description: "Alle Lektionen zu 100 % abgeschlossen",     icon: "🌟" },
+  { id: "first_solve",     name: "Erste Lösung",        description: "Erste Aufgabe erfolgreich gelöst",          icon: "check-circle" },
+  { id: "streak_3",        name: "Auf Kurs",             description: "3 Tage in Folge gelernt",                   icon: "flame" },
+  { id: "streak_7",        name: "Wochensträhne",        description: "7 Tage am Stück aktiv gewesen",             icon: "bolt" },
+  { id: "streak_30",       name: "Unaufhaltbar",         description: "30 Tage ohne Unterbrechung",                icon: "shield-check" },
+  { id: "exercises_10",    name: "Fleißig",              description: "10 Aufgaben gelöst",                        icon: "book-open" },
+  { id: "exercises_50",    name: "Erfahren",             description: "50 Aufgaben gelöst",                        icon: "academic-cap" },
+  { id: "exercises_100",   name: "Hundert Prozent",      description: "100 Aufgaben gelöst",                       icon: "chart-bar" },
+  { id: "exercises_250",   name: "Maschinenraum",        description: "250 Aufgaben gelöst",                       icon: "cpu-chip" },
+  { id: "story_first",     name: "Ermittler",            description: "Ersten Story-Fall abgeschlossen",           icon: "magnifying-glass" },
+  { id: "story_all",       name: "Meisterermittler",     description: "Alle Story-Fälle gelöst",                   icon: "key" },
+  { id: "lesson_complete", name: "Lektionsmeister",      description: "Eine Lektion zu 100 % abgeschlossen",       icon: "check-badge" },
+  { id: "debug_10",        name: "Debugger",             description: "10 Debug-Aufgaben gefixed",                 icon: "wrench-screwdriver" },
+  { id: "interview_10",    name: "Gesprächsbereit",      description: "10 Interview-Aufgaben gelöst",              icon: "chat-bubble" },
+  { id: "level_5",         name: "Aufsteiger",           description: "Level 5 erreicht",                          icon: "star" },
+  { id: "level_10",        name: "Meister der Abfragen", description: "Level 10 erreicht – du bist ein SQL-Profi", icon: "trophy" },
+  { id: "all_lessons",     name: "Vollständig",          description: "Alle Lektionen zu 100 % abgeschlossen",     icon: "sparkles" },
 ];
 
 interface ExerciseRecord {
