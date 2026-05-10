@@ -80,13 +80,13 @@ export function IntroOverlay() {
         innerHTML: scrambleText({
           override: " ",
           from: "center",
-          duration: 450,
+          duration: 600,
           revealDelay: 200,
           cursor: "░▒▓",
           perturbation: 0.5,
         }),
       },
-      stagger([0, 700], { grid: true, from: "center", ease: "out(3)", start: "<<+=100", reversed: true })
+      stagger([0, 1100], { grid: true, from: "center", ease: "out(3)", start: "<<+=100", reversed: true })
     );
 
     tl.add(
@@ -107,7 +107,7 @@ export function IntroOverlay() {
           cursor: "░▒▓",
         }),
       },
-      stagger([0, 500], { grid: true, from: "center", ease: "out(3)", start: "<+=350" })
+      stagger([0, 700], { grid: true, from: "center", ease: "out(3)", start: "<+=900" })
     );
 
     tl.set(`${S} .sql-slide:nth-child(2)`, { opacity: 1 }, "<<");
@@ -119,7 +119,7 @@ export function IntroOverlay() {
         color: "#818cf8",
         scale: [1, 1.8],
         ease: "inOutExpo",
-        duration: 1200,
+        duration: 1800,
         innerHTML: scrambleText({
           text: "SQL-VIBE",
           override: " ",
@@ -137,20 +137,21 @@ export function IntroOverlay() {
       {
         scale: 2.2,
         ease: "inOutExpo",
-        duration: 600,
+        duration: 700,
         innerHTML: scrambleText({
           text: " ",
           chars: "#!%░▒▓_",
           override: false,
-          duration: 600,
+          duration: 700,
           ease: "out(2)",
           from: "center",
         }),
       },
-      "<+=700"
+      "<+=1200"
     );
 
-    tl.add(`${S}`, { background: "#0a0e1a", duration: 600 }, "<<");
+    tl.add(`${S}`, { background: "#0a0e1a", duration: 700 }, "<<");
+    tl.add(`${S}`, { opacity: 0, duration: 400 }, "<+=300");
 
     tl.init();
 

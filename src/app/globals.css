@@ -55,6 +55,8 @@
   --animate-success-reveal: success-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-progress-fill: progress-fill 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
   --animate-flame: flame 1.5s ease-in-out infinite;
+  --animate-flame-glow: flame-glow 4s ease-in-out infinite;
+  --animate-spark-rise: spark-rise 1.8s ease-out infinite;
 
   @keyframes fade-in {
     0% {
@@ -153,6 +155,17 @@
     25% { transform: scaleX(0.92) scaleY(1.1) rotate(2deg); }
     50% { transform: scaleX(1.04) scaleY(0.92) rotate(-1.5deg); }
     75% { transform: scaleX(0.96) scaleY(1.07) rotate(2.5deg); }
+  }
+
+  @keyframes flame-glow {
+    0%, 100% { filter: drop-shadow(0 -2px 3px rgba(249, 115, 22, 0.35)); }
+    50%       { filter: drop-shadow(0 -7px 7px rgba(251, 191, 36, 0.6)) drop-shadow(0 -1px 2px rgba(249, 115, 22, 0.3)); }
+  }
+
+  @keyframes spark-rise {
+    0%   { transform: translateY(0) scale(1);   opacity: 0.9; }
+    70%  { opacity: 0.5; }
+    100% { transform: translateY(-18px) scale(0); opacity: 0; }
   }
 }
 

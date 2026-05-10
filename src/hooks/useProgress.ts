@@ -87,7 +87,19 @@ export function useProgress() {
   const pendingAchievementsRef = useRef<string[]>([]);
 
   useEffect(() => {
-    setProgress(loadProgress());
+    const loaded = loadProgress();
+    const retroactive = checkAchievements(
+      { ...loaded, achievements: [] },
+      loaded,
+      ACHIEVEMENT_TOTALS
+    );
+    if (retroactive.length > 0) {
+      const patched = { ...loaded, achievements: [...loaded.achievements, ...retroactive] };
+      saveProgress(patched);
+      setProgress(patched);
+    } else {
+      setProgress(loaded);
+    }
   }, []);
 
   // Flush queued achievements after state settles

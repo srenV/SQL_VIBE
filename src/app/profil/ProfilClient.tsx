@@ -42,7 +42,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
         {/* ── Level card ── */}
         <FadeIn delay={0}>
           <div
-            className="relative overflow-hidden rounded-3xl p-8 text-white"
+            className="relative overflow-hidden rounded-3xl p-5 sm:p-8 text-white"
             style={{
               background: "linear-gradient(135deg, #4338ca 0%, #6366f1 45%, #8b5cf6 80%, #a78bfa 100%)",
               boxShadow: "0 20px 60px rgba(99,102,241,0.35), 0 4px 20px rgba(0,0,0,0.2)",
@@ -52,10 +52,10 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
             <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-white/5 blur-2xl pointer-events-none" />
             <div className="absolute -bottom-8 -left-8 w-48 h-48 rounded-full bg-violet-300/10 blur-2xl pointer-events-none" />
 
-            <div className="relative flex items-center gap-8">
+            <div className="relative flex flex-col sm:flex-row items-center gap-5 sm:gap-8">
               {/* Circular progress ring */}
-              <div className="relative shrink-0 w-32 h-32">
-                <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120" aria-hidden="true">
+              <div className="relative shrink-0 w-28 h-28 sm:w-32 sm:h-32">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120" aria-hidden="true">
                   <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="6" />
                   <motion.circle
                     cx="60" cy="60" r="52"
@@ -85,11 +85,11 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
               </div>
 
               {/* Info */}
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 w-full text-center sm:text-left">
                 <p className="text-xs font-semibold uppercase tracking-widest text-white/60 mb-1">
                   Aktueller Rang
                 </p>
-                <h1 className="text-3xl font-black tracking-tight leading-none mb-4">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none mb-4">
                   {info.title}
                 </h1>
 
@@ -119,7 +119,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
             </div>
 
             {/* Stats row */}
-            <div className="relative mt-6 pt-6 border-t border-white/15 grid grid-cols-3 gap-4 text-center">
+            <div className="relative mt-6 pt-6 border-t border-white/15 grid grid-cols-3 gap-2 sm:gap-4 text-center">
               <StatItem label="Aufgaben gelöst" value={totalSolved} />
               <StatItem label="Gesamte XP" value={progress.totalPoints} />
               <StatItem
@@ -283,7 +283,7 @@ function StatItem({ label, value, flame }: { label: string; value: number; flame
   return (
     <div>
       <motion.p
-        className="text-2xl font-black"
+        className="text-xl sm:text-2xl font-black"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.4 }}

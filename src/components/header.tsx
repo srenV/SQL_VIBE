@@ -8,6 +8,8 @@ import { Container } from "@/components/container";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/themeToggle";
 import { LevelBadge } from "@/components/levelBadge";
+import { useProgress } from "@/hooks/useProgress";
+import { getLevel } from "@/lib/levelSystem";
 
 
 /** Haupt-Navigations-Tabs. */
@@ -62,6 +64,10 @@ export function Header({ rightSlot }: HeaderProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const prefersReduced = useReducedMotion();
+  const { progress } = useProgress();
+  const info = getLevel(progress.totalPoints);
+  const circumference = 2 * Math.PI * 14;
+  const dashOffset = circumference * (1 - info.progress);
 
   const isActive = (href: string) => {
     if (!pathname) return false;
@@ -234,9 +240,58 @@ export function Header({ rightSlot }: HeaderProps) {
               </button>
             </div>
 
+            {/* Profile card */}
+            <motion.div
+              className="relative z-10 px-5 pt-4"
+              variants={getItemVariants(0)}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <Link
+                href="/profil"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-4 w-full px-4 py-3.5 rounded-2xl bg-primary-500/10 border border-primary-400/25 hover:bg-primary-500/20 active:bg-primary-500/25 transition-colors duration-150"
+              >
+                {/* XP ring */}
+                <div className="relative shrink-0 w-12 h-12">
+                  <svg className="w-12 h-12 -rotate-90" viewBox="0 0 32 32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/15" />
+                    <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
+                      strokeDasharray={circumference} strokeDashoffset={dashOffset} className="text-primary-400" />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-ink tabular-nums leading-none">
+                    {info.level}
+                  </span>
+                </div>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-ink-muted font-medium uppercase tracking-wide mb-0.5">Profil</p>
+                  <p className="text-base font-bold text-ink truncate">{info.title}</p>
+                  <div className="mt-1.5 h-1 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-primary-400 transition-all duration-700" style={{ width: `${info.progress * 100}%` }} />
+                  </div>
+                </div>
+                {/* Streak + chevron */}
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  {progress.streak > 1 && (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-400">
+                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12.963 2.286a.75.75 0 0 0-1.071-.136 9.742 9.742 0 0 0-3.539 6.176 7.547 7.547 0 0 1-1.705-1.715.75.75 0 0 0-1.152-.082A9 9 0 1 0 15.68 4.534a7.46 7.46 0 0 1-2.717-2.248ZM15.75 14.25a3.75 3.75 0 1 1-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 0 1 1.925-3.545 3.75 3.75 0 0 1 3.255 3.717Z" />
+                      </svg>
+                      {progress.streak}
+                    </span>
+                  )}
+                  <svg className="w-4 h-4 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </div>
+              </Link>
+            </motion.div>
+
             {/* Nav Items */}
             <nav
-              className="relative z-10 flex flex-col justify-center flex-1 gap-3 px-5 py-8"
+              className="relative z-10 flex flex-col justify-center flex-1 gap-3 px-5 py-5"
               style={{ perspective: "1000px" }}
               aria-label="Mobile Navigation"
             >
@@ -245,7 +300,7 @@ export function Header({ rightSlot }: HeaderProps) {
                 return (
                   <motion.div
                     key={tab.href}
-                    variants={getItemVariants(i)}
+                    variants={getItemVariants(i + 1)}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
@@ -292,7 +347,7 @@ export function Header({ rightSlot }: HeaderProps) {
             {/* Bottom — Theme Toggle */}
             <motion.div
               className="relative z-10 flex justify-center pb-10 pt-4 border-t border-white/10"
-              variants={getItemVariants(NAV_TABS.length)}
+              variants={getItemVariants(NAV_TABS.length + 1)}
               initial="hidden"
               animate="visible"
               exit="exit"

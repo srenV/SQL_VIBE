@@ -26,7 +26,19 @@ const STARS = [
   { x: 8,  y: 7,  size: 1.5, delay: 0    },
   { x: 16, y: 16, size: 1.5, delay: 0.55 },
   { x: 28, y: 8,  size: 2,   delay: 1.1  },
-  { x: 24, y: 19, size: 1.5, delay: 0.3  },
+  { x: 24, y: 20, size: 1.5, delay: 0.3  },
+  { x: 12, y: 12, size: 1,   delay: 0.75 },
+  { x: 36, y: 18, size: 1,   delay: 1.5  },
+  { x: 6,  y: 22, size: 1,   delay: 0.2  },
+  { x: 32, y: 13, size: 1.5, delay: 1.8  },
+  { x: 44, y: 7,  size: 1,   delay: 0.95 },
+  { x: 40, y: 22, size: 1,   delay: 1.3  },
+];
+
+const CLOUDS = [
+  { x: 3,  y: 5,  scale: 0.75, delay: 0   },
+  { x: 16, y: 15, scale: 0.55, delay: 1.3 },
+  { x: 9,  y: 18, scale: 0.6,  delay: 0.7 },
 ];
 
 export function ThemeToggle() {
@@ -97,6 +109,30 @@ export function ThemeToggle() {
                 : { duration: 0.15 }
             }
           />
+        ))}
+
+        {/* Clouds — light only */}
+        {CLOUDS.map((c, i) => (
+          <motion.div
+            key={i}
+            className="absolute pointer-events-none"
+            style={{ left: c.x, top: c.y, transform: `scale(${c.scale})`, transformOrigin: "left top" }}
+            animate={
+              !isDark
+                ? { opacity: [0.55, 0.85, 0.55] }
+                : { opacity: 0 }
+            }
+            transition={
+              !isDark
+                ? { repeat: Infinity, duration: 4, delay: c.delay, ease: "easeInOut" }
+                : { duration: 0.2 }
+            }
+          >
+            <div style={{ position: "relative", width: 14, height: 5, background: "white", borderRadius: 999 }}>
+              <span style={{ position: "absolute", width: 8, height: 8, background: "white", borderRadius: "50%", top: -5, left: 1 }} />
+              <span style={{ position: "absolute", width: 5, height: 5, background: "white", borderRadius: "50%", top: -3, right: 2 }} />
+            </div>
+          </motion.div>
         ))}
 
         {/* Thumb */}
