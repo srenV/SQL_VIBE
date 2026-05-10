@@ -59,13 +59,13 @@ export function ThemeToggle() {
         animate={{
           backgroundColor: isDark ? "#1e1b4b" : "#fef3c7",
           boxShadow: isDark
-            ? "0 0 0 1.5px #312e81, 0 0 18px 3px rgba(99,102,241,0.35)"
-            : "0 0 0 1.5px #fde68a, 0 0 18px 3px rgba(251,191,36,0.4)",
+            ? "0 0 0 1.5px #312e81, 0 0 8px 1px rgba(99,102,241,0.18)"
+            : "0 0 0 1.5px #fde68a, 0 0 8px 1px rgba(251,191,36,0.22)",
         }}
         whileHover={{
           boxShadow: isDark
-            ? "0 0 0 1.5px #4338ca, 0 0 26px 6px rgba(99,102,241,0.5)"
-            : "0 0 0 1.5px #fbbf24, 0 0 26px 6px rgba(251,191,36,0.55)",
+            ? "0 0 0 1.5px #4338ca, 0 0 14px 2px rgba(99,102,241,0.3)"
+            : "0 0 0 1.5px #fbbf24, 0 0 14px 2px rgba(251,191,36,0.35)",
         }}
         transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
