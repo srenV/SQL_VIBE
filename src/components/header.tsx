@@ -164,8 +164,8 @@ export function Header({ rightSlot }: HeaderProps) {
             <div className="hidden sm:flex flex-col items-center gap-1">
               <ThemeToggle />
               {progress.streak > 1 && (
-                <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 px-1.5 text-[10px] font-bold text-orange-600 dark:text-orange-400 leading-4 h-4">
-                  <svg className="w-2.5 h-2.5 animate-flame shrink-0" style={{ transformOrigin: "50% 80%" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
+                  <svg className="w-3.5 h-3.5 animate-flame shrink-0" style={{ transformOrigin: "50% 80%" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.048 8.287 8.287 0 0 1 9 9.6a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 1 3 2.48z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.228 5.228 0 0 0-1.696-3.396 3.75 3.75 0 0 0-1.14 4.593A3.75 3.75 0 0 0 12 18z" />
                   </svg>
