@@ -20,7 +20,7 @@ Test-Strategie, Test-Struktur und Test-Abdeckung der SQL-Trainer MySQL-Lernplatt
 
 ```
            ╱──────╲
-          ╱  E2E   ╲         3 Playwright Specs
+          ╱  E2E   ╲         7 Playwright Specs
          ╱  (UI)    ╲        (Smoke Tests)
         ╱────────────╲
        ╱  Integration ╲      5 Specs (Hooks, Adapter)
@@ -38,8 +38,8 @@ Test-Strategie, Test-Struktur und Test-Abdeckung der SQL-Trainer MySQL-Lernplatt
 | Unit (Lib) | 639 | 8 Dateien |
 | Unit (Components) | 34 | 6 Dateien |
 | Integration (Hooks/Adapter) | 18 | 2 Dateien |
-| E2E (Playwright) | 6 | 6 Dateien |
-| **Gesamt** | **721** | **22 Dateien** |
+| E2E (Playwright) | 7 | 7 Dateien |
+| **Gesamt** | **743** | **23 Dateien** |
 
 ---
 
@@ -95,12 +95,14 @@ Testet verdeckte Tests mit allen 5 Compare-Modi:
 - `count`: Zeilenanzahl
 - `contains`: Teilmenge
 
-#### `src/lib/mysqlCompat.test.ts` (70 Tests)
+#### `src/lib/mysqlCompat.test.ts` (85 Tests)
 
 Testet die MySQL→SQLite Kompatibilitätsschicht:
 - `extractDatabaseName()`: CREATE DATABASE, USE, Fallback-Namen
 - MySQL-Kompatibilitätstransformationen
 - Case-Insensitivity, Whitespace-Handling
+- CHARACTER SET / DEFAULT CHARSET Varianten
+- Vollständige Küchen-Skript-Verarbeitung
 
 #### `src/lib/playgroundAdapter.test.ts` (9 Tests)
 
@@ -137,15 +139,15 @@ Testet Utilities:
 #### `src/data/catalog.test.ts` (9 Tests)
 
 Testet die Katalog-Struktur:
-- 10 Datasets, 500+ Exercises, 15 Lessons
+- 18 Datasets (10 Standard + 8 Story), 507 Exercises, 15 Lessons
 - Exercise↔Dataset-Referenzen
 - Lesson↔Exercise-Referenzen
 - Eindeutige IDs, deutsche Beschreibungen
 - HiddenTestQuery für write-Exercises
 
-#### `src/data/exercises/validate.test.ts` (500 Tests)
+#### `src/data/exercises/validate.test.ts` (507 Tests)
 
-**Validierung aller 500+ Übungen:**
+**Validierung aller 507 Übungen:**
 - Jede Übung wird gegen ihr Dataset validiert
 - `adaptExercise()` → `createDatabase()` → `runQuery(referenceQuery)`
 - Stellt sicher, dass alle Referenz-Queries syntaktisch korrekt sind

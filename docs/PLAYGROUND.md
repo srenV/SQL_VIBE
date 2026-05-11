@@ -223,12 +223,9 @@ Führt nach erfolgreicher Haupt-Query zusätzliche Prüfabfragen aus:
 
 ```typescript
 interface HiddenTest {
-  id: string;
   name: string;
   query: string;            // Prüfabfrage
   compareMode: "exact" | "rows" | "columns" | "count" | "contains";
-  expectedResultset?: SqlResultset;  // Optional: erwartetes Ergebnis
-  failureMessage: string;
 }
 ```
 

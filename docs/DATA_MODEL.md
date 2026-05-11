@@ -20,8 +20,8 @@ Der zentrale Katalog (`src/data/catalog.ts`) aggregiert alle Daten:
 
 ```typescript
 interface Catalog {
-  exercises: Record<string, Exercise>;   // 500+ Übungen
-  datasets: Record<string, Dataset>;     // 10 Datensätze
+  exercises: Record<string, Exercise>;   // 507 Übungen
+  datasets: Record<string, Dataset>;     // 18 Datensätze (10 Standard + 8 Story)
   lessons: Record<string, Lesson>;       // 15 Lektionen
 }
 ```
@@ -56,7 +56,7 @@ interface Lesson {
 | `lesson_predict` | Vorhersagen | ~20 |
 | `lesson_schema` | Schema-Design | ~20 |
 | `lesson_interview` | Interview-Fragen | ~40 |
-| `lesson_story` | Story-Modus | 3 |
+| `lesson_story` | Story-Modus | 10 |
 
 ---
 
@@ -109,7 +109,9 @@ CREATE TABLE bestellungen (
 
 `buildSchemaTables()` in `playgroundAdapter.ts` extrahiert daraus `ForeignKey[]`-Arrays.
 
-### Alle 10 Datasets
+### Alle 18 Datensätze (10 Standard + 8 Story)
+
+#### Standard-Datensätze
 
 | ID | Name | Tabellen | Besonderheit |
 |----|------|----------|-------------|
@@ -123,6 +125,19 @@ CREATE TABLE bestellungen (
 | `university` | Universität | 4 | studenten, kurse, professoren, einschreibungen |
 | `ecommerce` | E-Commerce | 4 | users, products, orders, reviews |
 | `hospital` | Krankenhaus | 4 | patienten, aerzte, termine, behandlungen |
+
+#### Story-Datensätze
+
+| ID | Name | Story |
+|----|------|-------|
+| `story-anna7` | Vermisst: ANNA-7 | Einheit ANNA-7 verschwunden |
+| `story-nexusmarkt` | Phantom-Transaktionen | NexusMarkt-Anomalien |
+| `story-helpcore` | Virus im HelpCore-Netz | HelpCore-Infektion |
+| `story-neuronale-luecke` | Neuronale Lücke | KI-Anomalie |
+| `story-systemfehler-delta` | Systemfehler Delta | Delta-Systemfehler |
+| `story-rote-zone` | Die rote Zone | Rote Zone Krise |
+| `story-ghost-protocol` | Ghost Protocol Sigma | Geister-Protokoll |
+| `story-geldstrom-omega` | Geldstrom Omega | Finanz-Anomalie |
 
 ---
 

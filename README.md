@@ -3,8 +3,8 @@
 Interaktive MySQL-Lernplattform mit über 500 Übungen, sofortigem Feedback und gamifiziertem Fortschritt — alles direkt im Browser, ohne Anmeldung, ohne Server.
 
 > **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · sql.js (WASM) · React Flow · dagre · Framer Motion  
-> **Tests:** 721 Tests (Vitest + Playwright E2E) · 719 grün, 2 pre-existing Failures  
-> **Deployment:** Vercel (Static Export)
+> **Tests:** 743 Tests (Vitest + Playwright E2E) · alle grün  
+> **Deployment:** [sql-vibe.vercel.app](https://sql-vibe.vercel.app) (Vercel Static Export)
 
 ---
 
@@ -41,13 +41,31 @@ npm run dev
 SQL_VIBE/
 ├── src/
 │   ├── app/                          # Next.js App Router
-│   │   ├── layout.tsx                # Root-Layout (Fonts, Theme, Metadata)
+│   │   ├── layout.tsx                # Root-Layout (Fonts, Theme, Metadata, SEO)
 │   │   ├── page.tsx                  # Landing Page (Home)
+│   │   ├── not-found.tsx             # 404-Seite
+│   │   ├── sitemap.ts                # XML-Sitemap (statisch)
+│   │   ├── manifest.ts               # Web App Manifest (PWA)
 │   │   ├── globals.css               # Tailwind v4 + Design Tokens
 │   │   ├── lektionen/
 │   │   │   ├── page.tsx              # Lektionen-Übersicht
 │   │   │   └── [lessonId]/
+│   │   │       ├── page.tsx           # Lektions-Detail
 │   │   │       └── [exerciseId]/     # Einzelne Übungsseite
+│   │   ├── lernen/
+│   │   │   ├── layout.tsx            # Lernen-Layout
+│   │   │   ├── page.tsx              # Lern-Module Übersicht
+│   │   │   └── [moduleId]/
+│   │   │       ├── page.tsx          # Modul-Detail
+│   │   │       └── [articleId]/     # Artikel-Detail
+│   │   ├── sandbox/
+│   │   │   ├── layout.tsx            # Sandbox-Layout
+│   │   │   └── page.tsx              # Freie SQL-Sandbox
+│   │   ├── story/
+│   │   │   ├── layout.tsx            # Story-Layout
+│   │   │   └── page.tsx              # Story-Übersicht
+│   │   ├── profil/
+│   │   │   └── page.tsx              # Profil & Fortschritt
 │   │   └── uebung/
 │   │       └── page.tsx              # Direkte Übungsseite
 │   │
@@ -62,7 +80,7 @@ SQL_VIBE/
 │   │   ├── successCelebration.tsx    # Erfolgs-Animation mit Konfetti
 │   │   ├── progressBar.tsx           # Fortschrittsbalken
 │   │   ├── button.tsx                # Button (primary/secondary/ghost/accent)
-│   │   ├── card.tsx                  # Card (flat/outlined/elevated)
+│   │   ├── card.tsx                  # Card (default/flat/outlined)
 │   │   ├── input.tsx                 # Input mit Label & Error
 │   │   ├── container.tsx             # Responsive Container
 │   │   ├── header.tsx                # Sticky Header mit Breadcrumbs
@@ -72,16 +90,24 @@ SQL_VIBE/
 │   │   ├── themeToggle.tsx           # Dark/Light Mode Toggle
 │   │   ├── skeleton.tsx              # Skeleton-Loader
 │   │   ├── animations.tsx            # FadeIn, AnimatedList, ScaleOnHover
+│   │   ├── animatedCard.tsx          # Animierbare Karte (Hover-Effekte)
+│   │   ├── featureCard.tsx           # Feature-Karte für Landing Page
+│   │   ├── levelBadge.tsx            # Schwierigkeits-Badge
+│   │   ├── achievementIcon.tsx       # Achievement-Icon
+│   │   ├── achievementToast.tsx     # Achievement-Benachrichtigung
+│   │   ├── streakFlame.tsx           # Streak-Flammen-Animation
+│   │   ├── storyIntro.tsx            # Story-Intro-Overlay
+│   │   ├── scrambleText.tsx          # Text-Scramble-Animation
+│   │   ├── introOverlay.tsx          # Intro-Overlay für Erstbesucher
 │   │   ├── learn/                    # Lern-Modul Komponenten
 │   │   │   ├── ArticlePageClient.tsx # Artikel-Renderer
 │   │   │   ├── ErmDiagram.tsx        # ER-Diagramm für Lern-Module
 │   │   │   ├── NfChecker.tsx         # Normalform-Checker
 │   │   │   ├── RmToSql.tsx           # RM→SQL Konverter
 │   │   │   └── moduleIcons.tsx       # Modul-Icons
-│   │   ├── sandbox/                  # Sandbox-Komponenten
-│   │   │   ├── sandboxWorkspace.tsx  # Sandbox-Hauptarbeitsbereich
-│   │   │   └── sandboxSidebar.tsx    # Sandbox-Seitenleiste
-│   │   └── ui/                       # (zukünftige UI-Primitives)
+│   │   └── sandbox/                  # Sandbox-Komponenten
+│   │       ├── sandboxWorkspace.tsx  # Sandbox-Hauptarbeitsbereich
+│   │       └── sandboxSidebar.tsx    # Sandbox-Seitenleiste
 │   │
 │   ├── hooks/                        # Custom Hooks
 │   │   ├── usePlayground.ts          # Playground-Orchestrator (DB, Queries, Tests)
@@ -103,7 +129,8 @@ SQL_VIBE/
 │   │
 │   ├── data/                         # Übungskatalog
 │   │   ├── catalog.ts                # Zentraler Katalog (Lessons + Exercises)
-│   │   ├── datasets/                 # 10 Datensätze
+│   │   ├── learnContent.ts           # Lern-Module & Artikel
+│   │   ├── datasets/                 # 18 Datensätze (10 Standard + 8 Story)
 │   │   │   ├── index.ts              # Barrel-Export
 │   │   │   ├── shop.ts               # Online-Shop
 │   │   │   ├── fitness.ts            # Fitness-Tracker
@@ -114,7 +141,15 @@ SQL_VIBE/
 │   │   │   ├── logs.ts               # Server-Logs
 │   │   │   ├── university.ts         # Universität
 │   │   │   ├── ecommerce.ts          # E-Commerce
-│   │   │   └── hospital.ts           # Krankenhaus
+│   │   │   ├── hospital.ts           # Krankenhaus
+│   │   │   ├── story-anna7.ts        # Story: Vermisst ANNA-7
+│   │   │   ├── story-nexusmarkt.ts   # Story: Phantom-Transaktionen
+│   │   │   ├── story-helpcore.ts     # Story: Virus im HelpCore-Netz
+│   │   │   ├── story-neuronale-luecke.ts # Story: Neuronale Lücke
+│   │   │   ├── story-systemfehler-delta.ts # Story: Systemfehler Delta
+│   │   │   ├── story-rote-zone.ts    # Story: Die rote Zone
+│   │   │   ├── story-ghost-protocol.ts # Story: Ghost Protocol Sigma
+│   │   │   └── story-geldstrom-omega.ts # Story: Geldstrom Omega
 │   │   └── exercises/                # 15 Übungskategorien
 │   │       ├── _factory.ts           # Factory-Funktionen
 │   │       ├── index.ts              # Barrel-Export
@@ -125,7 +160,7 @@ SQL_VIBE/
 │   │       ├── join.ts               # JOIN-Übungen
 │   │       ├── subquery.ts           # Subqueries
 │   │       ├── cte.ts                # CTE / WITH
-│   │       ├── windowFunction.ts     # Window Functions
+│   │       ├── windowFunctions.ts    # Window Functions
 │   │       ├── dml.ts                # INSERT / UPDATE / DELETE
 │   │       ├── ddl.ts                # CREATE / ALTER / DROP
 │   │       ├── debug.ts              # Debug-Übungen
@@ -138,8 +173,7 @@ SQL_VIBE/
 │   │   ├── exercise.ts               # Katalog-Typen (Exercise, Dataset, Lesson)
 │   │   └── playground.ts             # Playground-Typen (Queries, Results, Schema)
 │   │
-│   ├── fonts/                        # Inter Font (WOFF2, 6 Gewichte)
-│   └── styles/                       # Zusätzliche Styles
+│   └── fonts/                        # Inter Font (WOFF2, 6 Gewichte: 400–900)
 │
 ├── e2e/                              # Playwright E2E-Tests
 │   ├── landing.spec.ts               # Landing Page Tests
@@ -156,7 +190,10 @@ SQL_VIBE/
 │   └── verify-catalog.js             # Katalog-Verifikation
 │
 ├── public/
-│   └── sql-wasm.js                   # sql.js WASM Binary
+│   ├── sql-wasm.js                   # sql.js WASM Binary
+│   ├── robots.txt                    # Suchmaschinen-Steuerung
+│   ├── icon.svg                      # App-Icon (SVG)
+│   └── favicon.ico                   # Favicon
 │
 ├── DESIGN_SYSTEM.md                  # Design-System Dokumentation
 ├── package.json
@@ -177,12 +214,12 @@ SQL_VIBE/
 ```
 ┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
 │  Datasets   │────▶│ playgroundAdapter │────▶│ PlaygroundExercise│
-│  (10 Stück) │     │  buildSchemaTables│     │  .schemaTables   │
+│  (18 Stück) │     │  buildSchemaTables│     │  .schemaTables   │
 └─────────────┘     └──────────────────┘     └────────┬────────┘
                                                       │
 ┌─────────────┐     ┌──────────────────┐              │
 │  Exercises  │────▶│   adaptExercise   │──────────────┤
-│  (500+ St.) │     └──────────────────┘              │
+│  (507 St.)  │     └──────────────────┘              │
 └─────────────┘                                       ▼
                                             ┌─────────────────┐
                                             │  usePlayground   │
@@ -224,7 +261,7 @@ Der **`playgroundAdapter.ts`** konvertiert zwischen beiden Systemen.
 | Komponente | Varianten | Props |
 |-----------|-----------|-------|
 | **Button** | `primary`, `secondary`, `ghost`, `accent` | `size` (sm/md/lg), `isLoading`, `disabled` |
-| **Card** | `flat`, `outlined`, `elevated` | `className`, `children` |
+| **Card** | `default`, `flat`, `outlined` | `className`, `children` |
 | **Input** | — | `label`, `error`, `id`, `disabled` |
 | **Container** | — | `as` (div/section/main), `className` |
 | **ProgressBar** | `primary`, `success`, `accent` | `value`, `max`, `size` (sm/md/lg), `animated` |
@@ -253,7 +290,7 @@ Der **`playgroundAdapter.ts`** konvertiert zwischen beiden Systemen.
 
 ## Daten & Übungen
 
-### 10 Datensätze
+### 18 Datensätze (10 Standard + 8 Story)
 
 | Dataset | Tabellen | Domäne |
 |---------|----------|--------|
@@ -267,8 +304,16 @@ Der **`playgroundAdapter.ts`** konvertiert zwischen beiden Systemen.
 | `university` | studenten, kurse, professoren, einschreibungen | Universität |
 | `ecommerce` | users, products, orders, reviews | E-Commerce |
 | `hospital` | patienten, aerzte, termine, behandlungen | Krankenhaus |
+| `story-anna7` | Story-exklusiv | Vermisst: ANNA-7 |
+| `story-nexusmarkt` | Story-exklusiv | Phantom-Transaktionen |
+| `story-helpcore` | Story-exklusiv | Virus im HelpCore-Netz |
+| `story-neuronale-luecke` | Story-exklusiv | Neuronale Lücke |
+| `story-systemfehler-delta` | Story-exklusiv | Systemfehler Delta |
+| `story-rote-zone` | Story-exklusiv | Die rote Zone |
+| `story-ghost-protocol` | Story-exklusiv | Ghost Protocol Sigma |
+| `story-geldstrom-omega` | Story-exklusiv | Geldstrom Omega |
 
-### 15 Übungskategorien (500+ Übungen)
+### 15 Übungskategorien (507 Übungen)
 
 | Kategorie | Typ | Anzahl | Schwierigkeit |
 |-----------|-----|--------|---------------|
@@ -286,7 +331,7 @@ Der **`playgroundAdapter.ts`** konvertiert zwischen beiden Systemen.
 | Predict | predict | ~20 | beginner–intermediate |
 | Schema | schema | ~20 | intermediate–advanced |
 | Interview | write | ~40 | interview |
-| Story | story | 3 | intermediate–advanced |
+| Story | story | 10 | beginner–advanced |
 
 ### Übungstypen
 
@@ -409,7 +454,7 @@ Siehe **[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)** für die vollständige Dokument
 | **Surface** | `surface`, `surface-dim`, `dark-dim` |
 | **Ink** | `ink`, `ink-muted`, `ink-inverted` |
 | **Semantisch** | `success`, `warning`, `error`, `info` |
-| **Font** | Inter (300–800, WOFF2, `--font-inter`) |
+| **Font** | Inter (400–900, WOFF2, `--font-inter`) |
 | **Mono** | System Monospace (`--font-mono`) |
 
 ### Dark Mode
@@ -430,7 +475,7 @@ npm test                # Alle Tests mit Coverage
 npx vitest run          # Ohne Coverage (schneller)
 ```
 
-**20 Test-Dateien, 721 Tests:**
+**20 Test-Dateien, 743 Tests:**
 
 | Test-Datei | Tests | Bereich |
 |-----------|-------|---------|
@@ -441,10 +486,10 @@ npx vitest run          # Ohne Coverage (schneller)
 | `playgroundAdapter.test.ts` | 9 | Katalog→Playground Adapter |
 | `schemaExplorer.test.ts` | 5 | Schema-Introspektion |
 | `sqlEngine.test.ts` | 16 | RIGHT JOIN Transformation |
-| `mysqlCompat.test.ts` | 70 | MySQL→SQLite Kompatibilität |
+| `mysqlCompat.test.ts` | 85 | MySQL→SQLite Kompatibilität |
 | `utils.test.ts` | 8 | cn() Helper |
 | `catalog.test.ts` | 9 | Katalog-Validierung |
-| `validate.test.ts` | 500 | Alle 500+ Übungen validiert |
+| `validate.test.ts` | 507 | Alle 507 Übungen validiert |
 | `story.test.ts` | 3 | Story-Modus Integration |
 | `useProgress.test.ts` | 18 | Fortschritts-Hook |
 | `button.test.tsx` | 7 | Button-Komponente |
@@ -453,7 +498,7 @@ npx vitest run          # Ohne Coverage (schneller)
 | `container.test.tsx` | 3 | Container-Komponente |
 | `logo.test.tsx` | 3 | Logo-Komponente |
 | `animations.test.tsx` | 7 | Animations-Komponenten |
-| `page.test.tsx` | 4 | Home Page |
+| `page.test.tsx` | 5 | Home Page |
 
 ### E2E Tests (Playwright)
 
@@ -499,9 +544,31 @@ npm run test:e2e:ui     # Mit UI
 
 ---
 
+## SEO & Performance
+
+- **Per-Page Metadata:** Jede Route hat individuelle `<title>`, `description`, `keywords`, Open Graph und Twitter Card Meta
+- **JSON-LD Structured Data:** `WebSite`, `SoftwareApplication`, `ItemList`, `Course`, `BreadcrumbList` Schemas
+- **XML-Sitemap:** `src/app/sitemap.ts` generiert statische Sitemap mit allen Routen
+- **Web App Manifest:** `src/app/manifest.ts` für PWA-Unterstützung
+- **robots.txt:** `public/robots.txt` erlaubt Indexierung
+- **404-Seite:** `src/app/not-found.tsx` mit deutschem Text und Navigation
+- **Canonical URLs:** Jede Seite hat `alternates.canonical`
+
+## WCAG 2.1 AA Compliance
+
+Die App erfüllt WCAG 2.1 AA:
+- **1.3.1 Info & Relationships:** Tabellen-Header mit `scope="col"`, ARIA-Tab-Pattern in SchemaExplorer
+- **2.4.6 Headings:** `sr-only` Überschriften vor Inhalts-Grids
+- **2.5.5 Target Size:** Touch-Targets ≥ 44px (Buttons, Tabs, Nav)
+- **4.1.2 Name, Role, Value:** `aria-label` auf Badges, `aria-selected` auf Tabs
+
+---
+
 ## Deployment
 
 **Ziel-Plattform: Vercel** (Static Export)
+
+**Live:** [https://sql-vibe.vercel.app](https://sql-vibe.vercel.app)
 
 ```bash
 npm run build   # Statischer Export nach out/
@@ -510,6 +577,7 @@ npm run build   # Statischer Export nach out/
 - `next.config.ts` konfiguriert `output: "export"`
 - Keine API-Routen, keine Server-seitige Logik
 - sql.js WASM muss in `public/` liegen
+- 659 statische Seiten werden generiert
 
 ---
 

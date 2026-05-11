@@ -53,17 +53,17 @@ Container mit Varianten für unterschiedliche visuelle Hierarchie.
 
 ```typescript
 interface CardProps {
-  variant?: "flat" | "outlined" | "elevated";
+  variant?: "default" | "flat" | "outlined";
   className?: string;
   children: React.ReactNode;
 }
 ```
 
 | Variante | Style | Verwendung |
-|----------|-------|-----------|
-| `flat` | `bg-surface-dim` | Inhaltsbereiche, Schema-Details |
-| `outlined` | `border` + `bg-surface` | Abgrenzung (Erfolg/Fehler) |
-| `elevated` | `shadow-lg` | Hervorgehobene Bereiche |
+|----------|-------|------------|
+| `default` | `bg-surface` + `shadow-sm` | Standard-Container, Inhaltsbereiche |
+| `flat` | `bg-surface-dim`, kein Schatten | Inhaltsbereiche, Schema-Details |
+| `outlined` | `border-2` + `bg-surface` | Hervorgehobene Bereiche (Erfolg/Fehler) |
 
 ---
 

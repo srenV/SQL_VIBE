@@ -71,7 +71,7 @@ Der SQL-Trainer ist eine **rein clientseitige** Single-Page-Application (SPA), d
 | **Logic** | Business-Logik: Validierung, Hinweise, Fehler | `resultsetComparison.ts`, `hintEngine.ts` |
 | **Adapter** | Format-Konvertierung Katalog ↔ Playground | `playgroundAdapter.ts` |
 | **Engine** | sql.js WASM Wrapper, Schema-Introspektion | `sqlEngine.ts`, `schemaExplorer.ts` |
-| **Logic** | MySQL-Kompatibilität, DB-Persistenz | `mysqlCompat.ts`, `dbStorage.ts` |
+| **Compat** | MySQL-Kompatibilität, DB-Persistenz | `mysqlCompat.ts`, `dbStorage.ts` |
 | **Data** | Übungsdefinitionen, Datasets, Katalog | `catalog.ts`, `datasets/*.ts`, `exercises/*.ts` |
 | **Types** | TypeScript-Typdefinitionen | `exercise.ts`, `playground.ts` |
 
@@ -268,6 +268,8 @@ Behandelt MySQL-spezifische Statements, die SQLite nicht unterstützt:
 /lernen/[moduleId]/[articleId]  Artikel-Detail
 /uebung                     Direkte Übungsseite
 /sandbox                    Freie SQL-Sandbox
+/story                      Story-Übersicht
+/profil                    Profil & Fortschritt
 ```
 
 Alle Routen sind **statisch** — keine dynamischen Server-Routen. Next.js `output: "export"` generiert statische HTML-Dateien.
@@ -304,3 +306,21 @@ Vercel Deployment
   // Keine API-Routen, keine Middleware
 }
 ```
+
+### SEO
+
+- **Per-Page Metadata:** Jede Route hat individuelle `title`, `description`, `keywords`, Open Graph, Twitter Card
+- **JSON-LD:** `WebSite`, `SoftwareApplication`, `ItemList`, `Course`, `BreadcrumbList` Schemas
+- **Sitemap:** `src/app/sitemap.ts` generiert statische XML-Sitemap
+- **Manifest:** `src/app/manifest.ts` für PWA-Unterstützung
+- **robots.txt:** `public/robots.txt` erlaubt Indexierung
+- **404:** `src/app/not-found.tsx` mit deutschem Text
+- **Canonical URLs:** Jede Seite hat `alternates.canonical`
+
+### WCAG 2.1 AA
+
+- Tabellen-Header mit `scope="col"` (1.3.1)
+- ARIA-Tab-Pattern in SchemaExplorer (4.1.2)
+- Touch-Targets ≥ 44px (2.5.5)
+- `sr-only` Überschriften vor Inhalts-Grids (2.4.6)
+- `aria-label` auf Badges, `aria-selected` auf Tabs (4.1.2)

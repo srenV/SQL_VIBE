@@ -62,7 +62,7 @@ Alle Farben sind als **CSS-Custom-Properties** im Design-System hinterlegt und w
 ## Typografie
 
 - **Schriftart:** [Inter](https://rsms.me/inter/) (via `next/font/local`, selbstgehostet)
-- **Gewichte:** 300–800
+- **Gewichte:** 400–900
 - **Strategie:** Enger Zeichenabstand (`tracking-tight`) fuer Ueberschriften; lockere Zeilenhoehe fuer Fliesstext.
 - **HTML-Locale:** `lang="de"` im Root-Layout fuer korrekte Silbentrennung und Screenreader.
 

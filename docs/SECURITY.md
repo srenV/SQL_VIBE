@@ -34,6 +34,7 @@ Der SQL-Trainer ist ein **reiner Static Export** — es gibt:
 - **Plattform:** Vercel (Static Hosting)
 - **Build:** `next build` mit `output: "export"`
 - **Auslieferung:** Statische HTML/JS/CSS/WASM-Dateien über CDN
+- **Domain:** https://sql-vibe.vercel.app
 
 ---
 
