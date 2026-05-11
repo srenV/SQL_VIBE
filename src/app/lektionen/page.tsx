@@ -5,7 +5,8 @@ import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
-import type { Difficulty, Lesson } from "@/types/exercise";
+import { DifficultyBadge } from "@/components/difficultyBadge";
+import type { Lesson } from "@/types/exercise";
 
 export const metadata: Metadata = {
   title: "SQL Lektionen – Interaktive MySQL-Übungen",
@@ -17,14 +18,6 @@ export const metadata: Metadata = {
     description:
       "Lerne MySQL Schritt für Schritt mit interaktiven Übungen: SELECT, WHERE, JOINs, Aggregationen, Subqueries, CTEs, Window Functions und mehr.",
   },
-};
-
-const difficultyLabels: Record<Difficulty, { label: string; className: string }> = {
-  beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
-  junior: { label: "Grundlagen", className: "bg-primary-100 text-primary-700" },
-  intermediate: { label: "Fortgeschritten", className: "bg-warning/10 text-warning" },
-  advanced: { label: "Experte", className: "bg-error/10 text-error" },
-  interview: { label: "Interview", className: "bg-accent-100 text-accent-700" },
 };
 
 export default function LektionenPage() {
@@ -86,7 +79,6 @@ export default function LektionenPage() {
 }
 
 function LessonCard({ lesson }: { lesson: Lesson }) {
-  const diff = difficultyLabels[lesson.difficulty] ?? difficultyLabels.beginner;
   const exerciseCount = lesson.exercises.length;
 
   return (
@@ -101,11 +93,7 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
               <span className="text-xs font-semibold text-ink-muted">
                 Lektion {lesson.order}
               </span>
-              <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${diff.className}`}
-              >
-                {diff.label}
-              </span>
+              <DifficultyBadge difficulty={lesson.difficulty} />
             </div>
             <h3 className="text-base font-semibold text-ink group-hover:text-primary-500 transition-colors">
               {lesson.title}

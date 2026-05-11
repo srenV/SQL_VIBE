@@ -14,6 +14,7 @@ import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
+import { DifficultyBadge } from "@/components/difficultyBadge";
 import { getModuleIcon } from "@/components/learn/moduleIcons";
 import { QuizClient } from "@/components/learn/QuizClient";
 
@@ -43,12 +44,6 @@ function ArrowLeftIcon({ className = "w-4 h-4" }: { className?: string }) {
     </svg>
   );
 }
-
-const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = {
-  beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
-  junior: { label: "Grundlagen", className: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300" },
-  intermediate: { label: "Fortgeschritten", className: "bg-warning/10 text-warning" },
-};
 
 type Tab = "lernen" | "testen";
 
@@ -148,7 +143,6 @@ export default function LernenPage() {
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {learnModules.map((mod) => {
                   const totalMin = mod.articles.reduce((sum, a) => sum + a.estimatedMinutes, 0);
-                  const diffConfig = DIFFICULTY_CONFIG[mod.difficulty] ?? DIFFICULTY_CONFIG.beginner;
 
                   return (
                     <Link
@@ -162,9 +156,7 @@ export default function LernenPage() {
                             const IconComponent = getModuleIcon(mod.id);
                             return <IconComponent className="w-8 h-8 text-primary-500 group-hover:-translate-y-0.5 group-hover:rotate-2 transition-transform duration-300" />;
                           })()}
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${diffConfig.className}`}>
-                            {diffConfig.label}
-                          </span>
+                          <DifficultyBadge difficulty={mod.difficulty} className="text-[10px]" />
                         </div>
                         <h3 className="text-lg font-semibold text-ink group-hover:text-primary-500 transition-colors mt-3">
                           {mod.title}
@@ -206,7 +198,6 @@ export default function LernenPage() {
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {learnModules.map((mod) => {
                   const quiz = learnQuizzes.find((q) => q.moduleId === mod.id);
-                  const diffConfig = DIFFICULTY_CONFIG[mod.difficulty] ?? DIFFICULTY_CONFIG.beginner;
                   const questionCount = quiz?.questions.length ?? 0;
 
                   return (
@@ -221,9 +212,7 @@ export default function LernenPage() {
                             const IconComponent = getModuleIcon(mod.id);
                             return <IconComponent className="w-8 h-8 text-accent group-hover:-translate-y-0.5 group-hover:rotate-2 transition-transform duration-300" />;
                           })()}
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${diffConfig.className}`}>
-                            {diffConfig.label}
-                          </span>
+                          <DifficultyBadge difficulty={mod.difficulty} className="text-[10px]" />
                         </div>
                         <h3 className="text-lg font-semibold text-ink group-hover:text-accent transition-colors mt-3">
                           {mod.title}

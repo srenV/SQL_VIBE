@@ -12,6 +12,7 @@ import { Card } from "@/components/card";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
+import { DifficultyBadge, getDifficultyConfig } from "@/components/difficultyBadge";
 import { getModuleIcon } from "@/components/learn/moduleIcons";
 
 interface PageProps {
@@ -37,19 +38,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = {
-  beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
-  junior: { label: "Grundlagen", className: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300" },
-  intermediate: { label: "Fortgeschritten", className: "bg-warning/10 text-warning" },
-};
-
 export default async function LearnModulePage({ params }: PageProps) {
   const { moduleId } = await params;
   const mod = getModuleById(moduleId);
   if (!mod) notFound();
 
   const totalMin = mod.articles.reduce((sum, a) => sum + a.estimatedMinutes, 0);
-  const diffConfig = DIFFICULTY_CONFIG[mod.difficulty] ?? DIFFICULTY_CONFIG.beginner;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -71,7 +65,7 @@ export default async function LearnModulePage({ params }: PageProps) {
       name: "SQL VIBE",
       url: "https://sql-vibe.vercel.app",
     },
-    coursePrerequisites: diffConfig.label,
+    coursePrerequisites: getDifficultyConfig(mod.difficulty).label,
     numberOfItems: mod.articles.length,
     inLanguage: "de",
   };
@@ -97,9 +91,7 @@ export default async function LearnModulePage({ params }: PageProps) {
                   const IconComponent = getModuleIcon(mod.id);
                   return <IconComponent className="w-8 h-8 text-primary-500" />;
                 })()}
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${diffConfig.className}`}>
-                  {diffConfig.label}
-                </span>
+                <DifficultyBadge difficulty={mod.difficulty} className="text-[10px]" />
               </div>
               <h1 className="text-3xl font-bold tracking-tight text-ink">
                 {mod.title}

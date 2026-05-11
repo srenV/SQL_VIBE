@@ -14,6 +14,7 @@ import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { ProgressBar } from "@/components/progressBar";
+import { DifficultyBadge } from "@/components/difficultyBadge";
 import { useProgress } from "@/hooks/useProgress";
 import { storyExercises } from "@/data/exercises";
 import { getUnlockStatus } from "@/lib/storyUnlock";
@@ -30,14 +31,6 @@ interface ExercisePageClientProps {
   lessonExerciseTitles: string[];
   lessonExerciseCompleted: boolean[];
 }
-
-const difficultyLabels: Record<string, { label: string; className: string }> = {
-  beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
-  junior: { label: "Grundlagen", className: "bg-primary-100 text-primary-700" },
-  intermediate: { label: "Fortgeschritten", className: "bg-warning/10 text-warning" },
-  advanced: { label: "Experte", className: "bg-error/10 text-error" },
-  interview: { label: "Interview", className: "bg-accent-100 text-accent-700" },
-};
 
 export function ExercisePageClient({
   lesson,
@@ -65,7 +58,6 @@ export function ExercisePageClient({
   const progressPercent = totalExCount > 0 ? Math.round((completedExCount / totalExCount) * 100) : 0;
 
   const currentIndex = lesson.exercises.indexOf(exercise.id);
-  const diff = difficultyLabels[exercise.difficulty] ?? difficultyLabels.beginner;
 
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
@@ -78,11 +70,7 @@ export function ExercisePageClient({
               <span className="text-xs font-semibold text-ink-muted">
                 Übung {currentIndex + 1}/{lesson.exercises.length}
               </span>
-              <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${diff.className}`}
-              >
-                {diff.label}
-              </span>
+              <DifficultyBadge difficulty={exercise.difficulty} />
               {completed && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>

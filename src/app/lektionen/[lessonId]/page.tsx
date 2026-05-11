@@ -10,6 +10,7 @@ import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { Card } from "@/components/card";
 import { FadeIn } from "@/components/animations";
+import { DifficultyBadge } from "@/components/difficultyBadge";
 
 interface PageProps {
   params: Promise<{ lessonId: string }>;
@@ -34,14 +35,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-const difficultyLabels: Record<string, { label: string; className: string }> = {
-  beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
-  junior: { label: "Grundlagen", className: "bg-primary-100 text-primary-700" },
-  intermediate: { label: "Fortgeschritten", className: "bg-warning/10 text-warning" },
-  advanced: { label: "Experte", className: "bg-error/10 text-error" },
-  interview: { label: "Interview", className: "bg-accent-100 text-accent-700" },
-};
-
 export default async function LessonOverviewPage({ params }: PageProps) {
   const { lessonId } = await params;
   const lesson = catalog.lessons[lessonId];
@@ -52,7 +45,6 @@ export default async function LessonOverviewPage({ params }: PageProps) {
     .filter(Boolean);
 
   const totalPoints = exercises.reduce((sum, e) => sum + e.points, 0);
-  const diff = difficultyLabels[lesson.difficulty] ?? difficultyLabels.beginner;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -79,9 +71,7 @@ export default async function LessonOverviewPage({ params }: PageProps) {
               <h1 className="text-2xl font-bold text-ink">{lesson.title}</h1>
               <p className="mt-2 text-sm text-ink-muted">{lesson.description}</p>
               <div className="mt-4 flex flex-wrap items-center gap-4">
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${diff.className}`}>
-                  {diff.label}
-                </span>
+                <DifficultyBadge difficulty={lesson.difficulty} />
                 <span className="text-xs text-ink-muted">
                   {exercises.length} Übungen · {totalPoints} Punkte
                 </span>

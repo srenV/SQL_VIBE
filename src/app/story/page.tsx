@@ -5,20 +5,13 @@ import { storyExercises } from "@/data/exercises";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
+import { DifficultyBadge } from "@/components/difficultyBadge";
 import { useProgress } from "@/hooks/useProgress";
 import { DIFFICULTY_ORDER, LOCK_HINT, getUnlockStatus } from "@/lib/storyUnlock";
 
 // ---------------------------------------------------------------------------
 // Static lookup tables
 // ---------------------------------------------------------------------------
-
-const difficultyLabels: Record<string, { label: string; short: string; color: string }> = {
-  beginner:     { label: "Einsteiger",      short: "Einsteiger",      color: "text-success bg-success/10" },
-  junior:       { label: "Grundlagen",      short: "Grundlagen",      color: "text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-950" },
-  intermediate: { label: "Fortgeschritten", short: "Fortgeschritten", color: "text-warning bg-warning/10" },
-  advanced:     { label: "Experte",         short: "Experte",         color: "text-error bg-error/10" },
-  interview:    { label: "Interview",       short: "Interview",       color: "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-950/40" },
-};
 
 const datasetLabels: Record<string, string> = {
   hr:         "HR-System",
@@ -122,7 +115,6 @@ export default function StoryPage() {
             {/* Cards */}
             <div className="space-y-4">
               {displayed.map((exercise, i) => {
-                const diff = difficultyLabels[exercise.difficulty] ?? difficultyLabels.junior;
                 const chapterCount = exercise.story?.chapters.length ?? 0;
                 const datasetLabel = datasetLabels[exercise.datasetId] ?? exercise.datasetId;
                 const isCompleted = progress.exercises[exercise.id]?.completed ?? false;
@@ -144,9 +136,7 @@ export default function StoryPage() {
                           {/* Content */}
                           <div className="flex-1 min-w-0 space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${diff.color}`}>
-                                {diff.label}
-                              </span>
+                              <DifficultyBadge difficulty={exercise.difficulty} variant="story" />
                               <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-surface-dim dark:bg-dark-dim text-ink-muted">
                                 {datasetLabel}
                               </span>
@@ -198,9 +188,7 @@ export default function StoryPage() {
                           {/* Content */}
                           <div className="flex-1 min-w-0 space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${diff.color}`}>
-                                {diff.label}
-                              </span>
+                              <DifficultyBadge difficulty={exercise.difficulty} variant="story" />
                               <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-surface-dim dark:bg-dark-dim text-ink-muted">
                                 {datasetLabel}
                               </span>
