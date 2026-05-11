@@ -76,12 +76,6 @@ export const metadata: Metadata = {
     title: "SQL VIBE – Lerne MySQL: Üben, Experimentieren, Verstehen",
     description: SITE_DESCRIPTION,
   },
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
-    ],
-  },
 };
 
 export const viewport: Viewport = {
