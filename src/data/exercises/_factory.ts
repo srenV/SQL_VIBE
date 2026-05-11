@@ -213,6 +213,7 @@ export function makeStoryExercise(
       completionNarrative: string;
       hints?: string[];
       points?: number;
+      progressSql?: string;
     }[];
     outro: string;
     points?: number;
@@ -234,6 +235,7 @@ export function makeStoryExercise(
     completionNarrative: ch.completionNarrative,
     hints: ch.hints?.map((text, j) => ({ level: j + 1, text })) ?? [],
     points: ch.points ?? 20,
+    progressSql: ch.progressSql,
   }));
 
   const totalPoints = storyChapters.reduce((sum, ch) => sum + ch.points, 0);

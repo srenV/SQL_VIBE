@@ -95,6 +95,7 @@ export interface PlaygroundStoryChapter {
   hints?: ExerciseHint[];
   completionNarrative: string;
   points: number;
+  progressSql?: string;
 }
 
 /** Multiple-Choice-Option fuer Quiz-Uebungen. */

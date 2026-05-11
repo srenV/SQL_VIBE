@@ -97,6 +97,7 @@ function convertStoryData(story: StoryData): PlaygroundStoryData {
       })),
       completionNarrative: ch.completionNarrative,
       points: ch.points,
+      progressSql: ch.progressSql,
     })),
   };
 }

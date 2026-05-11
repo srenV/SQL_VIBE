@@ -138,6 +138,8 @@ export interface StoryChapter {
   hints: Hint[];
   /** Punkte fuer dieses Kapitel. */
   points: number;
+  /** Optionales SQL das nach Kapitel-Loesung gegen die laufende DB ausgefuehrt wird (z.B. INSERT neuer Beweise). */
+  progressSql?: string;
 }
 
 /** Eine Lektion/Kategorie, die mehrere Uebungen gruppiert. */
