@@ -27,7 +27,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, preis FROM produkte WHERE EXISTS (SELECT 1 FROM bestellpositionen WHERE bestellpositionen.produkt_id = produkte.id)`",
+      "Verwende `EXISTS` mit einer korrelierten Subquery auf `bestellpositionen` die `produkt_id = produkte.id` prueft, und selektiere `name, preis` aus `produkte`.",
     ],
     hiddenTestQuery: `SELECT name, preis FROM produkte WHERE EXISTS (SELECT 1 FROM bestellpositionen WHERE bestellpositionen.produkt_id = produkte.id);`,
     hiddenTestMode: "rows",
@@ -45,7 +45,7 @@ subqueryExercises.push(
     hints: [
       "IN mit Subquery prueft, ob ein Wert in der Ergebnisliste der inneren Abfrage enthalten ist — nützlich, wenn die Unterabfrage eine Liste von IDs zurueckliefert.",
       "Syntax: `WHERE spalte IN (SELECT fremd_id FROM andere_tabelle)` — die innere Abfrage darf mehrere Zeilen, aber nur eine Spalte liefern.",
-      "Fuer diese Aufgabe: `SELECT name, preis FROM produkte WHERE id IN (SELECT produkt_id FROM bestellpositionen)`",
+      "Verwende `IN` mit einer Subquery die `produkt_id` aus `bestellpositionen` selektiert, und filtere `produkte` auf `id IN (...)`.",
     ],
     hiddenTestQuery: `SELECT name, preis FROM produkte WHERE id IN (SELECT produkt_id FROM bestellpositionen);`,
     hiddenTestMode: "rows",
@@ -63,7 +63,7 @@ subqueryExercises.push(
     hints: [
       "Eine Subquery im FROM-Teil (Inline-View oder Derived Table) erzeugt eine temporaere Tabelle — sie muss immer einen Alias erhalten, damit der aeussere SELECT darauf zugreifen kann.",
       "Syntax: `FROM (SELECT spalte1, spalte2 FROM tabelle) AS alias` — der Alias ist in SQL Pflicht.",
-      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name, preis FROM produkte) AS sub`",
+      "Schreibe eine Inline-View `(SELECT name, preis FROM produkte) AS sub` und selektiere alles daraus mit `SELECT *`.",
     ],
     hiddenTestQuery: `SELECT * FROM (SELECT name, preis FROM produkte) AS sub;`,
     hiddenTestMode: "rows",
@@ -81,7 +81,7 @@ subqueryExercises.push(
     hints: [
       "Eine korrelierte Subquery im SELECT-Teil wird fuer jede Zeile der aeusseren Abfrage einmal ausgefuehrt und liefert genau einen Wert — so koennen Aggregationen pro Zeile berechnet werden.",
       "Syntax: `SELECT spalte1, (SELECT COUNT(*) FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id) AS alias FROM haupttabelle`",
-      "Fuer diese Aufgabe: `SELECT name, preis, (SELECT COUNT(*) FROM bestellpositionen WHERE bestellpositionen.produkt_id = produkte.id) AS anzahl FROM produkte`",
+      "Verwende eine korrelierte Subquery im SELECT-Teil: `(SELECT COUNT(*) FROM bestellpositionen WHERE bestellpositionen.produkt_id = produkte.id) AS anzahl`.",
     ],
     hiddenTestQuery: `SELECT name, preis, (SELECT COUNT(*) FROM bestellpositionen WHERE bestellpositionen.produkt_id = produkte.id) AS anzahl FROM produkte;`,
     hiddenTestMode: "rows",
@@ -99,7 +99,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, preis FROM produkte WHERE EXISTS (SELECT 1 FROM bestellpositionen WHERE bestellpositionen.produkt_id = produkte.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, preis FROM produkte WHERE EXISTS (SELECT 1 FROM bestellpositionen WHERE bestellpositionen.produkt_id = produkte.id);`,
     hiddenTestMode: "rows",
@@ -117,7 +117,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, email FROM kunden WHERE EXISTS (SELECT 1 FROM bestellungen WHERE bestellungen.kunde_id = kunden.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, email FROM kunden WHERE EXISTS (SELECT 1 FROM bestellungen WHERE bestellungen.kunde_id = kunden.id);`,
     hiddenTestMode: "rows",
@@ -135,7 +135,7 @@ subqueryExercises.push(
     hints: [
       "IN mit Subquery prueft, ob ein Wert in der Ergebnisliste der inneren Abfrage enthalten ist — nützlich, wenn die Unterabfrage eine Liste von IDs zurueckliefert.",
       "Syntax: `WHERE spalte IN (SELECT fremd_id FROM andere_tabelle)` — die innere Abfrage darf mehrere Zeilen, aber nur eine Spalte liefern.",
-      "Fuer diese Aufgabe: `SELECT name, email FROM kunden WHERE id IN (SELECT kunde_id FROM bestellungen)`",
+      "Verwende IN mit einer Subquery die die passenden IDs selektiert — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, email FROM kunden WHERE id IN (SELECT kunde_id FROM bestellungen);`,
     hiddenTestMode: "rows",
@@ -153,7 +153,7 @@ subqueryExercises.push(
     hints: [
       "Eine Subquery im FROM-Teil (Inline-View oder Derived Table) erzeugt eine temporaere Tabelle — sie muss immer einen Alias erhalten, damit der aeussere SELECT darauf zugreifen kann.",
       "Syntax: `FROM (SELECT spalte1, spalte2 FROM tabelle) AS alias` — der Alias ist in SQL Pflicht.",
-      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name, email FROM kunden) AS sub`",
+      "Erstelle eine Inline-View als Subquery im FROM-Teil mit einem Alias — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT * FROM (SELECT name, email FROM kunden) AS sub;`,
     hiddenTestMode: "rows",
@@ -171,7 +171,7 @@ subqueryExercises.push(
     hints: [
       "Eine korrelierte Subquery im SELECT-Teil wird fuer jede Zeile der aeusseren Abfrage einmal ausgefuehrt und liefert genau einen Wert — so koennen Aggregationen pro Zeile berechnet werden.",
       "Syntax: `SELECT spalte1, (SELECT COUNT(*) FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id) AS alias FROM haupttabelle`",
-      "Fuer diese Aufgabe: `SELECT name, email, (SELECT COUNT(*) FROM bestellungen WHERE bestellungen.kunde_id = kunden.id) AS anzahl FROM kunden`",
+      "Verwende eine korrelierte Subquery im SELECT-Teil mit COUNT — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, email, (SELECT COUNT(*) FROM bestellungen WHERE bestellungen.kunde_id = kunden.id) AS anzahl FROM kunden;`,
     hiddenTestMode: "rows",
@@ -189,7 +189,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, email FROM kunden WHERE EXISTS (SELECT 1 FROM bestellungen WHERE bestellungen.kunde_id = kunden.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, email FROM kunden WHERE EXISTS (SELECT 1 FROM bestellungen WHERE bestellungen.kunde_id = kunden.id);`,
     hiddenTestMode: "rows",
@@ -207,7 +207,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name FROM nutzer WHERE EXISTS (SELECT 1 FROM workouts WHERE workouts.nutzer_id = nutzer.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name FROM nutzer WHERE EXISTS (SELECT 1 FROM workouts WHERE workouts.nutzer_id = nutzer.id);`,
     hiddenTestMode: "rows",
@@ -225,7 +225,7 @@ subqueryExercises.push(
     hints: [
       "IN mit Subquery prueft, ob ein Wert in der Ergebnisliste der inneren Abfrage enthalten ist — nützlich, wenn die Unterabfrage eine Liste von IDs zurueckliefert.",
       "Syntax: `WHERE spalte IN (SELECT fremd_id FROM andere_tabelle)` — die innere Abfrage darf mehrere Zeilen, aber nur eine Spalte liefern.",
-      "Fuer diese Aufgabe: `SELECT name FROM nutzer WHERE id IN (SELECT nutzer_id FROM workouts)`",
+      "Verwende IN mit einer Subquery die die passenden IDs selektiert — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name FROM nutzer WHERE id IN (SELECT nutzer_id FROM workouts);`,
     hiddenTestMode: "rows",
@@ -243,7 +243,7 @@ subqueryExercises.push(
     hints: [
       "Eine Subquery im FROM-Teil (Inline-View oder Derived Table) erzeugt eine temporaere Tabelle — sie muss immer einen Alias erhalten, damit der aeussere SELECT darauf zugreifen kann.",
       "Syntax: `FROM (SELECT spalte FROM tabelle) AS alias` — der Alias ist in SQL Pflicht.",
-      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name FROM nutzer) AS sub`",
+      "Erstelle eine Inline-View als Subquery im FROM-Teil mit einem Alias — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT * FROM (SELECT name FROM nutzer) AS sub;`,
     hiddenTestMode: "rows",
@@ -261,7 +261,7 @@ subqueryExercises.push(
     hints: [
       "Eine korrelierte Subquery im SELECT-Teil wird fuer jede Zeile der aeusseren Abfrage einmal ausgefuehrt und liefert genau einen Wert — so koennen Aggregationen pro Zeile berechnet werden.",
       "Syntax: `SELECT spalte, (SELECT COUNT(*) FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id) AS alias FROM haupttabelle`",
-      "Fuer diese Aufgabe: `SELECT name, (SELECT COUNT(*) FROM workouts WHERE workouts.nutzer_id = nutzer.id) AS anzahl FROM nutzer`",
+      "Verwende eine korrelierte Subquery im SELECT-Teil mit COUNT — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, (SELECT COUNT(*) FROM workouts WHERE workouts.nutzer_id = nutzer.id) AS anzahl FROM nutzer;`,
     hiddenTestMode: "rows",
@@ -279,7 +279,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name FROM nutzer WHERE EXISTS (SELECT 1 FROM workouts WHERE workouts.nutzer_id = nutzer.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name FROM nutzer WHERE EXISTS (SELECT 1 FROM workouts WHERE workouts.nutzer_id = nutzer.id);`,
     hiddenTestMode: "rows",
@@ -297,7 +297,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, standort FROM abteilungen WHERE EXISTS (SELECT 1 FROM mitarbeiter WHERE mitarbeiter.abteilung_id = abteilungen.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, standort FROM abteilungen WHERE EXISTS (SELECT 1 FROM mitarbeiter WHERE mitarbeiter.abteilung_id = abteilungen.id);`,
     hiddenTestMode: "rows",
@@ -315,7 +315,7 @@ subqueryExercises.push(
     hints: [
       "IN mit Subquery prueft, ob ein Wert in der Ergebnisliste der inneren Abfrage enthalten ist — nützlich, wenn die Unterabfrage eine Liste von IDs zurueckliefert.",
       "Syntax: `WHERE spalte IN (SELECT fremd_id FROM andere_tabelle)` — die innere Abfrage darf mehrere Zeilen, aber nur eine Spalte liefern.",
-      "Fuer diese Aufgabe: `SELECT name, standort FROM abteilungen WHERE id IN (SELECT abteilung_id FROM mitarbeiter)`",
+      "Verwende IN mit einer Subquery die die passenden IDs selektiert — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, standort FROM abteilungen WHERE id IN (SELECT abteilung_id FROM mitarbeiter);`,
     hiddenTestMode: "rows",
@@ -333,7 +333,7 @@ subqueryExercises.push(
     hints: [
       "Eine Subquery im FROM-Teil (Inline-View oder Derived Table) erzeugt eine temporaere Tabelle — sie muss immer einen Alias erhalten, damit der aeussere SELECT darauf zugreifen kann.",
       "Syntax: `FROM (SELECT spalte1, spalte2 FROM tabelle) AS alias` — der Alias ist in SQL Pflicht.",
-      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name, standort FROM abteilungen) AS sub`",
+      "Erstelle eine Inline-View als Subquery im FROM-Teil mit einem Alias — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT * FROM (SELECT name, standort FROM abteilungen) AS sub;`,
     hiddenTestMode: "rows",
@@ -351,7 +351,7 @@ subqueryExercises.push(
     hints: [
       "Eine korrelierte Subquery im SELECT-Teil wird fuer jede Zeile der aeusseren Abfrage einmal ausgefuehrt und liefert genau einen Wert — so koennen Aggregationen pro Zeile berechnet werden.",
       "Syntax: `SELECT spalte1, spalte2, (SELECT COUNT(*) FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id) AS alias FROM haupttabelle`",
-      "Fuer diese Aufgabe: `SELECT name, standort, (SELECT COUNT(*) FROM mitarbeiter WHERE mitarbeiter.abteilung_id = abteilungen.id) AS anzahl FROM abteilungen`",
+      "Verwende eine korrelierte Subquery im SELECT-Teil mit COUNT — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, standort, (SELECT COUNT(*) FROM mitarbeiter WHERE mitarbeiter.abteilung_id = abteilungen.id) AS anzahl FROM abteilungen;`,
     hiddenTestMode: "rows",
@@ -369,7 +369,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, standort FROM abteilungen WHERE EXISTS (SELECT 1 FROM mitarbeiter WHERE mitarbeiter.abteilung_id = abteilungen.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, standort FROM abteilungen WHERE EXISTS (SELECT 1 FROM mitarbeiter WHERE mitarbeiter.abteilung_id = abteilungen.id);`,
     hiddenTestMode: "rows",
@@ -387,7 +387,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, team FROM agenten WHERE EXISTS (SELECT 1 FROM tickets WHERE tickets.agent_id = agenten.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, team FROM agenten WHERE EXISTS (SELECT 1 FROM tickets WHERE tickets.agent_id = agenten.id);`,
     hiddenTestMode: "rows",
@@ -405,7 +405,7 @@ subqueryExercises.push(
     hints: [
       "IN mit Subquery prueft, ob ein Wert in der Ergebnisliste der inneren Abfrage enthalten ist — nützlich, wenn die Unterabfrage eine Liste von IDs zurueckliefert.",
       "Syntax: `WHERE spalte IN (SELECT fremd_id FROM andere_tabelle)` — die innere Abfrage darf mehrere Zeilen, aber nur eine Spalte liefern.",
-      "Fuer diese Aufgabe: `SELECT name, team FROM agenten WHERE id IN (SELECT agent_id FROM tickets)`",
+      "Verwende IN mit einer Subquery die die passenden IDs selektiert — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, team FROM agenten WHERE id IN (SELECT agent_id FROM tickets);`,
     hiddenTestMode: "rows",
@@ -423,7 +423,7 @@ subqueryExercises.push(
     hints: [
       "Eine Subquery im FROM-Teil (Inline-View oder Derived Table) erzeugt eine temporaere Tabelle — sie muss immer einen Alias erhalten, damit der aeussere SELECT darauf zugreifen kann.",
       "Syntax: `FROM (SELECT spalte1, spalte2 FROM tabelle) AS alias` — der Alias ist in SQL Pflicht.",
-      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name, team FROM agenten) AS sub`",
+      "Erstelle eine Inline-View als Subquery im FROM-Teil mit einem Alias — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT * FROM (SELECT name, team FROM agenten) AS sub;`,
     hiddenTestMode: "rows",
@@ -441,7 +441,7 @@ subqueryExercises.push(
     hints: [
       "Eine korrelierte Subquery im SELECT-Teil wird fuer jede Zeile der aeusseren Abfrage einmal ausgefuehrt und liefert genau einen Wert — so koennen Aggregationen pro Zeile berechnet werden.",
       "Syntax: `SELECT spalte1, spalte2, (SELECT COUNT(*) FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id) AS alias FROM haupttabelle`",
-      "Fuer diese Aufgabe: `SELECT name, team, (SELECT COUNT(*) FROM tickets WHERE tickets.agent_id = agenten.id) AS anzahl FROM agenten`",
+      "Verwende eine korrelierte Subquery im SELECT-Teil mit COUNT — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, team, (SELECT COUNT(*) FROM tickets WHERE tickets.agent_id = agenten.id) AS anzahl FROM agenten;`,
     hiddenTestMode: "rows",
@@ -459,7 +459,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name, team FROM agenten WHERE EXISTS (SELECT 1 FROM tickets WHERE tickets.agent_id = agenten.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, team FROM agenten WHERE EXISTS (SELECT 1 FROM tickets WHERE tickets.agent_id = agenten.id);`,
     hiddenTestMode: "rows",
@@ -477,7 +477,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name FROM kunden WHERE EXISTS (SELECT 1 FROM konten WHERE konten.kunde_id = kunden.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name FROM kunden WHERE EXISTS (SELECT 1 FROM konten WHERE konten.kunde_id = kunden.id);`,
     hiddenTestMode: "rows",
@@ -495,7 +495,7 @@ subqueryExercises.push(
     hints: [
       "IN mit Subquery prueft, ob ein Wert in der Ergebnisliste der inneren Abfrage enthalten ist — nützlich, wenn die Unterabfrage eine Liste von IDs zurueckliefert.",
       "Syntax: `WHERE spalte IN (SELECT fremd_id FROM andere_tabelle)` — die innere Abfrage darf mehrere Zeilen, aber nur eine Spalte liefern.",
-      "Fuer diese Aufgabe: `SELECT name FROM kunden WHERE id IN (SELECT kunde_id FROM konten)`",
+      "Verwende IN mit einer Subquery die die passenden IDs selektiert — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name FROM kunden WHERE id IN (SELECT kunde_id FROM konten);`,
     hiddenTestMode: "rows",
@@ -513,7 +513,7 @@ subqueryExercises.push(
     hints: [
       "Eine Subquery im FROM-Teil (Inline-View oder Derived Table) erzeugt eine temporaere Tabelle — sie muss immer einen Alias erhalten, damit der aeussere SELECT darauf zugreifen kann.",
       "Syntax: `FROM (SELECT spalte FROM tabelle) AS alias` — der Alias ist in SQL Pflicht.",
-      "Fuer diese Aufgabe: `SELECT * FROM (SELECT name FROM kunden) AS sub`",
+      "Erstelle eine Inline-View als Subquery im FROM-Teil mit einem Alias — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT * FROM (SELECT name FROM kunden) AS sub;`,
     hiddenTestMode: "rows",
@@ -531,7 +531,7 @@ subqueryExercises.push(
     hints: [
       "Eine korrelierte Subquery im SELECT-Teil wird fuer jede Zeile der aeusseren Abfrage einmal ausgefuehrt und liefert genau einen Wert — so koennen Aggregationen pro Zeile berechnet werden.",
       "Syntax: `SELECT spalte, (SELECT COUNT(*) FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id) AS alias FROM haupttabelle`",
-      "Fuer diese Aufgabe: `SELECT name, (SELECT COUNT(*) FROM konten WHERE konten.kunde_id = kunden.id) AS anzahl FROM kunden`",
+      "Verwende eine korrelierte Subquery im SELECT-Teil mit COUNT — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name, (SELECT COUNT(*) FROM konten WHERE konten.kunde_id = kunden.id) AS anzahl FROM kunden;`,
     hiddenTestMode: "rows",
@@ -549,7 +549,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT name FROM kunden WHERE EXISTS (SELECT 1 FROM konten WHERE konten.kunde_id = kunden.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT name FROM kunden WHERE EXISTS (SELECT 1 FROM konten WHERE konten.kunde_id = kunden.id);`,
     hiddenTestMode: "rows",
@@ -567,7 +567,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT titel, genre FROM filme WHERE EXISTS (SELECT 1 FROM watch_history WHERE watch_history.film_id = filme.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT titel, genre FROM filme WHERE EXISTS (SELECT 1 FROM watch_history WHERE watch_history.film_id = filme.id);`,
     hiddenTestMode: "rows",
@@ -585,7 +585,7 @@ subqueryExercises.push(
     hints: [
       "IN mit Subquery prueft, ob ein Wert in der Ergebnisliste der inneren Abfrage enthalten ist — nützlich, wenn die Unterabfrage eine Liste von IDs zurueckliefert.",
       "Syntax: `WHERE spalte IN (SELECT fremd_id FROM andere_tabelle)` — die innere Abfrage darf mehrere Zeilen, aber nur eine Spalte liefern.",
-      "Fuer diese Aufgabe: `SELECT titel, genre FROM filme WHERE id IN (SELECT film_id FROM watch_history)`",
+      "Verwende IN mit einer Subquery die die passenden IDs selektiert — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT titel, genre FROM filme WHERE id IN (SELECT film_id FROM watch_history);`,
     hiddenTestMode: "rows",
@@ -603,7 +603,7 @@ subqueryExercises.push(
     hints: [
       "Eine Subquery im FROM-Teil (Inline-View oder Derived Table) erzeugt eine temporaere Tabelle — sie muss immer einen Alias erhalten, damit der aeussere SELECT darauf zugreifen kann.",
       "Syntax: `FROM (SELECT spalte1, spalte2 FROM tabelle) AS alias` — der Alias ist in SQL Pflicht.",
-      "Fuer diese Aufgabe: `SELECT * FROM (SELECT titel, genre FROM filme) AS sub`",
+      "Erstelle eine Inline-View als Subquery im FROM-Teil mit einem Alias — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT * FROM (SELECT titel, genre FROM filme) AS sub;`,
     hiddenTestMode: "rows",
@@ -621,7 +621,7 @@ subqueryExercises.push(
     hints: [
       "Eine korrelierte Subquery im SELECT-Teil wird fuer jede Zeile der aeusseren Abfrage einmal ausgefuehrt und liefert genau einen Wert — so koennen Aggregationen pro Zeile berechnet werden.",
       "Syntax: `SELECT spalte1, spalte2, (SELECT COUNT(*) FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id) AS alias FROM haupttabelle`",
-      "Fuer diese Aufgabe: `SELECT titel, genre, (SELECT COUNT(*) FROM watch_history WHERE watch_history.film_id = filme.id) AS anzahl FROM filme`",
+      "Verwende eine korrelierte Subquery im SELECT-Teil mit COUNT — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT titel, genre, (SELECT COUNT(*) FROM watch_history WHERE watch_history.film_id = filme.id) AS anzahl FROM filme;`,
     hiddenTestMode: "rows",
@@ -639,7 +639,7 @@ subqueryExercises.push(
     hints: [
       "EXISTS prueft, ob eine korrelierte Unterabfrage mindestens eine Zeile zurueckliefert — sie wird fuer jede Zeile der aeusseren Abfrage ausgefuehrt und liefert true oder false.",
       "Syntax: `WHERE EXISTS (SELECT 1 FROM andere_tabelle WHERE andere_tabelle.fremd_id = haupttabelle.id)` — SELECT 1 genuegt, da nur die Existenz geprueft wird.",
-      "Fuer diese Aufgabe: `SELECT titel, genre FROM filme WHERE EXISTS (SELECT 1 FROM watch_history WHERE watch_history.film_id = filme.id)`",
+      "Verwende EXISTS mit einer korrelierten Subquery — orientiere dich an der Syntax im zweiten Hinweis.",
     ],
     hiddenTestQuery: `SELECT titel, genre FROM filme WHERE EXISTS (SELECT 1 FROM watch_history WHERE watch_history.film_id = filme.id);`,
     hiddenTestMode: "rows",

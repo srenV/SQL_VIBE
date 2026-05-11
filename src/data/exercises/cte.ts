@@ -26,7 +26,7 @@ cteExercises.push(
     hints: [
       "Ein CTE (Common Table Expression) erlaubt es, eine Zwischenergebnismenge zu benennen und danach wie eine Tabelle zu verwenden — das macht komplexe Queries lesbarer.",
       "Syntax: `WITH cte_name AS (SELECT ...) SELECT ... FROM cte_name JOIN andere_tabelle ON ...`",
-      "Fuer diese Aufgabe: `WITH kunden_bestellungen AS (SELECT kunde_id, COUNT(*) AS anzahl FROM bestellungen GROUP BY kunde_id) SELECT k.name, kb.anzahl FROM kunden k INNER JOIN kunden_bestellungen kb ON k.id = kb.kunde_id ORDER BY kb.anzahl DESC`",
+      "Erstelle eine CTE `kunden_bestellungen` die `kunde_id` und `COUNT(*) AS anzahl` aus `bestellungen` gruppiert, dann joine sie mit `kunden` auf `k.id = kb.kunde_id`.",
     ],
     hiddenTestQuery: "WITH kunden_bestellungen AS (SELECT kunde_id, COUNT(*) AS anzahl FROM bestellungen GROUP BY kunde_id) SELECT k.name, kb.anzahl FROM kunden k INNER JOIN kunden_bestellungen kb ON k.id = kb.kunde_id ORDER BY kb.anzahl DESC;",
     hiddenTestMode: "rows",
@@ -42,7 +42,7 @@ cteExercises.push(
     hints: [
       "Ein CTE eignet sich, um zuerst eine Aggregation (z. B. MAX) pro Gruppe zu berechnen und das Ergebnis danach wie eine Tabelle zu joinen — ohne verschachtelte Subqueries.",
       "Syntax: `WITH cte_name AS (SELECT gruppe_id, MAX(wert) AS max_wert FROM ... GROUP BY gruppe_id) SELECT ... FROM tabelle JOIN cte_name ON tabelle.gruppe_id = cte_name.gruppe_id AND tabelle.wert = cte_name.max_wert`",
-      "Fuer diese Aufgabe: `WITH top_gehalt AS (SELECT abteilung_id, MAX(gehalt) AS max_gehalt FROM mitarbeiter GROUP BY abteilung_id) SELECT m.name, m.gehalt, a.name AS abteilung FROM mitarbeiter m INNER JOIN top_gehalt tg ON m.abteilung_id = tg.abteilung_id AND m.gehalt = tg.max_gehalt INNER JOIN abteilungen a ON m.abteilung_id = a.id`",
+      "Erstelle eine CTE `top_gehalt` die `abteilung_id` und `MAX(gehalt) AS max_gehalt` aus `mitarbeiter` gruppiert, dann joine `mitarbeiter` und `abteilungen` auf `m.abteilung_id = tg.abteilung_id AND m.gehalt = tg.max_gehalt`.",
     ],
     hiddenTestQuery: "WITH top_gehalt AS (SELECT abteilung_id, MAX(gehalt) AS max_gehalt FROM mitarbeiter GROUP BY abteilung_id) SELECT m.name, m.gehalt, a.name AS abteilung FROM mitarbeiter m INNER JOIN top_gehalt tg ON m.abteilung_id = tg.abteilung_id AND m.gehalt = tg.max_gehalt INNER JOIN abteilungen a ON m.abteilung_id = a.id;",
     hiddenTestMode: "rows",
@@ -58,7 +58,7 @@ cteExercises.push(
     hints: [
       "Ein CTE erlaubt es, eine Aggregation vorab zu berechnen und das Ergebnis anschliessend mit WHERE zu filtern — das ist uebersichtlicher als eine Subquery im FROM.",
       "Syntax: `WITH cte_name AS (SELECT fremd_id, AVG(wert) AS avg_wert FROM ... GROUP BY fremd_id) SELECT ... FROM haupttabelle JOIN cte_name ON ... WHERE cte_name.avg_wert > grenzwert`",
-      "Fuer diese Aufgabe: `WITH film_bewertungen AS (SELECT film_id, AVG(sterne) AS avg_sterne FROM bewertungen GROUP BY film_id) SELECT f.titel, fb.avg_sterne FROM filme f INNER JOIN film_bewertungen fb ON f.id = fb.film_id WHERE fb.avg_sterne > 4.0 ORDER BY fb.avg_sterne DESC`",
+      "Erstelle eine CTE `film_bewertungen` die `film_id` und `AVG(sterne) AS avg_sterne` aus `bewertungen` gruppiert, dann joine `filme` auf `f.id = fb.film_id` und filtere mit `WHERE fb.avg_sterne > 4.0`.",
     ],
     hiddenTestQuery: "WITH film_bewertungen AS (SELECT film_id, AVG(sterne) AS avg_sterne FROM bewertungen GROUP BY film_id) SELECT f.titel, fb.avg_sterne FROM filme f INNER JOIN film_bewertungen fb ON f.id = fb.film_id WHERE fb.avg_sterne > 4.0 ORDER BY fb.avg_sterne DESC;",
     hiddenTestMode: "rows",
@@ -74,7 +74,7 @@ cteExercises.push(
     hints: [
       "Ein CTE berechnet zuerst eine Aggregation (SUM) pro Gruppe und gibt der Ergebnismenge einen Namen — danach kann sie im Haupt-SELECT wie eine normale Tabelle verwendet werden.",
       "Syntax: `WITH cte_name AS (SELECT gruppe_id, SUM(betrag) AS total FROM ... GROUP BY gruppe_id) SELECT ... FROM haupttabelle JOIN cte_name ON ... WHERE cte_name.total > grenzwert`",
-      "Fuer diese Aufgabe: `WITH kunden_umsatz AS (SELECT kunde_id, SUM(gesamtbetrag) AS total_umsatz FROM bestellungen GROUP BY kunde_id) SELECT k.name, ku.total_umsatz FROM kunden k INNER JOIN kunden_umsatz ku ON k.id = ku.kunde_id WHERE ku.total_umsatz > 500 ORDER BY ku.total_umsatz DESC`",
+      "Erstelle eine CTE `kunden_umsatz` die `kunde_id` und `SUM(gesamtbetrag) AS total_umsatz` aus `bestellungen` gruppiert, dann joine `kunden` auf `k.id = ku.kunde_id` und filtere mit `WHERE ku.total_umsatz > 500`.",
     ],
     hiddenTestQuery: "WITH kunden_umsatz AS (SELECT kunde_id, SUM(gesamtbetrag) AS total_umsatz FROM bestellungen GROUP BY kunde_id) SELECT k.name, ku.total_umsatz FROM kunden k INNER JOIN kunden_umsatz ku ON k.id = ku.kunde_id WHERE ku.total_umsatz > 500 ORDER BY ku.total_umsatz DESC;",
     hiddenTestMode: "rows",
@@ -90,7 +90,7 @@ cteExercises.push(
     hints: [
       "Ein CTE eignet sich, um einen COUNT pro Gruppe vorab zu berechnen und das Ergebnis anschliessend mit einem WHERE-Filter einzuschraenken — direkt im GROUP BY waere das nur mit HAVING moeglich.",
       "Syntax: `WITH cte_name AS (SELECT gruppe_id, COUNT(*) AS anzahl FROM ... GROUP BY gruppe_id) SELECT ... FROM haupttabelle JOIN cte_name ON ... WHERE cte_name.anzahl > grenzwert`",
-      "Fuer diese Aufgabe: `WITH session_events AS (SELECT session_id, COUNT(*) AS event_count FROM events GROUP BY session_id) SELECT s.id, s.browser, se.event_count FROM sessions s INNER JOIN session_events se ON s.id = se.session_id WHERE se.event_count > 5 ORDER BY se.event_count DESC`",
+      "Erstelle eine CTE `session_events` die `session_id` und `COUNT(*) AS event_count` aus `events` gruppiert, dann joine `sessions` auf `s.id = se.session_id` und filtere mit `WHERE se.event_count > 5`.",
     ],
     hiddenTestQuery: "WITH session_events AS (SELECT session_id, COUNT(*) AS event_count FROM events GROUP BY session_id) SELECT s.id, s.browser, se.event_count FROM sessions s INNER JOIN session_events se ON s.id = se.session_id WHERE se.event_count > 5 ORDER BY se.event_count DESC;",
     hiddenTestMode: "rows",
@@ -106,7 +106,7 @@ cteExercises.push(
     hints: [
       "Ein CTE kann einen COUNT pro Gruppe berechnen; ein anschliessender LEFT JOIN im Haupt-SELECT stellt sicher, dass auch Agenten ohne Tickets im Ergebnis erscheinen.",
       "Syntax: `WITH cte_name AS (SELECT gruppe_id, COUNT(*) AS anzahl FROM ... WHERE gruppe_id IS NOT NULL GROUP BY gruppe_id) SELECT ... FROM haupttabelle LEFT JOIN cte_name ON ... `",
-      "Fuer diese Aufgabe: `WITH agent_stats AS (SELECT agent_id, COUNT(*) AS ticket_count FROM tickets WHERE agent_id IS NOT NULL GROUP BY agent_id) SELECT a.name, a.team, COALESCE(ast.ticket_count, 0) AS ticket_count FROM agenten a LEFT JOIN agent_stats ast ON a.id = ast.agent_id ORDER BY ticket_count DESC`",
+      "Erstelle eine CTE `agent_stats` die `agent_id` und `COUNT(*) AS ticket_count` aus `tickets` (mit `WHERE agent_id IS NOT NULL`) gruppiert, dann joine `agenten` mit `LEFT JOIN` und verwende `COALESCE(ast.ticket_count, 0)`.",
     ],
     hiddenTestQuery: "WITH agent_stats AS (SELECT agent_id, COUNT(*) AS ticket_count FROM tickets WHERE agent_id IS NOT NULL GROUP BY agent_id) SELECT a.name, a.team, COALESCE(ast.ticket_count, 0) AS ticket_count FROM agenten a LEFT JOIN agent_stats ast ON a.id = ast.agent_id ORDER BY ticket_count DESC;",
     hiddenTestMode: "rows",
@@ -122,7 +122,7 @@ cteExercises.push(
     hints: [
       "Ein CTE erlaubt es, SUM ueber mehrere Zeilen (z. B. Konten) pro Kunde zu bilden und das Resultat danach mit der Kundentabelle zu verknuepfen, um den Namen anzuzeigen.",
       "Syntax: `WITH cte_name AS (SELECT fremd_id, SUM(wert) AS gesamt FROM ... GROUP BY fremd_id) SELECT k.name, cte_name.gesamt FROM kunden k JOIN cte_name ON k.id = cte_name.fremd_id`",
-      "Fuer diese Aufgabe: `WITH kunden_saldi AS (SELECT kunde_id, SUM(saldo) AS gesamt_saldo FROM konten GROUP BY kunde_id) SELECT ku.name, ks.gesamt_saldo FROM kunden ku INNER JOIN kunden_saldi ks ON ku.id = ks.kunde_id ORDER BY ks.gesamt_saldo DESC`",
+      "Erstelle eine CTE `kunden_saldi` die `kunde_id` und `SUM(saldo) AS gesamt_saldo` aus `konten` gruppiert, dann joine `kunden` auf `ku.id = ks.kunde_id`.",
     ],
     hiddenTestQuery: "WITH kunden_saldi AS (SELECT kunde_id, SUM(saldo) AS gesamt_saldo FROM konten GROUP BY kunde_id) SELECT ku.name, ks.gesamt_saldo FROM kunden ku INNER JOIN kunden_saldi ks ON ku.id = ks.kunde_id ORDER BY ks.gesamt_saldo DESC;",
     hiddenTestMode: "rows",
@@ -138,7 +138,7 @@ cteExercises.push(
     hints: [
       "Ein CTE aggregiert die Workout-Dauer pro Nutzer in einer benannten Zwischenergebnismenge — anschliessend wird sie mit der Nutzertabelle gejoined, um lesbare Namen zu erhalten.",
       "Syntax: `WITH cte_name AS (SELECT nutzer_id, SUM(dauer) AS total FROM ... GROUP BY nutzer_id) SELECT n.name, cte_name.total FROM nutzer n JOIN cte_name ON n.id = cte_name.nutzer_id`",
-      "Fuer diese Aufgabe: `WITH nutzer_workouts AS (SELECT nutzer_id, SUM(dauer_min) AS total_min FROM workouts GROUP BY nutzer_id) SELECT n.name, nw.total_min FROM nutzer n INNER JOIN nutzer_workouts nw ON n.id = nw.nutzer_id ORDER BY nw.total_min DESC`",
+      "Erstelle eine CTE `nutzer_workouts` die `nutzer_id` und `SUM(dauer_min) AS total_min` aus `workouts` gruppiert, dann joine `nutzer` auf `n.id = nw.nutzer_id`.",
     ],
     hiddenTestQuery: "WITH nutzer_workouts AS (SELECT nutzer_id, SUM(dauer_min) AS total_min FROM workouts GROUP BY nutzer_id) SELECT n.name, nw.total_min FROM nutzer n INNER JOIN nutzer_workouts nw ON n.id = nw.nutzer_id ORDER BY nw.total_min DESC;",
     hiddenTestMode: "rows",
@@ -154,7 +154,7 @@ cteExercises.push(
     hints: [
       "Ein CTE kann Datumswerte mit strftime umrechnen und nach dem extrahierten Monat gruppieren — so entsteht eine uebersichtliche Monatsstatistik ohne verschachtelte Subqueries.",
       "Syntax: `WITH cte_name AS (SELECT strftime('%Y-%m', datumspalte) AS monat, COUNT(*) AS anzahl FROM ... GROUP BY monat) SELECT monat, anzahl FROM cte_name ORDER BY monat`",
-      "Fuer diese Aufgabe: `WITH urlaub_pro_monat AS (SELECT strftime('%Y-%m', startdatum) AS monat, COUNT(*) AS anzahl FROM urlaub GROUP BY monat) SELECT monat, anzahl FROM urlaub_pro_monat ORDER BY monat`",
+      "Erstelle eine CTE `urlaub_pro_monat` die `strftime('%Y-%m', startdatum) AS monat` und `COUNT(*) AS anzahl` aus `urlaub` gruppiert, dann selektiere `monat` und `anzahl` daraus.",
     ],
     hiddenTestQuery: "WITH urlaub_pro_monat AS (SELECT strftime('%Y-%m', startdatum) AS monat, COUNT(*) AS anzahl FROM urlaub GROUP BY monat) SELECT monat, anzahl FROM urlaub_pro_monat ORDER BY monat;",
     hiddenTestMode: "rows",
@@ -170,7 +170,7 @@ cteExercises.push(
     hints: [
       "Mehrere CTEs koennen in einer einzigen WITH-Klausel definiert werden, indem sie mit Komma getrennt werden — jede CTE kann die vorherigen referenzieren und macht komplexe Queries lesbar.",
       "Syntax: `WITH cte1 AS (SELECT ... FROM ...), cte2 AS (SELECT ... FROM ...) SELECT ... FROM haupttabelle LEFT JOIN cte1 ON ... LEFT JOIN cte2 ON ...`",
-      "Fuer diese Aufgabe: `WITH produkt_anzahl AS (SELECT produkt_id, SUM(menge) AS anzahl FROM bestellpositionen GROUP BY produkt_id), produkt_summe AS (SELECT produkt_id, SUM(menge * einzelpreis) AS summe FROM bestellpositionen GROUP BY produkt_id) SELECT p.name, pa.anzahl, ps.summe FROM produkte p LEFT JOIN produkt_anzahl pa ON p.id = pa.produkt_id LEFT JOIN produkt_summe ps ON p.id = ps.produkt_id ORDER BY ps.summe DESC`",
+      "Erstelle zwei CTEs: `produkt_anzahl` mit `produkt_id, SUM(menge) AS anzahl` und `produkt_summe` mit `produkt_id, SUM(menge * einzelpreis) AS summe`, beide aus `bestellpositionen`. Joine beide mit `LEFT JOIN` auf `produkte`.",
     ],
     hiddenTestQuery: "WITH produkt_anzahl AS (SELECT produkt_id, SUM(menge) AS anzahl FROM bestellpositionen GROUP BY produkt_id), produkt_summe AS (SELECT produkt_id, SUM(menge * einzelpreis) AS summe FROM bestellpositionen GROUP BY produkt_id) SELECT p.name, pa.anzahl, ps.summe FROM produkte p LEFT JOIN produkt_anzahl pa ON p.id = pa.produkt_id LEFT JOIN produkt_summe ps ON p.id = ps.produkt_id ORDER BY ps.summe DESC;",
     hiddenTestMode: "rows",
@@ -186,7 +186,7 @@ cteExercises.push(
     hints: [
       "Ein CTE macht eine Query lesbarer als eine verschachtelte Subquery, weil die Zwischenergebnismenge einen Namen erhaelt und einmal definiert, mehrfach referenziert werden kann.",
       "Syntax: `WITH cte_name AS (SELECT gruppe_id, SUM(wert) AS total FROM ... GROUP BY gruppe_id) SELECT ... FROM haupttabelle JOIN cte_name ON ... WHERE cte_name.total > grenzwert`",
-      "Fuer diese Aufgabe: `WITH kunden_umsatz AS (SELECT kunde_id, SUM(gesamtbetrag) AS total FROM bestellungen GROUP BY kunde_id) SELECT k.name, ku.total FROM kunden k INNER JOIN kunden_umsatz ku ON k.id = ku.kunde_id WHERE ku.total > 500 ORDER BY ku.total DESC`",
+      "Erstelle eine CTE `kunden_umsatz` die `kunde_id` und `SUM(gesamtbetrag) AS total` aus `bestellungen` gruppiert, dann joine `kunden` und filtere mit `WHERE ku.total > 500`.",
     ],
     hiddenTestQuery: "WITH kunden_umsatz AS (SELECT kunde_id, SUM(gesamtbetrag) AS total FROM bestellungen GROUP BY kunde_id) SELECT k.name, ku.total FROM kunden k INNER JOIN kunden_umsatz ku ON k.id = ku.kunde_id WHERE ku.total > 500 ORDER BY ku.total DESC;",
     hiddenTestMode: "rows",
@@ -202,7 +202,7 @@ cteExercises.push(
     hints: [
       "Ein CTE kann mehrere Tabellen mit JOINs kombinieren und das Ergebnis benennen — der Haupt-SELECT liest dann nur die gewuenschten Spalten aus dieser benannten Zwischentabelle.",
       "Syntax: `WITH cte_name AS (SELECT t1.spalte, t2.spalte, t3.spalte FROM t1 JOIN t2 ON ... JOIN t3 ON ...) SELECT spalte1, spalte2 FROM cte_name`",
-      "Fuer diese Aufgabe: `WITH betrug_details AS (SELECT bf.id AS betrugs_id, bf.grund, bf.status, t.betrag, k.typ AS kontotyp FROM betrugsfaelle bf INNER JOIN transaktionen t ON bf.transaktion_id = t.id INNER JOIN konten k ON t.konto_id = k.id) SELECT betrugs_id, grund, status, betrag, kontotyp FROM betrug_details`",
+      "Erstelle eine CTE `betrug_details` die `betrugsfaelle` mit `transaktionen` und `konten` joint, dann selektiere `betrugs_id, grund, status, betrag, kontotyp` daraus.",
     ],
     hiddenTestQuery: "WITH betrug_details AS (SELECT bf.id AS betrugs_id, bf.grund, bf.status, t.betrag, t.beschreibung, k.typ AS kontotyp FROM betrugsfaelle bf INNER JOIN transaktionen t ON bf.transaktion_id = t.id INNER JOIN konten k ON t.konto_id = k.id) SELECT betrugs_id, grund, status, betrag, kontotyp FROM betrug_details;",
     hiddenTestMode: "rows",
@@ -218,7 +218,7 @@ cteExercises.push(
     hints: [
       "Ein CTE eignet sich, um mehrere Zaehlungen (Gesamt-Events und Fehler-Events) pro Gruppe vorab zu berechnen — im Haupt-SELECT kann dann daraus eine Quote errechnet werden.",
       "Syntax: `WITH cte_name AS (SELECT gruppierungsspalte, COUNT(DISTINCT a.id) AS total, COUNT(DISTINCT b.id) AS teilmenge FROM ... GROUP BY gruppierungsspalte) SELECT gruppierungsspalte, ROUND(CAST(teilmenge AS FLOAT) / total * 100, 2) AS quote FROM cte_name`",
-      "Fuer diese Aufgabe: `WITH browser_events AS (SELECT s.browser, COUNT(DISTINCT e.id) AS total_events, COUNT(DISTINCT f.id) AS error_events FROM sessions s INNER JOIN events e ON s.id = e.session_id LEFT JOIN fehler f ON e.id = f.event_id GROUP BY s.browser) SELECT browser, total_events, error_events, ROUND(CAST(error_events AS FLOAT) / total_events * 100, 2) AS fehlerquote_prozent FROM browser_events ORDER BY fehlerquote_prozent DESC`",
+      "Erstelle eine CTE `browser_events` die `sessions` mit `events` und `LEFT JOIN fehler` verknuepft, dann berechne die Fehlerquote im Haupt-SELECT mit `ROUND(CAST(error_events AS FLOAT) / total_events * 100, 2)`.",
     ],
     hiddenTestQuery: "WITH browser_events AS (SELECT s.browser, COUNT(DISTINCT e.id) AS total_events, COUNT(DISTINCT f.id) AS error_events FROM sessions s INNER JOIN events e ON s.id = e.session_id LEFT JOIN fehler f ON e.id = f.event_id GROUP BY s.browser) SELECT browser, total_events, error_events, ROUND(CAST(error_events AS FLOAT) / total_events * 100, 2) AS fehlerquote_prozent FROM browser_events ORDER BY fehlerquote_prozent DESC;",
     hiddenTestMode: "rows",
@@ -234,7 +234,7 @@ cteExercises.push(
     hints: [
       "Ein CTE berechnet AVG pro Gruppe in einer Zwischenergebnismenge — im Haupt-SELECT kann dann mit ORDER BY DESC und LIMIT 1 der Spitzenreiter herausgefiltert werden.",
       "Syntax: `WITH cte_name AS (SELECT gruppe_id, AVG(wert) AS avg_wert FROM ... GROUP BY gruppe_id) SELECT ... FROM haupttabelle JOIN cte_name ON ... ORDER BY cte_name.avg_wert DESC LIMIT 1`",
-      "Fuer diese Aufgabe: `WITH nutzer_avg AS (SELECT nutzer_id, AVG(kalorien_verbrannt) AS avg_kalorien FROM workouts GROUP BY nutzer_id) SELECT n.name, na.avg_kalorien FROM nutzer n INNER JOIN nutzer_avg na ON n.id = na.nutzer_id ORDER BY na.avg_kalorien DESC LIMIT 1`",
+      "Erstelle eine CTE `nutzer_avg` die `nutzer_id` und `AVG(kalorien_verbrannt) AS avg_kalorien` aus `workouts` gruppiert, dann joine `nutzer` und sortiere mit `ORDER BY avg_kalorien DESC LIMIT 1`.",
     ],
     hiddenTestQuery: "WITH nutzer_avg AS (SELECT nutzer_id, AVG(kalorien_verbrannt) AS avg_kalorien FROM workouts GROUP BY nutzer_id) SELECT n.name, na.avg_kalorien FROM nutzer n INNER JOIN nutzer_avg na ON n.id = na.nutzer_id ORDER BY na.avg_kalorien DESC LIMIT 1;",
     hiddenTestMode: "rows",
@@ -250,7 +250,7 @@ cteExercises.push(
     hints: [
       "Ein CTE kann den Umsatz pro Produkt vorab berechnen — der Haupt-SELECT joined dann mit der Kategorietabelle und fasst die Umsaetze auf Kategorieebene zusammen.",
       "Syntax: `WITH cte_name AS (SELECT produkt_id, SUM(menge * preis) AS umsatz FROM ... GROUP BY produkt_id) SELECT k.name, SUM(cte_name.umsatz) FROM kategorien k JOIN produkte p ON k.id = p.kategorie_id JOIN cte_name ON p.id = cte_name.produkt_id GROUP BY k.id, k.name`",
-      "Fuer diese Aufgabe: `WITH produkt_umsatz AS (SELECT bp.produkt_id, SUM(bp.menge * bp.einzelpreis) AS umsatz FROM bestellpositionen bp GROUP BY bp.produkt_id) SELECT k.name AS kategorie, SUM(pu.umsatz) AS kategorie_umsatz FROM kategorien k INNER JOIN produkte p ON k.id = p.kategorie_id INNER JOIN produkt_umsatz pu ON p.id = pu.produkt_id GROUP BY k.id, k.name ORDER BY kategorie_umsatz DESC`",
+      "Erstelle eine CTE `produkt_umsatz` die `produkt_id` und `SUM(menge * einzelpreis) AS umsatz` aus `bestellpositionen` gruppiert, dann joine `kategorien` ueber `produkte` und gruppiere nach `k.id, k.name`.",
     ],
     hiddenTestQuery: "WITH produkt_umsatz AS (SELECT bp.produkt_id, SUM(bp.menge * bp.einzelpreis) AS umsatz FROM bestellpositionen bp GROUP BY bp.produkt_id) SELECT k.name AS kategorie, SUM(pu.umsatz) AS kategorie_umsatz FROM kategorien k INNER JOIN produkte p ON k.id = p.kategorie_id INNER JOIN produkt_umsatz pu ON p.id = pu.produkt_id GROUP BY k.id, k.name ORDER BY kategorie_umsatz DESC;",
     hiddenTestMode: "rows",
@@ -266,7 +266,7 @@ cteExercises.push(
     hints: [
       "Ein CTE kann HAVING direkt in seiner Definition verwenden, um nur Gruppen ueber einem Schwellenwert zu behalten — das Ergebnis wird dann im Haupt-SELECT mit der Namentabelle gejoined.",
       "Syntax: `WITH cte_name AS (SELECT gruppe_id, COUNT(*) AS anzahl FROM ... GROUP BY gruppe_id HAVING COUNT(*) > n) SELECT t.name, cte_name.anzahl FROM tabelle t JOIN cte_name ON t.id = cte_name.gruppe_id`",
-      "Fuer diese Aufgabe: `WITH abteilung_mitarbeiter AS (SELECT abteilung_id, COUNT(*) AS anzahl FROM mitarbeiter GROUP BY abteilung_id HAVING COUNT(*) > 3) SELECT a.name, am.anzahl FROM abteilungen a INNER JOIN abteilung_mitarbeiter am ON a.id = am.abteilung_id ORDER BY am.anzahl DESC`",
+      "Erstelle eine CTE `abteilung_mitarbeiter` die `abteilung_id` und `COUNT(*) AS anzahl` aus `mitarbeiter` gruppiert mit `HAVING COUNT(*) > 3`, dann joine `abteilungen` auf `a.id = am.abteilung_id`.",
     ],
     hiddenTestQuery: "WITH abteilung_mitarbeiter AS (SELECT abteilung_id, COUNT(*) AS anzahl FROM mitarbeiter GROUP BY abteilung_id HAVING COUNT(*) > 3) SELECT a.name, am.anzahl FROM abteilungen a INNER JOIN abteilung_mitarbeiter am ON a.id = am.abteilung_id ORDER BY am.anzahl DESC;",
     hiddenTestMode: "rows",

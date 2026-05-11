@@ -282,7 +282,7 @@ whereExercises.push(
     hints: [
       "Du willst Zeilen filtern, die einen von mehreren moeglichen Werten haben — es gibt einen eleganteren Weg als mehrfaches OR.",
       "`IN (wert1, wert2, ...)` prueft, ob ein Wert in einer Liste vorkommt: `WHERE spalte IN ('a', 'b')`",
-      "Loesung: `SELECT * FROM kunden WHERE stadt IN ('Berlin', 'Hamburg');`",
+      "Verwende `IN` mit den Werten `'Berlin'` und `'Hamburg'` auf der Spalte `stadt` in der Tabelle `kunden`.",
     ],
     hiddenTestQuery: "SELECT * FROM kunden WHERE stadt IN ('Berlin', 'Hamburg');",
     hiddenTestMode: "rows",

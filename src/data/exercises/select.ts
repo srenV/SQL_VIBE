@@ -37,7 +37,7 @@ selectExercises.push(
     hints: [
       "Um alle Spalten einer Tabelle abzurufen, kannst du einen Platzhalter statt konkreter Spaltennamen verwenden.",
       "Das Sternchen `*` steht fuer alle Spalten: `SELECT * FROM tabellenname;`",
-      "Loesung: `SELECT * FROM kunden;`",
+      "Verwende `SELECT *` auf der Tabelle `kunden`."
     ],
     hiddenTestQuery: "SELECT * FROM kunden;",
     hiddenTestMode: "rows",
@@ -53,7 +53,7 @@ selectExercises.push(
     hints: [
       "Du kannst gezielt einzelne Spalten auswaehlen, anstatt immer alle zu laden.",
       "Schreibe den Spaltennamen direkt nach `SELECT`: `SELECT spaltenname FROM tabellenname;`",
-      "Loesung: `SELECT name FROM produkte;`",
+      "Waehle nur die Spalte `name` aus der Tabelle `produkte`."
     ],
     hiddenTestQuery: "SELECT name FROM produkte;",
     hiddenTestMode: "rows",
@@ -69,7 +69,7 @@ selectExercises.push(
     hints: [
       "Wenn du mehrere Spalten brauchst, kannst du sie alle in einer einzigen Query angeben.",
       "Trenne mehrere Spaltennamen im SELECT durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, preis FROM produkte;`",
+      "Waehle die Spalten `name` und `preis` aus der Tabelle `produkte`."
     ],
     hiddenTestQuery: "SELECT name, preis FROM produkte;",
     hiddenTestMode: "rows",
@@ -85,7 +85,7 @@ selectExercises.push(
     hints: [
       "Du kannst Spaltennamen im Ergebnis umbenennen — das nennt sich Alias und macht Ausgaben lesbarer.",
       "Verwende das Schluesselwort `AS` direkt nach dem Spaltennamen: `SELECT spalte AS neuer_name FROM tabellenname;`",
-      "Loesung: `SELECT name AS produkt_name FROM produkte;`",
+      "Verwende `AS produkt_name` nach der Spalte `name` in der Tabelle `produkte`."
     ],
     hiddenTestQuery: "SELECT name AS produkt_name FROM produkte;",
     hiddenTestMode: "columns",
@@ -101,7 +101,7 @@ selectExercises.push(
     hints: [
       "Wenn eine Spalte denselben Wert mehrfach enthaelt, kannst du doppelte Eintraege aus dem Ergebnis herausfiltern.",
       "`DISTINCT` direkt nach `SELECT` entfernt Duplikate: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT stadt FROM kunden;`",
+      "Verwende `DISTINCT` vor der Spalte `stadt` in der Tabelle `kunden`."
     ],
     hiddenTestQuery: "SELECT DISTINCT stadt FROM kunden;",
     hiddenTestMode: "rows",
@@ -117,7 +117,7 @@ selectExercises.push(
     hints: [
       "Um alle Daten einer Tabelle zu lesen, brauchst du keine einzelnen Spaltennamen angeben.",
       "Das Sternchen `*` steht fuer alle Spalten: `SELECT * FROM tabellenname;`",
-      "Loesung: `SELECT * FROM abteilungen;`",
+      "Verwende `SELECT *` auf der Tabelle `abteilungen`."
     ],
     hiddenTestQuery: "SELECT * FROM abteilungen;",
     hiddenTestMode: "rows",
@@ -133,7 +133,7 @@ selectExercises.push(
     hints: [
       "Wenn du nur bestimmte Informationen brauchst, kannst du gezielt einzelne Spalten auswaehlen.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, position FROM mitarbeiter;`",
+      "Waehle die Spalten `name` und `position` aus der Tabelle `mitarbeiter`."
     ],
     hiddenTestQuery: "SELECT name, position FROM mitarbeiter;",
     hiddenTestMode: "rows",
@@ -149,7 +149,7 @@ selectExercises.push(
     hints: [
       "Um eine Liste eindeutiger Werte zu erhalten, ohne Wiederholungen, gibt es ein spezielles Schluesselwort.",
       "`DISTINCT` nach `SELECT` entfernt Duplikate aus dem Ergebnis: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT team FROM agenten;`",
+      "Verwende `DISTINCT` vor der Spalte `team` in der Tabelle `agenten`."
     ],
     hiddenTestQuery: "SELECT DISTINCT team FROM agenten;",
     hiddenTestMode: "rows",
@@ -165,7 +165,7 @@ selectExercises.push(
     hints: [
       "Du brauchst nur zwei bestimmte Informationen aus der Tabelle — waehle nur diese Spalten aus.",
       "Liste die gewuenschten Spaltennamen durch Kommas getrennt: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, abonnement FROM nutzer;`",
+      "Waehle die Spalten `name` und `abonnement` aus der Tabelle `nutzer`."
     ],
     hiddenTestQuery: "SELECT name, abonnement FROM nutzer;",
     hiddenTestMode: "rows",
@@ -181,7 +181,7 @@ selectExercises.push(
     hints: [
       "Du kannst einer Spalte im Ergebnis einen anderen Namen geben — das ist nuetzlich fuer lesbare Ausgaben.",
       "Verwende `AS` hinter dem Spaltennamen um einen Alias zu vergeben: `SELECT spalte AS alias FROM tabellenname;`",
-      "Loesung: `SELECT name AS uebung FROM uebungen;`",
+      "Verwende `AS uebung` nach der Spalte `name` in der Tabelle `uebungen`."
     ],
     hiddenTestQuery: "SELECT name AS uebung FROM uebungen;",
     hiddenTestMode: "columns",
@@ -201,7 +201,7 @@ selectExercises.push(
     hints: [
       "Du brauchst nur eine einzige Spalte aus der Tabelle — das ist effizienter als alle Daten zu laden.",
       "Schreibe den Spaltennamen direkt nach `SELECT`: `SELECT spaltenname FROM tabellenname;`",
-      "Loesung: `SELECT titel FROM tickets;`",
+      "Waehle nur die Spalte `titel` aus der Tabelle `tickets`."
     ],
     hiddenTestQuery: "SELECT titel FROM tickets;",
     hiddenTestMode: "rows",
@@ -217,7 +217,7 @@ selectExercises.push(
     hints: [
       "Du benotigst genau zwei Spalten aus dieser Tabelle — waehle nur diese aus.",
       "Trenne mehrere Spaltennamen im SELECT durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT kontonummer, saldo FROM konten;`",
+      "Waehle die Spalten `kontonummer` und `saldo` aus der Tabelle `konten`."
     ],
     hiddenTestQuery: "SELECT kontonummer, saldo FROM konten;",
     hiddenTestMode: "rows",
@@ -233,7 +233,7 @@ selectExercises.push(
     hints: [
       "Du brauchst nur zwei Informationen pro Film — waehle gezielt diese Spalten aus.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT titel, genre FROM filme;`",
+      "Waehle die Spalten `titel` und `genre` aus der Tabelle `filme`."
     ],
     hiddenTestQuery: "SELECT titel, genre FROM filme;",
     hiddenTestMode: "rows",
@@ -249,7 +249,7 @@ selectExercises.push(
     hints: [
       "Du moechtest jeden Event-Typ nur einmal sehen — ohne Wiederholungen.",
       "`DISTINCT` nach `SELECT` filtert doppelte Werte heraus: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT event_typ FROM events;`",
+      "Verwende `DISTINCT` vor der Spalte `event_typ` in der Tabelle `events`."
     ],
     hiddenTestQuery: "SELECT DISTINCT event_typ FROM events;",
     hiddenTestMode: "rows",
@@ -265,7 +265,7 @@ selectExercises.push(
     hints: [
       "Du kannst einzelne Spalten umbenennen, aber `SELECT *` erlaubt keine Aliases — du musst alle Spalten explizit aufzaehlen.",
       "Liste alle Spalten auf und verwende `AS` fuer die umzubenennende: `SELECT spalte1, spalte2 AS alias, spalte3 FROM tabellenname;`",
-      "Loesung: `SELECT id, name AS vollstaendiger_name, abteilung_id, position, gehalt, einstiegsdatum, manager_id FROM mitarbeiter;`",
+      "Liste alle Spalten auf und benenne `name` mit `AS vollstaendiger_name` in der Tabelle `mitarbeiter`."
     ],
     hiddenTestQuery: "SELECT id, name AS vollstaendiger_name, abteilung_id, position, gehalt, einstiegsdatum, manager_id FROM mitarbeiter;",
     hiddenTestMode: "columns",
@@ -281,7 +281,7 @@ selectExercises.push(
     hints: [
       "Wenn Kategorienamen mehrfach vorkommen, moechtest du jeden nur einmal sehen.",
       "`DISTINCT` entfernt doppelte Zeilen: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT name FROM kategorien;`",
+      "Verwende `DISTINCT` vor der Spalte `name` in der Tabelle `kategorien`."
     ],
     hiddenTestQuery: "SELECT DISTINCT name FROM kategorien;",
     hiddenTestMode: "rows",
@@ -297,7 +297,7 @@ selectExercises.push(
     hints: [
       "Du brauchst zwei bestimmte Spalten aus der Tabelle — nicht alle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT titel, beschreibung FROM tickets;`",
+      "Waehle die Spalten `titel` und `beschreibung` aus der Tabelle `tickets`."
     ],
     hiddenTestQuery: "SELECT titel, beschreibung FROM tickets;",
     hiddenTestMode: "rows",
@@ -313,7 +313,7 @@ selectExercises.push(
     hints: [
       "Du benotigst nur zwei bestimmte Informationen pro Kunde.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, geburtsdatum FROM kunden;`",
+      "Waehle die Spalten `name` und `geburtsdatum` aus der Tabelle `kunden` im Banking-Datensatz."
     ],
     hiddenTestQuery: "SELECT name, geburtsdatum FROM kunden;",
     hiddenTestMode: "rows",
@@ -329,7 +329,7 @@ selectExercises.push(
     hints: [
       "Du brauchst nur zwei der vorhandenen Spalten aus dieser Tabelle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, muskelgruppe FROM uebungen;`",
+      "Waehle die Spalten `name` und `muskelgruppe` aus der Tabelle `uebungen`."
     ],
     hiddenTestQuery: "SELECT name, muskelgruppe FROM uebungen;",
     hiddenTestMode: "rows",
@@ -345,7 +345,7 @@ selectExercises.push(
     hints: [
       "Du benotigst nur zwei bestimmte Spalten aus der Sessions-Tabelle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT id, browser FROM sessions;`",
+      "Waehle die Spalten `id` und `browser` aus der Tabelle `sessions`."
     ],
     hiddenTestQuery: "SELECT id, browser FROM sessions;",
     hiddenTestMode: "rows",
@@ -365,7 +365,7 @@ selectExercises.push(
     hints: [
       "Du moechtest herausfinden, welche Abonnement-Arten es gibt — jede Art nur einmal.",
       "`DISTINCT` filtert doppelte Werte heraus: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT abonnement FROM nutzer;`",
+      "Verwende `DISTINCT` vor der Spalte `abonnement` in der Tabelle `nutzer`."
     ],
     hiddenTestQuery: "SELECT DISTINCT abonnement FROM nutzer;",
     hiddenTestMode: "rows",
@@ -381,7 +381,7 @@ selectExercises.push(
     hints: [
       "Du moechtest sehen, welche Transaktionstypen es gibt — jeden Typ nur einmal.",
       "`DISTINCT` entfernt Duplikate aus dem Ergebnis: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT typ FROM transaktionen;`",
+      "Verwende `DISTINCT` vor der Spalte `typ` in der Tabelle `transaktionen`."
     ],
     hiddenTestQuery: "SELECT DISTINCT typ FROM transaktionen;",
     hiddenTestMode: "rows",
@@ -397,7 +397,7 @@ selectExercises.push(
     hints: [
       "Du kannst mehrere Spalten gleichzeitig umbenennen, um das Ergebnis verstaendlicher zu machen.",
       "Verwende `AS` nach jedem Spaltennamen: `SELECT spalte1 AS alias1, spalte2 AS alias2 FROM tabellenname;`",
-      "Loesung: `SELECT name AS produkt, lagerbestand AS auf_lager FROM produkte;`",
+      "Verwende `AS produkt` nach `name` und `AS auf_lager` nach `lagerbestand` in der Tabelle `produkte`."
     ],
     hiddenTestQuery: "SELECT name AS produkt, lagerbestand AS auf_lager FROM produkte;",
     hiddenTestMode: "columns",
@@ -413,7 +413,7 @@ selectExercises.push(
     hints: [
       "Du moechtest eine Liste aller moeglichen Status-Werte — ohne Wiederholungen.",
       "`DISTINCT` nach `SELECT` liefert nur eindeutige Werte: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT status FROM tickets;`",
+      "Verwende `DISTINCT` vor der Spalte `status` in der Tabelle `tickets`."
     ],
     hiddenTestQuery: "SELECT DISTINCT status FROM tickets;",
     hiddenTestMode: "rows",
@@ -429,7 +429,7 @@ selectExercises.push(
     hints: [
       "Du brauchst nur zwei bestimmte Informationen pro Film aus der Tabelle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT titel, jahr FROM filme;`",
+      "Waehle die Spalten `titel` und `jahr` aus der Tabelle `filme`."
     ],
     hiddenTestQuery: "SELECT titel, jahr FROM filme;",
     hiddenTestMode: "rows",
@@ -445,7 +445,7 @@ selectExercises.push(
     hints: [
       "Du moechtest alle Informationen aus der Tabelle sehen — keine Spalte weglassen.",
       "Das Sternchen `*` steht fuer alle Spalten: `SELECT * FROM tabellenname;`",
-      "Loesung: `SELECT * FROM workouts;`",
+      "Verwende `SELECT *` auf der Tabelle `workouts`."
     ],
     hiddenTestQuery: "SELECT * FROM workouts;",
     hiddenTestMode: "rows",
@@ -461,7 +461,7 @@ selectExercises.push(
     hints: [
       "Du moechtest herausfinden, welche Kontotypen existieren — jeden Typ nur einmal.",
       "`DISTINCT` filtert Duplikate: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT typ FROM konten;`",
+      "Verwende `DISTINCT` vor der Spalte `typ` in der Tabelle `konten`."
     ],
     hiddenTestQuery: "SELECT DISTINCT typ FROM konten;",
     hiddenTestMode: "rows",
@@ -477,7 +477,7 @@ selectExercises.push(
     hints: [
       "Du benotigst nur eine einzige Spalte aus dieser Tabelle.",
       "Schreibe den Spaltennamen direkt nach `SELECT`: `SELECT spaltenname FROM tabellenname;`",
-      "Loesung: `SELECT seite FROM events;`",
+      "Waehle nur die Spalte `seite` aus der Tabelle `events`."
     ],
     hiddenTestQuery: "SELECT seite FROM events;",
     hiddenTestMode: "rows",
@@ -493,7 +493,7 @@ selectExercises.push(
     hints: [
       "Du moechtest sehen, welche Status-Arten es bei Bewerbungen gibt — jede nur einmal.",
       "`DISTINCT` entfernt doppelte Werte aus dem Ergebnis: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT status FROM bewerbungen;`",
+      "Verwende `DISTINCT` vor der Spalte `status` in der Tabelle `bewerbungen`."
     ],
     hiddenTestQuery: "SELECT DISTINCT status FROM bewerbungen;",
     hiddenTestMode: "rows",
@@ -509,7 +509,7 @@ selectExercises.push(
     hints: [
       "Du moechtest eine Liste aller verwendeten Zahlungsarten — ohne Wiederholungen.",
       "`DISTINCT` liefert jeden Wert nur einmal: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT zahlungsmittel FROM zahlungen;`",
+      "Verwende `DISTINCT` vor der Spalte `zahlungsmittel` in der Tabelle `zahlungen`."
     ],
     hiddenTestQuery: "SELECT DISTINCT zahlungsmittel FROM zahlungen;",
     hiddenTestMode: "rows",
@@ -529,7 +529,7 @@ selectExercises.push(
     hints: [
       "Du kannst einer Spalte im Ergebnis einen anderen Namen geben, waehrend andere Spalten unveraendert bleiben.",
       "Verwende `AS` hinter dem Spaltennamen: `SELECT spalte AS alias, andere_spalte FROM tabellenname;`",
-      "Loesung: `SELECT name AS kunde, stadt FROM kunden;`",
+      "Verwende `AS kunde` nach der Spalte `name` in der Tabelle `kunden`, waehle auch `stadt`."
     ],
     hiddenTestQuery: "SELECT name AS kunde, stadt FROM kunden;",
     hiddenTestMode: "columns",
@@ -545,7 +545,7 @@ selectExercises.push(
     hints: [
       "Du moechtest herausfinden, welche Prioritaetsstufen es gibt — jede nur einmal auflisten.",
       "`DISTINCT` filtert doppelte Werte: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT prioritaet FROM tickets;`",
+      "Verwende `DISTINCT` vor der Spalte `prioritaet` in der Tabelle `tickets`."
     ],
     hiddenTestQuery: "SELECT DISTINCT prioritaet FROM tickets;",
     hiddenTestMode: "rows",
@@ -561,7 +561,7 @@ selectExercises.push(
     hints: [
       "Du benotigst nur zwei bestimmte Spalten aus der Uebungs-Tabelle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, kategorie FROM uebungen;`",
+      "Waehle die Spalten `name` und `kategorie` aus der Tabelle `uebungen`."
     ],
     hiddenTestQuery: "SELECT name, kategorie FROM uebungen;",
     hiddenTestMode: "rows",
@@ -577,7 +577,7 @@ selectExercises.push(
     hints: [
       "Du kannst eine Spalte unter einem anderen Namen ausgeben, waehrend die andere Spalte unveraendert bleibt.",
       "Verwende `AS` hinter dem Spaltennamen: `SELECT spalte1, spalte2 AS alias FROM tabellenname;`",
-      "Loesung: `SELECT genre, dauer_min AS dauer_minuten FROM filme;`",
+      "Waehle `genre` und `dauer_min AS dauer_minuten` aus der Tabelle `filme`."
     ],
     hiddenTestQuery: "SELECT genre, dauer_min AS dauer_minuten FROM filme;",
     hiddenTestMode: "columns",
@@ -593,7 +593,7 @@ selectExercises.push(
     hints: [
       "Du moechtest eine Liste aller vorhandenen Fehlercodes — jeden nur einmal.",
       "`DISTINCT` entfernt doppelte Werte: `SELECT DISTINCT spalte FROM tabellenname;`",
-      "Loesung: `SELECT DISTINCT fehlercode FROM fehler;`",
+      "Verwende `DISTINCT` vor der Spalte `fehlercode` in der Tabelle `fehler`."
     ],
     hiddenTestQuery: "SELECT DISTINCT fehlercode FROM fehler;",
     hiddenTestMode: "rows",
@@ -609,7 +609,7 @@ selectExercises.push(
     hints: [
       "Du benotigst nur zwei bestimmte Kontaktinformationen aus der Bewerbungstabelle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, email FROM bewerbungen;`",
+      "Waehle die Spalten `name` und `email` aus der Tabelle `bewerbungen`."
     ],
     hiddenTestQuery: "SELECT name, email FROM bewerbungen;",
     hiddenTestMode: "rows",
@@ -625,7 +625,7 @@ selectExercises.push(
     hints: [
       "Du benotigst nur eine einzige Spalte aus dieser Tabelle.",
       "Schreibe den Spaltennamen direkt nach `SELECT`: `SELECT spaltenname FROM tabellenname;`",
-      "Loesung: `SELECT kontonummer FROM konten;`",
+      "Waehle nur die Spalte `kontonummer` aus der Tabelle `konten`."
     ],
     hiddenTestQuery: "SELECT kontonummer FROM konten;",
     hiddenTestMode: "rows",
@@ -641,7 +641,7 @@ selectExercises.push(
     hints: [
       "Du brauchst zwei bestimmte Felder aus der Transaktionstabelle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT betrag, beschreibung FROM transaktionen;`",
+      "Waehle die Spalten `betrag` und `beschreibung` aus der Tabelle `transaktionen`."
     ],
     hiddenTestQuery: "SELECT betrag, beschreibung FROM transaktionen;",
     hiddenTestMode: "rows",
@@ -657,7 +657,7 @@ selectExercises.push(
     hints: [
       "Du benotigst zwei bestimmte Messwerte aus der Workout-Tabelle.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT dauer_min, kalorien_verbrannt FROM workouts;`",
+      "Waehle die Spalten `dauer_min` und `kalorien_verbrannt` aus der Tabelle `workouts`."
     ],
     hiddenTestQuery: "SELECT dauer_min, kalorien_verbrannt FROM workouts;",
     hiddenTestMode: "rows",
@@ -673,7 +673,7 @@ selectExercises.push(
     hints: [
       "Du brauchst zwei bestimmte Informationen aus der Nutzertabelle des Fitness-Datensatzes.",
       "Trenne mehrere Spaltennamen durch Kommas: `SELECT spalte1, spalte2 FROM tabellenname;`",
-      "Loesung: `SELECT name, registriert_am FROM nutzer;`",
+      "Waehle die Spalten `name` und `registriert_am` aus der Tabelle `nutzer` im Fitness-Datensatz."
     ],
     hiddenTestQuery: "SELECT name, registriert_am FROM nutzer;",
     hiddenTestMode: "rows",
