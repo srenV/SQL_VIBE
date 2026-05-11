@@ -69,9 +69,27 @@ interface Dataset {
   id: string;
   name: string;
   description: string;
-  sql: string;          // CREATE TABLE + INSERT Statements
+  sql: string;          // CREATE TABLE + INSERT Statements (inline Template-Literal)
   tables: TableDef[];   // Metadaten für Schema-Explorer
 }
+```
+
+### SQL in Dataset-Dateien
+
+Die SQL-Daten liegen als Template-Literals direkt in den `.ts`-Dataset-Dateien:
+
+```typescript
+// src/data/datasets/shop.ts
+export const shopDataset: Dataset = {
+  id: "shop",
+  name: "Online-Shop",
+  sql: `CREATE TABLE kunden (...); INSERT INTO kunden VALUES ...`,
+  // ...
+};
+```
+
+Kein Build-Schritt oder Prebuild-Hook erforderlich — der SQL-String ist direkt
+im TypeScript-Modul enthalten.
 
 interface TableDef {
   name: string;

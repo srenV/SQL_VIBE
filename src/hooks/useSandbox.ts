@@ -35,6 +35,27 @@ import {
   saveQueryToHistory,
   getQueryHistory,
 } from "@/lib/dbStorage";
+import {
+  shopDataset,
+  fitnessDataset,
+  hrDataset,
+  ticketsDataset,
+  bankingDataset,
+  streamingDataset,
+  logsDataset,
+  universityDataset,
+  ecommerceDataset,
+  hospitalDataset,
+  storyAnna7Dataset,
+  storyNexusMarktDataset,
+  storyHelpCoreDataset,
+  storyNeuronaleLueckeDataset,
+  storySystemfehlerDeltaDataset,
+  storyRoteZoneDataset,
+  storyGhostProtocolDataset,
+  storyGeldstromOmegaDataset,
+} from "@/data/datasets";
+import type { Dataset } from "@/types/exercise";
 
 /** Rueckgabewert des useSandbox-Hooks. */
 export interface UseSandboxReturn {
@@ -72,7 +93,31 @@ export interface UseSandboxReturn {
   refreshSchema: () => void;
   /** Laedt die DB-Liste neu aus IndexedDB. */
   refreshDbList: () => Promise<void>;
+  /** Importiert SQL in eine neue oder bestehende Datenbank. */
+  importFromSql: (name: string, sql: string) => Promise<string>;
 }
+
+/** Verfügbare vordefinierte Datensätze für den Import. */
+export const BUILTIN_DATASETS: Dataset[] = [
+  shopDataset,
+  fitnessDataset,
+  hrDataset,
+  ticketsDataset,
+  bankingDataset,
+  streamingDataset,
+  logsDataset,
+  universityDataset,
+  ecommerceDataset,
+  hospitalDataset,
+  storyAnna7Dataset,
+  storyNexusMarktDataset,
+  storyHelpCoreDataset,
+  storyNeuronaleLueckeDataset,
+  storySystemfehlerDeltaDataset,
+  storyRoteZoneDataset,
+  storyGhostProtocolDataset,
+  storyGeldstromOmegaDataset,
+];
 
 /** Debounce-Timer fuer Auto-Save (ms). */
 const AUTO_SAVE_DEBOUNCE_MS = 500;
@@ -517,6 +562,53 @@ export function useSandbox(): UseSandboxReturn {
     [refreshSchema, scheduleAutoSave, refreshDbList, dbList, openDatabase]
   );
 
+  /** Importiert SQL in eine neue Datenbank. */
+  const importFromSql = useCallback(
+    async (name: string, sql: string): Promise<string> => {
+      const now = new Date().toISOString();
+      const id = crypto.randomUUID();
+
+      // SQL ausführen und Datenbank erstellen
+      const db = await createDatabase(sql);
+      const binaryData = exportAndCloseDatabase(db);
+
+      // Frische DB aus Binary laden
+      const freshDb = await loadDatabaseFromBinary(binaryData);
+
+      // In IndexedDB speichern
+      await saveDatabase({
+        id,
+        name,
+        createdAt: now,
+        updatedAt: now,
+        sizeBytes: binaryData.byteLength,
+        binaryData,
+      });
+
+      // Als aktive DB setzen
+      activeDbRef.current = freshDb;
+      activeDbIdRef.current = id;
+      setActiveDb(freshDb);
+      setActiveDbId(id);
+      setQueryResult(null);
+      setIsDirty(false);
+
+      // Schema aktualisieren
+      try {
+        const schema = introspectSchema(freshDb);
+        setLiveSchema(schema);
+      } catch {
+        setLiveSchema([]);
+      }
+
+      // DB-Liste aktualisieren
+      await refreshDbList();
+
+      return id;
+    },
+    [refreshDbList]
+  );
+
   return {
     dbList,
     activeDbId,
@@ -535,5 +627,6 @@ export function useSandbox(): UseSandboxReturn {
     runQuery,
     refreshSchema,
     refreshDbList,
+    importFromSql,
   };
 }

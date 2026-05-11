@@ -74,8 +74,7 @@ export const universityDataset: Dataset = {
       ],
     },
   ],
-  sql: `
-CREATE TABLE studenten (
+  sql: `CREATE TABLE studenten (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,

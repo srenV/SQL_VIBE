@@ -80,8 +80,7 @@ export const ecommerceDataset: Dataset = {
       ],
     },
   ],
-  sql: `
-CREATE TABLE kunden (
+  sql: `CREATE TABLE kunden (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,

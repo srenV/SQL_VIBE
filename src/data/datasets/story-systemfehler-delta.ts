@@ -38,8 +38,7 @@ export const storySystemfehlerDeltaDataset: Dataset = {
       ],
     },
   ],
-  sql: `
-CREATE TABLE events (
+  sql: `CREATE TABLE events (
   id INTEGER PRIMARY KEY,
   session_id VARCHAR(50) NOT NULL,
   event_typ VARCHAR(30) NOT NULL,

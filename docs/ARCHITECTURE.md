@@ -198,6 +198,7 @@ Der SQL-Trainer verwendet **keinen** globalen State-Manager (Redux, Zustand, Con
 |-------|-------|-----------|
 | `usePlayground` | Pro Übung (Hook) | Nein (flüchtig) |
 | `useSandbox` | Pro Sandbox-Session (Hook) | IndexedDB (DB-Persistenz) |
+| `useSandbox.importFromSql` | Sandbox-Import (Hook-Methode) | In-Memory → IndexedDB |
 | `useProgress` | Global (Hook) | `localStorage` |
 | Theme | Global (DOM-Klasse) | `localStorage` |
 | UI-Zustände | Pro Komponente (`useState`) | Nein |
@@ -296,6 +297,9 @@ out/  (statische Dateien)
   ▼
 Vercel Deployment
 ```
+
+**Hinweis:** SQL-Daten liegen als Template-Literals direkt in den `.ts`-Dataset-Dateien.
+Es wird kein Prebuild-Schritt oder Build-Skript benötigt.
 
 ### Konfiguration (`next.config.ts`)
 

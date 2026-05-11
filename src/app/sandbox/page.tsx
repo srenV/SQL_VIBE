@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Header } from "@/components/header";
 import { SandboxSidebar } from "@/components/sandbox/sandboxSidebar";
 import { SandboxWorkspace, type SandboxWorkspaceHandle } from "@/components/sandbox/sandboxWorkspace";
-import { useSandbox } from "@/hooks/useSandbox";
+import { useSandbox, BUILTIN_DATASETS } from "@/hooks/useSandbox";
 
 export default function SandboxPage() {
   const sandbox = useSandbox();
@@ -23,12 +23,14 @@ export default function SandboxPage() {
             dbList={sandbox.dbList}
             activeDbId={sandbox.activeDbId}
             liveSchema={sandbox.liveSchema}
+            builtinDatasets={BUILTIN_DATASETS}
             onCreateNew={sandbox.createNewDatabase}
             onOpen={sandbox.openDatabase}
             onClose={sandbox.closeActiveDatabase}
             onDelete={sandbox.deleteDatabase}
             onRename={sandbox.renameDatabase}
             onDuplicate={sandbox.duplicateDatabase}
+            onImportFromSql={sandbox.importFromSql}
             onTableClick={(tableName) =>
               void workspaceRef.current?.insertAndRun(`SELECT * FROM \`${tableName}\` LIMIT 50;`)
             }

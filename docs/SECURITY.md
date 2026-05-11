@@ -45,9 +45,9 @@ Der SQL-Trainer ist ein **reiner Static Export** — es gibt:
 | Mechanismus | Status |
 |------------|--------|
 | React JSX Escaping | ✅ Standard (alle `{value}` werden escaped) |
-| `dangerouslySetInnerHTML` | ⚠️ Nur in `ThemeScript` (statisches JS, keine User-Inputs) |
+| `dangerouslySetInnerHTML` | ⚠️ Nur in `ThemeScript` (statisches JS, keine User-Inputs) und `renderMarkdown` (statische Lerninhalte, mit `escapeHtml`) |
 | `eval()` | ❌ Nicht verwendet |
-| `innerHTML` | ❌ Nicht verwendet |
+| `innerHTML` | ⚠️ Nur in `scrambleText` (anime.js, statische Texte) |
 
 ### SQL-Injection im Playground
 
@@ -59,6 +59,25 @@ Der Playground führt **User-SQL** in einer **isolierten In-Memory sql.js-Datenb
 - `PRAGMA foreign_key_list` und `PRAGMA table_info` sind read-only
 
 **Risiko:** Keines — selbst destruktives SQL (`DROP TABLE`, `DELETE`) betrifft nur die lokale In-Memory-DB.
+
+### Sandbox-Import
+
+Die Sandbox bietet drei Import-Wege für SQL-Daten:
+
+1. **Dropdown (18 vordefinierte Datensätze):** Statische SQL-Strings aus dem Codebase — kein Risiko.
+2. **Datei-Upload (`.sql`-Datei):** User wählt Datei über `<input type="file" accept=".sql">`.
+3. **Drag & Drop (`.sql`-Datei):** User zieht Datei in die Drop-Zone.
+
+**Sicherheitsmaßnahmen:**
+
+| Maßnahme | Details |
+|----------|---------|
+| Dateityp-Check | Nur `.sql`-Dateien akzeptiert (Upload + Drag & Drop) |
+| Dateigrößen-Limit | Max. 5 MB — verhindert Browser-Tab-Freeze bei riesigen Dumps |
+| Dateiname-Sanitizing | Illegale Zeichen (`<>:"/\|?*`), führende Punkte und Whitespace werden entfernt; max. 100 Zeichen; Fallback-Name bei leerem Ergebnis |
+| SQL-Ausführung | Nur in sql.js WASM-Sandbox — kein Dateisystem-, Netzwerk- oder Systemzugriff |
+| Fehlerbehandlung | SQL-Fehler werden als Fehlermeldung angezeigt, nicht als Exception |
+| Kein Code-Execution | SQL-Strings werden nie durch `eval()`, `new Function()` oder `dangerouslySetInnerHTML` geschleust |
 
 ### WASM Sandbox
 
@@ -162,7 +181,7 @@ npm audit fix      # Auto-Fix für bekannte CVEs
 | **Tampering** | Manipulation localStorage | Niedrig | Nur Client-seitig, kein Schaden |
 | **Repudiation** | — | Kein | Keine Aktionen die Logging erfordern |
 | **Information Disclosure** | Source Code | Niedrig | Keine Secrets im Code |
-| **Denial of Service** | Große WASM-Allokation | Niedrig | Browser-Tab-Limit |
+| **Denial of Service** | Große WASM-Allokation / SQL-Import | Niedrig | Browser-Tab-Limit; 5 MB Import-Limit; Dateityp-Check |
 | **Elevation of Privilege** | — | Kein | Keine Rollen/Rechte |
 
 ### Fazit

@@ -55,8 +55,7 @@ export const hrDataset: Dataset = {
       ],
     },
   ],
-  sql: `
-CREATE TABLE abteilungen (
+  sql: `CREATE TABLE abteilungen (
   id INTEGER PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
   standort VARCHAR(50) NOT NULL,

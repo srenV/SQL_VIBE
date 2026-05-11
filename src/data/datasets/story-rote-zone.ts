@@ -60,8 +60,7 @@ export const storyRoteZoneDataset: Dataset = {
       ],
     },
   ],
-  sql: `
-CREATE TABLE abteilungen (
+  sql: `CREATE TABLE abteilungen (
   id INTEGER PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
   etage INTEGER NOT NULL,

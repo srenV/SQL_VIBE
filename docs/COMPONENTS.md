@@ -347,7 +347,31 @@ interface SandboxWorkspaceProps {
 
 #### SandboxSidebar
 
-Seitenleiste für die Sandbox mit Datenbank-Aktionen.
+Seitenleiste für die Sandbox mit Datenbank-Aktionen und Import-Funktionalität.
+
+```typescript
+interface SandboxSidebarProps {
+  dbList: SandboxDatabaseMeta[];
+  activeDbId: string | null;
+  liveSchema: SchemaTable[];
+  builtinDatasets: Dataset[];        // 18 vordefinierte Datensätze für Dropdown
+  onCreateNew: (name: string) => Promise<string>;
+  onOpen: (id: string) => Promise<void>;
+  onClose: () => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+  onRename: (id: string, newName: string) => Promise<void>;
+  onDuplicate: (id: string, newName: string) => Promise<string>;
+  onImportFromSql: (name: string, sql: string) => Promise<string>;
+  onTableClick: (tableName: string) => void;
+  isLoading: boolean;
+}
+```
+
+**Import-Features:**
+- **Dropdown**: 18 vordefinierte Datensätze (10 Standard + 8 Story)
+- **Datei-Upload**: `.sql`-Dateien über Button (max. 5 MB)
+- **Drag & Drop**: `.sql`-Dateien per Drag & Drop (max. 5 MB)
+- **Fehlerbehandlung**: Größe, Format und SQL-Fehler werden angezeigt
 
 ---
 

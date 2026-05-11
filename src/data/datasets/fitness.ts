@@ -64,8 +64,7 @@ export const fitnessDataset: Dataset = {
       ],
     },
   ],
-  sql: `
-CREATE TABLE nutzer (
+  sql: `CREATE TABLE nutzer (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,
