@@ -27,7 +27,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest wissen, wie viele Datensaetze in einer Tabelle existieren — dafuer gibt es eine spezielle Zaehlfunktion.",
       "`COUNT(*)` zaehlt alle Zeilen: `SELECT COUNT(*) AS alias FROM tabelle`",
-      "Loesung: `SELECT COUNT(*) AS anzahl FROM kunden;`",
+      "Kombiniere `COUNT(*)` mit der Tabelle `kunden` und vergiss nicht den Alias `anzahl`.",
     ],
     hiddenTestQuery: `SELECT COUNT(*) AS anzahl FROM kunden;`,
     hiddenTestMode: "rows",
@@ -45,7 +45,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest alle Zahlenwerte einer Spalte aufaddieren — eine Aggregatfunktion erledigt das fuer dich.",
       "`SUM(spalte)` berechnet die Summe aller Werte: `SELECT SUM(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT SUM(gewicht_kg) AS gesamt FROM nutzer;`",
+      "Verwende `SUM` auf die Spalte `gewicht_kg` in der Tabelle `nutzer` mit dem Alias `gesamt`.",
     ],
     hiddenTestQuery: `SELECT SUM(gewicht_kg) AS gesamt FROM nutzer;`,
     hiddenTestMode: "rows",
@@ -63,7 +63,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den Mittelwert aller Werte einer Spalte berechnen — dafuer gibt es eine Aggregatfunktion.",
       "`AVG(spalte)` berechnet den Durchschnitt: `SELECT AVG(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT AVG(id) AS durchschnitt FROM uebungen;`",
+      "Verwende `AVG` auf die Spalte `id` in der Tabelle `uebungen` mit dem Alias `durchschnitt`.",
     ],
     hiddenTestQuery: `SELECT AVG(id) AS durchschnitt FROM uebungen;`,
     hiddenTestMode: "rows",
@@ -81,7 +81,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den groessten Wert in einer Spalte finden — eine Aggregatfunktion liefert dir genau das.",
       "`MAX(spalte)` gibt den hoechsten Wert zurueck: `SELECT MAX(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT MAX(id) AS maximum FROM abteilungen;`",
+      "Verwende `MAX` auf die Spalte `id` in der Tabelle `abteilungen` mit dem Alias `maximum`.",
     ],
     hiddenTestQuery: `SELECT MAX(id) AS maximum FROM abteilungen;`,
     hiddenTestMode: "rows",
@@ -99,27 +99,27 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den kleinsten Wert in einer Spalte finden — eine Aggregatfunktion liefert dir genau das.",
       "`MIN(spalte)` gibt den niedrigsten Wert zurueck: `SELECT MIN(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT MIN(gehalt) AS minimum FROM mitarbeiter;`",
+      "Verwende `MIN` auf die Spalte `gehalt` in der Tabelle `mitarbeiter` mit dem Alias `minimum`.",
     ],
     hiddenTestQuery: `SELECT MIN(gehalt) AS minimum FROM mitarbeiter;`,
     hiddenTestMode: "rows",
   }),
 
   makeWriteExercise("agg", {
-    title: "Gruppieren nach email",
-    description: "Zeige fuer jede E-Mail-Adresse der Agenten, wie oft sie in der Tabelle vorkommt. Gib der Aggregationsspalte den Alias `anzahl`.",
+    title: "Gruppieren nach team",
+    description: "Zeige fuer jedes Team der Agenten, wie viele Agenten ihm angehoeren. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: "tickets",
-    referenceQuery: `SELECT email, COUNT(*) AS anzahl FROM agenten GROUP BY email;`,
+    referenceQuery: `SELECT team, COUNT(*) AS anzahl FROM agenten GROUP BY team;`,
     expectedResultText: "",
     tags: ["Aggregation", "GROUP BY", "HAVING"],
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT email, COUNT(*) AS anzahl FROM agenten GROUP BY email;`",
+      "Verwende `GROUP BY team` auf der Tabelle `agenten` und zaehle mit `COUNT(*)`.",
     ],
-    hiddenTestQuery: `SELECT email, COUNT(*) AS anzahl FROM agenten GROUP BY email;`,
+    hiddenTestQuery: `SELECT team, COUNT(*) AS anzahl FROM agenten GROUP BY team;`,
     hiddenTestMode: "rows",
   }),
 
@@ -135,7 +135,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest Gruppen nach ihrer Aggregation filtern — aehnlich wie WHERE, aber NACH dem Gruppieren.",
       "`HAVING` filtert Gruppen: `GROUP BY spalte HAVING COUNT(*) > grenzwert`",
-      "Loesung: `SELECT adresse, COUNT(*) AS anzahl FROM kunden GROUP BY adresse HAVING COUNT(*) > 1;`",
+      "Gruppiere `kunden` nach `adresse`, zaehle mit `COUNT(*)` und filtere mit `HAVING COUNT(*) > 1`.",
     ],
     hiddenTestQuery: `SELECT adresse, COUNT(*) AS anzahl FROM kunden GROUP BY adresse HAVING COUNT(*) > 1;`,
     hiddenTestMode: "rows",
@@ -153,7 +153,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest wissen, wie viele Datensaetze in einer Tabelle existieren — dafuer gibt es eine spezielle Zaehlfunktion.",
       "`COUNT(*)` zaehlt alle Zeilen: `SELECT COUNT(*) AS alias FROM tabelle`",
-      "Loesung: `SELECT COUNT(*) AS anzahl FROM konten;`",
+      "Kombiniere `COUNT(*)` mit der Tabelle `konten` und vergiss nicht den Alias `anzahl`.",
     ],
     hiddenTestQuery: `SELECT COUNT(*) AS anzahl FROM konten;`,
     hiddenTestMode: "rows",
@@ -171,7 +171,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest alle Zahlenwerte einer Spalte aufaddieren — eine Aggregatfunktion erledigt das fuer dich.",
       "`SUM(spalte)` berechnet die Summe aller Werte: `SELECT SUM(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT SUM(id) AS gesamt FROM nutzer;`",
+      "Verwende `SUM` auf die Spalte `id` in der Tabelle `nutzer` mit dem Alias `gesamt`.",
     ],
     hiddenTestQuery: `SELECT SUM(id) AS gesamt FROM nutzer;`,
     hiddenTestMode: "rows",
@@ -189,7 +189,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den Mittelwert aller Werte einer Spalte berechnen — dafuer gibt es eine Aggregatfunktion.",
       "`AVG(spalte)` berechnet den Durchschnitt: `SELECT AVG(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT AVG(jahr) AS durchschnitt FROM filme;`",
+      "Verwende `AVG` auf die Spalte `jahr` in der Tabelle `filme` mit dem Alias `durchschnitt`.",
     ],
     hiddenTestQuery: `SELECT AVG(jahr) AS durchschnitt FROM filme;`,
     hiddenTestMode: "rows",
@@ -207,7 +207,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den groessten Wert in einer Spalte finden — eine Aggregatfunktion liefert dir genau das.",
       "`MAX(spalte)` gibt den hoechsten Wert zurueck: `SELECT MAX(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT MAX(dauer_ms) AS maximum FROM events;`",
+      "Verwende `MAX` auf die Spalte `dauer_ms` in der Tabelle `events` mit dem Alias `maximum`.",
     ],
     hiddenTestQuery: `SELECT MAX(dauer_ms) AS maximum FROM events;`,
     hiddenTestMode: "rows",
@@ -225,7 +225,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den kleinsten Wert in einer Spalte finden — eine Aggregatfunktion liefert dir genau das.",
       "`MIN(spalte)` gibt den niedrigsten Wert zurueck: `SELECT MIN(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT MIN(id) AS minimum FROM sessions;`",
+      "Verwende `MIN` auf die Spalte `id` in der Tabelle `sessions` mit dem Alias `minimum`.",
     ],
     hiddenTestQuery: `SELECT MIN(id) AS minimum FROM sessions;`,
     hiddenTestMode: "rows",
@@ -244,7 +244,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den Mittelwert aller Werte einer Spalte berechnen — dafuer gibt es eine Aggregatfunktion.",
       "`AVG(spalte)` berechnet den Durchschnitt: `SELECT AVG(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT AVG(preis) AS durchschnittspreis FROM produkte;`",
+      "Verwende `AVG` auf die Spalte `preis` in der Tabelle `produkte` mit dem Alias `durchschnittspreis`.",
     ],
     hiddenTestQuery: "SELECT AVG(preis) AS durchschnittspreis FROM produkte;",
     hiddenTestMode: "rows",
@@ -260,7 +260,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den groessten Wert in einer Spalte finden — eine Aggregatfunktion liefert dir genau das.",
       "`MAX(spalte)` gibt den hoechsten Wert zurueck: `SELECT MAX(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT MAX(preis) AS teuerster_preis FROM produkte;`",
+      "Verwende `MAX` auf die Spalte `preis` in der Tabelle `produkte` mit dem Alias `teuerster_preis`.",
     ],
     hiddenTestQuery: "SELECT MAX(preis) AS teuerster_preis FROM produkte;",
     hiddenTestMode: "rows",
@@ -276,7 +276,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest alle Zahlenwerte einer Spalte aufaddieren — eine Aggregatfunktion erledigt das fuer dich.",
       "`SUM(spalte)` berechnet die Summe aller Werte: `SELECT SUM(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT SUM(gesamtbetrag) AS summe FROM bestellungen;`",
+      "Verwende `SUM` auf die Spalte `gesamtbetrag` in der Tabelle `bestellungen` mit dem Alias `summe`.",
     ],
     hiddenTestQuery: "SELECT SUM(gesamtbetrag) AS summe FROM bestellungen;",
     hiddenTestMode: "rows",
@@ -292,7 +292,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe aggregieren.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT kategorie_id, COUNT(*) AS anzahl FROM produkte GROUP BY kategorie_id;`",
+      "Gruppiere `produkte` nach `kategorie_id` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT kategorie_id, COUNT(*) AS anzahl FROM produkte GROUP BY kategorie_id;",
     hiddenTestMode: "rows",
@@ -308,7 +308,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT kunde_id, COUNT(*) AS anzahl FROM bestellungen GROUP BY kunde_id;`",
+      "Gruppiere `bestellungen` nach `kunde_id` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT kunde_id, COUNT(*) AS anzahl FROM bestellungen GROUP BY kunde_id;",
     hiddenTestMode: "rows",
@@ -324,7 +324,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest pro Gruppe den groessten Wert einer Spalte ermitteln — kombiniere Gruppierung mit einer Aggregatfunktion.",
       "`GROUP BY spalte` gruppiert, `MAX(spalte)` gibt den Hoechstwert pro Gruppe: `SELECT gruppenspalte, MAX(wertspalte) AS alias FROM tabelle GROUP BY gruppenspalte`",
-      "Loesung: `SELECT abteilung_id, MAX(gehalt) AS max_gehalt FROM mitarbeiter GROUP BY abteilung_id;`",
+      "Gruppiere `mitarbeiter` nach `abteilung_id` und verwende `MAX(gehalt)` als `max_gehalt`.",
     ],
     hiddenTestQuery: "SELECT abteilung_id, MAX(gehalt) AS max_gehalt FROM mitarbeiter GROUP BY abteilung_id;",
     hiddenTestMode: "rows",
@@ -340,7 +340,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den Mittelwert aller Werte einer Spalte berechnen — dafuer gibt es eine Aggregatfunktion.",
       "`AVG(spalte)` berechnet den Durchschnitt: `SELECT AVG(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT AVG(gewicht_kg) AS avg_gewicht FROM nutzer;`",
+      "Verwende `AVG` auf die Spalte `gewicht_kg` in der Tabelle `nutzer` mit dem Alias `avg_gewicht`.",
     ],
     hiddenTestQuery: "SELECT AVG(gewicht_kg) AS avg_gewicht FROM nutzer;",
     hiddenTestMode: "rows",
@@ -356,7 +356,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest den Mittelwert aller Werte einer Spalte berechnen — dafuer gibt es eine Aggregatfunktion.",
       "`AVG(spalte)` berechnet den Durchschnitt: `SELECT AVG(spaltenname) AS alias FROM tabelle`",
-      "Loesung: `SELECT AVG(kalorien_verbrannt) AS avg_kalorien FROM workouts;`",
+      "Verwende `AVG` auf die Spalte `kalorien_verbrannt` in der Tabelle `workouts` mit dem Alias `avg_kalorien`.",
     ],
     hiddenTestQuery: "SELECT AVG(kalorien_verbrannt) AS avg_kalorien FROM workouts;",
     hiddenTestMode: "rows",
@@ -372,7 +372,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest pro Gruppe die Summe einer Spalte berechnen — kombiniere Gruppierung mit einer Summenfunktion.",
       "`GROUP BY spalte` gruppiert, `SUM(spalte)` summiert pro Gruppe: `SELECT gruppenspalte, SUM(wertspalte) AS alias FROM tabelle GROUP BY gruppenspalte`",
-      "Loesung: `SELECT nutzer_id, SUM(kalorien_verbrannt) AS total_kalorien FROM workouts GROUP BY nutzer_id;`",
+      "Gruppiere `workouts` nach `nutzer_id` und summiere `kalorien_verbrannt` als `total_kalorien`.",
     ],
     hiddenTestQuery: "SELECT nutzer_id, SUM(kalorien_verbrannt) AS total_kalorien FROM workouts GROUP BY nutzer_id;",
     hiddenTestMode: "rows",
@@ -388,7 +388,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT prioritaet, COUNT(*) AS anzahl FROM tickets GROUP BY prioritaet;`",
+      "Gruppiere `tickets` nach `prioritaet` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT prioritaet, COUNT(*) AS anzahl FROM tickets GROUP BY prioritaet;",
     hiddenTestMode: "rows",
@@ -404,7 +404,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest pro Gruppe die Summe einer Spalte berechnen — kombiniere Gruppierung mit einer Summenfunktion.",
       "`GROUP BY spalte` gruppiert, `SUM(spalte)` summiert pro Gruppe: `SELECT gruppenspalte, SUM(wertspalte) AS alias FROM tabelle GROUP BY gruppenspalte`",
-      "Loesung: `SELECT konto_id, SUM(betrag) AS total FROM transaktionen GROUP BY konto_id;`",
+      "Gruppiere `transaktionen` nach `konto_id` und summiere `betrag` als `total`.",
     ],
     hiddenTestQuery: "SELECT konto_id, SUM(betrag) AS total FROM transaktionen GROUP BY konto_id;",
     hiddenTestMode: "rows",
@@ -420,7 +420,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT genre, COUNT(*) AS anzahl FROM filme GROUP BY genre;`",
+      "Gruppiere `filme` nach `genre` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT genre, COUNT(*) AS anzahl FROM filme GROUP BY genre;",
     hiddenTestMode: "rows",
@@ -436,7 +436,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest pro Gruppe den Durchschnitt einer Spalte berechnen — kombiniere Gruppierung mit einer Durchschnittsfunktion.",
       "`GROUP BY spalte` gruppiert, `AVG(spalte)` berechnet den Mittelwert pro Gruppe: `SELECT gruppenspalte, AVG(wertspalte) AS alias FROM tabelle GROUP BY gruppenspalte`",
-      "Loesung: `SELECT film_id, AVG(sterne) AS avg_sterne FROM bewertungen GROUP BY film_id;`",
+      "Gruppiere `bewertungen` nach `film_id` und verwende `AVG(sterne)` als `avg_sterne`.",
     ],
     hiddenTestQuery: "SELECT film_id, AVG(sterne) AS avg_sterne FROM bewertungen GROUP BY film_id;",
     hiddenTestMode: "rows",
@@ -452,7 +452,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT event_typ, COUNT(*) AS anzahl FROM events GROUP BY event_typ;`",
+      "Gruppiere `events` nach `event_typ` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT event_typ, COUNT(*) AS anzahl FROM events GROUP BY event_typ;",
     hiddenTestMode: "rows",
@@ -468,7 +468,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest Gruppen nach ihrer Aggregation filtern — aehnlich wie WHERE, aber NACH dem Gruppieren.",
       "`HAVING` filtert Gruppen: `GROUP BY spalte HAVING COUNT(*) > grenzwert`",
-      "Loesung: `SELECT kunde_id, COUNT(*) AS anzahl FROM bestellungen GROUP BY kunde_id HAVING COUNT(*) > 1;`",
+      "Gruppiere `bestellungen` nach `kunde_id`, zaehle mit `COUNT(*)` als `anzahl` und filtere mit `HAVING COUNT(*) > 1`.",
     ],
     hiddenTestQuery: "SELECT kunde_id, COUNT(*) AS anzahl FROM bestellungen GROUP BY kunde_id HAVING COUNT(*) > 1;",
     hiddenTestMode: "rows",
@@ -484,7 +484,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest Zeilen filtern, deren Wert ueber einem berechneten Durchschnitt liegt — dazu kannst du eine Unterabfrage in der WHERE-Bedingung verwenden.",
       "Eine Subquery in WHERE berechnet den Vergleichswert: `WHERE spalte > (SELECT AVG(spalte) FROM tabelle)`",
-      "Loesung: `SELECT name, preis FROM produkte WHERE preis > (SELECT AVG(preis) FROM produkte);`",
+      "Verwende eine Subquery: `WHERE preis > (SELECT ...)` mit `AVG(preis)` aus der gleichen Tabelle.",
     ],
     hiddenTestQuery: "SELECT name, preis FROM produkte WHERE preis > (SELECT AVG(preis) FROM produkte);",
     hiddenTestMode: "rows",
@@ -500,7 +500,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest Gruppen nach ihrer summierten Aggregation filtern — aehnlich wie WHERE, aber NACH dem Gruppieren.",
       "`HAVING` filtert Gruppen nach Aggregatwerten: `GROUP BY spalte HAVING SUM(wertspalte) > grenzwert`",
-      "Loesung: `SELECT mitarbeiter_id, SUM(tage) AS urlaubs_tage FROM urlaub GROUP BY mitarbeiter_id HAVING SUM(tage) > 2;`",
+      "Gruppiere `urlaub` nach `mitarbeiter_id`, summiere `tage` als `urlaubs_tage` und filtere mit `HAVING SUM(tage) > 2`.",
     ],
     hiddenTestQuery: "SELECT mitarbeiter_id, SUM(tage) AS urlaubs_tage FROM urlaub GROUP BY mitarbeiter_id HAVING SUM(tage) > 2;",
     hiddenTestMode: "rows",
@@ -516,7 +516,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest pro Gruppe den kleinsten Wert einer Spalte ermitteln — kombiniere Gruppierung mit einer Aggregatfunktion.",
       "`GROUP BY spalte` gruppiert, `MIN(spalte)` gibt den Minimalwert pro Gruppe: `SELECT gruppenspalte, MIN(wertspalte) AS alias FROM tabelle GROUP BY gruppenspalte`",
-      "Loesung: `SELECT abteilung_id, MIN(gehalt) AS min_gehalt FROM mitarbeiter GROUP BY abteilung_id;`",
+      "Gruppiere `mitarbeiter` nach `abteilung_id` und verwende `MIN(gehalt)` als `min_gehalt`.",
     ],
     hiddenTestQuery: "SELECT abteilung_id, MIN(gehalt) AS min_gehalt FROM mitarbeiter GROUP BY abteilung_id;",
     hiddenTestMode: "rows",
@@ -532,7 +532,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT nutzer_id, COUNT(*) AS anzahl FROM workouts GROUP BY nutzer_id;`",
+      "Gruppiere `workouts` nach `nutzer_id` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT nutzer_id, COUNT(*) AS anzahl FROM workouts GROUP BY nutzer_id;",
     hiddenTestMode: "rows",
@@ -548,7 +548,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT schweregrad, COUNT(*) AS anzahl FROM fehler GROUP BY schweregrad;`",
+      "Gruppiere `fehler` nach `schweregrad` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT schweregrad, COUNT(*) AS anzahl FROM fehler GROUP BY schweregrad;",
     hiddenTestMode: "rows",
@@ -564,7 +564,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT typ, COUNT(*) AS anzahl FROM konten GROUP BY typ;`",
+      "Gruppiere `konten` nach `typ` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT typ, COUNT(*) AS anzahl FROM konten GROUP BY typ;",
     hiddenTestMode: "rows",
@@ -580,7 +580,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest pro Gruppe die Summe einer Spalte berechnen — kombiniere Gruppierung mit einer Summenfunktion.",
       "`GROUP BY spalte` gruppiert, `SUM(spalte)` summiert pro Gruppe: `SELECT gruppenspalte, SUM(wertspalte) AS alias FROM tabelle GROUP BY gruppenspalte`",
-      "Loesung: `SELECT zahlungsmittel, SUM(betrag) AS total FROM zahlungen GROUP BY zahlungsmittel;`",
+      "Gruppiere `zahlungen` nach `zahlungsmittel` und summiere `betrag` als `total`.",
     ],
     hiddenTestQuery: "SELECT zahlungsmittel, SUM(betrag) AS total FROM zahlungen GROUP BY zahlungsmittel;",
     hiddenTestMode: "rows",
@@ -596,7 +596,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest die Daten anhand einer Spalte in Gruppen aufteilen und pro Gruppe zaehlen.",
       "`GROUP BY spalte` gruppiert die Zeilen, `COUNT(*)` zaehlt pro Gruppe: `SELECT spalte, COUNT(*) AS anzahl FROM tabelle GROUP BY spalte`",
-      "Loesung: `SELECT status, COUNT(*) AS anzahl FROM tickets GROUP BY status;`",
+      "Gruppiere `tickets` nach `status` und zaehle mit `COUNT(*)` als `anzahl`.",
     ],
     hiddenTestQuery: "SELECT status, COUNT(*) AS anzahl FROM tickets GROUP BY status;",
     hiddenTestMode: "rows",
@@ -612,7 +612,7 @@ aggregationExercises.push(
     hints: [
       "Du moechtest Zeilen filtern, deren Wert ueber einem berechneten Durchschnitt liegt — dazu kannst du eine Unterabfrage in der WHERE-Bedingung verwenden.",
       "Eine Subquery in WHERE berechnet den Vergleichswert: `WHERE spalte > (SELECT AVG(spalte) FROM tabelle)`",
-      "Loesung: `SELECT * FROM bewertungen WHERE sterne > (SELECT AVG(sterne) FROM bewertungen);`",
+      "Verwende eine Subquery: `WHERE sterne > (SELECT ...)` mit `AVG(sterne)` aus der gleichen Tabelle.",
     ],
     hiddenTestQuery: "SELECT * FROM bewertungen WHERE sterne > (SELECT AVG(sterne) FROM bewertungen);",
     hiddenTestMode: "rows",
