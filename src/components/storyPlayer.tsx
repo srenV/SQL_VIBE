@@ -20,6 +20,7 @@ import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
 import { SuccessCelebration } from "@/components/successCelebration";
+import { StoryIntro } from "@/components/storyIntro";
 import { usePlayground } from "@/hooks/usePlayground";
 import { useProgress } from "@/hooks/useProgress";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
@@ -120,29 +121,16 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
     return (
       <div className="space-y-6">
         <FadeIn delay={0}>
-          <Card variant="outlined" className="p-6 border-primary-200 bg-gradient-to-br from-primary-50/50 to-accent-50/30">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <svg className="w-6 h-6 text-primary-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                </svg>
-                <h2 className="text-xl font-bold text-ink">{story.scenarioTitle}</h2>
-              </div>
-              <div className="text-sm text-ink whitespace-pre-line leading-relaxed">
-                {story.intro}
-              </div>
-              <div className="flex items-center gap-3 text-xs text-ink-muted">
-                <span>{story.chapters.length} Kapitel</span>
-                <span>·</span>
-                <span>Schwierigkeit: {exercise.difficulty === "easy" ? "Anfaenger" : exercise.difficulty === "medium" ? "Fortgeschritten" : "Experte"}</span>
-              </div>
-              <div className="pt-2">
-                <Button onClick={() => setShowIntro(false)}>
-                  Ermittlungen beginnen
-                </Button>
-              </div>
-            </div>
-          </Card>
+          <StoryIntro
+            scenarioTitle={story.scenarioTitle}
+            intro={story.intro}
+            difficulty={exercise.difficulty}
+            chapterCount={story.chapters.length}
+            solvedCount={solvedChapters.size}
+            currentChapter={currentChapter}
+            hasProgress={hasPersistedProgress}
+            onStart={() => setShowIntro(false)}
+          />
         </FadeIn>
       </div>
     );

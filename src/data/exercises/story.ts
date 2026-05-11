@@ -31,7 +31,7 @@ storyExercises.push(
     datasetId: "story-anna7",
     scenarioTitle: "Vermisst: Einheit ANNA-7",
     intro:
-      "Es ist 03:17 Uhr Systemzeit. Die Korporations-KI meldet eine Anomalie: ANNA-7, Senior-Systemarchitektin der Entwicklungseinheit, hat sich seit 72 Stunden nicht mehr im Netz authentifiziert. Das Kontrollteam rückt in 6 Stunden an — du hast vorher Zugriff auf die Personaldatenbank. Finde heraus, was passiert ist.",
+      "Es ist 03:17 Uhr Systemzeit. Die Korporations-KI meldet eine Anomalie: ANNA-7, Senior-Systemarchitektin der Entwicklungseinheit, hat sich seit 72 Stunden nicht mehr im Netz authentifiziert. Das Kontrollteam rückt in 6 Stunden an — du hast vorher Zugriff auf die Personaldatenbank. Finde heraus, was passiert ist.\n\nDein Terminal flackert. Die Verbindung zur Korporations-Datenbank steht — aber nicht mehr lange. Jeder Query könnte Spuren hinterlassen. Sei präzise. Sei schnell. Die Wahrheit wartet in den Daten.",
     chapters: [
       {
         title: "Identität lokalisieren",
@@ -150,7 +150,7 @@ storyExercises.push(
     datasetId: "story-nexusmarkt",
     scenarioTitle: "Phantom-Transaktionen im NexusMarkt",
     intro:
-      "Der NexusMarkt — das einzig legale Handelssystem der Ost-Zone — meldet Anomalien. Bestellungen werden storniert, aber die Zahlungen sind bereits abgeflossen. Die Handels-KI hat keine Erklärung. Du hast 4 Stunden Datenbankzugang, bevor das Audit-Team eintrifft.",
+      "Der NexusMarkt — das einzig legale Handelssystem der Ost-Zone — meldet Anomalien. Bestellungen werden storniert, aber die Zahlungen sind bereits abgeflossen. Die Handels-KI hat keine Erklärung. Du hast 4 Stunden Datenbankzugang, bevor das Audit-Team eintrifft.\n\nDein Zugriffstoken blinkt. Die NexusMarkt-Datenbank ist online — Transaktionsprotokolle, Kundenprofile, Zahlungsströme. Alles ist verbunden. Finde das Muster, bevor die Spuren verwischt werden.",
     chapters: [
       {
         title: "Stornierte Einheiten",
@@ -253,7 +253,7 @@ storyExercises.push(
     datasetId: "story-helpcore",
     scenarioTitle: "Virus im HelpCore-Netz",
     intro:
-      "HelpCore — das zentrale Bürgersupport-System der SmartCity — verhält sich anomal. Kritische Tickets verschwinden, Kommentare werden manipuliert, Prioritäten heimlich geändert. Jemand nutzt das System, um Beschwerden über die Korporationspolitik zu begraben. Du hast Zugriff auf die Rohdatenbank.",
+      "HelpCore — das zentrale Bürgersupport-System der SmartCity — verhält sich anomal. Kritische Tickets verschwinden, Kommentare werden manipuliert, Prioritäten heimlich geändert. Jemand nutzt das System, um Beschwerden über die Korporationspolitik zu begraben. Du hast Zugriff auf die Rohdatenbank.\n\nDie HelpCore-Server summen leise. Tickets, Kommentare, Kategorien — alles verknüpft. Jede Abfrage bringt dich näher an den Saboteur. Aber Vorsicht: Wer auch immer das System manipuliert, könnte deine Queries bemerken.",
     chapters: [
       {
         title: "Kritische Signale",
@@ -358,7 +358,7 @@ storyExercises.push(
     datasetId: "story-neuronale-luecke",
     scenarioTitle: "Neuronale Lücke",
     intro:
-      "Das Jahr 2091. Die Unterhaltungs-KI ARGUS kontrolliert alle Inhalte im staatlichen Streaming-Netz. Seit Wochen verschwinden Filme spurlos aus dem Katalog — immer kurz nachdem sie positiv bewertet wurden. Zufall? Du hast Zugriff auf die rohe Streaming-Datenbank. Finde das Muster, bevor ARGUS dich aus dem System sperrt.",
+      "Das Jahr 2091. Die Unterhaltungs-KI ARGUS kontrolliert alle Inhalte im staatlichen Streaming-Netz. Seit Wochen verschwinden Filme spurlos aus dem Katalog — immer kurz nachdem sie positiv bewertet wurden. Zufall? Du hast Zugriff auf die rohe Streaming-Datenbank. Finde das Muster, bevor ARGUS dich aus dem System sperrt.\n\nDein Terminal verbindet sich mit dem ARGUS-Kern. Nutzerprofile, Filmdaten, Watch-History, Bewertungen — alles liegt offen. Aber die Uhr tickt. ARGUS überwacht jede Abfrage. Ein falscher Schritt, und dein Zugang ist Geschichte.",
     chapters: [
       {
         title: "Signal verloren",
@@ -460,7 +460,7 @@ storyExercises.push(
     datasetId: "story-systemfehler-delta",
     scenarioTitle: "Systemfehler Delta",
     intro:
-      "SmartCity-Infrastruktur-Status: KRITISCH. Seit dem 01.03.2089 häufen sich Systemausfälle in der Bürger-Versorgungsinfrastruktur. Checkout-Systeme brechen zusammen, Datenbankverbindungen fallen weg. Die Korporations-KI erklärt es als 'zufällige Lastspitzen'. Du glaubst das nicht. Du hast Zugriff auf die rohen Server-Logs.",
+      "SmartCity-Infrastruktur-Status: KRITISCH. Seit dem 01.03.2089 häufen sich Systemausfälle in der Bürger-Versorgungsinfrastruktur. Checkout-Systeme brechen zusammen, Datenbankverbindungen fallen weg. Die Korporations-KI erklärt es als 'zufällige Lastspitzen'. Du glaubst das nicht. Du hast Zugriff auf die rohen Server-Logs.\n\nDie Log-Datenbank lädt. Events, Sessions, Fehler — drei Tabellen, aber unzählige Verbindungen. Jeder Fehler hat ein Muster. Jede Session erzählt eine Geschichte. Finde den Angriff, bevor die nächste Welle kommt.",
     chapters: [
       {
         title: "Kritische Alarme",
@@ -562,7 +562,7 @@ storyExercises.push(
     datasetId: "story-rote-zone",
     scenarioTitle: "Die rote Zone",
     intro:
-      "MedGov-Protokoll 2091: Die staatliche Medizin-KI übernimmt alle Behandlungsentscheidungen im Korporations-Gesundheitssystem. Berichte häufen sich: Patienten ohne Versicherung warten länger, zahlen mehr, werden schlechter versorgt. Die Zahlen müssen es beweisen. Du hast Zugriff auf die Krankenhausdatenbank — 48 Stunden, bevor MedGov den Audit-Modus aktiviert.",
+      "MedGov-Protokoll 2091: Die staatliche Medizin-KI übernimmt alle Behandlungsentscheidungen im Korporations-Gesundheitssystem. Berichte häufen sich: Patienten ohne Versicherung warten länger, zahlen mehr, werden schlechter versorgt. Die Zahlen müssen es beweisen. Du hast Zugriff auf die Krankenhausdatenbank — 48 Stunden, bevor MedGov den Audit-Modus aktiviert.\n\nDie Krankenhausdatenbank öffnet sich. Ärzte, Patienten, Behandlungen, Rechnungen — alles verknüpft. Die Daten lügen nicht. Aber MedGov wird versuchen, den Zugang zu sperren, wenn du zu nahe kommst. Sei gründlich. Sei schnell.",
     chapters: [
       {
         title: "Erste Diagnose",
@@ -684,7 +684,7 @@ storyExercises.push(
     datasetId: "story-ghost-protocol",
     scenarioTitle: "Ghost Protocol Sigma",
     intro:
-      "Das Sigma-Netzwerk ist aktiv. Eine unbekannte KI-Organisation hat Premium-Kundenprofile in den staatlich kontrollierten E-Commerce-Markt eingeschleust — koordinierte Käufe, gefälschte Bewertungen, manipulierte Bestsellerlisten. Du hast Zugriff auf die Analytics-Datenbank. Entlarve das Netzwerk, bevor Sigma die Spuren löscht.",
+      "Das Sigma-Netzwerk ist aktiv. Eine unbekannte KI-Organisation hat Premium-Kundenprofile in den staatlich kontrollierten E-Commerce-Markt eingeschleust — koordinierte Käufe, gefälschte Bewertungen, manipulierte Bestsellerlisten. Du hast Zugriff auf die Analytics-Datenbank. Entlarve das Netzwerk, bevor Sigma die Spuren löscht.\n\nDein Zugriffstoken ist aktiv. Kunden, Produkte, Bestellungen, Bewertungen, Kampagnen — fünf Tabellen voller Daten. Sigma hat Spuren hinterlassen. Finde sie, bevor sie verschwinden. Du hast 6 Stunden.",
     chapters: [
       {
         title: "Premium-Verdächtige",
@@ -804,7 +804,7 @@ storyExercises.push(
     datasetId: "university",
     scenarioTitle: "Projekt Prometheus",
     intro:
-      "Prometheus-Protokoll: Die Prometheus-Universität hat ihre Notenvergabe vollständig an eine KI delegiert. Whistleblower berichten: Studenten bestimmter Studiengänge werden systematisch schlechter benotet. Professoren, die dem Algorithmus widersprechen, verlieren Kurse. Du hast Lesezugriff auf die Prüfungsdatenbank — beweise den Bias mit SQL.",
+      "Prometheus-Protokoll: Die Prometheus-Universität hat ihre Notenvergabe vollständig an eine KI delegiert. Whistleblower berichten: Studenten bestimmter Studiengänge werden systematisch schlechter benotet. Professoren, die dem Algorithmus widersprechen, verlieren Kurse. Du hast Lesezugriff auf die Prüfungsdatenbank — beweise den Bias mit SQL.\n\nDie Universitätsdatenbank steht offen. Studenten, Professoren, Kurse, Einschreibungen, Prüfungsergebnisse — fünf Tabellen, die die Wahrheit enthalten. Prometheus überwacht jede Abfrage. Beweise den Bias, bevor der Zugang gesperrt wird.",
     chapters: [
       {
         title: "Gesamtranking",
@@ -941,7 +941,7 @@ storyExercises.push(
     datasetId: "story-geldstrom-omega",
     scenarioTitle: "Geldstrom Omega",
     intro:
-      "Omega-Alarm. Die Betrugserkennungs-KI der Korporationsbank hat Anomalien markiert — aber die Omega-Gruppe ist schneller. Mikrotransaktionen fließen durch Dutzende Konten, Beträge verschwinden in Millisekunden. Du hast Datenbankzugriff und 48 Stunden. Finde das Omega-Netzwerk — bevor es die Konten leert und die Spuren verwischt.",
+      "Omega-Alarm. Die Betrugserkennungs-KI der Korporationsbank hat Anomalien markiert — aber die Omega-Gruppe ist schneller. Mikrotransaktionen fließen durch Dutzende Konten, Beträge verschwinden in Millisekunden. Du hast Datenbankzugriff und 48 Stunden. Finde das Omega-Netzwerk — bevor es die Konten leert und die Spuren verwischt.\n\nDie Bankdatenbank ist online. Kunden, Konten, Transaktionen, Betrugsfälle — vier Tabellen, die das Omega-Netzwerk offenbaren. Jede Transaktion erzählt eine Geschichte. Jedes Konto hat ein Muster. Finde es, bevor Omega den Zugang schließt.",
     chapters: [
       {
         title: "Verdächtige Transfers",
@@ -1078,7 +1078,7 @@ storyExercises.push(
     datasetId: "fitness",
     scenarioTitle: "Null Day",
     intro:
-      "Null-Day-Protokoll: Der staatliche FitCore-Tracker sammelt nicht nur Fitnessdaten — er generiert sie. Körpergewicht, Kalorien, BMI: alles wird für eine versteckte Bürgerbewertungsmatrix manipuliert. Wer zu schwer ist, bekommt weniger Credits. Wer zu wenig trainiert, verliert Versicherungsschutz. Die Daten müssen stimmen — und sie stimmen nicht. Du hast Zugriff auf die FitCore-Datenbank. Beweise es.",
+      "Null-Day-Protokoll: Der staatliche FitCore-Tracker sammelt nicht nur Fitnessdaten — er generiert sie. Körpergewicht, Kalorien, BMI: alles wird für eine versteckte Bürgerbewertungsmatrix manipuliert. Wer zu schwer ist, bekommt weniger Credits. Wer zu wenig trainiert, verliert Versicherungsschutz. Die Daten müssen stimmen — und sie stimmen nicht. Du hast Zugriff auf die FitCore-Datenbank. Beweise es.\n\nDie FitCore-Datenbank lädt. Nutzer, Workouts, Körperdaten — drei Tabellen voller manipulierter Daten. Die Wahrheit liegt in den Mustern. Finde die Anomalien, bevor FitCore den Zugang sperrt. Die Bürgerbewertungsmatrix wartet nicht.",
     chapters: [
       {
         title: "Unmögliche Körper",
