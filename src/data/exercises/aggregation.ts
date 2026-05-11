@@ -17,7 +17,7 @@ resetCounter();
 aggregationExercises.push(
   makeWriteExercise("agg", {
     title: "Anzahl der Zeilen in kunden",
-    description: "Wie viele Kunden sind insgesamt in der Datenbank gespeichert?",
+    description: "Wie viele Kunden sind insgesamt in der Datenbank gespeichert? Gib der Ergebnisspalte den Namen `anzahl`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "shop",
@@ -35,7 +35,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Summe von gewicht_kg",
-    description: "Wie viel wiegen alle Nutzer zusammengerechnet?",
+    description: "Wie viel wiegen alle Nutzer zusammengerechnet? Gib der Ergebnisspalte den Namen `gesamt`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "fitness",
@@ -53,7 +53,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Durchschnitt von id",
-    description: "Welcher Wert liegt im Durchschnitt zwischen allen IDs in der Uebungstabelle?",
+    description: "Welcher Wert liegt im Durchschnitt zwischen allen IDs in der Uebungstabelle? Gib der Ergebnisspalte den Namen `durchschnitt`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "fitness",
@@ -71,7 +71,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Maximum von id",
-    description: "Wie hoch ist die hoechste vergebene ID in der Abteilungstabelle?",
+    description: "Wie hoch ist die hoechste vergebene ID in der Abteilungstabelle? Gib der Ergebnisspalte den Namen `maximum`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "hr",
@@ -89,7 +89,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Minimum von gehalt",
-    description: "Wie hoch ist das niedrigste Gehalt unter allen Mitarbeitern?",
+    description: "Wie hoch ist das niedrigste Gehalt unter allen Mitarbeitern? Gib der Ergebnisspalte den Namen `minimum`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "hr",
@@ -107,7 +107,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Gruppieren nach email",
-    description: "Zeige fuer jede E-Mail-Adresse der Agenten, wie oft sie in der Tabelle vorkommt.",
+    description: "Zeige fuer jede E-Mail-Adresse der Agenten, wie oft sie in der Tabelle vorkommt. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: "tickets",
@@ -125,7 +125,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "HAVING in kunden",
-    description: "Zeige alle Adressen, unter denen mehr als ein Kunde registriert ist, zusammen mit der jeweiligen Anzahl.",
+    description: "Zeige alle Adressen, unter denen mehr als ein Kunde registriert ist, zusammen mit der jeweiligen Anzahl. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: "banking",
@@ -143,7 +143,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Anzahl der Zeilen in konten",
-    description: "Wie viele Konten gibt es insgesamt in der Datenbank?",
+    description: "Wie viele Konten gibt es insgesamt in der Datenbank? Gib der Ergebnisspalte den Namen `anzahl`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "banking",
@@ -161,7 +161,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Summe von id",
-    description: "Welchen Gesamtwert ergibt die Addition aller Nutzer-IDs?",
+    description: "Welchen Gesamtwert ergibt die Addition aller Nutzer-IDs? Gib der Ergebnisspalte den Namen `gesamt`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "streaming",
@@ -179,7 +179,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Durchschnitt von jahr",
-    description: "Aus welchem durchschnittlichen Jahr stammen alle Filme in der Datenbank?",
+    description: "Aus welchem durchschnittlichen Jahr stammen alle Filme in der Datenbank? Gib der Ergebnisspalte den Namen `durchschnitt`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "streaming",
@@ -197,7 +197,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Maximum von dauer_ms",
-    description: "Wie lang war das laengste Event in Millisekunden?",
+    description: "Wie lang war das laengste Event in Millisekunden? Gib der Ergebnisspalte den Namen `maximum`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "logs",
@@ -215,7 +215,7 @@ aggregationExercises.push(
 
   makeWriteExercise("agg", {
     title: "Minimum von id",
-    description: "Wie hoch ist die kleinste ID in der Sitzungstabelle?",
+    description: "Wie hoch ist die kleinste ID in der Sitzungstabelle? Gib der Ergebnisspalte den Namen `minimum`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "logs",
@@ -235,7 +235,7 @@ aggregationExercises.push(
 aggregationExercises.push(
   makeWriteExercise("agg", {
     title: "Durchschnittspreis der Produkte",
-    description: "Was kostet ein Produkt im Durchschnitt?",
+    description: "Was kostet ein Produkt im Durchschnitt? Gib der Ergebnisspalte den Namen `durchschnittspreis`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: shopDataset.id,
@@ -251,7 +251,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Teuerstes Produkt",
-    description: "Was ist der hoechste Preis, den ein Produkt in der Datenbank hat?",
+    description: "Was ist der hoechste Preis, den ein Produkt in der Datenbank hat? Gib der Ergebnisspalte den Namen `teuerster_preis`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: shopDataset.id,
@@ -267,7 +267,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Summe aller Bestellgesamtbetraege",
-    description: "Welchen Gesamtumsatz ergeben alle Bestellungen zusammen?",
+    description: "Welchen Gesamtumsatz ergeben alle Bestellungen zusammen? Gib der Ergebnisspalte den Namen `summe`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: shopDataset.id,
@@ -283,7 +283,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Anzahl der Produkte pro Kategorie",
-    description: "Zeige fuer jede Kategorie, wie viele Produkte ihr zugeordnet sind.",
+    description: "Zeige fuer jede Kategorie, wie viele Produkte ihr zugeordnet sind. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: shopDataset.id,
@@ -299,7 +299,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Bestellungen pro Kunde",
-    description: "Zeige fuer jeden Kunden, wie viele Bestellungen er aufgegeben hat.",
+    description: "Zeige fuer jeden Kunden, wie viele Bestellungen er aufgegeben hat. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: shopDataset.id,
@@ -315,7 +315,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Hoechstes Gehalt pro Abteilung",
-    description: "Zeige fuer jede Abteilung das hoechste Gehalt, das dort gezahlt wird.",
+    description: "Zeige fuer jede Abteilung das hoechste Gehalt, das dort gezahlt wird. Gib der Aggregationsspalte den Alias `max_gehalt`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: hrDataset.id,
@@ -331,7 +331,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Durchschnittsgewicht der Nutzer",
-    description: "Berechne das Durchschnittsgewicht aller Nutzer.",
+    description: "Berechne das Durchschnittsgewicht aller Nutzer. Gib der Ergebnisspalte den Namen `avg_gewicht`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: fitnessDataset.id,
@@ -347,7 +347,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Durchschnittliche Kalorien pro Workout",
-    description: "Wie viele Kalorien werden bei einem Workout durchschnittlich verbrannt?",
+    description: "Wie viele Kalorien werden bei einem Workout durchschnittlich verbrannt? Gib der Ergebnisspalte den Namen `avg_kalorien`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: fitnessDataset.id,
@@ -363,7 +363,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Kalorien pro Nutzer summieren",
-    description: "Zeige fuer jeden Nutzer, wie viele Kalorien er insgesamt bei allen Workouts verbrannt hat.",
+    description: "Zeige fuer jeden Nutzer, wie viele Kalorien er insgesamt bei allen Workouts verbrannt hat. Gib der Aggregationsspalte den Alias `total_kalorien`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: fitnessDataset.id,
@@ -379,7 +379,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Anzahl der Tickets pro Prioritaet",
-    description: "Zeige fuer jede Prioritaetsstufe, wie viele Tickets ihr zugeordnet sind.",
+    description: "Zeige fuer jede Prioritaetsstufe, wie viele Tickets ihr zugeordnet sind. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: ticketsDataset.id,
@@ -395,7 +395,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Gesamtsumme der Transaktionen pro Konto",
-    description: "Zeige fuer jedes Konto, welchen Gesamtbetrag alle zugehoerigen Transaktionen ergeben.",
+    description: "Zeige fuer jedes Konto, welchen Gesamtbetrag alle zugehoerigen Transaktionen ergeben. Gib der Aggregationsspalte den Alias `total`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: bankingDataset.id,
@@ -411,7 +411,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Anzahl der Filme pro Genre",
-    description: "Zeige fuer jedes Genre, wie viele Filme es in der Datenbank gibt.",
+    description: "Zeige fuer jedes Genre, wie viele Filme es in der Datenbank gibt. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: streamingDataset.id,
@@ -427,7 +427,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Durchschnittsbewertung pro Film",
-    description: "Zeige fuer jeden Film, wie viele Sterne er im Durchschnitt erhalten hat.",
+    description: "Zeige fuer jeden Film, wie viele Sterne er im Durchschnitt erhalten hat. Gib der Aggregationsspalte den Alias `avg_sterne`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: streamingDataset.id,
@@ -443,7 +443,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Events pro Typ zaehlen",
-    description: "Zeige fuer jeden Event-Typ, wie viele Events dieser Art aufgezeichnet wurden.",
+    description: "Zeige fuer jeden Event-Typ, wie viele Events dieser Art aufgezeichnet wurden. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: logsDataset.id,
@@ -459,7 +459,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Kunden mit mehr als einer Bestellung (HAVING)",
-    description: "Zeige fuer jeden Kunden die Zahl seiner Bestellungen, aber nur wenn er mehr als eine aufgegeben hat.",
+    description: "Zeige fuer jeden Kunden die Zahl seiner Bestellungen, aber nur wenn er mehr als eine aufgegeben hat. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: shopDataset.id,
@@ -491,7 +491,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Mitarbeiter mit mehr als 2 Urlaubstagen",
-    description: "Zeige fuer jeden Mitarbeiter seine gesamten Urlaubstage, aber nur wenn es mehr als 2 sind.",
+    description: "Zeige fuer jeden Mitarbeiter seine gesamten Urlaubstage, aber nur wenn es mehr als 2 sind. Gib der Aggregationsspalte den Alias `urlaubs_tage`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: hrDataset.id,
@@ -507,7 +507,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Mindestgehalt pro Abteilung",
-    description: "Zeige fuer jede Abteilung das niedrigste Gehalt, das dort gezahlt wird.",
+    description: "Zeige fuer jede Abteilung das niedrigste Gehalt, das dort gezahlt wird. Gib der Aggregationsspalte den Alias `min_gehalt`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: hrDataset.id,
@@ -523,7 +523,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Anzahl der Workouts pro Nutzer",
-    description: "Zeige fuer jeden Nutzer, wie viele Workouts er absolviert hat.",
+    description: "Zeige fuer jeden Nutzer, wie viele Workouts er absolviert hat. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: fitnessDataset.id,
@@ -539,7 +539,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Anzahl der Fehler pro Schweregrad",
-    description: "Zeige fuer jeden Schweregrad, wie viele Fehler dieser Kategorie aufgetreten sind.",
+    description: "Zeige fuer jeden Schweregrad, wie viele Fehler dieser Kategorie aufgetreten sind. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: logsDataset.id,
@@ -555,7 +555,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Anzahl der Konten pro Typ",
-    description: "Zeige fuer jeden Kontotyp, wie viele Konten es davon gibt.",
+    description: "Zeige fuer jeden Kontotyp, wie viele Konten es davon gibt. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: bankingDataset.id,
@@ -571,7 +571,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Gesamtumsatz pro Zahlungsart",
-    description: "Zeige fuer jede Zahlungsart, welchen Gesamtbetrag alle damit getaetigten Zahlungen ergeben.",
+    description: "Zeige fuer jede Zahlungsart, welchen Gesamtbetrag alle damit getaetigten Zahlungen ergeben. Gib der Aggregationsspalte den Alias `total`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: shopDataset.id,
@@ -587,7 +587,7 @@ aggregationExercises.push(
   }),
   makeWriteExercise("agg", {
     title: "Tickets pro Status",
-    description: "Zeige fuer jeden Status, wie viele Tickets sich aktuell darin befinden.",
+    description: "Zeige fuer jeden Status, wie viele Tickets sich aktuell darin befinden. Gib der Aggregationsspalte den Alias `anzahl`.",
     difficulty: "junior",
     category: "Aggregation",
     datasetId: ticketsDataset.id,
