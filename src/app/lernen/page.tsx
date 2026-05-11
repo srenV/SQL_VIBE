@@ -10,8 +10,7 @@ import React from "react";
 import Link from "next/link";
 import { learnModules, totalArticles } from "@/data/learnContent";
 import { learnQuizzes } from "@/data/learnQuizzes";
-import { Container } from "@/components/container";
-import { Header } from "@/components/header";
+import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
 import { DifficultyBadge } from "@/components/difficultyBadge";
@@ -57,46 +56,37 @@ export default function LernenPage() {
     const mod = learnModules.find((m) => m.id === selectedQuizModule);
     if (quiz && mod) {
       return (
-        <div className="min-h-screen flex flex-col" id="main-content">
-          <Header />
-          <main className="flex-1 py-12">
-            <Container className="space-y-6">
-              <button
-                onClick={() => setSelectedQuizModule(null)}
-                className="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors"
-              >
-                <ArrowLeftIcon />
-                Zurück zur Modulauswahl
-              </button>
-              <QuizClient
-                questions={quiz.questions}
-                moduleTitle={quiz.title}
-                onComplete={() => {}}
-              />
-            </Container>
-          </main>
-        </div>
+        <PageShell mainClassName="flex-1 py-12" containerClassName="space-y-6">
+          <button
+            onClick={() => setSelectedQuizModule(null)}
+            className="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors"
+          >
+            <ArrowLeftIcon />
+            Zurück zur Modulauswahl
+          </button>
+          <QuizClient
+            questions={quiz.questions}
+            moduleTitle={quiz.title}
+            onComplete={() => {}}
+          />
+        </PageShell>
       );
     }
   }
 
   return (
-    <div className="min-h-screen flex flex-col" id="main-content">
-      <Header />
-
-      <main className="flex-1 py-12">
-        <Container className="space-y-10">
-          <FadeIn delay={0}>
-            <div className="text-center space-y-3">
-              <h1 className="text-4xl font-bold tracking-tight text-ink">
-                Lern-Hub
-              </h1>
-              <p className="text-lg text-ink-muted max-w-2xl mx-auto">
-                Verstehe die Theorie hinter den Datenbanken: Normalisierung, Relationenmodell,
-                ERM, SQL-Grundlagen und mehr — mit interaktiven Beispielen und Übungen.
-              </p>
-            </div>
-          </FadeIn>
+    <PageShell mainClassName="flex-1 py-12" containerClassName="space-y-10">
+      <FadeIn delay={0}>
+        <div className="text-center space-y-3">
+          <h1 className="text-4xl font-bold tracking-tight text-ink">
+            Lern-Hub
+          </h1>
+          <p className="text-lg text-ink-muted max-w-2xl mx-auto">
+            Verstehe die Theorie hinter den Datenbanken: Normalisierung, Relationenmodell,
+            ERM, SQL-Grundlagen und mehr — mit interaktiven Beispielen und Übungen.
+          </p>
+        </div>
+      </FadeIn>
 
           {/* Tab navigation */}
           <FadeIn delay={0.05}>
@@ -242,8 +232,6 @@ export default function LernenPage() {
               </div>
             </FadeIn>
           )}
-        </Container>
-      </main>
-    </div>
+    </PageShell>
   );
 }

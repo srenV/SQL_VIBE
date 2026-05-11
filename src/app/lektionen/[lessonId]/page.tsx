@@ -6,8 +6,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { catalog, allLessonIds } from "@/data/catalog";
-import { Container } from "@/components/container";
-import { Header } from "@/components/header";
+import { PageShell } from "@/components/pageShell";
 import { Card } from "@/components/card";
 import { FadeIn } from "@/components/animations";
 import { DifficultyBadge } from "@/components/difficultyBadge";
@@ -57,21 +56,17 @@ export default async function LessonOverviewPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" id="main-content">
-      <Header />
-
-      <main className="flex-1 py-8">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-        />
-        <Container>
-          <FadeIn delay={0}>
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold text-ink">{lesson.title}</h1>
-              <p className="mt-2 text-sm text-ink-muted">{lesson.description}</p>
-              <div className="mt-4 flex flex-wrap items-center gap-4">
-                <DifficultyBadge difficulty={lesson.difficulty} />
+    <PageShell mainClassName="flex-1 py-8" containerClassName="">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <FadeIn delay={0}>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-ink">{lesson.title}</h1>
+          <p className="mt-2 text-sm text-ink-muted">{lesson.description}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <DifficultyBadge difficulty={lesson.difficulty} />
                 <span className="text-xs text-ink-muted">
                   {exercises.length} Übungen · {totalPoints} Punkte
                 </span>
@@ -118,8 +113,6 @@ export default async function LessonOverviewPage({ params }: PageProps) {
               </div>
             </FadeIn>
           )}
-        </Container>
-      </main>
-    </div>
+    </PageShell>
   );
 }

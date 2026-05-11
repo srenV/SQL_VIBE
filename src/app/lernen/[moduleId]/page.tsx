@@ -9,8 +9,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getModuleById, allModuleIds } from "@/data/learnContent";
 import { Card } from "@/components/card";
-import { Container } from "@/components/container";
-import { Header } from "@/components/header";
+import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { DifficultyBadge, getDifficultyConfig } from "@/components/difficultyBadge";
 import { getModuleIcon } from "@/components/learn/moduleIcons";
@@ -71,22 +70,18 @@ export default async function LearnModulePage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" id="main-content">
-      <Header />
-
-      <main className="flex-1 py-12">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
-        />
-        <Container className="space-y-10">
-          <FadeIn delay={0}>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
+    <PageShell mainClassName="flex-1 py-12" containerClassName="space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+      />
+      <FadeIn delay={0}>
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
                 {(() => {
                   const IconComponent = getModuleIcon(mod.id);
                   return <IconComponent className="w-8 h-8 text-primary-500" />;
@@ -153,8 +148,6 @@ export default async function LearnModulePage({ params }: PageProps) {
               })}
             </div>
           </FadeIn>
-        </Container>
-      </main>
-    </div>
+    </PageShell>
   );
 }

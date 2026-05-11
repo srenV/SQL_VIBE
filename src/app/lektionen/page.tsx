@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { catalog, allLessonIds } from "@/data/catalog";
-import { Container } from "@/components/container";
-import { Header } from "@/components/header";
+import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
 import { DifficultyBadge } from "@/components/difficultyBadge";
@@ -41,22 +40,18 @@ export default function LektionenPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" id="main-content">
-      <Header />
-
-      <main className="flex-1 py-12">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <Container className="space-y-10">
-          <FadeIn delay={0}>
-            <div className="text-center space-y-3">
-              <h1 className="text-4xl font-bold tracking-tight text-ink">
-                SQL Lektionen
-              </h1>
-              <p className="text-lg text-ink-muted max-w-2xl mx-auto">
-                Lerne MySQL Schritt für Schritt. Wähle eine Lektion, um mit den
+    <PageShell mainClassName="flex-1 py-12" containerClassName="space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <FadeIn delay={0}>
+        <div className="text-center space-y-3">
+          <h1 className="text-4xl font-bold tracking-tight text-ink">
+            SQL Lektionen
+          </h1>
+          <p className="text-lg text-ink-muted max-w-2xl mx-auto">
+            Lerne MySQL Schritt für Schritt. Wähle eine Lektion, um mit den
                 interaktiven Übungen zu beginnen.
               </p>
             </div>
@@ -70,11 +65,7 @@ export default function LektionenPage() {
               ))}
             </div>
           </FadeIn>
-        </Container>
-      </main>
-
-
-    </div>
+    </PageShell>
   );
 }
 

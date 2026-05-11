@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/header";
+import { PageShell } from "@/components/pageShell";
 import { ProfilClient } from "./ProfilClient";
 import { catalog, allLessonIds } from "@/data/catalog";
 import { storyExercises } from "@/data/exercises";
@@ -18,9 +18,8 @@ export default function ProfilPage() {
     .map((l) => ({ id: l.id, title: l.title, exerciseIds: l.exercises }));
 
   return (
-    <div className="min-h-screen flex flex-col" id="main-content">
-      <Header />
+    <PageShell>
       <ProfilClient lessons={lessons} storyTotal={storyExercises.length} />
-    </div>
+    </PageShell>
   );
 }

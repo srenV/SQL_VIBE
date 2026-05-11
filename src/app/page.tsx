@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/container";
-import { Header } from "@/components/header";
+import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { FeatureCard } from "@/components/featureCard";
 
@@ -34,15 +34,12 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" id="main-content">
-      <Header />
-
-      <main className="flex-1">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <section className="py-20 text-center bg-linear-to-b from-primary-50/50 to-transparent dark:from-primary-950/30 dark:to-transparent">
+    <PageShell mainClassName="flex-1">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <section className="py-20 text-center bg-linear-to-b from-primary-50/50 to-transparent dark:from-primary-950/30 dark:to-transparent">
           <Container className="space-y-6 max-w-4xl mx-auto">
             <FadeIn delay={0}>
               <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-ink">
@@ -123,11 +120,6 @@ export default function HomePage() {
             </div>
           </Container>
         </section>
-
-
-      </main>
-
-
-    </div>
+    </PageShell>
   );
 }

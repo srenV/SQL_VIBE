@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { storyExercises } from "@/data/exercises";
 import { Container } from "@/components/container";
-import { Header } from "@/components/header";
+import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { DifficultyBadge } from "@/components/difficultyBadge";
 import { useProgress } from "@/hooks/useProgress";
@@ -43,13 +43,10 @@ export default function StoryPage() {
   const progressPct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen flex flex-col" id="main-content">
-      <Header />
-
-      <main className="flex-1">
-        {/* ------------------------------------------------------------------ */}
-        {/* Hero                                                                */}
-        {/* ------------------------------------------------------------------ */}
+    <PageShell mainClassName="flex-1">
+      {/* ------------------------------------------------------------------ */}
+      {/* Hero                                                                */}
+      {/* ------------------------------------------------------------------ */}
         <section className="py-16 text-center bg-linear-to-b from-primary-50/50 to-transparent dark:from-primary-950/30 dark:to-transparent">
           <Container className="space-y-5 max-w-3xl mx-auto">
             <FadeIn delay={0}>
@@ -227,7 +224,6 @@ export default function StoryPage() {
             </div>
           </Container>
         </section>
-      </main>
-    </div>
+    </PageShell>
   );
 }
