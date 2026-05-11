@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { catalog, allLessonIds } from "@/data/catalog";
 import { Container } from "@/components/container";
@@ -5,6 +6,18 @@ import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
 import type { Difficulty, Lesson } from "@/types/exercise";
+
+export const metadata: Metadata = {
+  title: "SQL Lektionen – Interaktive MySQL-Übungen",
+  description:
+    "Lerne MySQL Schritt für Schritt mit interaktiven Übungen: SELECT, WHERE, JOINs, Aggregationen, Subqueries, CTEs, Window Functions und mehr.",
+  alternates: { canonical: "/lektionen" },
+  openGraph: {
+    title: "SQL Lektionen – Interaktive MySQL-Übungen",
+    description:
+      "Lerne MySQL Schritt für Schritt mit interaktiven Übungen: SELECT, WHERE, JOINs, Aggregationen, Subqueries, CTEs, Window Functions und mehr.",
+  },
+};
 
 const difficultyLabels: Record<Difficulty, { label: string; className: string }> = {
   beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
@@ -20,11 +33,29 @@ export default function LektionenPage() {
     .filter((l): l is NonNullable<typeof l> => !!l && l.id !== "lesson_story")
     .sort((a, b) => a.order - b.order);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "SQL Lektionen",
+    description: "Interaktive MySQL-Übungen von SELECT-Grundlagen bis zu Interview-Challenges.",
+    numberOfItems: sortedLessons.length,
+    itemListElement: sortedLessons.map((lesson, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: lesson.title,
+      url: `https://sql-vibe.vercel.app/lektionen/${lesson.id}`,
+    })),
+  };
+
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
       <Header />
 
       <main className="flex-1 py-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Container className="space-y-10">
           <FadeIn delay={0}>
             <div className="text-center space-y-3">

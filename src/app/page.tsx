@@ -1,14 +1,47 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/animations";
 import { FeatureCard } from "@/components/featureCard";
 
+export const metadata: Metadata = {
+  title: "SQL VIBE – Lerne MySQL: Üben, Experimentieren, Verstehen",
+  description:
+    "Interaktive MySQL-Lernplattform mit Übungen, freier Sandbox für eigene Datenbanken und Theorie-Hub für Normalisierung, RM, ERM und SQL-Grundlagen. MySQL-Syntax wird vollständig unterstützt.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "SQL VIBE – Lerne MySQL: Üben, Experimentieren, Verstehen",
+    description:
+      "Interaktive MySQL-Lernplattform mit Übungen, freier Sandbox für eigene Datenbanken und Theorie-Hub für Normalisierung, RM, ERM und SQL-Grundlagen.",
+    type: "website",
+  },
+};
+
 export default function HomePage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "SQL VIBE",
+    applicationCategory: "EducationalApplication",
+    operatingSystem: "Web",
+    description:
+      "Interaktive MySQL-Lernplattform mit Übungen, freier Sandbox für eigene Datenbanken und Theorie-Hub für Normalisierung, RM, ERM und SQL-Grundlagen.",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "EUR",
+    },
+  };
+
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
       <Header />
 
       <main className="flex-1">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <section className="py-20 text-center bg-linear-to-b from-primary-50/50 to-transparent dark:from-primary-950/30 dark:to-transparent">
           <Container className="space-y-6 max-w-4xl mx-auto">
             <FadeIn delay={0}>

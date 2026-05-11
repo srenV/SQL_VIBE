@@ -2,6 +2,7 @@
  * Lektionen-Detailseite – Zeigt alle Uebungen einer Lektion mit
  * Fortschrittsanzeige und Schwierigkeitsgrad-Labels an.
  */
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { catalog, allLessonIds } from "@/data/catalog";
@@ -16,6 +17,21 @@ interface PageProps {
 
 export async function generateStaticParams() {
   return allLessonIds.map((id) => ({ lessonId: id }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lessonId } = await params;
+  const lesson = catalog.lessons[lessonId];
+  if (!lesson) return { title: "Lektion nicht gefunden" };
+  return {
+    title: `${lesson.title} – SQL Üben`,
+    description: lesson.description,
+    alternates: { canonical: `/lektionen/${lessonId}` },
+    openGraph: {
+      title: `${lesson.title} – SQL Üben`,
+      description: lesson.description,
+    },
+  };
 }
 
 const difficultyLabels: Record<string, { label: string; className: string }> = {
@@ -38,11 +54,25 @@ export default async function LessonOverviewPage({ params }: PageProps) {
   const totalPoints = exercises.reduce((sum, e) => sum + e.points, 0);
   const diff = difficultyLabels[lesson.difficulty] ?? difficultyLabels.beginner;
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Startseite", item: "https://sql-vibe.vercel.app" },
+      { "@type": "ListItem", position: 2, name: "Lektionen", item: "https://sql-vibe.vercel.app/lektionen" },
+      { "@type": "ListItem", position: 3, name: lesson.title, item: `https://sql-vibe.vercel.app/lektionen/${lessonId}` },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
       <Header />
 
       <main className="flex-1 py-8">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
         <Container>
           <FadeIn delay={0}>
             <div className="mb-8">

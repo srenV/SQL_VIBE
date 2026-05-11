@@ -106,8 +106,10 @@ export default function LernenPage() {
           {/* Tab navigation */}
           <FadeIn delay={0.05}>
             <div className="flex justify-center">
-              <div className="inline-flex rounded-lg border border-surface-dim p-1 bg-surface-dim/30">
+              <div role="tablist" className="inline-flex rounded-lg border border-surface-dim p-1 bg-surface-dim/30">
                 <button
+                  role="tab"
+                  aria-selected={activeTab === "lernen"}
                   onClick={() => { setActiveTab("lernen"); setSelectedQuizModule(null); }}
                   className={`inline-flex items-center gap-2 px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     activeTab === "lernen"
@@ -119,6 +121,8 @@ export default function LernenPage() {
                   Lernen
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={activeTab === "testen"}
                   onClick={() => { setActiveTab("testen"); setSelectedQuizModule(null); }}
                   className={`inline-flex items-center gap-2 px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     activeTab === "testen"
@@ -136,7 +140,7 @@ export default function LernenPage() {
           {/* Lernen tab */}
           {activeTab === "lernen" && (
             <FadeIn delay={0.1}>
-              <div className="text-center mb-2">
+              <div role="tabpanel" className="text-center mb-2">
                 <p className="text-sm text-ink-muted">
                   {learnModules.length} Module · {totalArticles} Artikel
                 </p>
@@ -194,7 +198,7 @@ export default function LernenPage() {
           {/* Testen tab */}
           {activeTab === "testen" && (
             <FadeIn delay={0.1}>
-              <div className="text-center mb-2">
+              <div role="tabpanel" className="text-center mb-2">
                 <p className="text-sm text-ink-muted">
                   {learnQuizzes.length} Quizze · Je {learnQuizzes[0]?.questions.length ?? 15} Fragen pro Modul
                 </p>

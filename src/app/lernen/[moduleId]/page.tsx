@@ -4,6 +4,7 @@
  * English: Learning module detail page – Shows all articles of a learning module.
  */
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getModuleById, allModuleIds } from "@/data/learnContent";
@@ -21,6 +22,21 @@ export async function generateStaticParams() {
   return allModuleIds.map((id) => ({ moduleId: id }));
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { moduleId } = await params;
+  const mod = getModuleById(moduleId);
+  if (!mod) return { title: "Modul nicht gefunden" };
+  return {
+    title: `${mod.title} – SQL Lernen`,
+    description: mod.description,
+    alternates: { canonical: `/lernen/${moduleId}` },
+    openGraph: {
+      title: `${mod.title} – SQL Lernen`,
+      description: mod.description,
+    },
+  };
+}
+
 const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = {
   beginner: { label: "Anfänger", className: "bg-success/10 text-success" },
   junior: { label: "Grundlagen", className: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300" },
@@ -35,11 +51,44 @@ export default async function LearnModulePage({ params }: PageProps) {
   const totalMin = mod.articles.reduce((sum, a) => sum + a.estimatedMinutes, 0);
   const diffConfig = DIFFICULTY_CONFIG[mod.difficulty] ?? DIFFICULTY_CONFIG.beginner;
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Startseite", item: "https://sql-vibe.vercel.app" },
+      { "@type": "ListItem", position: 2, name: "Lernen", item: "https://sql-vibe.vercel.app/lernen" },
+      { "@type": "ListItem", position: 3, name: mod.title, item: `https://sql-vibe.vercel.app/lernen/${moduleId}` },
+    ],
+  };
+
+  const courseJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: mod.title,
+    description: mod.description,
+    provider: {
+      "@type": "Organization",
+      name: "SQL VIBE",
+      url: "https://sql-vibe.vercel.app",
+    },
+    coursePrerequisites: diffConfig.label,
+    numberOfItems: mod.articles.length,
+    inLanguage: "de",
+  };
+
   return (
     <div className="min-h-screen flex flex-col" id="main-content">
       <Header />
 
       <main className="flex-1 py-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+        />
         <Container className="space-y-10">
           <FadeIn delay={0}>
             <div className="space-y-3">

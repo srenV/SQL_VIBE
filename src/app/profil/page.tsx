@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { ProfilClient } from "./ProfilClient";
 import { catalog, allLessonIds } from "@/data/catalog";
 import { storyExercises } from "@/data/exercises";
 
-export const metadata = { title: "Profil – SQL Vibe" };
+export const metadata: Metadata = {
+  title: "Profil",
+  description: "Dein persönliches SQL VIBE-Profil mit Fortschritt, Level und Erfolgen.",
+  robots: { index: false, follow: false },
+};
 
 export default function ProfilPage() {
   const lessons = allLessonIds

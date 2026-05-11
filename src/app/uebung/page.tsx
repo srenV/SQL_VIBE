@@ -1,19 +1,14 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { catalog, allLessonIds } from "@/data/catalog";
+
+export const metadata: Metadata = {
+  title: "Üben",
+  robots: { index: false, follow: false },
+};
 
 /**
- * Alte Uebungs-Seite: leitet auf die erste Lektion weiter.
+ * Alte Uebungs-Seite: leitet auf den Ueben-Hub (Lektionen) weiter.
  */
 export default function UebungPage() {
-  const sortedLessons = allLessonIds
-    .map((id) => catalog.lessons[id])
-    .filter(Boolean)
-    .sort((a, b) => a.order - b.order);
-
-  const firstLesson = sortedLessons[0];
-  if (!firstLesson) {
-    redirect("/lektionen");
-  }
-
-  redirect(`/lektionen/${firstLesson.id}/${firstLesson.exercises[0]}`);
+  redirect("/lektionen");
 }

@@ -3,6 +3,7 @@
  * den Playground-Adapter aufruft und die Client-Komponente rendert.
  * Generiert statische Pfade fuer alle Uebungen beim Build.
  */
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { catalog, allLessonIds } from "@/data/catalog";
 import { adaptExercise } from "@/lib/playgroundAdapter";
@@ -22,6 +23,22 @@ export async function generateStaticParams() {
     }
   }
   return params;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lessonId, exerciseId } = await params;
+  const lesson = catalog.lessons[lessonId];
+  const exercise = catalog.exercises[exerciseId];
+  if (!lesson || !exercise) return { title: "Übung nicht gefunden" };
+  return {
+    title: `${exercise.title} – ${lesson.title}`,
+    description: exercise.description,
+    alternates: { canonical: `/lektionen/${lessonId}/${exerciseId}` },
+    openGraph: {
+      title: `${exercise.title} – ${lesson.title}`,
+      description: exercise.description,
+    },
+  };
 }
 
 export default async function ExercisePage({ params }: PageProps) {
@@ -52,16 +69,33 @@ export default async function ExercisePage({ params }: PageProps) {
 
   const lessonExerciseCompleted = lessonExerciseIds.map(() => false);
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Startseite", item: "https://sql-vibe.vercel.app" },
+      { "@type": "ListItem", position: 2, name: "Lektionen", item: "https://sql-vibe.vercel.app/lektionen" },
+      { "@type": "ListItem", position: 3, name: lesson.title, item: `https://sql-vibe.vercel.app/lektionen/${lessonId}` },
+      { "@type": "ListItem", position: 4, name: exercise.title, item: `https://sql-vibe.vercel.app/lektionen/${lessonId}/${exerciseId}` },
+    ],
+  };
+
   return (
-    <ExercisePageClient
-      lesson={lesson}
-      exercise={exercise}
-      playgroundExercise={playgroundExercise}
-      prevExerciseId={prevExerciseId}
-      nextExerciseId={nextExerciseId}
-      lessonExerciseIds={lessonExerciseIds}
-      lessonExerciseTitles={lessonExerciseTitles}
-      lessonExerciseCompleted={lessonExerciseCompleted}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ExercisePageClient
+        lesson={lesson}
+        exercise={exercise}
+        playgroundExercise={playgroundExercise}
+        prevExerciseId={prevExerciseId}
+        nextExerciseId={nextExerciseId}
+        lessonExerciseIds={lessonExerciseIds}
+        lessonExerciseTitles={lessonExerciseTitles}
+        lessonExerciseCompleted={lessonExerciseCompleted}
+      />
+    </>
   );
 }
