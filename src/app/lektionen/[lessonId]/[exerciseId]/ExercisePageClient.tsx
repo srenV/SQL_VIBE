@@ -162,7 +162,7 @@ export function ExercisePageClient({
                     }`}
                   >
                     <span
-                      className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-xs transition-colors duration-200 ${
+                      className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs transition-colors duration-200 ${
                         isCompleted
                           ? "bg-success/15 text-success"
                           : isCurrent

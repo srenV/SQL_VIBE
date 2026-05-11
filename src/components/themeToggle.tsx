@@ -69,15 +69,15 @@ export function ThemeToggle() {
         className="relative overflow-hidden rounded-full"
         style={{ width: 56, height: 28 }}
         animate={{
-          backgroundColor: isDark ? "#1e1b4b" : "#fef3c7",
+          backgroundColor: isDark ? "#1e1b4b" : "#38bdf8",
           boxShadow: isDark
             ? "0 0 0 1.5px #312e81, 0 0 8px 1px rgba(99,102,241,0.18)"
-            : "0 0 0 1.5px #fde68a, 0 0 8px 1px rgba(251,191,36,0.22)",
+            : "0 0 0 1.5px #0ea5e9, 0 0 8px 1px rgba(56,189,248,0.3)",
         }}
         whileHover={{
           boxShadow: isDark
             ? "0 0 0 1.5px #4338ca, 0 0 14px 2px rgba(99,102,241,0.3)"
-            : "0 0 0 1.5px #fbbf24, 0 0 14px 2px rgba(251,191,36,0.35)",
+            : "0 0 0 1.5px #0284c7, 0 0 14px 2px rgba(56,189,248,0.45)",
         }}
         transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
