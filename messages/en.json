@@ -122,5 +122,16 @@
     "missingColumn": "The column does not exist. Check the column name for typos.",
     "datatypeMismatch": "The data types are not compatible. Check that you are comparing strings and numbers correctly.",
     "unknown": "An unknown error occurred. Try simplifying the query and testing step by step."
+  },
+  "lektionen": {
+    "metaTitle": "SQL Lessons – Interactive MySQL Exercises",
+    "metaDescription": "Learn MySQL step by step with interactive exercises: SELECT, WHERE, JOINs, aggregations, subqueries, CTEs, window functions, and more.",
+    "title": "SQL Lessons",
+    "subtitle": "Learn MySQL step by step. Choose a lesson to start with interactive exercises.",
+    "allLessons": "All lessons",
+    "lesson": "Lesson",
+    "exerciseSingular": "exercise",
+    "exercisePlural": "exercises",
+    "start": "Start"
   }
 }

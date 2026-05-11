@@ -122,5 +122,16 @@
     "missingColumn": "Die Spalte existiert nicht. Prüfe den Spaltennamen auf Tippfehler.",
     "datatypeMismatch": "Die Datentypen sind nicht kompatibel. Prüfe, ob du Zeichenketten und Zahlen korrekt vergleichst.",
     "unknown": "Ein unbekannter Fehler ist aufgetreten. Versuche die Abfrage zu vereinfachen und Schritt für Schritt zu testen."
+  },
+  "lektionen": {
+    "metaTitle": "SQL Lektionen – Interaktive MySQL-Übungen",
+    "metaDescription": "Lerne MySQL Schritt für Schritt mit interaktiven Übungen: SELECT, WHERE, JOINs, Aggregationen, Subqueries, CTEs, Window Functions und mehr.",
+    "title": "SQL Lektionen",
+    "subtitle": "Lerne MySQL Schritt für Schritt. Wähle eine Lektion, um mit den interaktiven Übungen zu beginnen.",
+    "allLessons": "Alle Lektionen",
+    "lesson": "Lektion",
+    "exerciseSingular": "Übung",
+    "exercisePlural": "Übungen",
+    "start": "Starten"
   }
 }

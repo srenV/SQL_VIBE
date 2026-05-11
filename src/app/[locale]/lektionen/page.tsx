@@ -1,25 +1,39 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { catalog, allLessonIds } from "@/data/catalog";
 import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
 import { DifficultyBadge } from "@/components/difficultyBadge";
+import { routing } from "@/i18n/routing";
 import type { Lesson } from "@/types/exercise";
 
-export const metadata: Metadata = {
-  title: "SQL Lektionen – Interaktive MySQL-Übungen",
-  description:
-    "Lerne MySQL Schritt für Schritt mit interaktiven Übungen: SELECT, WHERE, JOINs, Aggregationen, Subqueries, CTEs, Window Functions und mehr.",
-  alternates: { canonical: "/lektionen" },
-  openGraph: {
-    title: "SQL Lektionen – Interaktive MySQL-Übungen",
-    description:
-      "Lerne MySQL Schritt für Schritt mit interaktiven Übungen: SELECT, WHERE, JOINs, Aggregationen, Subqueries, CTEs, Window Functions und mehr.",
-  },
-};
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-export default function LektionenPage() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("lektionen");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/lektionen" },
+    openGraph: {
+      title: t("metaTitle"),
+      description: t("metaDescription"),
+    },
+  };
+}
+
+export default async function LektionenPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("lektionen");
+
   const sortedLessons = allLessonIds
     .map((id) => catalog.lessons[id])
     .filter((l): l is NonNullable<typeof l> => !!l && l.id !== "lesson_story")
@@ -28,14 +42,14 @@ export default function LektionenPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "SQL Lektionen",
-    description: "Interaktive MySQL-Übungen von SELECT-Grundlagen bis zu Interview-Challenges.",
+    name: t("metaTitle"),
+    description: t("metaDescription"),
     numberOfItems: sortedLessons.length,
     itemListElement: sortedLessons.map((lesson, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: lesson.title,
-      url: `https://sql-vibe.vercel.app/lektionen/${lesson.id}`,
+      url: `https://sql-vibe.vercel.app/${locale}/lektionen/${lesson.id}`,
     })),
   };
 
@@ -48,20 +62,19 @@ export default function LektionenPage() {
       <FadeIn delay={0}>
         <div className="text-center space-y-3">
           <h1 className="text-4xl font-bold tracking-tight text-ink">
-            SQL Lektionen
+            {t("title")}
           </h1>
           <p className="text-lg text-ink-muted max-w-2xl mx-auto">
-            Lerne MySQL Schritt für Schritt. Wähle eine Lektion, um mit den
-                interaktiven Übungen zu beginnen.
-              </p>
-            </div>
-          </FadeIn>
+            {t("subtitle")}
+          </p>
+        </div>
+      </FadeIn>
 
-          <FadeIn delay={0.1}>
-            <h2 className="sr-only">Alle Lektionen</h2>
+      <FadeIn delay={0.1}>
+        <h2 className="sr-only">{t("allLessons")}</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {sortedLessons.map((lesson) => (
-                <LessonCard key={lesson.id} lesson={lesson} />
+                <LessonCard key={lesson.id} lesson={lesson} t={t} />
               ))}
             </div>
           </FadeIn>
@@ -69,7 +82,7 @@ export default function LektionenPage() {
   );
 }
 
-function LessonCard({ lesson }: { lesson: Lesson }) {
+function LessonCard({ lesson, t }: { lesson: Lesson; t: (key: string) => string }) {
   const exerciseCount = lesson.exercises.length;
 
   return (
@@ -82,7 +95,7 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
           <div className="space-y-2 flex-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-ink-muted">
-                Lektion {lesson.order}
+                {t("lesson")} {lesson.order}
               </span>
               <DifficultyBadge difficulty={lesson.difficulty} />
             </div>
@@ -100,10 +113,10 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
 
         <div className="mt-auto pt-4 flex items-center justify-between text-xs text-ink-muted">
           <span>
-            {exerciseCount} {exerciseCount === 1 ? "Übung" : "Übungen"}
+            {exerciseCount} {exerciseCount === 1 ? t("exerciseSingular") : t("exercisePlural")}
           </span>
           <span className="text-primary-500 font-medium group-hover:translate-x-1 inline-flex items-center gap-1 transition-transform">
-            Starten
+            {t("start")}
             <svg className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all duration-300 -ml-1 group-hover:ml-0 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
