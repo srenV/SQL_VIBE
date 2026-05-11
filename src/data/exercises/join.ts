@@ -17,7 +17,7 @@ resetCounter();
 joinExercises.push(
   makeWriteExercise("joi", {
     title: "kunden und bestellungen verbinden",
-    description: "Zeige name und gesamtbetrag durch einen INNER JOIN zwischen `kunden` und `bestellungen`.",
+    description: "Verbinde `kunden` und `bestellungen` mit einem INNER JOIN. Gib den Kundennamen und den Gesamtbetrag der Bestellung aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "shop",
@@ -35,7 +35,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen kunden und bestellungen",
-    description: "Zeige alle Kunden mit dem Gesamtbetrag ihrer Bestellungen. Kunden ohne Bestellung sollen trotzdem in der Ausgabe erscheinen.",
+    description: "Gib den Namen jedes Kunden und den Gesamtbetrag seiner Bestellungen aus. Auch Kunden ohne Bestellung sollen mit ihrem Namen in der Ausgabe erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "shop",
@@ -53,7 +53,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen kunden und bestellungen",
-    description: "Zeige alle Bestellungen mit dem Namen des zugehoerigen Kunden und dem Bestellbetrag. Bestellungen ohne Kundeneintrag sollen ebenfalls erscheinen.",
+    description: "Gib den Kundennamen und den Gesamtbetrag jeder Bestellung aus. Auch Bestellungen ohne zugehoerigen Kundeneintrag sollen mit ihrem Gesamtbetrag erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "shop",
@@ -71,7 +71,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Bestellungen pro Kunde zaehlen (JOIN + GROUP BY)",
-    description: "Ermittle, wie viele Bestellungen jeder Kunde aufgegeben hat. Gib die Kunden-ID und die Bestellanzahl aus.",
+    description: "Zaehle, wie viele Bestellungen jeder Kunde aufgegeben hat. Gib die Kunden-ID und die Anzahl der Bestellungen pro Kunde aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "shop",
@@ -89,7 +89,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "produkte und kategorien verbinden",
-    description: "Zeige produkte.name und kategorien.name durch einen INNER JOIN zwischen `produkte` und `kategorien`.",
+    description: "Verbinde `produkte` und `kategorien` mit einem INNER JOIN. Gib den Produktnamen und den Kategorienamen aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "shop",
@@ -107,7 +107,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen produkte und kategorien",
-    description: "Erstelle eine Liste aller Produkte mit dem Namen der zugehoerigen Kategorie. Produkte ohne Kategorie sollen ebenfalls angezeigt werden.",
+    description: "Gib den Namen jedes Produkts und den Namen seiner Kategorie aus. Auch Produkte ohne zugeordnete Kategorie sollen mit ihrem Produktnamen erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "shop",
@@ -125,7 +125,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen produkte und kategorien",
-    description: "Erstelle eine vollstaendige Liste aller Kategorien mit den ihnen zugeordneten Produkten. Kategorien ohne Produkt sollen nicht fehlen.",
+    description: "Gib den Produktnamen und den Kategorienamen aus. Auch Kategorien ohne zugeordnetes Produkt sollen mit ihrem Kategorienamen erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "shop",
@@ -143,7 +143,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Kategorien pro Produkt zaehlen (JOIN + GROUP BY)",
-    description: "Finde heraus, wie viele Kategorien jedem Produkt zugeordnet sind. Gib die Produkt-ID und die Anzahl der Kategorien aus.",
+    description: "Zaehle, wie viele Kategorien jedem Produkt zugeordnet sind. Gib die Produkt-ID und die Anzahl der Kategorien pro Produkt aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "shop",
@@ -161,7 +161,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "bestellungen und zahlungen verbinden",
-    description: "Zeige status und betrag durch einen INNER JOIN zwischen `bestellungen` und `zahlungen`.",
+    description: "Verbinde `bestellungen` und `zahlungen` mit einem INNER JOIN. Gib den Bestellstatus und den Zahlungsbetrag aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "shop",
@@ -179,7 +179,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen bestellungen und zahlungen",
-    description: "Zeige alle Bestellungen mit dem Betrag der zugehoerigen Zahlung. Bestellungen, fuer die noch keine Zahlung vorliegt, sollen nicht fehlen.",
+    description: "Gib den Status jeder Bestellung und den Betrag der zugehoerigen Zahlung aus. Auch Bestellungen ohne Zahlung sollen mit ihrem Status erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "shop",
@@ -197,7 +197,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen bestellungen und zahlungen",
-    description: "Zeige alle Zahlungen mit dem Betrag und dem Status der zugehoerigen Bestellung. Zahlungen ohne Bestellung sollen ebenfalls erscheinen.",
+    description: "Gib den Bestellstatus und den Zahlungsbetrag aus. Auch Zahlungen ohne zugehoerige Bestellung sollen mit ihrem Betrag erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "shop",
@@ -215,7 +215,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Zahlungen pro Bestellung zaehlen (JOIN + GROUP BY)",
-    description: "Ermittle, wie viele Zahlungen jeder Bestellung zugeordnet sind. Gib die Bestell-ID und die Zahlungsanzahl aus.",
+    description: "Zaehle, wie viele Zahlungen jeder Bestellung zugeordnet sind. Gib die Bestell-ID und die Anzahl der Zahlungen pro Bestellung aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "shop",
@@ -233,7 +233,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "nutzer und workouts verbinden",
-    description: "Zeige nutzer.name und dauer_min durch einen INNER JOIN zwischen `nutzer` und `workouts`.",
+    description: "Verbinde `nutzer` und `workouts` mit einem INNER JOIN. Gib den Nutzernamen und die Dauer in Minuten aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "fitness",
@@ -251,7 +251,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen nutzer und workouts",
-    description: "Zeige alle Nutzer mit der Dauer ihrer Workouts. Nutzer ohne Workouts sollen ebenfalls erscheinen.",
+    description: "Gib den Namen jedes Nutzers und die Dauer seiner Workouts in Minuten aus. Auch Nutzer ohne Workouts sollen mit ihrem Namen erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "fitness",
@@ -269,7 +269,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen nutzer und workouts",
-    description: "Gib alle Workouts mit ihrer Dauer und dem Nutzernamen aus. Workouts ohne zugeordneten Nutzer sollen ebenfalls erscheinen.",
+    description: "Gib den Nutzernamen und die Workout-Dauer in Minuten aus. Auch Workouts ohne zugeordneten Nutzer sollen mit ihrer Dauer erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "fitness",
@@ -287,7 +287,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Workouts pro Nutzer zaehlen (JOIN + GROUP BY)",
-    description: "Finde heraus, wie viele Workouts jeder Nutzer absolviert hat. Gib die Nutzer-ID und die Workout-Anzahl aus.",
+    description: "Zaehle, wie viele Workouts jeder Nutzer absolviert hat. Gib die Nutzer-ID und die Anzahl der Workouts pro Nutzer aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "fitness",
@@ -305,7 +305,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "workouts und saetze verbinden",
-    description: "Zeige datum und wiederholungen durch einen INNER JOIN zwischen `workouts` und `saetze`.",
+    description: "Verbinde `workouts` und `saetze` mit einem INNER JOIN. Gib das Workout-Datum und die Anzahl der Wiederholungen aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "fitness",
@@ -323,7 +323,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen workouts und saetze",
-    description: "Erstelle eine Uebersicht aller Workouts mit Datum und den Wiederholungszahlen der zugehoerigen Saetze. Workouts ohne Saetze sollen nicht wegfallen.",
+    description: "Gib das Datum jedes Workouts und die Wiederholungszahlen der zugehoerigen Saetze aus. Auch Workouts ohne Saetze sollen mit ihrem Datum erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "fitness",
@@ -341,7 +341,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen workouts und saetze",
-    description: "Zeige alle Saetze mit ihren Wiederholungszahlen und dem Datum des zugehoerigen Workouts. Saetze ohne Workout sollen nicht verloren gehen.",
+    description: "Gib das Workout-Datum und die Wiederholungszahl jedes Satzes aus. Auch Saetze ohne zugeordnetes Workout sollen mit ihren Wiederholungen erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "fitness",
@@ -359,7 +359,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Saetze pro Workout zaehlen (JOIN + GROUP BY)",
-    description: "Ermittle, wie viele Saetze jedes Workout enthaelt. Gib die Workout-ID und die Satz-Anzahl aus.",
+    description: "Zaehle, wie viele Saetze jedes Workout enthaelt. Gib die Workout-ID und die Anzahl der Saetze pro Workout aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "fitness",
@@ -377,7 +377,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "mitarbeiter und abteilungen verbinden",
-    description: "Zeige mitarbeiter.name und abteilungen.name durch einen INNER JOIN zwischen `mitarbeiter` und `abteilungen`.",
+    description: "Verbinde `mitarbeiter` und `abteilungen` mit einem INNER JOIN. Gib den Mitarbeiternamen und den Abteilungsnamen aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "hr",
@@ -395,7 +395,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen mitarbeiter und abteilungen",
-    description: "Zeige alle Mitarbeiter und die Abteilung, der sie angehoeren. Mitarbeiter ohne zugeordnete Abteilung sollen trotzdem angezeigt werden.",
+    description: "Gib den Namen jedes Mitarbeiters und den Namen seiner Abteilung aus. Auch Mitarbeiter ohne zugeordnete Abteilung sollen mit ihrem Namen erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "hr",
@@ -413,7 +413,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen mitarbeiter und abteilungen",
-    description: "Erstelle eine vollstaendige Liste aller Abteilungen mit den ihnen zugeordneten Mitarbeitern. Abteilungen ohne Mitarbeiter sollen ebenfalls erscheinen.",
+    description: "Gib den Mitarbeiternamen und den Abteilungsnamen aus. Auch Abteilungen ohne zugeordnete Mitarbeiter sollen mit ihrem Abteilungsnamen erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "hr",
@@ -431,7 +431,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Abteilungen pro Mitarbeiter zaehlen (JOIN + GROUP BY)",
-    description: "Finde heraus, wie vielen Abteilungen jeder Mitarbeiter angehoert. Gib die Mitarbeiter-ID und die Anzahl der Abteilungen aus.",
+    description: "Zaehle, wie vielen Abteilungen jeder Mitarbeiter angehoert. Gib die Mitarbeiter-ID und die Anzahl der Abteilungen pro Mitarbeiter aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "hr",
@@ -449,7 +449,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "mitarbeiter und urlaub verbinden",
-    description: "Zeige name und tage durch einen INNER JOIN zwischen `mitarbeiter` und `urlaub`.",
+    description: "Verbinde `mitarbeiter` und `urlaub` mit einem INNER JOIN. Gib den Mitarbeiternamen und die Anzahl der Urlaubstage aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "hr",
@@ -467,7 +467,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen mitarbeiter und urlaub",
-    description: "Zeige alle Mitarbeiter und wie viele Urlaubstage sie gebucht haben. Mitarbeiter ohne Urlaubseintrag sollen ebenfalls erscheinen.",
+    description: "Gib den Namen jedes Mitarbeiters und die Anzahl seiner gebuchten Urlaubstage aus. Auch Mitarbeiter ohne Urlaubseintrag sollen mit ihrem Namen erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "hr",
@@ -485,7 +485,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen mitarbeiter und urlaub",
-    description: "Zeige alle Urlaubseintraege mit der Anzahl der Tage. Gib auch den Namen des zugehoerigen Mitarbeiters aus, falls vorhanden.",
+    description: "Gib den Mitarbeiternamen und die Anzahl der Urlaubstage aus. Auch Urlaubseintraege ohne zugehoerigen Mitarbeiter sollen mit ihrer Tagesanzahl erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "hr",
@@ -503,7 +503,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Urlaub pro Mitarbeiter zaehlen (JOIN + GROUP BY)",
-    description: "Ermittle, wie viele Urlaubseintraege jeder Mitarbeiter hat. Gib die Mitarbeiter-ID und die Anzahl aus.",
+    description: "Zaehle, wie viele Urlaubseintraege jeder Mitarbeiter hat. Gib die Mitarbeiter-ID und die Anzahl der Eintraege pro Mitarbeiter aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "hr",
@@ -521,7 +521,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "tickets und agenten verbinden",
-    description: "Zeige tickets.titel und agenten.name durch einen INNER JOIN zwischen `tickets` und `agenten`.",
+    description: "Verbinde `tickets` und `agenten` mit einem INNER JOIN. Gib den Ticket-Titel und den Agentennamen aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "tickets",
@@ -539,7 +539,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen tickets und agenten",
-    description: "Zeige alle Tickets mit dem Namen des zustaendigen Agenten. Tickets, denen noch kein Agent zugewiesen wurde, sollen ebenfalls erscheinen.",
+    description: "Gib den Titel jedes Tickets und den Namen des zustaendigen Agenten aus. Auch Tickets ohne zugewiesenen Agenten sollen mit ihrem Titel erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "tickets",
@@ -557,7 +557,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen tickets und agenten",
-    description: "Erstelle eine Uebersicht aller Agenten und der Tickets, die sie bearbeiten. Agenten ohne Tickets sollen nicht fehlen.",
+    description: "Gib den Ticket-Titel und den Agentennamen aus. Auch Agenten ohne zugewiesene Tickets sollen mit ihrem Namen erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "tickets",
@@ -575,7 +575,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Agenten pro Ticket zaehlen (JOIN + GROUP BY)",
-    description: "Finde heraus, wie viele Agenten jedem Ticket zugeordnet sind. Gib die Ticket-ID und die Agentenanzahl aus.",
+    description: "Zaehle, wie viele Agenten jedem Ticket zugeordnet sind. Gib die Ticket-ID und die Anzahl der Agenten pro Ticket aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "tickets",
@@ -593,7 +593,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "tickets und kategorien verbinden",
-    description: "Zeige tickets.titel und kategorien.name durch einen INNER JOIN zwischen `tickets` und `kategorien`.",
+    description: "Verbinde `tickets` und `kategorien` mit einem INNER JOIN. Gib den Ticket-Titel und den Kategorienamen aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "tickets",
@@ -611,7 +611,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen tickets und kategorien",
-    description: "Gib alle Tickets mit ihrer zugehoerigen Kategorie aus. Tickets ohne Kategorie sollen nicht verloren gehen.",
+    description: "Gib den Titel jedes Tickets und den Namen seiner Kategorie aus. Auch Tickets ohne Kategorie sollen mit ihrem Titel erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "tickets",
@@ -629,7 +629,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen tickets und kategorien",
-    description: "Erstelle eine Abfrage, die alle Kategorien anzeigt. Wenn einer Kategorie Tickets zugeordnet sind, soll der Ticket-Titel ausgegeben werden. Kategorien ohne Tickets duerfen nicht verloren gehen.",
+    description: "Gib den Ticket-Titel und den Kategorienamen aus. Auch Kategorien ohne zugeordnete Tickets sollen mit ihrem Kategorienamen erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "tickets",
@@ -647,7 +647,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Kategorien pro Ticket zaehlen (JOIN + GROUP BY)",
-    description: "Ermittle, wie viele Kategorien jedem Ticket zugeordnet sind. Gib die Ticket-ID und die Kategorieanzahl aus.",
+    description: "Zaehle, wie viele Kategorien jedem Ticket zugeordnet sind. Gib die Ticket-ID und die Anzahl der Kategorien pro Ticket aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "tickets",
@@ -665,7 +665,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "kunden und konten verbinden",
-    description: "Zeige kunden.name und saldo durch einen INNER JOIN zwischen `kunden` und `konten`.",
+    description: "Verbinde `kunden` und `konten` mit einem INNER JOIN. Gib den Kundennamen und den Kontosaldo aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "banking",
@@ -683,7 +683,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen kunden und konten",
-    description: "Erstelle eine Uebersicht aller Kunden mit dem Saldo ihrer Konten. Kunden ohne Konto sollen ebenfalls angezeigt werden.",
+    description: "Gib den Namen jedes Kunden und den Saldo seiner Konten aus. Auch Kunden ohne Konto sollen mit ihrem Namen erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "banking",
@@ -701,7 +701,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen kunden und konten",
-    description: "Zeige alle Konten mit ihrem Saldo und dem Namen des Kontoinhabers. Konten ohne zugehoerigen Kunden sollen ebenfalls erscheinen.",
+    description: "Gib den Kundennamen und den Kontosaldo aus. Auch Konten ohne zugehoerigen Kunden sollen mit ihrem Saldo erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "banking",
@@ -719,7 +719,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Konten pro Kunde zaehlen (JOIN + GROUP BY)",
-    description: "Finde heraus, wie viele Konten jeder Kunde besitzt. Gib die Kunden-ID und die Kontenanzahl aus.",
+    description: "Zaehle, wie viele Konten jeder Kunde besitzt. Gib die Kunden-ID und die Anzahl der Konten pro Kunde aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "banking",
@@ -737,7 +737,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "konten und transaktionen verbinden",
-    description: "Zeige kontonummer und betrag durch einen INNER JOIN zwischen `konten` und `transaktionen`.",
+    description: "Verbinde `konten` und `transaktionen` mit einem INNER JOIN. Gib die Kontonummer und den Transaktionsbetrag aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "banking",
@@ -755,7 +755,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen konten und transaktionen",
-    description: "Zeige alle Konten mit dem Betrag der zugehoerigen Transaktionen. Konten ohne Transaktionen sollen in der Ausgabe bleiben.",
+    description: "Gib die Kontonummer jedes Kontos und den Betrag der zugehoerigen Transaktionen aus. Auch Konten ohne Transaktionen sollen mit ihrer Kontonummer erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "banking",
@@ -773,7 +773,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen konten und transaktionen",
-    description: "Gib alle Transaktionen mit ihrem Betrag aus. Zeige zusaetzlich die Kontonummer, auch wenn kein Konto zugeordnet ist.",
+    description: "Gib die Kontonummer und den Transaktionsbetrag aus. Auch Transaktionen ohne zugeordnetes Konto sollen mit ihrem Betrag erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "banking",
@@ -791,7 +791,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Transaktionen pro Konto zaehlen (JOIN + GROUP BY)",
-    description: "Ermittle, wie viele Transaktionen jedes Konto hat. Gib die Konto-ID und die Transaktionsanzahl aus.",
+    description: "Zaehle, wie viele Transaktionen jedes Konto hat. Gib die Konto-ID und die Anzahl der Transaktionen pro Konto aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "banking",
@@ -809,7 +809,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "nutzer und watch_history verbinden",
-    description: "Zeige nutzer.name und fortschritt_prozent durch einen INNER JOIN zwischen `nutzer` und `watch_history`.",
+    description: "Verbinde `nutzer` und `watch_history` mit einem INNER JOIN. Gib den Nutzernamen und den Fortschritt in Prozent aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "streaming",
@@ -827,7 +827,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen nutzer und watch_history",
-    description: "Gib alle Nutzer mit ihrem Fortschritt in der Watch-History aus. Nutzer ohne Watch-History sollen trotzdem erscheinen.",
+    description: "Gib den Namen jedes Nutzers und seinen Fortschritt in Prozent aus. Auch Nutzer ohne Watch-History sollen mit ihrem Namen erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "streaming",
@@ -845,7 +845,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "RIGHT JOIN zwischen nutzer und watch_history",
-    description: "Zeige alle Eintraege der Watch-History mit dem Fortschrittswert. Gib auch den Nutzernamen aus, falls ein Nutzer zugeordnet ist.",
+    description: "Gib den Nutzernamen und den Fortschritt in Prozent aus. Auch Watch-History-Eintraege ohne zugeordneten Nutzer sollen mit ihrem Fortschritt erscheinen.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "streaming",
@@ -863,7 +863,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "Watch-History pro Nutzer zaehlen (JOIN + GROUP BY)",
-    description: "Finde heraus, wie viele Eintraege jeder Nutzer in der Watch-History hat. Gib die Nutzer-ID und die Anzahl aus.",
+    description: "Zaehle, wie viele Eintraege jeder Nutzer in der Watch-History hat. Gib die Nutzer-ID und die Anzahl der Eintraege pro Nutzer aus.",
     difficulty: "intermediate",
     category: "JOIN",
     datasetId: "streaming",
@@ -881,7 +881,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "filme und bewertungen verbinden",
-    description: "Zeige filme.titel und sterne durch einen INNER JOIN zwischen `filme` und `bewertungen`.",
+    description: "Verbinde `filme` und `bewertungen` mit einem INNER JOIN. Gib den Filmtitel und die Sternebewertung aus.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "streaming",
@@ -899,7 +899,7 @@ joinExercises.push(
 
   makeWriteExercise("joi", {
     title: "LEFT JOIN zwischen filme und bewertungen",
-    description: "Erstelle eine Liste aller Filme mit ihren Sternebewertungen. Filme ohne Bewertung sollen ebenfalls angezeigt werden.",
+    description: "Gib den Titel jedes Films und seine Sternebewertung aus. Auch Filme ohne Bewertung sollen mit ihrem Titel erscheinen.",
     difficulty: "junior",
     category: "JOIN",
     datasetId: "streaming",
