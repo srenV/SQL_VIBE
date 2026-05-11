@@ -115,7 +115,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             onClick={() => setViewMode("rm")}
             className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
               viewMode === "rm"
-                ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                 : "text-ink-muted hover:text-ink"
             }`}
           >
@@ -125,7 +125,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             onClick={switchToData}
             className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
               viewMode === "data"
-                ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                 : "text-ink-muted hover:text-ink"
             }`}
           >
@@ -135,7 +135,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             onClick={() => setViewMode("schema")}
             className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
               viewMode === "schema"
-                ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                 : "text-ink-muted hover:text-ink"
             }`}
           >

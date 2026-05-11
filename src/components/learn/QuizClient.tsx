@@ -239,7 +239,7 @@ export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, 
                 >
                   <span className="flex items-center gap-3">
                     <span
-                      className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
+                      className={`shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
                         submitted && option.isCorrect
                           ? "border-success bg-success text-white"
                           : submitted && isSubmittedOption && !option.isCorrect

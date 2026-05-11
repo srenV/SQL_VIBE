@@ -167,7 +167,7 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable; referenced
 
   return (
     <div
-      className="rounded-lg border-2 border-primary-300 dark:border-primary-600 bg-white dark:bg-slate-800 shadow-lg"
+      className="rounded-lg border-2 border-primary-300 dark:border-primary-600 bg-surface dark:bg-slate-800 shadow-lg"
       style={{ width: NODE_WIDTH, fontSize: 12, position: "relative", overflow: "visible" }}
     >
       {/* ── Handles placed at node level with absolute positioning ── */}

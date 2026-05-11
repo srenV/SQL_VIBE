@@ -178,7 +178,7 @@ export default function StoryPage() {
                     <Link href={`/lektionen/lesson_story/${exercise.id}`} className="group block">
                       <div className="relative overflow-hidden rounded-xl border border-surface-dim dark:border-dark-dim bg-surface hover:border-violet-400/60 dark:hover:border-violet-400/40 hover:shadow-[0_8px_30px_-8px_rgba(139,92,246,0.25)] transition-all duration-300">
                         {/* Top shimmer on hover */}
-                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-violet-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-violet-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                         {/* Completed checkmark badge */}
                         {isCompleted && (

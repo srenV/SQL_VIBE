@@ -8,6 +8,7 @@ import { Container } from "@/components/container";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/themeToggle";
 import { LevelBadge } from "@/components/levelBadge";
+import { StreakFlame } from "@/components/streakFlame";
 import { useProgress } from "@/hooks/useProgress";
 import { getLevel } from "@/lib/levelSystem";
 
@@ -151,7 +152,7 @@ export function Header({ rightSlot }: HeaderProps) {
                   href={tab.href}
                   className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150 ${
                     active
-                      ? "bg-white text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                      ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                       : "text-ink-muted hover:text-ink"
                   }`}
                   aria-current={active ? "page" : undefined}
@@ -274,14 +275,7 @@ export function Header({ rightSlot }: HeaderProps) {
                 </div>
                 {/* Streak + chevron */}
                 <div className="flex flex-col items-end gap-2 shrink-0">
-                  {progress.streak > 1 && (
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-400">
-                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12.963 2.286a.75.75 0 0 0-1.071-.136 9.742 9.742 0 0 0-3.539 6.176 7.547 7.547 0 0 1-1.705-1.715.75.75 0 0 0-1.152-.082A9 9 0 1 0 15.68 4.534a7.46 7.46 0 0 1-2.717-2.248ZM15.75 14.25a3.75 3.75 0 1 1-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 0 1 1.925-3.545 3.75 3.75 0 0 1 3.255 3.717Z" />
-                      </svg>
-                      {progress.streak}
-                    </span>
-                  )}
+                  <StreakFlame streak={progress.streak} size="sm" />
                   <svg className="w-4 h-4 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                   </svg>

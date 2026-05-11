@@ -12,6 +12,7 @@ import { SqlEditor } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
+import { ScrambleText } from "@/components/scrambleText";
 import { SqlResultSkeleton } from "@/components/skeleton";
 import { usePlayground } from "@/hooks/usePlayground";
 import type { PlaygroundExercise } from "@/types/playground";
@@ -67,8 +68,8 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
         <Card variant="outlined" className="p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <h3 className="text-lg font-semibold">{exercise.title}</h3>
-              <p className="text-sm text-ink-muted">{exercise.task}</p>
+              <ScrambleText as="h3" text={exercise.title} className="text-lg font-semibold" duration={600} revealDelay={50} />
+              <ScrambleText as="p" text={exercise.task} className="text-sm text-ink-muted" duration={900} revealDelay={15} />
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span

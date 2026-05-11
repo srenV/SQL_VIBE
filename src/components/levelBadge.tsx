@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProgress } from "@/hooks/useProgress";
 import { getLevel } from "@/lib/levelSystem";
+import { StreakFlame } from "@/components/streakFlame";
 
 const containerVariants = {
   hidden: {},
@@ -50,29 +51,8 @@ export function LevelBadge() {
           </span>
         </div>
 
-        {/* Streak — large filled flame with glow, sparks, and number inside */}
-        {progress.streak > 1 && (
-          <div className="relative shrink-0 w-8 h-8" style={{ overflow: "visible" }}>
-            <div className="animate-flame-glow" style={{ transformOrigin: "50% 80%" }}>
-              <svg
-                className="w-8 h-8 text-orange-500 animate-flame"
-                style={{ transformOrigin: "50% 80%" }}
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M12.963 2.286a.75.75 0 0 0-1.071-.136 9.742 9.742 0 0 0-3.539 6.176 7.547 7.547 0 0 1-1.705-1.715.75.75 0 0 0-1.152-.082A9 9 0 1 0 15.68 4.534a7.46 7.46 0 0 1-2.717-2.248ZM15.75 14.25a3.75 3.75 0 1 1-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 0 1 1.925-3.545 3.75 3.75 0 0 1 3.255 3.717Z" />
-              </svg>
-            </div>
-            <span className="absolute w-1 h-1 rounded-full bg-amber-300 animate-spark-rise" style={{ left: "28%", top: "28%", animationDelay: "0s" }} />
-            <span className="absolute w-0.5 h-0.5 rounded-full bg-orange-300 animate-spark-rise" style={{ left: "52%", top: "22%", animationDelay: "0.55s" }} />
-            <span className="absolute w-1 h-1 rounded-full bg-yellow-300 animate-spark-rise" style={{ left: "63%", top: "34%", animationDelay: "1.1s" }} />
-            <span className="absolute w-0.5 h-0.5 rounded-full bg-amber-200 animate-spark-rise" style={{ left: "38%", top: "32%", animationDelay: "1.55s" }} />
-            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white tabular-nums leading-none" style={{ paddingTop: "3px" }}>
-              {progress.streak}
-            </span>
-          </div>
-        )}
+        {/* Streak flame */}
+        <StreakFlame streak={progress.streak} />
       </Link>
 
       {/* Title label — staggered character reveal below the badge on hover */}

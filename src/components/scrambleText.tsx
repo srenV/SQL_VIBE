@@ -109,7 +109,8 @@ export const ScrambleText: React.FC<ScrambleTextProps> = ({
 
   return (
     <Tag
-      ref={ref as React.Ref<HTMLElement>}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
       className={className}
       id={idRef.current}
     >

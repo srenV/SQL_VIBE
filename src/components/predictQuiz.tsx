@@ -9,6 +9,7 @@ import React from "react";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
 import { FadeIn } from "@/components/animations";
+import { ScrambleText } from "@/components/scrambleText";
 import { SuccessCelebration } from "@/components/successCelebration";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { useProgress } from "@/hooks/useProgress";
@@ -90,11 +91,11 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
         <Card variant="outlined" className="p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <h3 className="text-lg font-semibold">{exercise.title}</h3>
+              <ScrambleText as="h3" text={exercise.title} className="text-lg font-semibold" duration={600} revealDelay={50} />
               {exercise.question && (
-                <div className="mt-2 text-sm text-ink whitespace-pre-line">{exercise.question}</div>
+                <ScrambleText as="div" text={exercise.question} className="mt-2 text-sm text-ink whitespace-pre-line" duration={700} revealDelay={20} />
               )}
-              <p className="text-sm text-ink-muted">{exercise.task}</p>
+              <ScrambleText as="p" text={exercise.task} className="text-sm text-ink-muted" duration={900} revealDelay={15} />
             </div>
             <span
               className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -118,7 +119,7 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
       {exercise.description && exercise.description !== exercise.task && (
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
-            <p className="text-sm text-ink whitespace-pre-line">{exercise.description}</p>
+            <ScrambleText as="p" text={exercise.description} className="text-sm text-ink whitespace-pre-line" duration={900} revealDelay={15} />
           </Card>
         </FadeIn>
       )}

@@ -32,8 +32,8 @@
   --color-error: #ef4444;
   --color-info: #3b82f6;
 
-  --color-surface: #ffffff;
-  --color-surface-dim: #f8fafc;
+  --color-surface: #f8fafc;
+  --color-surface-dim: #e2e8f0;
   --color-dark-dim: #1e293b;
 
   --color-ink: #0f172a;
@@ -170,8 +170,8 @@
 }
 
 :root {
-  --color-surface: #ffffff;
-  --color-surface-dim: #f1f5f9;
+  --color-surface: #f8fafc;
+  --color-surface-dim: #e2e8f0;
   --color-ink: #0f172a;
   --color-ink-muted: #64748b;
   --color-ink-inverted: #f8fafc;
@@ -243,7 +243,7 @@ body {
   z-index: 9999;
   padding: 0.5rem 1rem;
   background: var(--color-primary-600);
-  color: #fff;
+  color: var(--color-ink-inverted);
   font-weight: 600;
   border-radius: 0 0 0.5rem 0.5rem;
   transition: left 0.2s;

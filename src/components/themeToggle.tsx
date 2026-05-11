@@ -137,7 +137,7 @@ export function ThemeToggle() {
 
         {/* Thumb */}
         <motion.div
-          className="absolute top-[3px] rounded-full flex items-center justify-center overflow-hidden"
+          className="absolute top-0.75 rounded-full flex items-center justify-center overflow-hidden"
           style={{ width: 22, height: 22 }}
           animate={{
             x: isDark ? 3 : 31,
