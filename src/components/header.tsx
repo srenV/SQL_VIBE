@@ -150,7 +150,7 @@ export function Header({ rightSlot }: HeaderProps) {
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150 ${
+                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 ${
                     active
                       ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                       : "text-ink-muted hover:text-ink"

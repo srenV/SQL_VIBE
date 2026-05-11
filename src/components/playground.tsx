@@ -72,6 +72,13 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span
+                aria-label={`Schwierigkeit: ${
+                  exercise.difficulty === "easy"
+                    ? "Leicht"
+                    : exercise.difficulty === "medium"
+                    ? "Mittel"
+                    : "Schwer"
+                }`}
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                   exercise.difficulty === "easy"
                     ? "bg-success/10 text-success"
@@ -127,7 +134,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
                 <button
                   onClick={hint ? requestStrongerHint : showHint}
                   disabled={hint && hint.level >= (exercise.hints?.length ?? 1)}
-                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink hover:bg-surface-dim transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2.5 text-xs font-medium text-ink-muted hover:text-ink hover:bg-surface-dim transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   title={hint ? "Stärkeren Hinweis anzeigen" : "Hinweis anzeigen"}
                   aria-label={hint ? "Stärkeren Hinweis anzeigen" : "Hinweis anzeigen"}
                 >
@@ -142,7 +149,7 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
               {attemptCount >= 5 && !completed && !solutionRevealed && (
                 <button
                   onClick={showSolution}
-                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2.5 text-xs font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20 transition-colors"
                   title="Lösung anzeigen"
                   aria-label="Lösung anzeigen"
                 >

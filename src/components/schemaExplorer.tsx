@@ -110,10 +110,12 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
   return (
     <div className="space-y-4">
       {!hideTabs && (
-        <div className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
+        <div role="tablist" aria-label="Schema-Ansicht" className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
           <button
+            role="tab"
+            aria-selected={viewMode === "rm"}
             onClick={() => setViewMode("rm")}
-            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`flex-1 rounded-md px-3 py-2.5 text-xs font-medium transition-colors ${
               viewMode === "rm"
                 ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                 : "text-ink-muted hover:text-ink"
@@ -122,8 +124,10 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             Graph
           </button>
           <button
+            role="tab"
+            aria-selected={viewMode === "data"}
             onClick={switchToData}
-            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`flex-1 rounded-md px-3 py-2.5 text-xs font-medium transition-colors ${
               viewMode === "data"
                 ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                 : "text-ink-muted hover:text-ink"
@@ -132,8 +136,10 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             Daten
           </button>
           <button
+            role="tab"
+            aria-selected={viewMode === "schema"}
             onClick={() => setViewMode("schema")}
-            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`flex-1 rounded-md px-3 py-2.5 text-xs font-medium transition-colors ${
               viewMode === "schema"
                 ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
                 : "text-ink-muted hover:text-ink"
@@ -144,7 +150,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
         </div>
       )}
 
-      {viewMode === "rm" && <SchemaGraph tables={tables} />}
+      {viewMode === "rm" && <div role="tabpanel" aria-label="Graph-Ansicht"><SchemaGraph tables={tables} /></div>}
 
       {/* Sandbox: Create Table Button */}
       {sandboxMode && onCreateTableTemplate && viewMode !== "rm" && (
@@ -160,7 +166,8 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
       )}
 
       {viewMode === "schema" &&
-        tables.map((table) => (
+        <div role="tabpanel" aria-label="Schema-Ansicht" className="space-y-4">
+        {tables.map((table) => (
           <Card key={table.name} variant="flat" className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center rounded-md bg-primary-50 px-2 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
@@ -199,11 +206,11 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-dim dark:border-dark-dim">
-                    <th className="px-2 py-1 text-left font-medium text-ink-muted">Spalte</th>
-                    <th className="px-2 py-1 text-left font-medium text-ink-muted">Typ</th>
-                    <th className="px-2 py-1 text-left font-medium text-ink-muted">Nullable</th>
-                    <th className="px-2 py-1 text-left font-medium text-ink-muted">Default</th>
-                    <th className="px-2 py-1 text-left font-medium text-ink-muted">PK</th>
+                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Spalte</th>
+                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Typ</th>
+                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Nullable</th>
+                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Default</th>
+                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">PK</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -234,9 +241,12 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             )}
           </Card>
         ))}
+        </div>
+      }
 
       {viewMode === "data" &&
-        tables.map((table) => (
+        <div role="tabpanel" aria-label="Daten-Ansicht" className="space-y-4">
+        {tables.map((table) => (
           <Card key={table.name} variant="flat" className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center rounded-md bg-primary-50 px-2 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
@@ -288,7 +298,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                       <thead>
                         <tr className="bg-surface-dim/50 dark:bg-dark-dim/50">
                           {tableData[table.name].columns.map((col) => (
-                            <th key={col.name} className="px-2 py-1 text-left font-medium text-ink-muted border-b border-surface-dim dark:border-dark-dim">
+                            <th key={col.name} scope="col" className="px-2 py-1 text-left font-medium text-ink-muted border-b border-surface-dim dark:border-dark-dim">
                               {col.name}
                             </th>
                           ))}
@@ -314,6 +324,8 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             )}
           </Card>
         ))}
+        </div>
+      }
     </div>
   );
 };

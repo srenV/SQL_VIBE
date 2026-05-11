@@ -70,6 +70,7 @@ export default function LektionenPage() {
           </FadeIn>
 
           <FadeIn delay={0.1}>
+            <h2 className="sr-only">Alle Lektionen</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {sortedLessons.map((lesson) => (
                 <LessonCard key={lesson.id} lesson={lesson} />

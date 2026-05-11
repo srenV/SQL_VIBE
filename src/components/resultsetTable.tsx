@@ -32,6 +32,7 @@ export const ResultsetTable: React.FC<ResultsetTableProps> = ({ columns, rows, c
             {columns.map((col) => (
               <th
                 key={col.name}
+                scope="col"
                 className="px-3 py-2 text-left font-semibold text-ink-muted whitespace-nowrap"
               >
                 {col.name}
