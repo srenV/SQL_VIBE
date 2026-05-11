@@ -6,7 +6,6 @@
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="7" fill="url(#bg)"/>
-  <rect x="7" y="7" width="18" height="5" rx="2.5" fill="white"/>
-  <rect x="7" y="14" width="18" height="5" rx="2.5" fill="rgba(255,255,255,0.72)"/>
-  <rect x="7" y="21" width="18" height="4" rx="2" fill="rgba(45,212,191,0.85)"/>
+  <text x="16" y="21" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="14" fill="white" letter-spacing="-0.5">SQL</text>
+  <rect x="8" y="25" width="16" height="2.5" rx="1.25" fill="#2dd4bf" opacity="0.85"/>
 </svg>

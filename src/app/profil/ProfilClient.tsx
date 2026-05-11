@@ -172,11 +172,9 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                       <p className={`text-[11px] font-semibold leading-tight ${unlocked ? "text-ink" : "text-ink-muted"}`}>
                         {ach.name}
                       </p>
-                      {unlocked && (
-                        <p className="text-[10px] text-ink-muted mt-0.5 leading-tight line-clamp-2">
-                          {ach.description}
-                        </p>
-                      )}
+                      <p className={`text-[10px] mt-0.5 leading-tight line-clamp-2 ${unlocked ? "text-ink-muted" : "text-ink-muted/40"}`}>
+                        {ach.description}
+                      </p>
                     </div>
                   </motion.div>
                 );

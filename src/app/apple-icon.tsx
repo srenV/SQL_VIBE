@@ -1,16 +1,16 @@
 import { ImageResponse } from "next/og";
 
 export const dynamic = "force-static";
-export const size = { width: 32, height: 32 };
+export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default function AppleIcon() {
   return new ImageResponse(
     <div
       style={{
-        width: 32,
-        height: 32,
-        borderRadius: 7,
+        width: 180,
+        height: 180,
+        borderRadius: 40,
         background: "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
         display: "flex",
         flexDirection: "column",
@@ -20,10 +20,10 @@ export default function Icon() {
     >
       <div
         style={{
-          fontSize: 14,
+          fontSize: 80,
           fontWeight: 800,
           color: "white",
-          letterSpacing: "-0.5px",
+          letterSpacing: "-2px",
           lineHeight: 1,
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
@@ -32,11 +32,11 @@ export default function Icon() {
       </div>
       <div
         style={{
-          width: 16,
-          height: 2.5,
-          borderRadius: 1.25,
+          width: 90,
+          height: 14,
+          borderRadius: 7,
           background: "rgba(45,212,191,0.85)",
-          marginTop: 2,
+          marginTop: 10,
         }}
       />
     </div>,
