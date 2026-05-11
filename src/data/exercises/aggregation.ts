@@ -178,20 +178,20 @@ aggregationExercises.push(
   }),
 
   makeWriteExercise("agg", {
-    title: "Durchschnitt von jahr",
-    description: "Aus welchem durchschnittlichen Jahr stammen alle Filme in der Datenbank? Gib der Ergebnisspalte den Namen `durchschnitt`.",
+    title: "Durchschnittliche Filmdauer",
+    description: "Wie lang sind die Filme im Durchschnitt in Minuten? Gib der Ergebnisspalte den Namen `durchschnitt`.",
     difficulty: "beginner",
     category: "Aggregation",
     datasetId: "streaming",
-    referenceQuery: `SELECT AVG(jahr) AS durchschnitt FROM filme;`,
+    referenceQuery: `SELECT AVG(dauer_min) AS durchschnitt FROM filme;`,
     expectedResultText: "",
-    tags: ["Aggregation", "GROUP BY", "HAVING"],
+    tags: ["Aggregation", "AVG"],
     hints: [
       "Du moechtest den Mittelwert aller Werte einer Spalte berechnen — dafuer gibt es eine Aggregatfunktion.",
       "`AVG(spalte)` berechnet den Durchschnitt: `SELECT AVG(spaltenname) AS alias FROM tabelle`",
-      "Verwende `AVG` auf die Spalte `jahr` in der Tabelle `filme` mit dem Alias `durchschnitt`.",
+      "Verwende `AVG` auf die Spalte `dauer_min` in der Tabelle `filme` mit dem Alias `durchschnitt`.",
     ],
-    hiddenTestQuery: `SELECT AVG(jahr) AS durchschnitt FROM filme;`,
+    hiddenTestQuery: `SELECT AVG(dauer_min) AS durchschnitt FROM filme;`,
     hiddenTestMode: "rows",
   }),
 
