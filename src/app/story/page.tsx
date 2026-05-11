@@ -57,10 +57,10 @@ export default function StoryPage() {
         {/* ------------------------------------------------------------------ */}
         {/* Hero                                                                */}
         {/* ------------------------------------------------------------------ */}
-        <section className="py-16 text-center bg-linear-to-b from-violet-950/40 to-transparent dark:from-violet-950/60 dark:to-transparent">
+        <section className="py-16 text-center bg-linear-to-b from-primary-50/50 to-transparent dark:from-primary-950/30 dark:to-transparent">
           <Container className="space-y-5 max-w-3xl mx-auto">
             <FadeIn delay={0}>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-400/20 text-violet-400 text-xs font-medium mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-400/20 text-primary-400 text-xs font-medium mb-2">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
                 </svg>
@@ -69,7 +69,7 @@ export default function StoryPage() {
             </FadeIn>
             <FadeIn delay={0.05}>
               <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-ink">
-                Löse echte <span className="text-violet-500 dark:text-violet-400">Fälle</span> mit SQL
+                Löse echte <span className="text-primary-500 dark:text-primary-400">Fälle</span> mit SQL
               </h1>
             </FadeIn>
             <FadeIn delay={0.1}>
@@ -97,7 +97,7 @@ export default function StoryPage() {
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-surface-dim dark:bg-dark-dim overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-violet-500 transition-all duration-500"
+                    className="h-full rounded-full bg-primary-500 transition-all duration-500"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
@@ -176,9 +176,9 @@ export default function StoryPage() {
                 return (
                   <FadeIn key={exercise.id} delay={0.17 + i * 0.06}>
                     <Link href={`/lektionen/lesson_story/${exercise.id}`} className="group block">
-                      <div className="relative overflow-hidden rounded-xl border border-surface-dim dark:border-dark-dim bg-surface hover:border-violet-400/60 dark:hover:border-violet-400/40 hover:shadow-[0_8px_30px_-8px_rgba(139,92,246,0.25)] transition-all duration-300">
+                      <div className="relative overflow-hidden rounded-xl border border-surface-dim dark:border-dark-dim bg-surface hover:border-primary-400/60 dark:hover:border-primary-400/40 hover:shadow-[0_8px_30px_-8px_rgba(99,102,241,0.25)] transition-all duration-300">
                         {/* Top shimmer on hover */}
-                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-violet-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-primary-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                         {/* Completed checkmark badge */}
                         {isCompleted && (
@@ -191,7 +191,7 @@ export default function StoryPage() {
 
                         <div className="p-5 sm:p-6 flex items-start gap-4 sm:gap-6">
                           {/* Case number */}
-                          <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-400/20 text-violet-500 dark:text-violet-400 font-bold text-sm">
+                          <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-primary-500/10 border border-primary-400/20 text-primary-500 dark:text-primary-400 font-bold text-sm">
                             {String(globalIndex + 1).padStart(2, "0")}
                           </div>
 
@@ -208,7 +208,7 @@ export default function StoryPage() {
                                 {chapterCount} Kapitel
                               </span>
                             </div>
-                            <h3 className="font-semibold text-ink text-base group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors">
+                            <h3 className="font-semibold text-ink text-base group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors">
                               {exercise.title}
                             </h3>
                             <p className="text-sm text-ink-muted leading-relaxed line-clamp-2">
@@ -217,7 +217,7 @@ export default function StoryPage() {
                           </div>
 
                           {/* Arrow */}
-                          <div className="shrink-0 flex items-center self-center text-ink-muted group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors">
+                          <div className="shrink-0 flex items-center self-center text-ink-muted group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors">
                             <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>

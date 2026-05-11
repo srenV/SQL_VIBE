@@ -117,7 +117,7 @@ export function ExercisePageClient({
                 {lesson.title}
               </p>
               <div
-                className="flex-1 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:var(--color-violet-500)_transparent] [&::-webkit-scrollbar]:w-0.75 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-surface-dim/50 dark:[&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-violet-500 [&::-webkit-scrollbar-thumb]:max-h-8 [&::-webkit-scrollbar-thumb]:[box-shadow:0_0_8px_--theme(--color-violet-500/0.8)]"
+                className="flex-1 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:var(--color-primary-500)_transparent] [&::-webkit-scrollbar]:w-0.75 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-surface-dim/50 dark:[&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-500 [&::-webkit-scrollbar-thumb]:max-h-8 [&::-webkit-scrollbar-thumb]:[box-shadow:0_0_8px_--theme(--color-primary-500/0.8)]"
                 style={{ direction: "rtl" }}
               >
                 <div className="space-y-1 pl-3" style={{ direction: "ltr" }}>
