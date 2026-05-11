@@ -377,9 +377,11 @@ function SchemaGraphInner({ tables }: { tables: SchemaTable[] }) {
 
 export interface SchemaGraphProps {
   tables: SchemaTable[];
+  /** If true, the graph fills its parent's height instead of using a fixed 550px. */
+  fullHeight?: boolean;
 }
 
-export function SchemaGraph({ tables }: SchemaGraphProps) {
+export function SchemaGraph({ tables, fullHeight }: SchemaGraphProps) {
   if (tables.length === 0) {
     return (
       <p className="text-sm text-ink-muted p-4">
@@ -389,7 +391,10 @@ export function SchemaGraph({ tables }: SchemaGraphProps) {
   }
 
   return (
-    <div className="w-full border border-surface-dim dark:border-slate-700 rounded-lg overflow-hidden" style={{ height: 550 }}>
+    <div
+      className={`w-full border border-surface-dim dark:border-slate-700 rounded-lg overflow-hidden ${fullHeight ? "h-full" : ""}`}
+      style={fullHeight ? undefined : { height: 550 }}
+    >
       <ReactFlowProvider>
         <SchemaGraphInner tables={tables} />
       </ReactFlowProvider>

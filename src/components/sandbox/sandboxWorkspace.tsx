@@ -236,7 +236,7 @@ function SandboxWorkspace({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="flex-1 overflow-y-auto p-4"
+          className={`flex-1 min-h-0 overflow-y-auto ${activeTab === "graph" || activeTab === "schema" ? "" : "p-4"}`}
         >
           {/* ── Ergebnis Tab ── */}
           {activeTab === "result" && (
@@ -420,6 +420,7 @@ function SandboxWorkspace({
               tables={liveSchema}
               db={db}
               sandboxMode
+              fullHeight
               onDropTable={async (tableName) => {
                 if (confirm(`Tabelle "${tableName}" wirklich löschen?`)) {
                   await onRunQuery(`DROP TABLE IF EXISTS "${tableName}";`);
@@ -448,6 +449,7 @@ function SandboxWorkspace({
               tables={liveSchema}
               db={db}
               sandboxMode
+              fullHeight
               onDropTable={async (tableName) => {
                 if (confirm(`Tabelle "${tableName}" wirklich löschen?`)) {
                   await onRunQuery(`DROP TABLE IF EXISTS "${tableName}";`);

@@ -21,6 +21,8 @@ export interface SchemaExplorerProps {
   viewMode?: ViewMode;
   /** Interne Tab-Leiste ausblenden (wenn extern gesteuert). */
   hideTabs?: boolean;
+  /** Graph fuellt die volle Hoehe des Eltern-Containers (statt fixer 550px). */
+  fullHeight?: boolean;
 }
 
 type ViewMode = "rm" | "data" | "schema";
@@ -31,7 +33,7 @@ interface TableDataCache {
   totalRows?: number;
 }
 
-export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sandboxMode, onDropTable, onInsertTemplate, onCreateTableTemplate, viewMode: externalViewMode, hideTabs }) => {
+export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sandboxMode, onDropTable, onInsertTemplate, onCreateTableTemplate, viewMode: externalViewMode, hideTabs, fullHeight }) => {
   const [internalViewMode, setInternalViewMode] = useState<ViewMode>("rm");
   const viewMode = externalViewMode ?? internalViewMode;
   const setViewMode = hideTabs ? () => {} : setInternalViewMode;
@@ -108,7 +110,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
   }
 
   return (
-    <div className="space-y-4">
+    <div className={fullHeight ? "flex flex-col h-full" : "space-y-4"}>
       {!hideTabs && (
         <div role="tablist" aria-label="Schema-Ansicht" className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
           <button
@@ -150,7 +152,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
         </div>
       )}
 
-      {viewMode === "rm" && <div role="tabpanel" aria-label="Graph-Ansicht"><SchemaGraph tables={tables} /></div>}
+      {viewMode === "rm" && <div role="tabpanel" aria-label="Graph-Ansicht" className={fullHeight ? "flex-1 min-h-0" : undefined}><SchemaGraph tables={tables} fullHeight={fullHeight} /></div>}
 
       {/* Sandbox: Create Table Button */}
       {sandboxMode && onCreateTableTemplate && viewMode !== "rm" && (
