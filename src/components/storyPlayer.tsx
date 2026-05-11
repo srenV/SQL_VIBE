@@ -19,7 +19,6 @@ import { SqlEditor } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
-import { ScrambleText } from "@/components/scrambleText";
 import { SuccessCelebration } from "@/components/successCelebration";
 import { StoryIntro } from "@/components/storyIntro";
 import { usePlayground } from "@/hooks/usePlayground";
@@ -149,7 +148,9 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 </svg>
                 <h2 className="text-xl font-bold text-success">Fall geloest!</h2>
               </div>
-              <ScrambleText as="div" text={story.outro} className="text-sm text-ink whitespace-pre-line leading-relaxed" duration={1200} revealDelay={12} />
+              <div className="text-sm text-ink whitespace-pre-line leading-relaxed">
+                {story.outro}
+              </div>
               <div className="flex items-center gap-3 text-sm text-ink-muted">
                 <span>Alle {story.chapters.length} Kapitel geloest</span>
                 <span>·</span>
@@ -197,8 +198,8 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
 
       <FadeIn delay={0.05}>
         <Card variant="outlined" className="p-5 border-primary-200">
-          <ScrambleText as="h3" text={chapter.title} className="text-lg font-semibold text-primary-900 mb-2" duration={600} revealDelay={50} />
-          <ScrambleText as="p" text={chapter.narrative} className="text-sm text-ink whitespace-pre-line leading-relaxed" duration={1200} revealDelay={12} />
+          <h3 className="text-lg font-semibold text-primary-900 mb-2">{chapter.title}</h3>
+          <p className="text-sm text-ink whitespace-pre-line leading-relaxed">{chapter.narrative}</p>
         </Card>
       </FadeIn>
 
