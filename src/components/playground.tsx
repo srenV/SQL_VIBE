@@ -12,6 +12,7 @@ import { SqlEditor } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
+import { StatusCard } from "@/components/statusCard";
 import { SqlResultSkeleton } from "@/components/skeleton";
 import { usePlayground } from "@/hooks/usePlayground";
 import type { PlaygroundExercise } from "@/types/playground";
@@ -197,38 +198,16 @@ export const Playground: React.FC<PlaygroundProps> = ({ exercise, onComplete, pr
       )}
 
       {phase === "error" && errorExplanation && (
-        <FadeIn delay={0.05}>
-          <Card variant="outlined" className="p-5 border-error/40">
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-error/10 text-error text-xs font-bold" aria-hidden="true">
-                !
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-error">
-                  {errorExplanation.category}
-                </p>
-                <p className="text-sm text-ink">{errorExplanation.userMessage}</p>
-                <p className="text-xs text-ink-muted font-mono">{errorExplanation.originalError}</p>
-              </div>
-            </div>
-          </Card>
-        </FadeIn>
+        <StatusCard variant="error" title={errorExplanation.category} animated>
+          <p className="text-sm text-ink">{errorExplanation.userMessage}</p>
+          <p className="text-xs text-ink-muted font-mono">{errorExplanation.originalError}</p>
+        </StatusCard>
       )}
 
       {phase === "success" && completed && (
-        <FadeIn delay={0.05}>
-          <Card variant="outlined" className="p-5 border-success/40">
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-success/10 text-success text-xs font-bold" aria-hidden="true">
-                ✓
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-success">Richtig!</p>
-                <p className="text-sm text-ink">Deine Abfrage liefert das erwartete Ergebnis.</p>
-              </div>
-            </div>
-          </Card>
-        </FadeIn>
+        <StatusCard variant="success" title="Richtig!" animated>
+          <p className="text-sm text-ink">Deine Abfrage liefert das erwartete Ergebnis.</p>
+        </StatusCard>
       )}
 
       {(phase === "partial" || phase === "success") && queryResult && queryResult.resultset && (

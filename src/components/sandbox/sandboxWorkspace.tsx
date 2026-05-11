@@ -7,6 +7,7 @@ import { Button } from "@/components/button";
 import { SqlEditor } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
+import { StatusCard } from "@/components/statusCard";
 import type { SandboxQueryResult, QueryHistoryEntry } from "@/types/sandbox";
 import type { SchemaTable, SqlColumn } from "@/types/playground";
 import { explainError } from "@/lib/errorExplanation";
@@ -327,25 +328,17 @@ function SandboxWorkspace({
                     exit="exit"
                   >
                     {!queryResult.success && (
-                      <Card variant="outlined" className="p-4 border-error/40">
-                        <div className="flex items-start gap-3">
-                          <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-error/10 text-error text-xs font-bold" aria-hidden="true">
-                            !
-                          </span>
-                          <div className="space-y-1">
-                            {(() => {
-                              const exp = explainError(queryResult.error || "");
-                              return (
-                                <>
-                                  <p className="text-sm font-semibold text-error">{exp.category}</p>
-                                  <p className="text-sm text-ink">{exp.userMessage}</p>
-                                  <p className="text-xs text-ink-muted font-mono">{exp.originalError}</p>
-                                </>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                      </Card>
+                      <StatusCard variant="error" title={(() => { const exp = explainError(queryResult.error || ""); return exp.category; })()} className="p-4">
+                        {(() => {
+                          const exp = explainError(queryResult.error || "");
+                          return (
+                            <>
+                              <p className="text-sm text-ink">{exp.userMessage}</p>
+                              <p className="text-xs text-ink-muted font-mono">{exp.originalError}</p>
+                            </>
+                          );
+                        })()}
+                      </StatusCard>
                     )}
 
                     {queryResult.success && queryResult.resultset && queryResult.resultset.rows.length > 0 && (

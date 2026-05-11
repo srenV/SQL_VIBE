@@ -9,6 +9,7 @@ import React from "react";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
 import { FadeIn } from "@/components/animations";
+import { StatusCard } from "@/components/statusCard";
 import { SuccessCelebration } from "@/components/successCelebration";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { useProgress } from "@/hooks/useProgress";
@@ -185,21 +186,11 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
       )}
 
       {submitted && !isCorrect && (
-        <FadeIn delay={0.05}>
-          <Card variant="outlined" className="p-5 border-error/40">
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-error/10 text-error text-xs font-bold">
-                ✗
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-error">Leider falsch</p>
-                <p className="text-sm text-ink">
-                  Versuche es noch einmal. Die richtige Antwort ist hervorgehoben.
-                </p>
-              </div>
-            </div>
-          </Card>
-        </FadeIn>
+        <StatusCard variant="error" title="Leider falsch" icon="✗" animated>
+          <p className="text-sm text-ink">
+            Versuche es noch einmal. Die richtige Antwort ist hervorgehoben.
+          </p>
+        </StatusCard>
       )}
 
       {attemptCount > 0 && (

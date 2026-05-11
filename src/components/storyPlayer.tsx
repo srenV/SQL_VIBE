@@ -19,6 +19,7 @@ import { SqlEditor } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
+import { StatusCard } from "@/components/statusCard";
 import { SuccessCelebration } from "@/components/successCelebration";
 import { StoryIntro } from "@/components/storyIntro";
 import { usePlayground } from "@/hooks/usePlayground";
@@ -240,20 +241,10 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
       </FadeIn>
 
       {phase === "error" && errorExplanation && (
-        <FadeIn delay={0.05}>
-          <Card variant="outlined" className="p-5 border-error/40">
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-error/10 text-error text-xs font-bold">
-                !
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-error">{errorExplanation.category}</p>
-                <p className="text-sm text-ink">{errorExplanation.userMessage}</p>
-                <p className="text-xs text-ink-muted font-mono">{errorExplanation.originalError}</p>
-              </div>
-            </div>
-          </Card>
-        </FadeIn>
+        <StatusCard variant="error" title={errorExplanation.category} animated>
+          <p className="text-sm text-ink">{errorExplanation.userMessage}</p>
+          <p className="text-xs text-ink-muted font-mono">{errorExplanation.originalError}</p>
+        </StatusCard>
       )}
 
       {(phase === "partial" || phase === "success") && queryResult && queryResult.resultset && (
