@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Header } from "@/components/header";
 import { SandboxSidebar } from "@/components/sandbox/sandboxSidebar";
 import { SandboxWorkspace, type SandboxWorkspaceHandle } from "@/components/sandbox/sandboxWorkspace";
@@ -10,12 +11,13 @@ import { useSandbox, BUILTIN_DATASETS } from "@/hooks/useSandbox";
 export default function SandboxPage() {
   const sandbox = useSandbox();
   const workspaceRef = useRef<SandboxWorkspaceHandle>(null);
+  const t = useTranslations("sandbox");
 
   return (
     <>
       {/* Desktop-only sandbox */}
       <div className="hidden md:flex h-screen flex-col" id="main-content">
-        <h1 className="sr-only">SQL Sandbox – Eigene Datenbanken erstellen und abfragen</h1>
+        <h1 className="sr-only">{t("title")}</h1>
         <Header />
 
         <div className="flex-1 flex min-h-0 overflow-hidden">
@@ -58,13 +60,12 @@ export default function SandboxPage() {
             <svg className="w-16 h-16 text-ink-muted mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zM12 16v4M8 20h8" />
             </svg>
-            <h1 className="text-xl font-bold text-ink">Sandbox nur auf Desktop verfügbar</h1>
+            <h1 className="text-xl font-bold text-ink">{t("mobileTitle")}</h1>
             <p className="text-sm text-ink-muted">
-              Die Sandbox benötigt einen größeren Bildschirm für den SQL-Editor und die Ergebnis-Anzeige.
-              Bitte verwende einen Desktop-Browser oder vergrößere dein Fenster.
+              {t("mobileDescription")}
             </p>
             <Link href="/" className="inline-block rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 transition-colors">
-              Zur Startseite
+              {t("backToHome")}
             </Link>
           </div>
         </main>

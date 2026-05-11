@@ -1,6 +1,12 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export function Footer() {
+  const t = useTranslations("footer");
+  const tNav = useTranslations("nav");
+
   return (
     <footer className="border-t border-surface-dim bg-surface-dim/40">
       <div className="mx-auto max-w-5xl px-6 py-10">
@@ -12,7 +18,7 @@ export function Footer() {
               SQL<span className="text-primary-500">VIBE</span>
             </span>
             <span className="text-xs text-ink-muted">
-              Interaktiv SQL lernen — vom Anfänger zum Profi.
+              {t("brandSlogan")}
             </span>
           </div>
 
@@ -20,24 +26,24 @@ export function Footer() {
           <div className="flex gap-10 text-sm">
             <div className="flex flex-col gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
-                Plattform
+                {t("platform")}
               </span>
               <Link href="/lernen" className="text-ink-muted hover:text-primary-500 transition-colors">
-                Lernen
+                {tNav("learn")}
               </Link>
               <Link href="/lektionen" className="text-ink-muted hover:text-primary-500 transition-colors">
-                Üben
+                {tNav("practice")}
               </Link>
               <Link href="/story" className="text-ink-muted hover:text-primary-500 transition-colors">
-                Story
+                {tNav("story")}
               </Link>
               <Link href="/sandbox" className="text-ink-muted hover:text-primary-500 transition-colors">
-                Sandbox
+                {tNav("sandbox")}
               </Link>
             </div>
             <div className="flex flex-col gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
-                Rechtliches
+                {t("legal")}
               </span>
               <Link
                 href="https://srenv.vercel.app/impressum"
@@ -45,7 +51,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-ink-muted hover:text-primary-500 transition-colors"
               >
-                Impressum
+                {t("imprint")}
               </Link>
               <Link
                 href="https://srenv.vercel.app/legal"
@@ -53,7 +59,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-ink-muted hover:text-primary-500 transition-colors"
               >
-                Datenschutz
+                {t("privacy")}
               </Link>
             </div>
           </div>

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Container } from "@/components/container";
 import { Logo } from "@/components/logo";
@@ -11,13 +11,14 @@ import { LevelBadge } from "@/components/levelBadge";
 import { StreakFlame } from "@/components/streakFlame";
 import { useProgress } from "@/hooks/useProgress";
 import { getLevel } from "@/lib/levelSystem";
+import { LanguageSwitcher } from "@/components/languageSwitcher";
 
 
 /** Haupt-Navigations-Tabs. */
 const NAV_TABS = [
   {
     href: "/lektionen",
-    label: "Üben",
+    labelKey: "practice",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
@@ -26,7 +27,7 @@ const NAV_TABS = [
   },
   {
     href: "/story",
-    label: "Story",
+    labelKey: "story",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 2v2" />
@@ -39,7 +40,7 @@ const NAV_TABS = [
   },
   {
     href: "/sandbox",
-    label: "Sandbox",
+    labelKey: "sandbox",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
@@ -48,7 +49,7 @@ const NAV_TABS = [
   },
   {
     href: "/lernen",
-    label: "Lernen",
+    labelKey: "learn",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
@@ -62,7 +63,10 @@ export interface HeaderProps {
 }
 
 export function Header({ rightSlot }: HeaderProps) {
+  const t = useTranslations("nav");
+  const tCommon = useTranslations("common");
   const pathname = usePathname();
+  const locale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const prefersReduced = useReducedMotion();
   const { progress } = useProgress();
@@ -72,6 +76,7 @@ export function Header({ rightSlot }: HeaderProps) {
 
   const isActive = (href: string) => {
     if (!pathname) return false;
+    // pathname from next-intl's usePathname is locale-relative (no /de/ prefix)
     if (href === "/lektionen") {
       return (pathname.startsWith("/lektionen") && !pathname.startsWith("/lektionen/lesson_story")) || pathname.startsWith("/uebung");
     }
@@ -137,13 +142,13 @@ export function Header({ rightSlot }: HeaderProps) {
       <header className="sticky top-0 z-40 border-b border-surface-dim bg-surface/80 backdrop-blur-md supports-backdrop-filter:bg-surface/60 transition-colors duration-200">
         <Container className="flex items-center py-3">
           <div className="flex-1 flex items-center gap-3 min-w-0">
-            <Link href="/" className="shrink-0" aria-label="SQLVIBE Startseite">
+            <Link href="/" className="shrink-0" aria-label={tCommon("home")}>
               <Logo />
             </Link>
           </div>
 
           {/* Tab-Bar — Desktop only */}
-          <nav className="hidden sm:flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1" aria-label="Hauptnavigation">
+          <nav className="hidden sm:flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1" aria-label={t("mainNav")}>
             {NAV_TABS.map((tab) => {
               const active = isActive(tab.href);
               return (
@@ -158,7 +163,7 @@ export function Header({ rightSlot }: HeaderProps) {
                   aria-current={active ? "page" : undefined}
                 >
                   {tab.icon}
-                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="hidden sm:inline">{t(tab.labelKey)}</span>
                 </Link>
               );
             })}
@@ -167,6 +172,7 @@ export function Header({ rightSlot }: HeaderProps) {
           <div className="flex-1 flex items-center justify-end gap-3">
             {rightSlot}
             <LevelBadge />
+            <LanguageSwitcher />
             <span className="hidden sm:block">
               <ThemeToggle />
             </span>
@@ -175,7 +181,7 @@ export function Header({ rightSlot }: HeaderProps) {
             <button
               className="sm:hidden flex items-center justify-center w-10 h-10 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-dim/60 transition-colors duration-150"
               onClick={() => setIsOpen((v) => !v)}
-              aria-label={isOpen ? "Menü schließen" : "Menü öffnen"}
+              aria-label={isOpen ? tCommon("closeMenu") : tCommon("openMenu")}
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
             >
@@ -227,13 +233,13 @@ export function Header({ rightSlot }: HeaderProps) {
 
             {/* Header Row */}
             <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-white/10">
-              <Link href="/" onClick={() => setIsOpen(false)} aria-label="SQLVIBE Startseite">
+              <Link href="/" onClick={() => setIsOpen(false)} aria-label={tCommon("home")}>
                 <Logo />
               </Link>
               <button
                 className="flex items-center justify-center w-10 h-10 rounded-lg text-ink-muted hover:text-ink hover:bg-white/10 transition-colors duration-150"
                 onClick={() => setIsOpen(false)}
-                aria-label="Menü schließen"
+                aria-label={tCommon("close")}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -267,7 +273,7 @@ export function Header({ rightSlot }: HeaderProps) {
                 </div>
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-ink-muted font-medium uppercase tracking-wide mb-0.5">Profil</p>
+                  <p className="text-xs text-ink-muted font-medium uppercase tracking-wide mb-0.5">{t("profile")}</p>
                   <p className="text-base font-bold text-ink truncate">{info.title}</p>
                   <div className="mt-1.5 h-1 rounded-full bg-white/10 overflow-hidden">
                     <div className="h-full rounded-full bg-primary-400 transition-all duration-700" style={{ width: `${info.progress * 100}%` }} />
@@ -320,7 +326,7 @@ export function Header({ rightSlot }: HeaderProps) {
                         <span className={`shrink-0 [&_svg]:w-6 [&_svg]:h-6 ${active ? "text-primary-400" : ""}`}>
                           {tab.icon}
                         </span>
-                        <span className="text-xl font-semibold flex-1">{tab.label}</span>
+                        <span className="text-xl font-semibold flex-1">{t(tab.labelKey)}</span>
                         <svg
                           className={`w-5 h-5 shrink-0 ${active ? "text-primary-400" : "text-ink-muted"}`}
                           fill="none"
