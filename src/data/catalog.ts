@@ -16,6 +16,14 @@ import {
   universityDataset,
   ecommerceDataset,
   hospitalDataset,
+  storyAnna7Dataset,
+  storyNexusMarktDataset,
+  storyHelpCoreDataset,
+  storyNeuronaleLueckeDataset,
+  storySystemfehlerDeltaDataset,
+  storyRoteZoneDataset,
+  storyGhostProtocolDataset,
+  storyGeldstromOmegaDataset,
 } from "@/data/datasets";
 import {
   selectExercises,
@@ -70,6 +78,14 @@ const datasetsRecord: Catalog["datasets"] = {
   [universityDataset.id]: universityDataset,
   [ecommerceDataset.id]: ecommerceDataset,
   [hospitalDataset.id]: hospitalDataset,
+  [storyAnna7Dataset.id]: storyAnna7Dataset,
+  [storyNexusMarktDataset.id]: storyNexusMarktDataset,
+  [storyHelpCoreDataset.id]: storyHelpCoreDataset,
+  [storyNeuronaleLueckeDataset.id]: storyNeuronaleLueckeDataset,
+  [storySystemfehlerDeltaDataset.id]: storySystemfehlerDeltaDataset,
+  [storyRoteZoneDataset.id]: storyRoteZoneDataset,
+  [storyGhostProtocolDataset.id]: storyGhostProtocolDataset,
+  [storyGeldstromOmegaDataset.id]: storyGeldstromOmegaDataset,
 };
 
 const lessonsArray: Lesson[] = [

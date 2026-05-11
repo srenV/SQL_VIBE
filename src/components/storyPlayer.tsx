@@ -21,6 +21,7 @@ import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
 import { SuccessCelebration } from "@/components/successCelebration";
 import { usePlayground } from "@/hooks/usePlayground";
+import { useProgress } from "@/hooks/useProgress";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
 import { introspectSchema, mergeSchemaWithFKs } from "@/lib/schemaExplorer";
 import type { PlaygroundExercise, PlaygroundStoryChapter, PlaygroundStoryData, SchemaTable } from "@/types/playground";
@@ -34,11 +35,23 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
   const story = exercise.story;
   if (!story) return null;
 
-  const [currentChapter, setCurrentChapter] = React.useState(0);
-  const [solvedChapters, setSolvedChapters] = React.useState<Set<number>>(new Set());
-  const [showIntro, setShowIntro] = React.useState(true);
+  const { getStoryProgress, markStoryChapterSolved, setStoryCurrentChapter } = useProgress();
+
+  // Load persisted progress on mount
+  const persistedProgress = getStoryProgress(exercise.id);
+  const hasPersistedProgress = !!persistedProgress && persistedProgress.solvedChapters.length > 0;
+
+  const [currentChapter, setCurrentChapter] = React.useState(
+    persistedProgress?.currentChapter ?? 0,
+  );
+  const [solvedChapters, setSolvedChapters] = React.useState<Set<number>>(
+    () => new Set(persistedProgress?.solvedChapters ?? []),
+  );
+  const [showIntro, setShowIntro] = React.useState(!hasPersistedProgress);
   const [showOutro, setShowOutro] = React.useState(false);
-  const [chapterCompletionNarratives, setChapterCompletionNarratives] = React.useState<Record<number, string>>({});
+  const [chapterCompletionNarratives, setChapterCompletionNarratives] = React.useState<Record<number, string>>(
+    persistedProgress?.chapterCompletionNarratives ?? {},
+  );
 
   const chapter: PlaygroundStoryChapter | undefined = story.chapters[currentChapter];
   const isChapterUnlocked = currentChapter <= solvedChapters.size;
@@ -87,6 +100,8 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
           ...prev,
           [currentChapter]: chapter.completionNarrative,
         }));
+        // Persist chapter progress to localStorage
+        markStoryChapterSolved(exercise.id, currentChapter, chapter.completionNarrative);
       }
       const totalAttempts = attemptCount;
       const allSolved = newSolved.size === story.chapters.length;
@@ -95,7 +110,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
       }
     }
     prevCompletedRef.current = completed;
-  }, [completed, solvedChapters, currentChapter, chapter, story.chapters.length, onComplete, attemptCount]);
+  }, [completed, solvedChapters, currentChapter, chapter, story.chapters.length, onComplete, attemptCount, markStoryChapterSolved, exercise.id]);
 
   const allChaptersSolved = solvedChapters.size === story.chapters.length;
   const canAdvance = completed && currentChapter < story.chapters.length - 1;
@@ -311,7 +326,9 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
             <Button
               onClick={() => {
                 resetSession();
-                setCurrentChapter(currentChapter + 1);
+                const nextChapter = currentChapter + 1;
+                setCurrentChapter(nextChapter);
+                setStoryCurrentChapter(exercise.id, nextChapter);
                 prevCompletedRef.current = false;
               }}
             >

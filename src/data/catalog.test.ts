@@ -5,8 +5,8 @@
 import { catalog, allExerciseIds, allLessonIds } from "@/data/catalog";
 
 describe("Catalog", () => {
-  it("should contain all 10 datasets", () => {
-    expect(Object.keys(catalog.datasets)).toHaveLength(10);
+  it("should contain all 18 datasets (10 standard + 8 story)", () => {
+    expect(Object.keys(catalog.datasets)).toHaveLength(18);
     expect(catalog.datasets["shop"]).toBeDefined();
     expect(catalog.datasets["fitness"]).toBeDefined();
     expect(catalog.datasets["hr"]).toBeDefined();
@@ -17,6 +17,15 @@ describe("Catalog", () => {
     expect(catalog.datasets["university"]).toBeDefined();
     expect(catalog.datasets["ecommerce"]).toBeDefined();
     expect(catalog.datasets["hospital"]).toBeDefined();
+    // Story-exklusive Datensaetze
+    expect(catalog.datasets["story-anna7"]).toBeDefined();
+    expect(catalog.datasets["story-nexusmarkt"]).toBeDefined();
+    expect(catalog.datasets["story-helpcore"]).toBeDefined();
+    expect(catalog.datasets["story-neuronale-luecke"]).toBeDefined();
+    expect(catalog.datasets["story-systemfehler-delta"]).toBeDefined();
+    expect(catalog.datasets["story-rote-zone"]).toBeDefined();
+    expect(catalog.datasets["story-ghost-protocol"]).toBeDefined();
+    expect(catalog.datasets["story-geldstrom-omega"]).toBeDefined();
   });
 
   it("should contain at least 400 exercises", () => {

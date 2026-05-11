@@ -42,6 +42,14 @@ import {
   universityDataset,
   ecommerceDataset,
   hospitalDataset,
+  storyAnna7Dataset,
+  storyNexusMarktDataset,
+  storyHelpCoreDataset,
+  storyNeuronaleLueckeDataset,
+  storySystemfehlerDeltaDataset,
+  storyRoteZoneDataset,
+  storyGhostProtocolDataset,
+  storyGeldstromOmegaDataset,
 } from "../datasets/index";
 import type { Exercise } from "@/types/exercise";
 import type { Dataset } from "@/types/exercise";
@@ -58,6 +66,14 @@ const datasetMap: Record<string, Dataset> = {
   university: universityDataset,
   ecommerce: ecommerceDataset,
   hospital: hospitalDataset,
+  "story-anna7": storyAnna7Dataset,
+  "story-nexusmarkt": storyNexusMarktDataset,
+  "story-helpcore": storyHelpCoreDataset,
+  "story-neuronale-luecke": storyNeuronaleLueckeDataset,
+  "story-systemfehler-delta": storySystemfehlerDeltaDataset,
+  "story-rote-zone": storyRoteZoneDataset,
+  "story-ghost-protocol": storyGhostProtocolDataset,
+  "story-geldstrom-omega": storyGeldstromOmegaDataset,
 };
 
 // Collect all exercises

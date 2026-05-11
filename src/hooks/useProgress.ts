@@ -15,6 +15,12 @@ export interface ExerciseProgress {
   difficulty?: string;
 }
 
+export interface StoryChapterProgress {
+  solvedChapters: number[];
+  currentChapter: number;
+  chapterCompletionNarratives: Record<number, string>;
+}
+
 export interface ProgressData {
   exercises: Record<string, ExerciseProgress>;
   totalPoints: number;
@@ -22,6 +28,7 @@ export interface ProgressData {
   lastActiveDate: string | null;
   achievements: string[];
   learnProgress: Record<string, LearnModuleProgress>;
+  storyProgress: Record<string, StoryChapterProgress>;
 }
 
 export interface LearnModuleProgress {
@@ -57,6 +64,7 @@ const initialProgress: ProgressData = {
   lastActiveDate: null,
   achievements: [],
   learnProgress: {},
+  storyProgress: {},
 };
 
 function loadProgress(): ProgressData {
@@ -64,7 +72,13 @@ function loadProgress(): ProgressData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return initialProgress;
-    return JSON.parse(raw) as ProgressData;
+    const parsed = JSON.parse(raw) as ProgressData;
+    // Ensure storyProgress exists for users with older localStorage data
+    return {
+      ...initialProgress,
+      ...parsed,
+      storyProgress: parsed.storyProgress ?? {},
+    };
   } catch {
     return initialProgress;
   }
@@ -276,6 +290,77 @@ export function useProgress() {
     [progress]
   );
 
+  /** Mark a story chapter as solved and persist the progress. */
+  const markStoryChapterSolved = useCallback(
+    (
+      exerciseId: string,
+      chapterIndex: number,
+      completionNarrative: string,
+    ) => {
+      setProgress((prev) => {
+        const existing = prev.storyProgress[exerciseId];
+        const solvedChapters = existing?.solvedChapters ?? [];
+        const chapterCompletionNarratives = existing?.chapterCompletionNarratives ?? {};
+
+        // Avoid duplicates
+        if (solvedChapters.includes(chapterIndex)) return prev;
+
+        const updated: ProgressData = {
+          ...prev,
+          storyProgress: {
+            ...prev.storyProgress,
+            [exerciseId]: {
+              solvedChapters: [...solvedChapters, chapterIndex],
+              currentChapter: Math.max(existing?.currentChapter ?? 0, chapterIndex + 1),
+              chapterCompletionNarratives: {
+                ...chapterCompletionNarratives,
+                [chapterIndex]: completionNarrative,
+              },
+            },
+          },
+          lastActiveDate: todayISO(),
+        };
+
+        saveProgress(updated);
+        return updated;
+      });
+    },
+    [],
+  );
+
+  /** Update the current chapter index for a story exercise. */
+  const setStoryCurrentChapter = useCallback(
+    (exerciseId: string, chapterIndex: number) => {
+      setProgress((prev) => {
+        const existing = prev.storyProgress[exerciseId];
+        const updated: ProgressData = {
+          ...prev,
+          storyProgress: {
+            ...prev.storyProgress,
+            [exerciseId]: {
+              solvedChapters: existing?.solvedChapters ?? [],
+              currentChapter: chapterIndex,
+              chapterCompletionNarratives: existing?.chapterCompletionNarratives ?? {},
+            },
+          },
+          lastActiveDate: todayISO(),
+        };
+
+        saveProgress(updated);
+        return updated;
+      });
+    },
+    [],
+  );
+
+  /** Get the persisted story progress for an exercise. */
+  const getStoryProgress = useCallback(
+    (exerciseId: string): StoryChapterProgress | undefined => {
+      return progress.storyProgress?.[exerciseId];
+    },
+    [progress],
+  );
+
   return {
     progress,
     markExerciseCompleted,
@@ -288,6 +373,9 @@ export function useProgress() {
     markSectionRead,
     isSectionRead,
     getLearnModuleProgress,
+    markStoryChapterSolved,
+    setStoryCurrentChapter,
+    getStoryProgress,
   };
 }
 

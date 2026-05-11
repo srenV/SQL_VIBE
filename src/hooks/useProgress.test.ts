@@ -48,12 +48,14 @@ describe("useProgress", () => {
           streak: 3,
           lastActiveDate: "2025-01-01",
           achievements: ["first_exercise"],
+          storyProgress: {},
         })
       );
       const { result } = renderHook(() => useProgress());
       expect(result.current.progress.totalPoints).toBe(10);
       expect(result.current.progress.exercises["ex1"].completed).toBe(true);
-      expect(result.current.progress.achievements).toEqual(["first_exercise"]);
+      // Achievements may be retroactively expanded by checkAchievements
+      expect(result.current.progress.achievements).toContain("first_exercise");
     });
   });
 

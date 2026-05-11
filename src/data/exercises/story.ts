@@ -7,9 +7,16 @@
  */
 import { makeStoryExercise, resetCounter } from "@/data/exercises/_factory";
 import type { Exercise } from "@/types/exercise";
-import { shopDataset } from "@/data/datasets/shop";
-import { hrDataset } from "@/data/datasets/hr";
-import { ticketsDataset } from "@/data/datasets/tickets";
+import { storyAnna7Dataset } from "@/data/datasets/story-anna7";
+import { storyNexusMarktDataset } from "@/data/datasets/story-nexusmarkt";
+import { storyHelpCoreDataset } from "@/data/datasets/story-helpcore";
+import { storyNeuronaleLueckeDataset } from "@/data/datasets/story-neuronale-luecke";
+import { storySystemfehlerDeltaDataset } from "@/data/datasets/story-systemfehler-delta";
+import { storyRoteZoneDataset } from "@/data/datasets/story-rote-zone";
+import { storyGhostProtocolDataset } from "@/data/datasets/story-ghost-protocol";
+import { storyGeldstromOmegaDataset } from "@/data/datasets/story-geldstrom-omega";
+import { universityDataset } from "@/data/datasets/university";
+import { fitnessDataset } from "@/data/datasets/fitness";
 
 export const storyExercises: Exercise[] = [];
 resetCounter();
@@ -21,7 +28,7 @@ storyExercises.push(
       "Die Systemarchitektin ANNA-7 ist aus dem Korporations-Netz verschwunden. Durchsuche die Personaldatenbank des Konzerns, bevor die Kontrolleinheit eintrifft.",
     difficulty: "junior",
     category: "Story",
-    datasetId: "hr",
+    datasetId: "story-anna7",
     scenarioTitle: "Vermisst: Einheit ANNA-7",
     intro:
       "Es ist 03:17 Uhr Systemzeit. Die Korporations-KI meldet eine Anomalie: ANNA-7, Senior-Systemarchitektin der Entwicklungseinheit, hat sich seit 72 Stunden nicht mehr im Netz authentifiziert. Das Kontrollteam rückt in 6 Stunden an — du hast vorher Zugriff auf die Personaldatenbank. Finde heraus, was passiert ist.",
@@ -140,7 +147,7 @@ storyExercises.push(
       "Im staatlich kontrollierten NexusMarkt häufen sich mysteriöse Storno-Anomalien. Eine unsichtbare Entität manipuliert das Handelssystem — oder ist es jemand aus dem Inneren?",
     difficulty: "intermediate",
     category: "Story",
-    datasetId: "shop",
+    datasetId: "story-nexusmarkt",
     scenarioTitle: "Phantom-Transaktionen im NexusMarkt",
     intro:
       "Der NexusMarkt — das einzig legale Handelssystem der Ost-Zone — meldet Anomalien. Bestellungen werden storniert, aber die Zahlungen sind bereits abgeflossen. Die Handels-KI hat keine Erklärung. Du hast 4 Stunden Datenbankzugang, bevor das Audit-Team eintrifft.",
@@ -243,7 +250,7 @@ storyExercises.push(
       "Das HelpCore-Ticketsystem der SmartCity-Infrastruktur wurde infiltriert. Kritische Bürger-Anfragen werden systematisch unterdrückt. Finde den Saboteur, bevor das Netz kollabiert.",
     difficulty: "intermediate",
     category: "Story",
-    datasetId: "tickets",
+    datasetId: "story-helpcore",
     scenarioTitle: "Virus im HelpCore-Netz",
     intro:
       "HelpCore — das zentrale Bürgersupport-System der SmartCity — verhält sich anomal. Kritische Tickets verschwinden, Kommentare werden manipuliert, Prioritäten heimlich geändert. Jemand nutzt das System, um Beschwerden über die Korporationspolitik zu begraben. Du hast Zugriff auf die Rohdatenbank.",
@@ -348,7 +355,7 @@ storyExercises.push(
       "Die staatliche Streaming-KI ARGUS löscht selektiv Inhalte aus dem Kulturnetz. Du bist der letzte unabhängige Analyst mit Datenbankzugriff — finde das Muster, bevor ARGUS dich findet.",
     difficulty: "beginner",
     category: "Story",
-    datasetId: "streaming",
+    datasetId: "story-neuronale-luecke",
     scenarioTitle: "Neuronale Lücke",
     intro:
       "Das Jahr 2091. Die Unterhaltungs-KI ARGUS kontrolliert alle Inhalte im staatlichen Streaming-Netz. Seit Wochen verschwinden Filme spurlos aus dem Katalog — immer kurz nachdem sie positiv bewertet wurden. Zufall? Du hast Zugriff auf die rohe Streaming-Datenbank. Finde das Muster, bevor ARGUS dich aus dem System sperrt.",
@@ -450,7 +457,7 @@ storyExercises.push(
       "Kritische Infrastrukturausfälle häufen sich in der SmartCity. Die Logs zeigen ein Muster — aber wer steckt dahinter? Du hast Zugriff auf die Serverprotokolle.",
     difficulty: "beginner",
     category: "Story",
-    datasetId: "logs",
+    datasetId: "story-systemfehler-delta",
     scenarioTitle: "Systemfehler Delta",
     intro:
       "SmartCity-Infrastruktur-Status: KRITISCH. Seit dem 01.03.2089 häufen sich Systemausfälle in der Bürger-Versorgungsinfrastruktur. Checkout-Systeme brechen zusammen, Datenbankverbindungen fallen weg. Die Korporations-KI erklärt es als 'zufällige Lastspitzen'. Du glaubst das nicht. Du hast Zugriff auf die rohen Server-Logs.",
@@ -552,7 +559,7 @@ storyExercises.push(
       "MedGov, die staatliche Medizin-KI, verteilt Behandlungen nach einem undurchsichtigen Algorithmus. Patienten ohne Versicherung werden systematisch benachteiligt. Du deckst den Bias auf.",
     difficulty: "junior",
     category: "Story",
-    datasetId: "hospital",
+    datasetId: "story-rote-zone",
     scenarioTitle: "Die rote Zone",
     intro:
       "MedGov-Protokoll 2091: Die staatliche Medizin-KI übernimmt alle Behandlungsentscheidungen im Korporations-Gesundheitssystem. Berichte häufen sich: Patienten ohne Versicherung warten länger, zahlen mehr, werden schlechter versorgt. Die Zahlen müssen es beweisen. Du hast Zugriff auf die Krankenhausdatenbank — 48 Stunden, bevor MedGov den Audit-Modus aktiviert.",
@@ -674,7 +681,7 @@ storyExercises.push(
       "Geheime KI-Kampagnen unterwandern den E-Commerce-Markt durch koordinierte Fake-Premium-Accounts. Du hast Zugriff auf die Analytics-Datenbank und 6 Stunden, um das Netzwerk zu entlarven.",
     difficulty: "intermediate",
     category: "Story",
-    datasetId: "ecommerce",
+    datasetId: "story-ghost-protocol",
     scenarioTitle: "Ghost Protocol Sigma",
     intro:
       "Das Sigma-Netzwerk ist aktiv. Eine unbekannte KI-Organisation hat Premium-Kundenprofile in den staatlich kontrollierten E-Commerce-Markt eingeschleust — koordinierte Käufe, gefälschte Bewertungen, manipulierte Bestsellerlisten. Du hast Zugriff auf die Analytics-Datenbank. Entlarve das Netzwerk, bevor Sigma die Spuren löscht.",
@@ -931,7 +938,7 @@ storyExercises.push(
       "Ein KI-Netzwerk wäscht Geld durch Tausende Mikrotransaktionen. Du hast 48 Stunden und Zugriff auf die Bankdatenbank — finde die Täter, bevor Omega die Konten leert.",
     difficulty: "advanced",
     category: "Story",
-    datasetId: "banking",
+    datasetId: "story-geldstrom-omega",
     scenarioTitle: "Geldstrom Omega",
     intro:
       "Omega-Alarm. Die Betrugserkennungs-KI der Korporationsbank hat Anomalien markiert — aber die Omega-Gruppe ist schneller. Mikrotransaktionen fließen durch Dutzende Konten, Beträge verschwinden in Millisekunden. Du hast Datenbankzugriff und 48 Stunden. Finde das Omega-Netzwerk — bevor es die Konten leert und die Spuren verwischt.",
