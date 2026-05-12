@@ -7,24 +7,25 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getModuleById, allModuleIds } from "@/data/learnContent";
+import { getModuleById, getAllModuleIds } from "@/data/learnContentLocale";
 import { Card } from "@/components/card";
 import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
-import { DifficultyBadge, getDifficultyConfig } from "@/components/difficultyBadge";
+import { DifficultyBadge } from "@/components/difficultyBadge";
+import { getDifficultyConfig } from "@/lib/difficultyConfig";
 import { getModuleIcon } from "@/components/learn/moduleIcons";
 
 interface PageProps {
-  params: Promise<{ moduleId: string }>;
+  params: Promise<{ locale: string; moduleId: string }>;
 }
 
 export async function generateStaticParams() {
-  return allModuleIds.map((id) => ({ moduleId: id }));
+  return getAllModuleIds("de").map((id) => ({ moduleId: id }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { moduleId } = await params;
-  const mod = getModuleById(moduleId);
+  const { locale, moduleId } = await params;
+  const mod = getModuleById(locale, moduleId);
   if (!mod) return { title: "Modul nicht gefunden" };
   return {
     title: `${mod.title} – SQL Lernen`,
@@ -38,8 +39,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function LearnModulePage({ params }: PageProps) {
-  const { moduleId } = await params;
-  const mod = getModuleById(moduleId);
+  const { locale, moduleId } = await params;
+  const mod = getModuleById(locale, moduleId);
   if (!mod) notFound();
 
   const totalMin = mod.articles.reduce((sum, a) => sum + a.estimatedMinutes, 0);
@@ -64,7 +65,7 @@ export default async function LearnModulePage({ params }: PageProps) {
       name: "SQL VIBE",
       url: "https://sql-vibe.vercel.app",
     },
-    coursePrerequisites: getDifficultyConfig(mod.difficulty).label,
+    coursePrerequisites: getDifficultyConfig(mod.difficulty).labelKey,
     numberOfItems: mod.articles.length,
     inLanguage: "de",
   };

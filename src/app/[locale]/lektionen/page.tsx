@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { catalog, allLessonIds } from "@/data/catalog";
+import { getCatalog, allLessonIds } from "@/data/catalog";
 import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
@@ -33,6 +33,8 @@ export default async function LektionenPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("lektionen");
+
+  const catalog = getCatalog(locale);
 
   const sortedLessons = allLessonIds
     .map((id) => catalog.lessons[id])

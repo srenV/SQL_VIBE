@@ -9,8 +9,9 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { learnModules, totalArticles } from "@/data/learnContent";
-import { learnQuizzes } from "@/data/learnQuizzes";
+import { useLocale } from "next-intl";
+import { getLearnModules, totalArticles } from "@/data/learnContentLocale";
+import { getLearnQuizzes } from "@/data/learnQuizzes/locale";
 import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
 import { AnimatedCard } from "@/components/animatedCard";
@@ -51,11 +52,15 @@ export default function LernenPage() {
   const [activeTab, setActiveTab] = React.useState<Tab>("lernen");
   const [selectedQuizModule, setSelectedQuizModule] = React.useState<string | null>(null);
   const t = useTranslations("lernen");
+  const locale = useLocale();
+  const learnModulesData = getLearnModules(locale);
+  const totalArticlesCount = totalArticles(locale);
+  const quizzes = getLearnQuizzes(locale);
 
   // Quiz mode: show quiz for selected module
   if (activeTab === "testen" && selectedQuizModule) {
-    const quiz = learnQuizzes.find((q) => q.moduleId === selectedQuizModule);
-    const mod = learnModules.find((m) => m.id === selectedQuizModule);
+    const quiz = quizzes.find((q) => q.moduleId === selectedQuizModule);
+    const mod = learnModulesData.find((m) => m.id === selectedQuizModule);
     if (quiz && mod) {
       return (
         <PageShell mainClassName="flex-1 py-12" containerClassName="space-y-6">
@@ -128,11 +133,11 @@ export default function LernenPage() {
             <FadeIn delay={0.1}>
               <div role="tabpanel" className="text-center mb-2">
                 <p className="text-sm text-ink-muted">
-                  {learnModules.length} {t("modules")} · {totalArticles} {t("articles")}
+                  {learnModulesData.length} {t("modules")} · {totalArticlesCount} {t("articles")}
                 </p>
               </div>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {learnModules.map((mod) => {
+                {learnModulesData.map((mod) => {
                   const totalMin = mod.articles.reduce((sum, a) => sum + a.estimatedMinutes, 0);
 
                   return (
@@ -183,12 +188,12 @@ export default function LernenPage() {
             <FadeIn delay={0.1}>
               <div role="tabpanel" className="text-center mb-2">
                 <p className="text-sm text-ink-muted">
-                  {learnQuizzes.length} {t("quizzes")} · {t("questionsPerModule", { count: learnQuizzes[0]?.questions.length ?? 15 })}
+                  {quizzes.length} {t("quizzes")} · {t("questionsPerModule", { count: quizzes[0]?.questions.length ?? 15 })}
                 </p>
               </div>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {learnModules.map((mod) => {
-                  const quiz = learnQuizzes.find((q) => q.moduleId === mod.id);
+                {learnModulesData.map((mod) => {
+                  const quiz = quizzes.find((q) => q.moduleId === mod.id);
                   const questionCount = quiz?.questions.length ?? 0;
 
                   return (

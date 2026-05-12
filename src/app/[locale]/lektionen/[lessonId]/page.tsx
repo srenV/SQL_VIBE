@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { catalog, allLessonIds } from "@/data/catalog";
+import { getCatalog, allLessonIds } from "@/data/catalog";
 import { PageShell } from "@/components/pageShell";
 import { Card } from "@/components/card";
 import { FadeIn } from "@/components/animations";
@@ -24,7 +24,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale, lessonId } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("lektionen");
-  const lesson = catalog.lessons[lessonId];
+  const metaCatalog = getCatalog(locale);
+  const lesson = metaCatalog.lessons[lessonId];
   if (!lesson) return { title: t("lessonNotFound") };
   return {
     title: `${lesson.title} – ${t("title")}`,
@@ -41,6 +42,7 @@ export default async function LessonOverviewPage({ params }: PageProps) {
   const { locale, lessonId } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("lektionen");
+  const catalog = getCatalog(locale);
   const lesson = catalog.lessons[lessonId];
   if (!lesson) notFound();
 

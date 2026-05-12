@@ -5,35 +5,35 @@
  */
 
 import type { Metadata } from "next";
-import { allArticlePaths, getArticle, getModuleById } from "@/data/learnContent";
+import { getAllArticlePaths, getArticle, getModuleById } from "@/data/learnContentLocale";
 import { ArticlePageClient } from "@/components/learn/ArticlePageClient";
 
 export function generateStaticParams() {
-  return allArticlePaths;
+  return getAllArticlePaths("de");
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ moduleId: string; articleId: string }>;
+  params: Promise<{ locale: string; moduleId: string; articleId: string }>;
 }): Promise<Metadata> {
-  const { moduleId, articleId } = await params;
-  const mod = getModuleById(moduleId);
-  const article = getArticle(moduleId, articleId);
-  if (!mod || !article) return { title: "Artikel nicht gefunden" };
+  const { locale, moduleId, articleId } = await params;
+  const result = getArticle(locale, moduleId, articleId);
+  if (!result) return { title: "Article not found" };
+  const { module: mod, article } = result;
   return {
     title: `${article.title} – ${mod.title}`,
-    description: `${article.title} im Modul ${mod.title}: ${mod.description}`,
+    description: `${article.title} in module ${mod.title}: ${mod.description}`,
     alternates: { canonical: `/lernen/${moduleId}/${articleId}` },
     openGraph: {
       title: `${article.title} – ${mod.title}`,
-      description: `${article.title} im Modul ${mod.title}: ${mod.description}`,
+      description: `${article.title} in module ${mod.title}: ${mod.description}`,
       type: "article",
     },
   };
 }
 
-export default function ArticlePage({ params }: { params: Promise<{ moduleId: string; articleId: string }> }) {
+export default function ArticlePage({ params }: { params: Promise<{ locale: string; moduleId: string; articleId: string }> }) {
   // BreadcrumbList JSON-LD is rendered here; article data is loaded client-side
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

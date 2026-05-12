@@ -1,9 +1,10 @@
 /**
- * Zentraler Katalog fuer Lektionen, Uebungen und Datensaetze.
+ * Central catalog for lessons, exercises, and datasets.
  *
- * Baut die Lernstruktur der SQL-Trainer MySQL-Lernplattform auf:
- * Ordnet Uebungen und Datensaetze den jeweiligen Lektionen zu
- * und exportiert die vollstaendige Katalog-Struktur.
+ * Builds the learning structure of the SQL Trainer MySQL learning platform:
+ * Assigns exercises and datasets to the respective lessons
+ * and exports the complete catalog structure.
+ * Now locale-aware — returns English or German content based on locale.
  */
 import {
   shopDataset,
@@ -25,47 +26,195 @@ import {
   storyGhostProtocolDataset,
   storyGeldstromOmegaDataset,
 } from "@/data/datasets";
-import {
-  selectExercises,
-  whereExercises,
-  orderLimitExercises,
-  aggregationExercises,
-  joinExercises,
-  subqueryExercises,
-  debugExercises,
-  predictExercises,
-  schemaExercises,
-  interviewExercises,
-  cteExercises,
-  windowFunctionExercises,
-  dmlExercises,
-  ddlExercises,
-  storyExercises,
-} from "@/data/exercises";
+import { getAllExercises } from "@/data/exercises/locale";
 import type { Catalog, Lesson } from "@/types/exercise";
 
-const allExercises = [
-  ...selectExercises,
-  ...whereExercises,
-  ...orderLimitExercises,
-  ...aggregationExercises,
-  ...joinExercises,
-  ...subqueryExercises,
-  ...debugExercises,
-  ...predictExercises,
-  ...schemaExercises,
-  ...interviewExercises,
-  ...cteExercises,
-  ...windowFunctionExercises,
-  ...dmlExercises,
-  ...ddlExercises,
-  ...storyExercises,
-];
+// ─── Lesson definitions (locale-aware) ───
 
-const exercisesRecord: Catalog["exercises"] = {};
-for (const ex of allExercises) {
-  exercisesRecord[ex.id] = ex;
-}
+const lessonDefs = [
+  {
+    id: "lesson_select",
+    title: { de: "SELECT Grundlagen", en: "SELECT Basics" },
+    description: {
+      de: "Lerne, Daten aus Tabellen abzufragen: alle Spalten, einzelne Spalten, Aliase und DISTINCT.",
+      en: "Learn to query data from tables: all columns, individual columns, aliases, and DISTINCT.",
+    },
+    difficulty: "beginner" as const,
+    category: "SELECT",
+    exerciseKey: "select" as const,
+    order: 1,
+  },
+  {
+    id: "lesson_where",
+    title: { de: "Filterlogik mit WHERE", en: "Filter Logic with WHERE" },
+    description: {
+      de: "Verfeinere deine Abfragen mit WHERE, AND, OR, BETWEEN, IN, LIKE und IS NULL.",
+      en: "Refine your queries with WHERE, AND, OR, BETWEEN, IN, LIKE, and IS NULL.",
+    },
+    difficulty: "beginner" as const,
+    category: "WHERE",
+    exerciseKey: "where" as const,
+    order: 2,
+  },
+  {
+    id: "lesson_order",
+    title: { de: "Sortieren und Begrenzen", en: "Sorting and Limiting" },
+    description: {
+      de: "Ordne Ergebnisse mit ORDER BY und begrenze sie mit LIMIT.",
+      en: "Sort results with ORDER BY and limit them with LIMIT.",
+    },
+    difficulty: "beginner" as const,
+    category: "ORDER BY / LIMIT",
+    exerciseKey: "orderLimit" as const,
+    order: 3,
+  },
+  {
+    id: "lesson_aggregation",
+    title: { de: "Aggregationen", en: "Aggregations" },
+    description: {
+      de: "Berechne Summen, Durchschnitte, Minima, Maxima und gruppiere mit GROUP BY und HAVING.",
+      en: "Calculate sums, averages, minima, maxima and group with GROUP BY and HAVING.",
+    },
+    difficulty: "junior" as const,
+    category: "Aggregation",
+    exerciseKey: "aggregation" as const,
+    order: 4,
+  },
+  {
+    id: "lesson_join",
+    title: { de: "Tabellen verbinden (JOINs)", en: "Joining Tables (JOINs)" },
+    description: {
+      de: "Verbinde Tabellen mit INNER JOIN, LEFT JOIN, RIGHT JOIN und Self Join.",
+      en: "Join tables with INNER JOIN, LEFT JOIN, RIGHT JOIN, and Self Join.",
+    },
+    difficulty: "junior" as const,
+    category: "JOIN",
+    exerciseKey: "join" as const,
+    order: 5,
+  },
+  {
+    id: "lesson_subquery",
+    title: { de: "Subqueries", en: "Subqueries" },
+    description: {
+      de: "Nutze Unterabfragen in WHERE, FROM, SELECT und mit EXISTS.",
+      en: "Use subqueries in WHERE, FROM, SELECT, and with EXISTS.",
+    },
+    difficulty: "intermediate" as const,
+    category: "Subquery",
+    exerciseKey: "subquery" as const,
+    order: 6,
+  },
+  {
+    id: "lesson_cte",
+    title: { de: "Common Table Expressions (CTEs)", en: "Common Table Expressions (CTEs)" },
+    description: {
+      de: "Strukturiere komplexe Abfragen mit WITH und CTEs fuer bessere Lesbarkeit.",
+      en: "Structure complex queries with WITH and CTEs for better readability.",
+    },
+    difficulty: "intermediate" as const,
+    category: "CTE",
+    exerciseKey: "cte" as const,
+    order: 7,
+  },
+  {
+    id: "lesson_window",
+    title: { de: "Window Functions", en: "Window Functions" },
+    description: {
+      de: "Berechne laufende Summen, Rangfolgen und Analysefunktionen mit OVER, ROW_NUMBER, RANK und LAG.",
+      en: "Calculate running totals, rankings, and analytics functions with OVER, ROW_NUMBER, RANK, and LAG.",
+    },
+    difficulty: "intermediate" as const,
+    category: "Window Functions",
+    exerciseKey: "windowFunctions" as const,
+    order: 8,
+  },
+  {
+    id: "lesson_dml",
+    title: { de: "Daten aendern (DML)", en: "Modifying Data (DML)" },
+    description: {
+      de: "Aendere Daten mit INSERT, UPDATE und DELETE.",
+      en: "Modify data with INSERT, UPDATE, and DELETE.",
+    },
+    difficulty: "junior" as const,
+    category: "DML",
+    exerciseKey: "dml" as const,
+    order: 9,
+  },
+  {
+    id: "lesson_ddl",
+    title: { de: "Schema und Tabellen (DDL)", en: "Schema and Tables (DDL)" },
+    description: {
+      de: "Erstelle und aendere Tabellenstrukturen mit CREATE TABLE, ALTER TABLE und Constraints.",
+      en: "Create and modify table structures with CREATE TABLE, ALTER TABLE, and constraints.",
+    },
+    difficulty: "junior" as const,
+    category: "DDL",
+    exerciseKey: "ddl" as const,
+    order: 10,
+  },
+  {
+    id: "lesson_debug",
+    title: { de: "Debugging-Aufgaben", en: "Debugging Tasks" },
+    description: {
+      de: "Finde und korrigiere Fehler in SQL-Queries.",
+      en: "Find and fix errors in SQL queries.",
+    },
+    difficulty: "junior" as const,
+    category: "Debugging",
+    exerciseKey: "debug" as const,
+    order: 11,
+  },
+  {
+    id: "lesson_predict",
+    title: { de: "Ergebnis-Vorhersage", en: "Result Prediction" },
+    description: {
+      de: "Schaue dir eine Query an und sage das Ergebnis voraus.",
+      en: "Look at a query and predict the result.",
+    },
+    difficulty: "beginner" as const,
+    category: "Result Prediction",
+    exerciseKey: "predict" as const,
+    order: 12,
+  },
+  {
+    id: "lesson_schema",
+    title: { de: "Schema-Verstaendnis", en: "Schema Understanding" },
+    description: {
+      de: "Lies Tabellenbeziehungen und waehle die richtigen Tabellen fuer eine Abfrage.",
+      en: "Read table relationships and choose the right tables for a query.",
+    },
+    difficulty: "beginner" as const,
+    category: "Schema Understanding",
+    exerciseKey: "schema" as const,
+    order: 13,
+  },
+  {
+    id: "lesson_interview",
+    title: { de: "Interview-Challenges", en: "Interview Challenges" },
+    description: {
+      de: "Realistische Aufgaben im Stil von LeetCode und HackerRank.",
+      en: "Realistic tasks in the style of LeetCode and HackerRank.",
+    },
+    difficulty: "intermediate" as const,
+    category: "Interview Challenge",
+    exerciseKey: "interview" as const,
+    order: 14,
+  },
+  {
+    id: "lesson_story",
+    title: { de: "SQL Agent", en: "SQL Agent" },
+    description: {
+      de: "Loese spannende Kriminalfaelle mit SQL! Finde Hinweise, verdaechtige Muster und klaere Faelle auf.",
+      en: "Solve exciting crime cases with SQL! Find clues, suspicious patterns, and crack cases.",
+    },
+    difficulty: "junior" as const,
+    category: "Story",
+    exerciseKey: "story" as const,
+    order: 15,
+  },
+] as const;
+
+// ─── Dataset record (same for all locales — resolved via datasets/locale.ts) ───
 
 const datasetsRecord: Catalog["datasets"] = {
   [shopDataset.id]: shopDataset,
@@ -88,160 +237,82 @@ const datasetsRecord: Catalog["datasets"] = {
   [storyGeldstromOmegaDataset.id]: storyGeldstromOmegaDataset,
 };
 
-const lessonsArray: Lesson[] = [
-  {
-    id: "lesson_select",
-    title: "SELECT Grundlagen",
-    description: "Lerne, Daten aus Tabellen abzufragen: alle Spalten, einzelne Spalten, Aliase und DISTINCT.",
-    difficulty: "beginner",
-    category: "SELECT",
-    exercises: selectExercises.map((e) => e.id),
-    order: 1,
-  },
-  {
-    id: "lesson_where",
-    title: "Filterlogik mit WHERE",
-    description: "Verfeinere deine Abfragen mit WHERE, AND, OR, BETWEEN, IN, LIKE und IS NULL.",
-    difficulty: "beginner",
-    category: "WHERE",
-    exercises: whereExercises.map((e) => e.id),
-    order: 2,
-  },
-  {
-    id: "lesson_order",
-    title: "Sortieren und Begrenzen",
-    description: "Ordne Ergebnisse mit ORDER BY und begrenze sie mit LIMIT.",
-    difficulty: "beginner",
-    category: "ORDER BY / LIMIT",
-    exercises: orderLimitExercises.map((e) => e.id),
-    order: 3,
-  },
-  {
-    id: "lesson_aggregation",
-    title: "Aggregationen",
-    description: "Berechne Summen, Durchschnitte, Minima, Maxima und gruppiere mit GROUP BY und HAVING.",
-    difficulty: "junior",
-    category: "Aggregation",
-    exercises: aggregationExercises.map((e) => e.id),
-    order: 4,
-  },
-  {
-    id: "lesson_join",
-    title: "Tabellen verbinden (JOINs)",
-    description: "Verbinde Tabellen mit INNER JOIN, LEFT JOIN, RIGHT JOIN und Self Join.",
-    difficulty: "junior",
-    category: "JOIN",
-    exercises: joinExercises.map((e) => e.id),
-    order: 5,
-  },
-  {
-    id: "lesson_subquery",
-    title: "Subqueries",
-    description: "Nutze Unterabfragen in WHERE, FROM, SELECT und mit EXISTS.",
-    difficulty: "intermediate",
-    category: "Subquery",
-    exercises: subqueryExercises.map((e) => e.id),
-    order: 6,
-  },
-  {
-    id: "lesson_cte",
-    title: "Common Table Expressions (CTEs)",
-    description: "Strukturiere komplexe Abfragen mit WITH und CTEs fuer bessere Lesbarkeit.",
-    difficulty: "intermediate",
-    category: "CTE",
-    exercises: cteExercises.map((e) => e.id),
-    order: 7,
-  },
-  {
-    id: "lesson_window",
-    title: "Window Functions",
-    description: "Berechne laufende Summen, Rangfolgen und Analysefunktionen mit OVER, ROW_NUMBER, RANK und LAG.",
-    difficulty: "intermediate",
-    category: "Window Functions",
-    exercises: windowFunctionExercises.map((e) => e.id),
-    order: 8,
-  },
-  {
-    id: "lesson_dml",
-    title: "Daten aendern (DML)",
-    description: "Aendere Daten mit INSERT, UPDATE und DELETE.",
-    difficulty: "junior",
-    category: "DML",
-    exercises: dmlExercises.map((e) => e.id),
-    order: 9,
-  },
-  {
-    id: "lesson_ddl",
-    title: "Schema und Tabellen (DDL)",
-    description: "Erstelle und aendere Tabellenstrukturen mit CREATE TABLE, ALTER TABLE und Constraints.",
-    difficulty: "junior",
-    category: "DDL",
-    exercises: ddlExercises.map((e) => e.id),
-    order: 10,
-  },
-  {
-    id: "lesson_debug",
-    title: "Debugging-Aufgaben",
-    description: "Finde und korrigiere Fehler in SQL-Queries.",
-    difficulty: "junior",
-    category: "Debugging",
-    exercises: debugExercises.map((e) => e.id),
-    order: 11,
-  },
-  {
-    id: "lesson_predict",
-    title: "Ergebnis-Vorhersage",
-    description: "Schaue dir eine Query an und sage das Ergebnis voraus.",
-    difficulty: "beginner",
-    category: "Ergebnis-Vorhersage",
-    exercises: predictExercises.map((e) => e.id),
-    order: 12,
-  },
-  {
-    id: "lesson_schema",
-    title: "Schema-Verstaendnis",
-    description: "Lies Tabellenbeziehungen und waehle die richtigen Tabellen fuer eine Abfrage.",
-    difficulty: "beginner",
-    category: "Schema-Verstaendnis",
-    exercises: schemaExercises.map((e) => e.id),
-    order: 13,
-  },
-  {
-    id: "lesson_interview",
-    title: "Interview-Challenges",
-    description: "Realistische Aufgaben im Stil von LeetCode und HackerRank.",
-    difficulty: "intermediate",
-    category: "Interview-Challenge",
-    exercises: interviewExercises.map((e) => e.id),
-    order: 14,
-  },
-  {
-    id: "lesson_story",
-    title: "SQL Agent",
-    description: "Loese spannende Kriminalfaelle mit SQL! Finde Hinweise, verdaechtige Muster und klaere Faelle auf.",
-    difficulty: "junior",
-    category: "Story",
-    exercises: [...storyExercises]
-      .sort((a, b) =>
-        ["beginner", "junior", "intermediate", "advanced", "interview"].indexOf(a.difficulty) -
-        ["beginner", "junior", "intermediate", "advanced", "interview"].indexOf(b.difficulty)
-      )
-      .map((e) => e.id),
-    order: 15,
-  },
-];
+// ─── Catalog builder ───
 
-const lessonsRecord: Catalog["lessons"] = {};
-for (const l of lessonsArray) {
-  lessonsRecord[l.id] = l;
+/**
+ * Build a locale-aware catalog.
+ * Returns exercises and lessons in the requested language.
+ */
+export function getCatalog(locale: string): Catalog {
+  const allExercises = getAllExercises(locale);
+
+  const exercisesRecord: Catalog["exercises"] = {};
+  for (const ex of allExercises) {
+    exercisesRecord[ex.id] = ex;
+  }
+
+  const lessonsArray: Lesson[] = lessonDefs.map((def) => {
+    // Find exercises for this lesson by matching the exerciseKey
+    const key = def.exerciseKey;
+    const lessonExercises = allExercises.filter((ex) => {
+      // Match by category prefix
+      const categoryMap: Record<string, string> = {
+        select: "SELECT",
+        where: "WHERE",
+        orderLimit: "ORDER BY / LIMIT",
+        aggregation: "Aggregation",
+        join: "JOIN",
+        subquery: "Subquery",
+        cte: "CTE",
+        windowFunctions: "Window Functions",
+        dml: "DML",
+        ddl: "DDL",
+        debug: "Debugging",
+        predict: "Result Prediction",
+        schema: "Schema Understanding",
+        interview: "Interview Challenge",
+        story: "Story",
+      };
+      return ex.category === categoryMap[key];
+    });
+
+    // For story, sort by difficulty
+    const exerciseIds = key === "story"
+      ? [...lessonExercises]
+          .sort((a, b) =>
+            ["beginner", "junior", "intermediate", "advanced", "interview"].indexOf(a.difficulty) -
+            ["beginner", "junior", "intermediate", "advanced", "interview"].indexOf(b.difficulty)
+          )
+          .map((e) => e.id)
+      : lessonExercises.map((e) => e.id);
+
+    return {
+      id: def.id,
+      title: def.title[locale as "de" | "en"] ?? def.title.de,
+      description: def.description[locale as "de" | "en"] ?? def.description.de,
+      difficulty: def.difficulty,
+      category: def.category,
+      exercises: exerciseIds,
+      order: def.order,
+    };
+  });
+
+  const lessonsRecord: Catalog["lessons"] = {};
+  for (const l of lessonsArray) {
+    lessonsRecord[l.id] = l;
+  }
+
+  return {
+    datasets: datasetsRecord,
+    exercises: exercisesRecord,
+    lessons: lessonsRecord,
+  };
 }
 
-export const catalog: Catalog = {
-  datasets: datasetsRecord,
-  exercises: exercisesRecord,
-  lessons: lessonsRecord,
-};
+// ─── Default catalog (German) for backward compatibility ───
 
-export const allExerciseIds: string[] = allExercises.map((e) => e.id);
+export const catalog: Catalog = getCatalog("de");
 
-export const allLessonIds: string[] = lessonsArray.map((l) => l.id);
+export const allExerciseIds: string[] = Object.keys(catalog.exercises);
+
+export const allLessonIds: string[] = Object.keys(catalog.lessons);
