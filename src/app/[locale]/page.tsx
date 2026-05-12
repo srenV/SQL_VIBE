@@ -54,7 +54,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HomeContent
-        headline={t("headline")}
+        headline={t("headline", { highlight: t("headlineHighlight") })}
+        headlineHighlight={t("headlineHighlight")}
         subheadline={t("subheadline")}
         sectionTitle={t("sectionTitle")}
         sectionSubtitle={t("sectionSubtitle")}

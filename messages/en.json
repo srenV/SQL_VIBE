@@ -35,7 +35,8 @@
   "landing": {
     "title": "SQL VIBE – Learn MySQL: Practice, Experiment, Understand",
     "description": "Interactive MySQL learning platform with exercises, a free sandbox for your own databases, and a theory hub for normalization, RM, ERM, and SQL fundamentals.",
-    "headline": "Learn <span class='text-primary-500'>SQL</span> — practice, experiment, understand",
+    "headline": "Learn {highlight} — practice, experiment, understand",
+    "headlineHighlight": "SQL",
     "subheadline": "Interactive exercises, a free sandbox for your own databases, and a learning hub for normalization, RM & ERM — all right in your browser, no sign-up required.",
     "sectionTitle": "Master SQL — your way",
     "sectionSubtitle": "Targeted exercises, exciting story missions, free experimentation, or theory tutoring",
@@ -144,7 +145,8 @@
     "foreignKey": "Foreign key",
     "databaseNotAvailable": "Database not available.",
     "noDataInTable": "No data in this table.",
-    "showingRows": "Showing {count, plural, =1 {1 row} other {# rows}}"
+    "showingRows": "Showing {count, plural, =1 {1 row} other {# rows}}",
+    "history": "History"
   },
   "achievements": {
     "achievementUnlocked": "Achievement unlocked",

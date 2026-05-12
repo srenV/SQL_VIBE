@@ -424,7 +424,7 @@ function transformAlterTable(sql: string): string {
 
   // Check if this is a multi-clause ALTER TABLE (contains commas between ADD clauses)
   const multiClauseMatch = result.match(
-    /^\s*ALTER\s+TABLE\s+"?(\w+)"?\s+(ADD\s+.+)$/is
+    /^\s*ALTER\s+TABLE\s+"?(\w+)"?\s+(ADD\s+[\s\S]+)$/i
   );
   if (multiClauseMatch && /,\s*\n?\s*ADD\s+/i.test(multiClauseMatch[2])) {
     const tableName = multiClauseMatch[1];

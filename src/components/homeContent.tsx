@@ -6,6 +6,7 @@ import { FeatureCard } from "@/components/featureCard";
 
 export interface HomeContentProps {
   headline: string;
+  headlineHighlight: string;
   subheadline: string;
   sectionTitle: string;
   sectionSubtitle: string;
@@ -25,6 +26,7 @@ export interface HomeContentProps {
 
 export function HomeContent({
   headline,
+  headlineHighlight,
   subheadline,
   sectionTitle,
   sectionSubtitle,
@@ -47,7 +49,9 @@ export function HomeContent({
         <Container className="space-y-6 max-w-4xl mx-auto">
           <FadeIn delay={0}>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-ink">
-              {headline}
+              {headline.split(headlineHighlight).map((part, i, arr) => (
+                i < arr.length - 1 ? <span key={i}>{part}<span className="text-primary-500">{headlineHighlight}</span></span> : part
+              ))}
             </h1>
           </FadeIn>
           <FadeIn delay={0.1}>

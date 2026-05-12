@@ -46,7 +46,8 @@ function renderHome() {
   return render(
     <NextIntlClientProvider locale="de" messages={deMessages}>
       <HomeContent
-        headline={landing.headline}
+        headline={landing.headline.replace("{highlight}", landing.headlineHighlight)}
+        headlineHighlight={landing.headlineHighlight}
         subheadline={landing.subheadline}
         sectionTitle={landing.sectionTitle}
         sectionSubtitle={landing.sectionSubtitle}
