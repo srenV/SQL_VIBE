@@ -6,7 +6,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Playground } from "@/components/playground";
 import { PredictQuiz } from "@/components/predictQuiz";
 import { StoryPlayer } from "@/components/storyPlayer";
@@ -43,6 +44,7 @@ export function ExercisePageClient({
   lessonExerciseCompleted,
 }: ExercisePageClientProps) {
   const { progress, markExerciseCompleted, getLessonProgress } = useProgress();
+  const t = useTranslations("exercise");
   const completed = progress.exercises[exercise.id]?.completed ?? false;
 
   const lessonProgress = getLessonProgress(lesson.exercises);
@@ -68,13 +70,13 @@ export function ExercisePageClient({
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="text-xs font-semibold text-ink-muted">
-                Übung {currentIndex + 1}/{lesson.exercises.length}
+                {t("exerciseLabel", { current: currentIndex + 1, total: lesson.exercises.length })}
               </span>
               <DifficultyBadge difficulty={exercise.difficulty} />
               {completed && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                  Gelöst
+                  {t("solved")}
                 </span>
               )}
             </div>
@@ -82,7 +84,7 @@ export function ExercisePageClient({
               <ProgressBar
                 value={completedExCount}
                 max={totalExCount}
-                label={`${completedExCount} von ${totalExCount} Übungen abgeschlossen`}
+                label={t("progressLabel", { completed: completedExCount, total: totalExCount })}
                 variant={progressPercent === 100 ? "success" : "primary"}
                 size="sm"
               />
@@ -99,7 +101,7 @@ export function ExercisePageClient({
           <div className="relative lg:pl-62">
             <nav
               className="hidden lg:flex absolute left-0 top-0 bottom-0 w-56 flex-col gap-2 p-2 rounded-lg border border-surface-dim dark:border-dark-dim"
-              aria-label="Übungsnavigation"
+              aria-label={t("exerciseNav")}
             >
               <p className="shrink-0 px-1 text-xs font-semibold text-ink-muted uppercase tracking-wide">
                 {lesson.title}

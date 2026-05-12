@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import type { SchemaTable } from "@/types/playground";
 import type { SandboxDatabaseMeta } from "@/types/sandbox";
@@ -69,6 +70,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
   onTableClick,
   isLoading,
 }) => {
+  const t = useTranslations("sandbox");
   const [isCreating, setIsCreating] = useState(false);
   const [newDbName, setNewDbName] = useState("");
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -95,7 +97,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
       .replace(/\s+/g, " ")         // collapse whitespace
       .trim()
       .slice(0, 100)                // max 100 chars
-      || "Importierte Datenbank";   // fallback
+      || t("importedDatabase");   // fallback
   };
 
   // Auto-expand newly active DB
@@ -119,7 +121,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
   }, [menuOpenId]);
 
   const handleCreate = async () => {
-    const name = newDbName.trim() || "Neue Datenbank";
+    const name = newDbName.trim() || t("newDatabase");
     setIsCreating(false);
     setNewDbName("");
     const id = await onCreateNew(name);
@@ -136,7 +138,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
       const id = await onImportFromSql(dataset.name, dataset.sql);
       await onOpen(id);
     } catch (err) {
-      setImportError(err instanceof Error ? err.message : "Import fehlgeschlagen.");
+      setImportError(err instanceof Error ? err.message : t("importFailed"));
     } finally {
       setIsImporting(false);
       setSelectedDatasetId("");
@@ -148,7 +150,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
     if (!file.name.endsWith(".sql")) return;
     setImportError(null);
     if (file.size > MAX_SQL_FILE_SIZE) {
-      setImportError(`Datei zu groß (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximal 5 MB.`);
+      setImportError(t("fileTooLarge", { size: (file.size / 1024 / 1024).toFixed(1) }));
       return;
     }
     setIsImporting(true);
@@ -158,7 +160,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
       const id = await onImportFromSql(name, sql);
       await onOpen(id);
     } catch (err) {
-      setImportError(err instanceof Error ? err.message : "Import fehlgeschlagen.");
+      setImportError(err instanceof Error ? err.message : t("importFailed"));
     } finally {
       setIsImporting(false);
       setIsImportOpen(false);
@@ -184,11 +186,11 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
     const file = e.dataTransfer.files[0];
     if (!file) return;
     if (!file.name.endsWith(".sql")) {
-      setImportError("Nur .sql-Dateien können importiert werden.");
+      setImportError(t("invalidFileType"));
       return;
     }
     if (file.size > MAX_SQL_FILE_SIZE) {
-      setImportError(`Datei zu groß (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximal 5 MB.`);
+      setImportError(t("fileTooLarge", { size: (file.size / 1024 / 1024).toFixed(1) }));
       return;
     }
     void handleFileImport(file);
@@ -203,7 +205,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
 
   const handleDuplicate = async (id: string) => {
     const source = dbList.find((db) => db.id === id);
-    const name = source ? `${source.name} (Kopie)` : "Duplikat";
+    const name = source ? `${source.name} (${t("copy")})` : t("duplicate");
     const newId = await onDuplicate(id, name);
     await onOpen(newId);
     setMenuOpenId(null);
@@ -211,7 +213,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
 
   const handleDelete = async (id: string) => {
     const source = dbList.find((db) => db.id === id);
-    if (confirm(`Datenbank "${source?.name ?? id}" wirklich löschen?`)) {
+    if (confirm(t("confirmDelete", { name: source?.name ?? id }))) {
       await onDelete(id);
     }
     setMenuOpenId(null);
@@ -248,7 +250,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
           onClick={() => setIsCreating(true)}
           disabled={isLoading}
           className="rounded-md p-1.5 text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Neue Datenbank erstellen"
+          title={t("createDatabase")}
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -275,7 +277,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                   if (e.key === "Enter") handleCreate();
                   if (e.key === "Escape") { setIsCreating(false); setNewDbName(""); }
                 }}
-                placeholder="Name der Datenbank…"
+                placeholder={t("placeholderDbName")}
                 className="flex-1 min-w-0 rounded-md border border-primary-300 dark:border-primary-700 bg-surface px-2 py-1 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-primary-500"
                 autoFocus
               />
@@ -305,7 +307,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
           </svg>
-          Daten importieren
+          {t("importData")}
           <svg
             className={`w-3 h-3 ml-auto transition-transform duration-200 ${isImportOpen ? "rotate-180" : ""}`}
             fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
@@ -332,7 +334,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                     disabled={isImporting}
                     className="flex-1 min-w-0 rounded-md border border-surface-dim dark:border-dark-dim bg-surface dark:bg-dark px-2 py-1.5 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
                   >
-                    <option value="">Beispieldatenbank…</option>
+                    <option value="">{t("builtinDatasets")}</option>
                     {builtinDatasets.map((ds) => (
                       <option key={ds.id} value={ds.id}>{ds.name}</option>
                     ))}
@@ -342,7 +344,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                     disabled={!selectedDatasetId || isImporting}
                     className="rounded-md px-2.5 py-1.5 text-xs font-medium bg-primary-600 text-white hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isImporting ? "…" : "Laden"}
+                    {isImporting ? "…" : t("loadDataset")}
                   </button>
                 </div>
 
@@ -355,7 +357,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                   </svg>
-                  .sql-Datei hochladen
+                  {t("uploadFile")}
                 </button>
                 <input
                   ref={fileInputRef}
@@ -383,7 +385,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                   <svg className="w-5 h-5 mx-auto mb-1 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9.75m3 0l-3-3m3 3l3-3M3.75 21h16.5" />
                   </svg>
-                  .sql-Datei hierher ziehen
+                  {t("dragDrop")}
                 </div>
 
                 {/* Error message */}
@@ -406,8 +408,8 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
             className="flex flex-col items-center justify-center py-10 px-4 text-center"
           >
             <DatabaseIcon className="w-8 h-8 text-surface-dim dark:text-dark-dim mb-2" />
-            <p className="text-xs text-ink-muted font-medium">Keine Datenbanken</p>
-            <p className="text-[11px] text-ink-muted mt-0.5">Klicke &quot;+&quot; um zu starten.</p>
+            <p className="text-xs text-ink-muted font-medium">{t("noDatabase")}</p>
+            <p className="text-[11px] text-ink-muted mt-0.5">{t("noDatabaseHint")}</p>
           </motion.div>
         )}
 
@@ -442,7 +444,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                 <button
                   onClick={(e) => handleChevron(e, db)}
                   className="shrink-0 rounded p-0.5 text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors"
-                  title={isActive ? (isExpanded ? "Einklappen" : "Aufklappen") : "Öffnen & aufklappen"}
+                  title={isActive ? (isExpanded ? t("collapse") : t("expand")) : t("openAndExpand")}
                 >
                   <svg
                     className={`w-3 h-3 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
@@ -502,7 +504,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                   <button
                     onClick={() => { void onClose(); }}
                     className="shrink-0 rounded p-0.5 text-ink-muted hover:text-error hover:bg-error/10 transition-colors opacity-0 group-hover/row:opacity-100"
-                    title="Datenbank schließen"
+                    title={t("closeDatabase")}
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -517,7 +519,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                     className={`shrink-0 rounded p-0.5 hover:bg-surface-dim dark:hover:bg-dark-dim transition-opacity ${
                       showMenu ? "opacity-100" : "opacity-0 group-hover/row:opacity-100"
                     }`}
-                    title="Aktionen"
+                    title={t("actions")}
                   >
                     <svg className="w-3.5 h-3.5 text-ink-muted" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -537,10 +539,10 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                     className="overflow-hidden"
                   >
                     {isLoading ? (
-                      <p className="pl-9 py-1.5 text-[11px] text-ink-muted italic">Laden…</p>
+                      <p className="pl-9 py-1.5 text-[11px] text-ink-muted italic">{t("importing")}</p>
                     ) : liveSchema.length === 0 ? (
                       <p className="pl-9 py-1.5 pr-3 text-[11px] text-ink-muted italic leading-relaxed">
-                        Keine Tabellen — CREATE TABLE starten
+                        {t("noTablesHint")}
                       </p>
                     ) : (
                       liveSchema.map((table) => (
@@ -553,7 +555,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                           <TableIcon className="shrink-0 w-3.5 h-3.5 text-ink-muted" />
                           <span className="flex-1 min-w-0 text-xs text-ink truncate">{table.name}</span>
                           <span className="shrink-0 text-[10px] text-ink-muted tabular-nums">
-                            {table.columns.length} Sp.
+                            {table.columns.length} {t("columnsShort")}
                           </span>
                         </button>
                       ))
@@ -581,7 +583,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l1.139-3.684a4.5 4.5 0 011.13-1.897l8.633-8.932z" />
                       </svg>
-                      Umbenennen
+                      {t("renameDatabase")}
                     </button>
                     <button
                       onClick={() => handleDuplicate(db.id)}
@@ -590,7 +592,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375C8.754 2.25 8.25 2.754 8.25 3.375v3.375" />
                       </svg>
-                      Duplizieren
+                      {t("duplicateDatabase")}
                     </button>
                     <hr className="my-1 border-surface-dim dark:border-dark-dim" />
                     <button
@@ -600,7 +602,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                       </svg>
-                      Löschen
+                      {t("deleteDatabase")}
                     </button>
                   </motion.div>
                 )}
@@ -616,7 +618,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
           <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
           </svg>
-          Lokal im Browser gespeichert
+          {t("storedLocally")}
         </div>
       </div>
     </motion.aside>

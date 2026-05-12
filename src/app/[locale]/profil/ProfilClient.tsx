@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Container } from "@/components/container";
 import { FadeIn } from "@/components/animations";
@@ -21,6 +22,7 @@ interface ProfilClientProps {
 
 export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
   const { progress } = useProgress();
+  const t = useTranslations("profil");
   const info = getLevel(progress.totalPoints);
 
   const totalSolved = Object.values(progress.exercises).filter((e) => e.completed).length;
@@ -79,7 +81,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                     {info.level}
                   </motion.span>
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-white/70 mt-0.5">
-                    Level
+                    {t("level")}
                   </span>
                 </div>
               </div>
@@ -87,7 +89,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
               {/* Info */}
               <div className="flex-1 min-w-0 w-full text-center sm:text-left">
                 <p className="text-xs font-semibold uppercase tracking-widest text-white/60 mb-1">
-                  Aktueller Rang
+                  {t("currentRank")}
                 </p>
                 <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none mb-4">
                   {info.title}
@@ -109,10 +111,10 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                   </div>
                   {info.xpNext != null ? (
                     <p className="text-xs text-white/60">
-                      Noch <strong className="text-white">{xpToNext} XP</strong> bis Level {info.level + 1}
+                      {t.rich("xpToNext", { amount: xpToNext, level: info.level + 1 })}
                     </p>
                   ) : (
-                    <p className="text-xs text-white/60 font-semibold">Maximales Level erreicht</p>
+                    <p className="text-xs text-white/60 font-semibold">{t("maxLevel")}</p>
                   )}
                 </div>
               </div>
@@ -120,10 +122,10 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
 
             {/* Stats row */}
             <div className="relative mt-6 pt-6 border-t border-white/15 grid grid-cols-3 gap-2 sm:gap-4 text-center">
-              <StatItem label="Aufgaben gelöst" value={totalSolved} />
-              <StatItem label="Gesamte XP" value={progress.totalPoints} />
+              <StatItem label={t("exercisesSolved")} value={totalSolved} />
+              <StatItem label={t("totalXp")} value={progress.totalPoints} />
               <StatItem
-                label={progress.streak > 1 ? "Tage-Streak" : "Aktiv heute"}
+                label={progress.streak > 1 ? t("dayStreak") : t("activeToday")}
                 value={progress.streak}
                 flame={progress.streak > 1}
               />
@@ -136,7 +138,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
           <section aria-labelledby="achievements-heading">
             <div className="flex items-center justify-between mb-4">
               <h2 id="achievements-heading" className="text-lg font-bold text-ink">
-                Erfolge
+                {t("achievements")}
               </h2>
               <span className="text-sm text-ink-muted">
                 {progress.achievements.length} / {ACHIEVEMENTS.length}
@@ -188,10 +190,10 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
           <section aria-labelledby="lessons-heading">
             <div className="flex items-center justify-between mb-4">
               <h2 id="lessons-heading" className="text-lg font-bold text-ink">
-                Lektionsfortschritt
+                {t("lessonProgress")}
               </h2>
               <span className="text-sm text-ink-muted">
-                {lessonsComplete} / {lessons.length} abgeschlossen
+                {t("lessonsCompleted", { done: lessonsComplete, total: lessons.length })}
               </span>
             </div>
 
@@ -254,16 +256,16 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
           <FadeIn delay={0.25}>
             <div className="rounded-2xl border border-surface-dim bg-surface-dim/30 dark:bg-dark-dim/20 p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted mb-1">
-                Level {info.level + 1} freischalten
+                {t("unlockLevel", { level: info.level + 1 })}
               </p>
               <p className="text-sm text-ink mb-4">
-                Noch <strong>{xpToNext} XP</strong> bis du <strong>{LEVELS.find(l => l.level === info.level + 1)?.title}</strong> wirst.
+                {t.rich("xpToNextLevel", { amount: xpToNext, nextTitle: LEVELS.find(l => l.level === info.level + 1)?.title ?? "" })}
               </p>
               <Link
                 href="/lektionen"
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 transition-colors"
               >
-                Weiterüben
+                {t("keepPracticing")}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>

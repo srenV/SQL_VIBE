@@ -7,7 +7,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { learnModules, totalArticles } from "@/data/learnContent";
 import { learnQuizzes } from "@/data/learnQuizzes";
 import { PageShell } from "@/components/pageShell";
@@ -49,6 +50,7 @@ type Tab = "lernen" | "testen";
 export default function LernenPage() {
   const [activeTab, setActiveTab] = React.useState<Tab>("lernen");
   const [selectedQuizModule, setSelectedQuizModule] = React.useState<string | null>(null);
+  const t = useTranslations("lernen");
 
   // Quiz mode: show quiz for selected module
   if (activeTab === "testen" && selectedQuizModule) {
@@ -62,7 +64,7 @@ export default function LernenPage() {
             className="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors"
           >
             <ArrowLeftIcon />
-            Zurück zur Modulauswahl
+            {t("backToModules")}
           </button>
           <QuizClient
             questions={quiz.questions}
@@ -79,11 +81,10 @@ export default function LernenPage() {
       <FadeIn delay={0}>
         <div className="text-center space-y-3">
           <h1 className="text-4xl font-bold tracking-tight text-ink">
-            Lern-Hub
+            {t("title")}
           </h1>
           <p className="text-lg text-ink-muted max-w-2xl mx-auto">
-            Verstehe die Theorie hinter den Datenbanken: Normalisierung, Relationenmodell,
-            ERM, SQL-Grundlagen und mehr — mit interaktiven Beispielen und Übungen.
+            {t("subtitle")}
           </p>
         </div>
       </FadeIn>
@@ -103,7 +104,7 @@ export default function LernenPage() {
                   }`}
                 >
                   <BookOpenIcon />
-                  Lernen
+                  {t("tabLearn")}
                 </button>
                 <button
                   role="tab"
@@ -116,7 +117,7 @@ export default function LernenPage() {
                   }`}
                 >
                   <ClipboardCheckIcon />
-                  Testen
+                  {t("tabTest")}
                 </button>
               </div>
             </div>
@@ -127,7 +128,7 @@ export default function LernenPage() {
             <FadeIn delay={0.1}>
               <div role="tabpanel" className="text-center mb-2">
                 <p className="text-sm text-ink-muted">
-                  {learnModules.length} Module · {totalArticles} Artikel
+                  {learnModules.length} {t("modules")} · {totalArticles} {t("articles")}
                 </p>
               </div>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -157,13 +158,13 @@ export default function LernenPage() {
                         <div className="mt-auto pt-4 flex items-center justify-between text-xs text-ink-muted">
                           <div className="flex items-center gap-3">
                             <span>
-                              {mod.articles.length} {mod.articles.length === 1 ? "Artikel" : "Artikel"}
+                              {mod.articles.length} {mod.articles.length === 1 ? t("articleSingular") : t("articles")}
                             </span>
                             <span>·</span>
-                            <span>~{totalMin} Min.</span>
+                            <span>~{totalMin} {t("minutes")}</span>
                           </div>
                           <span className="text-primary-500 font-medium inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                            Lesen
+                            {t("read")}
                             <svg className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all duration-300 -ml-1 group-hover:ml-0 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                             </svg>
@@ -182,7 +183,7 @@ export default function LernenPage() {
             <FadeIn delay={0.1}>
               <div role="tabpanel" className="text-center mb-2">
                 <p className="text-sm text-ink-muted">
-                  {learnQuizzes.length} Quizze · Je {learnQuizzes[0]?.questions.length ?? 15} Fragen pro Modul
+                  {learnQuizzes.length} {t("quizzes")} · {t("questionsPerModule", { count: learnQuizzes[0]?.questions.length ?? 15 })}
                 </p>
               </div>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -213,13 +214,13 @@ export default function LernenPage() {
                         <div className="mt-auto pt-4 flex items-center justify-between text-xs text-ink-muted">
                           <div className="flex items-center gap-3">
                             <span className="inline-flex items-center gap-1">
-                              {questionCount} Fragen
+                              {questionCount} {t("questions")}
                             </span>
                             <span>·</span>
                             <span>Multiple Choice</span>
                           </div>
                           <span className="text-accent font-medium inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                            Starten
+                            {t("start")}
                             <svg className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all duration-300 -ml-1 group-hover:ml-0 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                             </svg>

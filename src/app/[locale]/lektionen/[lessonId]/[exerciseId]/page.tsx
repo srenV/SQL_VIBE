@@ -5,12 +5,13 @@
  */
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { catalog, allLessonIds } from "@/data/catalog";
 import { adaptExercise } from "@/lib/playgroundAdapter";
 import { ExercisePageClient } from "./ExercisePageClient";
 
 interface PageProps {
-  params: Promise<{ lessonId: string; exerciseId: string }>;
+  params: Promise<{ locale: string; lessonId: string; exerciseId: string }>;
 }
 
 export async function generateStaticParams() {
@@ -26,10 +27,12 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { lessonId, exerciseId } = await params;
+  const { locale, lessonId, exerciseId } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("exercise");
   const lesson = catalog.lessons[lessonId];
   const exercise = catalog.exercises[exerciseId];
-  if (!lesson || !exercise) return { title: "Übung nicht gefunden" };
+  if (!lesson || !exercise) return { title: t("notFound") };
   return {
     title: `${exercise.title} – ${lesson.title}`,
     description: exercise.description,
@@ -42,7 +45,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ExercisePage({ params }: PageProps) {
-  const { lessonId, exerciseId } = await params;
+  const { locale, lessonId, exerciseId } = await params;
+  setRequestLocale(locale);
 
   const lesson = catalog.lessons[lessonId];
   if (!lesson) notFound();

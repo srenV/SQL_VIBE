@@ -1,16 +1,31 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { PageShell } from "@/components/pageShell";
 import { ProfilClient } from "./ProfilClient";
 import { catalog, allLessonIds } from "@/data/catalog";
 import { storyExercises } from "@/data/exercises";
+import { routing } from "@/i18n/routing";
 
-export const metadata: Metadata = {
-  title: "Profil",
-  description: "Dein persönliches SQL VIBE-Profil mit Fortschritt, Level und Erfolgen.",
-  robots: { index: false, follow: false },
-};
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-export default function ProfilPage() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("profil");
+  return {
+    title: t("title"),
+    description: t("description"),
+    robots: { index: false, follow: false },
+  };
+}
+
+export default async function ProfilPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const lessons = allLessonIds
     .map((id) => catalog.lessons[id])
     .filter((l): l is NonNullable<typeof l> => !!l && l.id !== "lesson_story")
