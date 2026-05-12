@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { setRequestLocale } from "next-intl/server";
 import { PageShell } from "@/components/pageShell";
 import { ProfilClient } from "./ProfilClient";
-import { catalog, allLessonIds } from "@/data/catalog";
+import { getCatalog, allLessonIds } from "@/data/catalog";
 import { storyExercises } from "@/data/exercises";
 import { routing } from "@/i18n/routing";
 
@@ -25,6 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function ProfilPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const catalog = getCatalog(locale);
 
   const lessons = allLessonIds
     .map((id) => catalog.lessons[id])

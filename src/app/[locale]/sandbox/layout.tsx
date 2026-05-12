@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sandbox – Eigene SQL-Datenbank erstellen",
+  title: "Sandbox – Create your own SQL database",
   description:
-    "Erstelle eigene MySQL-Datenbanken, lege Tabellen an, füge Daten ein und führe beliebige SQL-Abfragen aus. Alles wird lokal im Browser gespeichert.",
+    "Create your own MySQL databases, set up tables, insert data, and run any SQL queries. Everything is stored locally in your browser.",
   alternates: { canonical: "/sandbox" },
   openGraph: {
-    title: "Sandbox – Eigene SQL-Datenbank erstellen",
+    title: "Sandbox – Create your own SQL database",
     description:
-      "Erstelle eigene MySQL-Datenbanken, lege Tabellen an, füge Daten ein und führe beliebige SQL-Abfragen aus. Alles wird lokal im Browser gespeichert.",
+      "Create your own MySQL databases, set up tables, insert data, and run any SQL queries. Everything is stored locally in your browser.",
   },
 };
 

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { catalog, allLessonIds } from "@/data/catalog";
-import { allModuleIds, learnModules } from "@/data/learnContent";
+import { getAllModuleIds, getLearnModules } from "@/data/learnContentLocale";
 
 export const dynamic = "force-static";
 
@@ -72,8 +72,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }));
     });
 
-  // Learning module pages
-  const modulePages: MetadataRoute.Sitemap = allModuleIds.map((id) => ({
+  // Learning module pages (use German as default for sitemap)
+  const deModules = getLearnModules("de");
+  const modulePages: MetadataRoute.Sitemap = getAllModuleIds("de").map((id) => ({
     url: `${BASE_URL}/lernen/${id}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
@@ -81,7 +82,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Learning article pages
-  const articlePages: MetadataRoute.Sitemap = learnModules.flatMap((mod) =>
+  const articlePages: MetadataRoute.Sitemap = deModules.flatMap((mod) =>
     mod.articles.map((article) => ({
       url: `${BASE_URL}/lernen/${mod.id}/${article.id}`,
       lastModified: now,
