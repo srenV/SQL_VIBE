@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { SuccessCelebration } from "@/components/successCelebration";
 
@@ -44,15 +45,16 @@ export interface NfCheckerProps {
 }
 
 const NF_OPTIONS = [
-  { value: "1NF" as const, label: "1NF verletzt", description: "Nicht-atomare Werte oder wiederholende Gruppen" },
-  { value: "2NF" as const, label: "2NF verletzt", description: "Partielle Abhängigkeiten vom Primärschlüssel" },
-  { value: "3NF" as const, label: "3NF verletzt", description: "Transitive Abhängigkeiten" },
-  { value: "BCNF" as const, label: "BCNF verletzt", description: "Jede Determinante ist kein Kandidatenschlüssel" },
-  { value: "keine" as const, label: "Keine NF verletzt", description: "Die Tabelle ist normalisiert" },
+  { value: "1NF" as const, labelKey: "nf1Violated", descriptionKey: "nf1Desc" },
+  { value: "2NF" as const, labelKey: "nf2Violated", descriptionKey: "nf2Desc" },
+  { value: "3NF" as const, labelKey: "nf3Violated", descriptionKey: "nf3Desc" },
+  { value: "BCNF" as const, labelKey: "bcnfViolated", descriptionKey: "bcnfDesc" },
+  { value: "keine" as const, labelKey: "noNfViolated", descriptionKey: "noNfDesc" },
 ];
 
 export function NfChecker({ data, className }: NfCheckerProps) {
   const { question } = data;
+  const t = useTranslations("learn");
   const [selectedAnswer, setSelectedAnswer] = useState<"1NF" | "2NF" | "3NF" | "BCNF" | "keine" | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -76,10 +78,10 @@ export function NfChecker({ data, className }: NfCheckerProps) {
         </span>
         <div>
           <p className="text-sm font-semibold text-ink">
-            Welche Normalform ist in dieser Tabelle verletzt?
+            {t("nfQuestion")}
           </p>
           <p className="text-xs text-ink-muted mt-0.5">
-            Analysiere die Struktur und wähle die niedrigste verletzte Normalform.
+            {t("nfQuestionHint")}
           </p>
         </div>
       </div>
@@ -171,8 +173,8 @@ export function NfChecker({ data, className }: NfCheckerProps) {
                   {isSelected && <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-ink">{option.label}</p>
-                  <p className="text-xs text-ink-muted">{option.description}</p>
+                  <p className="text-sm font-medium text-ink">{t(option.labelKey)}</p>
+                  <p className="text-xs text-ink-muted">{t(option.descriptionKey)}</p>
                 </div>
               </div>
             </button>
@@ -192,14 +194,14 @@ export function NfChecker({ data, className }: NfCheckerProps) {
               : "bg-surface-dim text-ink-muted cursor-not-allowed dark:bg-dark-dim"
           )}
         >
-          Antwort prüfen
+          {t("checkAnswer")}
         </button>
       ) : (
         <div className="space-y-3">
-          {isCorrect && <SuccessCelebration message="Richtig!" submessage={question.explanation} />}
+          {isCorrect && <SuccessCelebration message={t("correctExclamation")} submessage={question.explanation} />}
           {!isCorrect && (
             <div className="p-3 rounded-lg bg-error/10 border border-error/30">
-              <p className="text-sm font-semibold text-error">Nicht ganz richtig</p>
+              <p className="text-sm font-semibold text-error">{t("notQuiteRight")}</p>
               <p className="text-xs text-ink mt-1">{question.explanation}</p>
             </div>
           )}
@@ -207,7 +209,7 @@ export function NfChecker({ data, className }: NfCheckerProps) {
             onClick={handleReset}
             className="px-4 py-2 rounded-lg text-sm font-medium bg-surface-dim dark:bg-dark-dim text-ink hover:bg-surface-dim/80 dark:hover:bg-dark-dim/80 transition-colors"
           >
-            Nochmal versuchen
+            {t("tryAgain")}
           </button>
         </div>
       )}

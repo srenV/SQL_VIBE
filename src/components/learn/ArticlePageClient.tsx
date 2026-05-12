@@ -14,8 +14,9 @@
 "use client";
 
 import React, { useEffect, useState, use, useCallback, useRef } from "react";
-import Link from "next/link";
-import { getModuleById, getArticle } from "@/data/learnContent";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { getModuleById, getArticle } from "@/data/learnContentLocale";
 import { Card } from "@/components/card";
 import { Container } from "@/components/container";
 import { Header } from "@/components/header";
@@ -30,22 +31,24 @@ import { getModuleIcon, InlineIcons } from "@/components/learn/moduleIcons";
 import { useProgress } from "@/hooks/useProgress";
 
 export interface ArticlePageClientProps {
-  params: Promise<{ moduleId: string; articleId: string }>;
+  params: Promise<{ locale: string; moduleId: string; articleId: string }>;
 }
 
-/** Section type badge configuration. */
-const SECTION_TYPE_CONFIG: Record<string, { label: string; icon: React.ReactNode; colorClass: string }> = {
-  theory: { label: "Theorie", icon: InlineIcons.bookOpen, colorClass: "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300" },
-  example: { label: "Beispiel", icon: InlineIcons.lightbulb, colorClass: "bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300" },
-  practice: { label: "Praxis", icon: InlineIcons.pencil, colorClass: "bg-success/10 text-success" },
-  summary: { label: "Zusammenfassung", icon: InlineIcons.clipboard, colorClass: "bg-warning/10 text-warning" },
+/** Section type badge configuration — labels are now i18n keys resolved at render time. */
+const SECTION_TYPE_KEYS: Record<string, { labelKey: string; icon: React.ReactNode; colorClass: string }> = {
+  theory: { labelKey: "theory", icon: InlineIcons.bookOpen, colorClass: "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300" },
+  example: { labelKey: "example", icon: InlineIcons.lightbulb, colorClass: "bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300" },
+  practice: { labelKey: "practice", icon: InlineIcons.pencil, colorClass: "bg-success/10 text-success" },
+  summary: { labelKey: "summary", icon: InlineIcons.clipboard, colorClass: "bg-warning/10 text-warning" },
 };
 
 export function ArticlePageClient({ params }: ArticlePageClientProps) {
-  const { moduleId, articleId } = use(params);
+  const { locale, moduleId, articleId } = use(params);
+  const t = useTranslations("learn");
 
-  const mod = getModuleById(moduleId);
-  const article = mod ? getArticle(moduleId, articleId) : undefined;
+  const result = getArticle(locale, moduleId, articleId);
+  const mod = result?.module;
+  const article = result?.article;
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
@@ -108,10 +111,10 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
         <Header />
         <main className="flex-1 py-12">
           <Container className="text-center">
-            <h1 className="text-2xl font-bold text-ink">Nicht gefunden</h1>
-            <p className="text-ink-muted mt-2">Dieser Artikel existiert nicht.</p>
+            <h1 className="text-2xl font-bold text-ink">{t("notFound")}</h1>
+            <p className="text-ink-muted mt-2">{t("notFoundDescription")}</p>
             <Link href="/lernen">
-              <Button variant="secondary" className="mt-4">Zurück zum Lern-Hub</Button>
+              <Button variant="secondary" className="mt-4">{t("backToHub")}</Button>
             </Link>
           </Container>
         </main>
@@ -141,7 +144,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                 {/* Progress */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-ink-muted">Fortschritt</p>
+                    <p className="text-xs font-semibold text-ink-muted">{t("progress")}</p>
                     <p className="text-xs font-medium text-primary-600 dark:text-primary-400">
                       {readSections}/{totalSections}
                     </p>
@@ -151,13 +154,13 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                     max={totalSections}
                     variant={progressPercent === 100 ? "success" : "primary"}
                     size="sm"
-                    label={`${progressPercent}% gelesen`}
+                    label={`${progressPercent}% ${t("read")}`}
                   />
                 </div>
 
                 {/* TOC */}
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold text-ink-muted mb-2">Inhalt</p>
+                  <p className="text-xs font-semibold text-ink-muted mb-2">{t("contents")}</p>
                   {article.sections.map((section) => {
                     const isRead = sectionsRead.includes(section.id);
                     const isActive = activeSection === section.id;
@@ -206,13 +209,13 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                   </div>
                   <h1 className="text-2xl font-bold text-ink">{article.title}</h1>
                   <div className="flex items-center gap-3 text-sm text-ink-muted">
-                    <span>{article.estimatedMinutes} Min. Lesezeit</span>
+                    <span>{article.estimatedMinutes} {t("minRead")}</span>
                     <span>·</span>
-                    <span>{article.sections.length} Abschnitte</span>
+                    <span>{article.sections.length} {t("sections")}</span>
                     {progressPercent === 100 && (
                       <>
                         <span>·</span>
-                        <span className="text-success font-medium inline-flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> Gelesen</span>
+                        <span className="text-success font-medium inline-flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> {t("read")}</span>
                       </>
                     )}
                   </div>
@@ -223,7 +226,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                       max={totalSections}
                       variant={progressPercent === 100 ? "success" : "primary"}
                       size="sm"
-                      label={`${progressPercent}% gelesen`}
+                      label={`${progressPercent}% ${t("read")}`}
                     />
                   </div>
                 </div>
@@ -231,7 +234,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
 
               {article.sections.map((section) => {
                 const isRead = sectionsRead.includes(section.id);
-                const typeConfig = SECTION_TYPE_CONFIG[section.sectionType ?? "theory"];
+                const typeConfig = SECTION_TYPE_KEYS[section.sectionType ?? "theory"];
 
                 return (
                   <FadeIn key={section.id} delay={0.05}>
@@ -255,7 +258,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                               <h2 className="text-lg font-semibold text-ink">{section.title}</h2>
                               {typeConfig && (
                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${typeConfig.colorClass}`}>
-                                  {typeConfig.icon} {typeConfig.label}
+                                  {typeConfig.icon} {t(typeConfig.labelKey)}
                                 </span>
                               )}
                             </div>
@@ -266,7 +269,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                                   ? "bg-success/10 text-success hover:bg-success/20"
                                   : "bg-surface-dim dark:bg-dark-dim text-ink-muted hover:text-ink hover:bg-surface-dim/80"
                               }`}
-                              title={isRead ? "Als ungelesen markieren" : "Als gelesen markieren"}
+                              title={isRead ? t("markAsUnread") : t("markAsRead")}
                             >
                               {isRead ? (
                                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -275,7 +278,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                               ) : (
                                 <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-current" />
                               )}
-                              {isRead ? "Gelesen" : "Lesen"}
+                              {isRead ? t("read") : t("readAction")}
                             </button>
                           </div>
 
@@ -294,7 +297,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
                                 </svg>
-                                Kernaussagen
+                                {t("keyTakeaways")}
                               </h4>
                               <ul className="space-y-1.5">
                                 {section.keyTakeaways.map((takeaway, i) => (
@@ -343,13 +346,13 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
-                        Vorheriger Artikel
+                        {t("previousArticle")}
                       </div>
                       <p className="text-sm font-semibold text-ink group-hover:text-primary-500 transition-colors">
                         {prevArticle.title}
                       </p>
                       <p className="text-xs text-ink-muted mt-0.5">
-                        {prevArticle.estimatedMinutes} Min. · {prevArticle.sections.length} Abschnitte
+                        {prevArticle.estimatedMinutes} {t("minutes")} · {prevArticle.sections.length} {t("sections")}
                       </p>
                     </Card>
                   </Link>
@@ -360,7 +363,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
-                        Zurück zum Modul
+                        {t("backToModule")}
                       </div>
                       <p className="text-sm font-semibold text-ink group-hover:text-primary-500 transition-colors">
                         {mod.title}
@@ -375,7 +378,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                   >
                     <Card variant="outlined" className="p-4 h-full transition-all duration-200 group-hover:shadow-md group-hover:border-primary-300">
                       <div className="flex items-center justify-end gap-2 text-xs text-ink-muted mb-1">
-                        Nächster Artikel
+                        {t("nextArticle")}
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
@@ -384,7 +387,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                         {nextArticle.title}
                       </p>
                       <p className="text-xs text-ink-muted mt-0.5">
-                        {nextArticle.estimatedMinutes} Min. · {nextArticle.sections.length} Abschnitte
+                        {nextArticle.estimatedMinutes} {t("minutes")} · {nextArticle.sections.length} {t("sections")}
                       </p>
                     </Card>
                   </Link>
@@ -392,7 +395,7 @@ export function ArticlePageClient({ params }: ArticlePageClientProps) {
                   <Link href={`/lernen/${mod.id}`} className="group block text-right">
                     <Card variant="outlined" className="p-4 h-full transition-all duration-200 group-hover:shadow-md group-hover:border-primary-300">
                       <div className="flex items-center justify-end gap-2 text-xs text-ink-muted mb-1">
-                        Zurück zum Modul
+                        {t("backToModule")}
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { SchemaTable, SqlColumn, SqlRow } from "@/types/playground";
 import { peekTableData } from "@/lib/sqlEngine";
 import { Card } from "@/components/card";
@@ -34,6 +35,7 @@ interface TableDataCache {
 }
 
 export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sandboxMode, onDropTable, onInsertTemplate, onCreateTableTemplate, viewMode: externalViewMode, hideTabs, fullHeight }) => {
+  const t = useTranslations("sandbox");
   const [internalViewMode, setInternalViewMode] = useState<ViewMode>("rm");
   const viewMode = externalViewMode ?? internalViewMode;
   const setViewMode = hideTabs ? () => {} : setInternalViewMode;
@@ -92,7 +94,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
     return (
       <div className="space-y-3">
         <p className="text-sm text-ink-muted">
-          Keine Tabellen in der aktuellen Datenbank.
+          {t("noTablesInDatabase")}
         </p>
         {sandboxMode && onCreateTableTemplate && (
           <button
@@ -102,7 +104,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            Tabelle erstellen
+            {t("createTable")}
           </button>
         )}
       </div>
@@ -112,7 +114,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
   return (
     <div className={fullHeight ? "flex flex-col h-full" : "space-y-4"}>
       {!hideTabs && (
-        <div role="tablist" aria-label="Schema-Ansicht" className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
+        <div role="tablist" aria-label={t("schemaView")} className="flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1">
           <button
             role="tab"
             aria-selected={viewMode === "rm"}
@@ -135,7 +137,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                 : "text-ink-muted hover:text-ink"
             }`}
           >
-            Daten
+            {t("tabData")}
           </button>
           <button
             role="tab"
@@ -152,7 +154,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
         </div>
       )}
 
-      {viewMode === "rm" && <div role="tabpanel" aria-label="Graph-Ansicht" className={fullHeight ? "flex-1 min-h-0" : undefined}><SchemaGraph tables={tables} fullHeight={fullHeight} /></div>}
+      {viewMode === "rm" && <div role="tabpanel" aria-label={t("graphView")} className={fullHeight ? "flex-1 min-h-0" : undefined}><SchemaGraph tables={tables} fullHeight={fullHeight} /></div>}
 
       {/* Sandbox: Create Table Button */}
       {sandboxMode && onCreateTableTemplate && viewMode !== "rm" && (
@@ -163,17 +165,17 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Tabelle erstellen
+          {t("createTable")}
         </button>
       )}
 
       {viewMode === "schema" &&
-        <div role="tabpanel" aria-label="Schema-Ansicht" className="space-y-4">
+        <div role="tabpanel" aria-label={t("schemaView")} className="space-y-4">
         {tables.map((table) => (
           <Card key={table.name} variant="flat" className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center rounded-md bg-primary-50 px-2 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
-                Tabelle
+                {t("table")}
               </span>
               <span className="text-sm font-semibold text-ink">{table.name}</span>
               {sandboxMode && (
@@ -182,7 +184,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                     <button
                       onClick={() => onInsertTemplate(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors"
-                      title="INSERT-Template einfügen"
+                      title={t("insertTemplate")}
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -193,7 +195,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                     <button
                       onClick={() => onDropTable(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-error/70 hover:text-error hover:bg-error/10 transition-colors"
-                      title="Tabelle löschen"
+                      title={t("deleteTable")}
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -208,8 +210,8 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-dim dark:border-dark-dim">
-                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Spalte</th>
-                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Typ</th>
+                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">{t("column")}</th>
+                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">{t("type")}</th>
                     <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Nullable</th>
                     <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Default</th>
                     <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">PK</th>
@@ -220,7 +222,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                     <tr key={col.name} className="border-b border-surface-dim/50 dark:border-dark-dim/50">
                       <td className="px-2 py-1 text-ink">{col.name}</td>
                       <td className="px-2 py-1 text-ink-muted">{col.type}</td>
-                      <td className="px-2 py-1 text-ink-muted">{col.nullable ? "Ja" : "Nein"}</td>
+                      <td className="px-2 py-1 text-ink-muted">{col.nullable ? t("yes") : t("no")}</td>
                       <td className="px-2 py-1 text-ink-muted">{col.defaultValue ?? "-"}</td>
                       <td className="px-2 py-1 text-ink-muted">{col.isPrimaryKey ? "PK" : ""}</td>
                     </tr>
@@ -231,7 +233,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
 
             {table.foreignKeys && table.foreignKeys.length > 0 && (
               <div className="mt-3">
-                <p className="text-xs font-medium text-ink-muted mb-1">Fremdschlüssel</p>
+                <p className="text-xs font-medium text-ink-muted mb-1">{t("foreignKey")}</p>
                 <ul className="text-xs text-ink-muted space-y-1">
                   {table.foreignKeys.map((fk, i) => (
                     <li key={i}>
@@ -247,12 +249,12 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
       }
 
       {viewMode === "data" &&
-        <div role="tabpanel" aria-label="Daten-Ansicht" className="space-y-4">
+        <div role="tabpanel" aria-label={t("dataView")} className="space-y-4">
         {tables.map((table) => (
           <Card key={table.name} variant="flat" className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center rounded-md bg-primary-50 px-2 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
-                Tabelle
+                {t("table")}
               </span>
               <span className="text-sm font-semibold text-ink">{table.name}</span>
               {sandboxMode && (
@@ -261,7 +263,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                     <button
                       onClick={() => onInsertTemplate(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors"
-                      title="INSERT-Template einfügen"
+                      title={t("insertTemplate")}
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -272,7 +274,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                     <button
                       onClick={() => onDropTable(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-error/70 hover:text-error hover:bg-error/10 transition-colors"
-                      title="Tabelle löschen"
+                      title={t("deleteTable")}
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -284,16 +286,16 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
             </div>
 
             {!db ? (
-              <p className="text-xs text-ink-muted italic">Datenbank nicht verfügbar.</p>
+              <p className="text-xs text-ink-muted italic">{t("databaseNotAvailable")}</p>
             ) : loadingTables.has(table.name) ? (
-              <p className="text-xs text-ink-muted italic">Laden...</p>
+              <p className="text-xs text-ink-muted italic">{t("loading")}</p>
             ) : tableData[table.name] ? (
               tableData[table.name].rows.length === 0 ? (
-                <p className="text-xs text-ink-muted italic">Keine Daten in dieser Tabelle.</p>
+                <p className="text-xs text-ink-muted italic">{t("noDataInTable")}</p>
               ) : (
                 <>
                   <p className="text-xs text-ink-muted mb-2">
-                    Zeige {tableData[table.name].rows.length} Zeile{tableData[table.name].rows.length !== 1 ? "n" : ""}
+                    {t("showingRows", { count: tableData[table.name].rows.length })}
                   </p>
                   <div className="overflow-x-auto">
                     <table className="min-w-full text-sm border border-surface-dim dark:border-dark-dim rounded">
@@ -322,7 +324,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                 </>
               )
             ) : (
-              <p className="text-xs text-ink-muted italic">Laden...</p>
+              <p className="text-xs text-ink-muted italic">{t("loading")}</p>
             )}
           </Card>
         ))}

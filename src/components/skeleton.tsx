@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -41,8 +42,9 @@ export function Skeleton({
 }
 
 export function SqlResultSkeleton() {
+  const t = useTranslations("common");
   return (
-    <div className="space-y-3" aria-label="Ergebnis wird geladen..." role="status">
+    <div className="space-y-3" aria-label={t("loadingResult")} role="status">
       <div className="flex items-center justify-between">
         <Skeleton width="6rem" height="0.875rem" />
         <Skeleton width="4rem" height="0.75rem" />
@@ -52,14 +54,15 @@ export function SqlResultSkeleton() {
         <Skeleton height="2rem" rounded="sm" />
         <Skeleton height="2rem" rounded="sm" width="75%" />
       </div>
-      <span className="sr-only">Laden...</span>
+      <span className="sr-only">{t("loading")}</span>
     </div>
   );
 }
 
 export function ExerciseSkeleton() {
+  const t = useTranslations("common");
   return (
-    <div className="space-y-6" aria-label="Uebung wird geladen..." role="status">
+    <div className="space-y-6" aria-label={t("loadingExercise")} role="status">
       <div className="rounded-xl border border-surface-dim p-5 space-y-3">
         <Skeleton width="60%" height="1.25rem" />
         <Skeleton width="80%" height="0.875rem" />
@@ -71,7 +74,7 @@ export function ExerciseSkeleton() {
           <Skeleton width="6rem" height="2rem" rounded="md" />
         </div>
       </div>
-      <span className="sr-only">Laden...</span>
+      <span className="sr-only">{t("loading")}</span>
     </div>
   );
 }

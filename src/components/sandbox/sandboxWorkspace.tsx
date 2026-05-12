@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useImperativeHandle } from "react";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
@@ -28,13 +29,14 @@ export interface SandboxWorkspaceProps {
   isLoading: boolean;
 }
 
-function getDmlMessage(result: SandboxQueryResult): string {
-  if (result.statementType === "DDL") return "Schema geändert.";
-  if (result.rowsModified > 0) return `${result.rowsModified} Zeile${result.rowsModified !== 1 ? "n" : ""} betroffen.`;
-  return "Befehl ausgeführt.";
+function getDmlMessage(result: SandboxQueryResult, t: (key: string, params?: Record<string, number>) => string): string {
+  if (result.statementType === "DDL") return t("schemaChanged");
+  if (result.rowsModified > 0) return t("rowsAffected", { count: result.rowsModified });
+  return t("commandExecuted");
 }
 
 const PeekTableData: React.FC<{ db: import("sql.js").Database | null; tableName: string }> = ({ db, tableName }) => {
+  const t = useTranslations("sandbox");
   const [data, setData] = useState<{ columns: SqlColumn[]; rows: Record<string, unknown>[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,17 +49,17 @@ const PeekTableData: React.FC<{ db: import("sql.js").Database | null; tableName:
         setError(null);
       } else {
         setData(null);
-        setError(result.error || "Keine Daten verfügbar.");
+        setError(result.error || t("noDataAvailable"));
       }
     } catch (e) {
       setData(null);
-      setError(e instanceof Error ? e.message : "Fehler beim Laden der Daten.");
+      setError(e instanceof Error ? e.message : t("errorLoadingData"));
     }
-  }, [db, tableName]);
+  }, [db, tableName, t]);
 
   if (error) return <p className="text-xs text-error italic">{error}</p>;
-  if (!data) return <p className="text-xs text-ink-muted italic">Laden…</p>;
-  if (data.rows.length === 0) return <p className="text-xs text-ink-muted italic">Tabelle ist leer.</p>;
+  if (!data) return <p className="text-xs text-ink-muted italic">{t("loading")}</p>;
+  if (data.rows.length === 0) return <p className="text-xs text-ink-muted italic">{t("tableEmpty")}</p>;
 
   return (
     <div className="overflow-x-auto">
@@ -94,6 +96,7 @@ function SandboxWorkspace({
   onRefreshSchema,
   isLoading,
 }, ref) {
+  const t = useTranslations("sandbox");
   const [userQuery, setUserQuery] = useState("");
 
   useImperativeHandle(ref, () => ({
@@ -127,7 +130,7 @@ function SandboxWorkspace({
   const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
     {
       key: "result",
-      label: "Ergebnis",
+      label: t("tabResult"),
       icon: (
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -136,7 +139,7 @@ function SandboxWorkspace({
     },
     {
       key: "data",
-      label: "Daten",
+      label: t("tabData"),
       icon: (
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
@@ -145,7 +148,7 @@ function SandboxWorkspace({
     },
     {
       key: "graph",
-      label: "Graph",
+      label: t("tabGraph"),
       icon: (
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -154,7 +157,7 @@ function SandboxWorkspace({
     },
     {
       key: "schema",
-      label: "Schema",
+      label: t("tabSchema"),
       icon: (
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -174,10 +177,10 @@ function SandboxWorkspace({
       <div className="flex items-center justify-between gap-3 px-4 py-2 border-b border-surface-dim dark:border-dark-dim bg-surface-dim/30 dark:bg-dark-dim/30">
         <div className="flex items-center gap-2">
           <Button size="sm" onClick={handleRun} disabled={!userQuery.trim() || isLoading}>
-            Ausführen
+            {t("runQuery")}
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setUserQuery("")}>
-            Leeren
+            {t("clear")}
           </Button>
         </div>
         <div className="flex items-center gap-2">
@@ -192,9 +195,9 @@ function SandboxWorkspace({
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            History
+            {t("history")}
           </button>
-          <span className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-ink-muted bg-surface-dim dark:bg-dark-dim" title="MySQL-Syntax wird unterstützt. RIGHT JOIN, IF(), CONCAT(), NOW() etc. werden automatisch übersetzt. FULL OUTER JOIN wird nicht unterstützt.">
+          <span className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-ink-muted bg-surface-dim dark:bg-dark-dim" title={t("mysqlSyntaxHint")}>
             MySQL
           </span>
         </div>
@@ -203,11 +206,11 @@ function SandboxWorkspace({
       {/* SQL Editor */}
       <div className="px-4 pt-4 pb-3 border-b border-surface-dim dark:border-dark-dim">
         <SqlEditor
-          label="SQL-Abfrage"
+          label={t("sqlQuery")}
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
           onSubmit={handleRun}
-          placeholder={hasNoDb ? "Füge dein SQL ein — eine Datenbank wird automatisch erstellt …" : "Schreibe hier dein SQL — z.B. CREATE TABLE, INSERT, SELECT …"}
+          placeholder={hasNoDb ? t("placeholderNoDb") : t("placeholderWithDb")}
         />
       </div>
 
@@ -254,11 +257,11 @@ function SandboxWorkspace({
                   >
                     <Card variant="flat" className="p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-xs font-semibold text-ink-muted">Letzte Abfragen</h4>
-                        <button onClick={() => setShowHistory(false)} className="text-xs text-ink-muted hover:text-ink">Schließen</button>
+                        <h4 className="text-xs font-semibold text-ink-muted">{t("recentQueries")}</h4>
+                        <button onClick={() => setShowHistory(false)} className="text-xs text-ink-muted hover:text-ink">{t("close")}</button>
                       </div>
                       {queryHistory.length === 0 ? (
-                        <p className="text-xs text-ink-muted italic">Noch keine Abfragen ausgeführt.</p>
+                        <p className="text-xs text-ink-muted italic">{t("noQueriesYet")}</p>
                       ) : (
                         <ul className="space-y-1">
                           {queryHistory.slice(0, 20).map((entry, i) => (
@@ -288,7 +291,7 @@ function SandboxWorkspace({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Datenbank wird geladen…
+                    {t("databaseLoading")}
                   </div>
                 </div>
               )}
@@ -300,8 +303,8 @@ function SandboxWorkspace({
                     <svg className="w-12 h-12 mx-auto text-surface-dim dark:text-dark-dim" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5 0v3.75m16.5 0v3.75m-16.5 0v3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
                     </svg>
-                    <p className="text-sm font-medium">Keine Datenbank geöffnet</p>
-                    <p className="text-xs">Füge SQL in den Editor ein und klicke &quot;Ausführen&quot; — eine Datenbank wird automatisch erstellt. Oder erstelle eine in der Seitenleiste.</p>
+                    <p className="text-sm font-medium">{t("noDatabaseOpen")}</p>
+                    <p className="text-xs">{t("noDatabaseOpenHint")}</p>
                   </div>
                 </div>
               )}
@@ -311,8 +314,8 @@ function SandboxWorkspace({
                     <svg className="w-12 h-12 mx-auto text-surface-dim dark:text-dark-dim" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <p className="text-sm">Schreibe eine SQL-Abfrage und klicke &quot;Ausführen&quot;</p>
-                    <p className="text-xs">oder drücke Strg + Enter</p>
+                    <p className="text-sm">{t("writeQueryHint")}</p>
+                    <p className="text-xs">{t("orCtrlEnter")}</p>
                   </div>
                 </div>
               )}
@@ -344,9 +347,9 @@ function SandboxWorkspace({
                     {queryResult.success && queryResult.resultset && queryResult.resultset.rows.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-semibold text-ink">Ergebnis</h4>
+                          <h4 className="text-sm font-semibold text-ink">{t("result")}</h4>
                           <span className="text-xs text-ink-muted">
-                            {queryResult.resultset.rows.length} Zeile{queryResult.resultset.rows.length !== 1 ? "n" : ""}
+                            {queryResult.resultset.rows.length} {queryResult.resultset.rows.length !== 1 ? t("rowsPlural") : t("rowSingular")}
                             {queryResult.executionTimeMs != null && ` · ${queryResult.executionTimeMs}ms`}
                           </span>
                         </div>
@@ -363,7 +366,7 @@ function SandboxWorkspace({
                           <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-success/10 text-success" aria-hidden="true">
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                           </span>
-                          <p className="text-sm text-ink">{getDmlMessage(queryResult)}</p>
+                          <p className="text-sm text-ink">{getDmlMessage(queryResult, t)}</p>
                           {queryResult.executionTimeMs != null && (
                             <span className="text-xs text-ink-muted ml-auto">{queryResult.executionTimeMs}ms</span>
                           )}
@@ -385,8 +388,8 @@ function SandboxWorkspace({
                     <svg className="w-12 h-12 mx-auto text-surface-dim dark:text-dark-dim" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                     </svg>
-                    <p className="text-sm">Noch keine Tabellen vorhanden.</p>
-                    <p className="text-xs">Erstelle eine Tabelle mit CREATE TABLE, um Daten anzusehen.</p>
+                    <p className="text-sm">{t("noTablesYet")}</p>
+                    <p className="text-xs">{t("createTableHint")}</p>
                   </div>
                 </div>
               ) : (
@@ -396,7 +399,7 @@ function SandboxWorkspace({
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="text-sm font-semibold text-ink">{table.name}</h4>
                         <span className="text-xs text-ink-muted">
-                          {table.columns.length} Spalte{table.columns.length !== 1 ? "n" : ""}
+                          {table.columns.length} {table.columns.length !== 1 ? t("columnsShort") : t("columnSingular")}
                         </span>
                       </div>
                       <PeekTableData db={db} tableName={table.name} />
@@ -415,7 +418,7 @@ function SandboxWorkspace({
               sandboxMode
               fullHeight
               onDropTable={async (tableName) => {
-                if (confirm(`Tabelle "${tableName}" wirklich löschen?`)) {
+                if (confirm(t("confirmDropTable", { name: tableName }))) {
                   await onRunQuery(`DROP TABLE IF EXISTS "${tableName}";`);
                   onRefreshSchema();
                 }
@@ -428,7 +431,7 @@ function SandboxWorkspace({
                 setActiveTab("result");
               }}
               onCreateTableTemplate={() => {
-                setUserQuery(`CREATE TABLE tabelle_name (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);`);
+                setUserQuery(`CREATE TABLE table_name (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);`);
                 setActiveTab("result");
               }}
               viewMode="rm"
@@ -444,7 +447,7 @@ function SandboxWorkspace({
               sandboxMode
               fullHeight
               onDropTable={async (tableName) => {
-                if (confirm(`Tabelle "${tableName}" wirklich löschen?`)) {
+                if (confirm(t("confirmDropTable", { name: tableName }))) {
                   await onRunQuery(`DROP TABLE IF EXISTS "${tableName}";`);
                   onRefreshSchema();
                 }
@@ -457,7 +460,7 @@ function SandboxWorkspace({
                 setActiveTab("result");
               }}
               onCreateTableTemplate={() => {
-                setUserQuery(`CREATE TABLE tabelle_name (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);`);
+                setUserQuery(`CREATE TABLE table_name (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL\n);`);
                 setActiveTab("result");
               }}
               viewMode="schema"

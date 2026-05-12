@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProgress } from "@/hooks/useProgress";
 import { getLevel } from "@/lib/levelSystem";
@@ -22,6 +23,7 @@ const letterVariants = {
 };
 
 export function LevelBadge() {
+  const t = useTranslations("common");
   const { progress } = useProgress();
   const info = getLevel(progress.totalPoints);
   const [hovered, setHovered] = React.useState(false);
@@ -38,7 +40,7 @@ export function LevelBadge() {
       <Link
         href="/profil"
         className="inline-flex items-center gap-1.5 rounded-xl p-1.5 hover:bg-surface-dim/70 transition-colors duration-150"
-        aria-label={`Level ${info.level} ${info.title} — Zum Profil`}
+        aria-label={t("levelBadgeAria", { level: info.level, title: info.title })}
       >
         {/* Circular XP ring */}
         <div className="relative shrink-0 w-8 h-8">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -382,10 +383,12 @@ export interface SchemaGraphProps {
 }
 
 export function SchemaGraph({ tables, fullHeight }: SchemaGraphProps) {
+  const t = useTranslations("sandbox");
+
   if (tables.length === 0) {
     return (
       <p className="text-sm text-ink-muted p-4">
-        Keine Tabellen in der aktuellen Datenbank.
+        {t("noTablesInDatabase")}
       </p>
     );
   }

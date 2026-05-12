@@ -1,16 +1,7 @@
-/**
- * QuizClient – Interaktive Multiple-Choice-Quiz-Komponente fuer den Testen-Tab.
- *
- * Zeigt Fragen mit Antwortoptionen an, wertet die Auswahl aus und
- * verfolgt den Fortschritt. Nach dem Beantworten wird die Erklaerung angezeigt.
- *
- * English: Interactive multiple-choice quiz component for the Test tab.
- * Shows questions with answer options, evaluates selections, and tracks progress.
- * Explanations are shown after answering.
- */
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
 import { FadeIn } from "@/components/animations";
@@ -29,6 +20,7 @@ type AnswerState = {
 };
 
 export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, onComplete }) => {
+  const t = useTranslations("learn");
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [answers, setAnswers] = React.useState<AnswerState[]>([]);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -97,24 +89,24 @@ export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, 
       );
     };
     const getMessage = () => {
-      if (percentage >= 90) return "Hervorragend! Du beherrschst dieses Thema!";
-      if (percentage >= 70) return "Gut gemacht! Noch ein bisschen Übung und du bist perfekt.";
-      if (percentage >= 50) return "Solide Grundlage! Wiederhole die Themen, bei denen du unsicher warst.";
-      return "Weiter üben! Jeder Versuch bringt dich weiter.";
+      if (percentage >= 90) return t("resultExcellent");
+      if (percentage >= 70) return t("resultGood");
+      if (percentage >= 50) return t("resultSolid");
+      return t("resultKeepPracticing");
     };
 
     return (
       <FadeIn>
         <div className="max-w-2xl mx-auto text-center space-y-6">
           <div>{getIcon()}</div>
-          <h2 className="text-2xl font-bold text-ink">Quiz abgeschlossen!</h2>
+          <h2 className="text-2xl font-bold text-ink">{t("quizCompleted")}</h2>
           <p className="text-lg text-ink-muted">{getMessage()}</p>
 
           <div className="bg-surface-dim dark:bg-dark-dim rounded-xl p-6 space-y-3">
             <div className="text-4xl font-bold text-accent">
               {correctCount} / {totalQuestions}
             </div>
-            <div className="text-sm text-ink-muted">{percentage}% richtig</div>
+            <div className="text-sm text-ink-muted">{percentage}% {t("correct")}</div>
 
             {/* Progress bar */}
             <div className="w-full bg-surface-dim dark:bg-dark-dim rounded-full h-3 overflow-hidden">
@@ -147,7 +139,7 @@ export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, 
           </div>
 
           <Button variant="primary" onClick={handleRestart} className="mt-6">
-            Nochmal versuchen
+            {t("tryAgain")}
           </Button>
         </div>
       </FadeIn>
@@ -161,7 +153,7 @@ export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, 
         <div className="flex items-center justify-between text-sm text-ink-muted">
           <span>{moduleTitle}</span>
           <span>
-            Frage {currentIndex + 1} von {totalQuestions}
+            {t("questionOf", { current: currentIndex + 1, total: totalQuestions })}
           </span>
         </div>
         <div className="w-full bg-surface-dim dark:bg-dark-dim rounded-full h-2 overflow-hidden">
@@ -188,10 +180,10 @@ export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, 
                 }`}
               >
                 {question.difficulty === "easy"
-                  ? "Leicht"
+                  ? t("easy")
                   : question.difficulty === "medium"
-                  ? "Mittel"
-                  : "Schwer"}
+                  ? t("medium")
+                  : t("hard")}
               </span>
             </div>
           )}
@@ -276,8 +268,8 @@ export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, 
               >
                 <p className="text-sm font-semibold text-ink mb-1">
                   {answers[currentIndex]?.isCorrect
-                    ? "✓ Richtig!"
-                    : "✗ Nicht richtig"}
+                    ? `✓ ${t("correct")}`
+                    : `✗ ${t("incorrect")}`}
                 </p>
                 <p className="text-sm text-ink-muted leading-relaxed">
                   {question.explanation}
@@ -294,13 +286,13 @@ export const QuizClient: React.FC<QuizClientProps> = ({ questions, moduleTitle, 
                 onClick={handleSubmit}
                 disabled={!selectedId}
               >
-                Antwort prüfen
+                {t("checkAnswer")}
               </Button>
             ) : (
               <Button variant="primary" onClick={handleNext}>
                 {currentIndex < totalQuestions - 1
-                  ? "Nächste Frage"
-                  : "Ergebnis anzeigen"}
+                  ? t("nextQuestion")
+                  : t("showResults")}
               </Button>
             )}
           </div>

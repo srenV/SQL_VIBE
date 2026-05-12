@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useId, useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 interface SuccessCelebrationProps {
   message?: string;
@@ -24,17 +25,19 @@ function useSeededParticles(count: number) {
 }
 
 export function SuccessCelebration({
-  message = "Richtig!",
+  message,
   submessage,
   show = true,
 }: SuccessCelebrationProps) {
+  const t = useTranslations("common");
+  const displayMessage = message ?? t("correct");
   const particles = useSeededParticles(12);
 
   useEffect(() => {
     if (show) {
-      document.dispatchEvent(new CustomEvent("sql-trainer-success", { detail: { message } }));
+      document.dispatchEvent(new CustomEvent("sql-trainer-success", { detail: { message: displayMessage } }));
     }
-  }, [show, message]);
+  }, [show, displayMessage]);
 
   if (!show) return null;
 
@@ -48,7 +51,7 @@ export function SuccessCelebration({
             </svg>
           </span>
           <div className="space-y-1">
-            <p className="text-base font-semibold text-success">{message}</p>
+            <p className="text-base font-semibold text-success">{displayMessage}</p>
             {submessage && (
               <p className="text-sm text-ink">{submessage}</p>
             )}

@@ -1,24 +1,27 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import type { SqlColumn, SqlRow } from "@/types/playground";
 
 /**
- * ResultsetTable – Zeigt die Ergebnisse einer SQL-Abfrage in einer Tabelle an.
- * Spalten und Zeilen werden aus den SqlColumn/SqlRow-Daten gerendert.
+ * ResultsetTable – Displays the results of an SQL query in a table.
+ * Columns and rows are rendered from SqlColumn/SqlRow data.
  */
 export interface ResultsetTableProps {
   columns: SqlColumn[];
   rows: SqlRow[];
-  /** Tabellenueberschrift (Caption), die ueber der Tabelle angezeigt wird. */
+  /** Table caption displayed above the table. */
   caption?: string;
 }
 
 export const ResultsetTable: React.FC<ResultsetTableProps> = ({ columns, rows, caption }) => {
+  const t = useTranslations("sandbox");
+
   if (columns.length === 0 && rows.length === 0) {
     return (
       <p className="text-sm text-ink-muted">
-        Keine Ergebnisse (z. B. erfolgreiches CREATE, INSERT, UPDATE).
+        {t("noResultsDml")}
       </p>
     );
   }

@@ -8,6 +8,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createTimeline, stagger, scrambleText } from "animejs";
 
 const SCOPE = "#sql-story-intro";
@@ -109,14 +110,6 @@ interface StoryIntroProps {
   onStart: () => void;
 }
 
-const DIFFICULTY_LABELS: Record<string, string> = {
-  beginner: "Anfänger",
-  junior: "Grundlagen",
-  intermediate: "Fortgeschritten",
-  advanced: "Experte",
-  interview: "Interview",
-};
-
 export const StoryIntro: React.FC<StoryIntroProps> = ({
   scenarioTitle,
   intro,
@@ -127,6 +120,7 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
   hasProgress,
   onStart,
 }) => {
+  const t = useTranslations("story");
   const containerRef = useRef<HTMLDivElement>(null);
   // Initialize from matchMedia so users with reduced-motion never see scramble flash
   const [reducedMotion, setReducedMotion] = useState(
@@ -198,7 +192,7 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
     return () => mql.removeEventListener("change", handler);
   }, []);
 
-  const diffLabel = DIFFICULTY_LABELS[difficulty] ?? difficulty;
+  const diffLabel = t(`difficulty.${difficulty}`, { defaultValue: difficulty });
 
   return (
     <div id="sql-story-intro" ref={containerRef}>
@@ -208,9 +202,9 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
       <button
         className="si-skip"
         onClick={onStart}
-        aria-label="Animation überspringen"
+        aria-label={t("skipAnimation")}
       >
-        Überspringen
+        {t("skip")}
       </button>
 
       {/* Progress dots */}
@@ -235,13 +229,13 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
 
       {/* Meta info */}
       <div className={`si-meta ${metaVisible || reducedMotion ? "si-visible" : ""}`}>
-        <span>{chapterCount} Kapitel</span>
+        <span>{t("chapterCount", { count: chapterCount })}</span>
         <span className="si-dot" />
         <span>{diffLabel}</span>
         {hasProgress && (
           <>
             <span className="si-dot" />
-            <span style={{ color: "var(--color-accent-500)" }}>✓ {solvedCount}/{chapterCount} gelöst</span>
+            <span style={{ color: "var(--color-accent-500)" }}>✓ {t("solvedOf", { solved: solvedCount, total: chapterCount })}</span>
           </>
         )}
       </div>
@@ -262,7 +256,7 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
           </svg>
-          {hasProgress ? "Fortsetzen" : "Ermittlungen beginnen"}
+          {hasProgress ? t("continueStory") : t("startInvestigation")}
         </button>
       </div>
     </div>

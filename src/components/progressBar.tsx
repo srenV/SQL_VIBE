@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 export interface ProgressBarProps {
@@ -34,6 +35,7 @@ export function ProgressBar({
   animated = true,
   className,
 }: ProgressBarProps) {
+  const t = useTranslations("common");
   const percent = max > 0 ? Math.min(Math.round((value / max) * 100), 100) : 0;
 
   return (
@@ -43,7 +45,7 @@ export function ProgressBar({
       aria-valuenow={percent}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label={label || `${percent}% abgeschlossen`}
+      aria-label={label || t("percentComplete", { percent })}
     >
       <div className={cn("w-full rounded-full bg-surface-dim overflow-hidden", sizeClasses[size])}>
         <div

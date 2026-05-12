@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ACHIEVEMENTS, type AchievementDef } from "@/lib/levelSystem";
 import { AchievementIcon } from "@/components/achievementIcon";
@@ -27,6 +28,7 @@ interface QueuedAchievement {
 }
 
 export function AchievementToastProvider({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("achievements");
   const [visible, setVisible] = useState<QueuedAchievement[]>([]);
   const queueRef = useRef<QueuedAchievement[]>([]);
   const uidCounter = useRef(0);
@@ -68,7 +70,7 @@ export function AchievementToastProvider({ children }: { children: React.ReactNo
       <div
         className="fixed bottom-6 right-6 z-200 flex flex-col-reverse gap-3 pointer-events-none"
         aria-live="polite"
-        aria-label="Erfolge"
+        aria-label={t("achievementsAria")}
       >
         <AnimatePresence>
           {visible.map((item) => (
@@ -109,6 +111,7 @@ function AchievementToastItem({
   item: QueuedAchievement;
   onDismiss: () => void;
 }) {
+  const t = useTranslations("achievements");
   const prefersReduced = useReducedMotion();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -252,7 +255,7 @@ function AchievementToastItem({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.3 }}
             >
-              Erfolg freigeschaltet
+              {t("achievementUnlocked")}
             </motion.p>
             <motion.p
               className="text-base font-bold text-white leading-tight"
@@ -276,7 +279,7 @@ function AchievementToastItem({
           <button
             onClick={onDismiss}
             className="shrink-0 self-start mt-0.5 p-1 rounded-md text-slate-500 hover:text-slate-300 transition-colors"
-            aria-label="Schließen"
+            aria-label={t("close")}
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 
@@ -12,6 +12,7 @@ import { routing, type Locale } from "@/i18n/routing";
  */
 export function LanguageSwitcher() {
   const locale = useLocale();
+  const t = useTranslations("common");
   const router = useRouter();
   const pathname = usePathname();
 
@@ -34,8 +35,8 @@ export function LanguageSwitcher() {
     <button
       onClick={() => switchLocale(otherLocale)}
       className="inline-flex items-center justify-center w-8 h-8 rounded-md text-xs font-bold text-ink-muted hover:text-ink hover:bg-surface-dim/60 dark:hover:bg-dark-dim/60 transition-colors duration-150 border border-surface-dim dark:border-dark-dim"
-      aria-label={locale === "de" ? "Switch to English" : "Zur Deutsch wechseln"}
-      title={locale === "de" ? "Switch to English" : "Zur Deutsch wechseln"}
+      aria-label={t("switchLanguage")}
+      title={t("switchLanguage")}
     >
       {label}
     </button>
