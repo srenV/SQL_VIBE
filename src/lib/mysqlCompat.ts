@@ -42,6 +42,19 @@
 export function mysqlToSqlite(sql: string): string {
   let result = sql;
 
+  // 0. phpMyAdmin-Kommentare entfernen: /*!40101 ... */ und /*!...*/
+  // Diese sind MySQL-Version-bedingte Kommentare, die in phpMyAdmin-Exports vorkommen
+  // Das Semikolon nach dem Kommentar wird auch entfernt
+  result = result.replace(/\/\*!\d*\s*[\s\S]*?\*\/\s*;?\s*/g, "");
+
+  // 0b. MySQL-SET-Befehle entfernen (SET SQL_MODE, SET time_zone, SET NAMES, etc.)
+  // Diese werden von phpMyAdmin-Exports generiert und sind in SQLite nicht nötig
+  result = result.replace(/^\s*SET\s+SQL_MODE\s*=.*$/gim, "");
+  result = result.replace(/^\s*SET\s+time_zone\s*=.*$/gim, "");
+  result = result.replace(/^\s*SET\s+NAMES\s+\S+.*$/gim, "");
+  result = result.replace(/^\s*START\s+TRANSACTION\s*;?\s*$/gim, "");
+  result = result.replace(/^\s*COMMIT\s*;?\s*$/gim, "");
+
   // 1. Kommentare entfernen (für zuverlässiges Parsing)
   // Aber wir müssen sie behalten — nur für die Transformation relevant
 
@@ -366,12 +379,22 @@ function removeMysqlTableOptions(sql: string): string {
   // Nur bei CREATE TABLE
   if (!/^\s*CREATE\s+TABLE\b/i.test(sql)) return sql;
 
-  // Entferne alles nach der letzten schließenden Klammer vor dem Semikolon,
-  // was MySQL-Table-Optionen sind: ENGINE=, DEFAULT CHARSET=, COLLATE=, AUTO_INCREMENT=, etc.
-  return sql.replace(
-    /\)\s*(?:ENGINE\s*=\s*\w+)?\s*(?:DEFAULT\s+CHARSET\s*=\s*\w+)?\s*(?:COLLATE\s*=\s*\w+)?\s*(?:AUTO_INCREMENT\s*=\s*\d+)?\s*(?:CHARACTER\s+SET\s+\w+)?\s*;/gi,
-    ");"
-  );
+  // Strategy: Find the last closing parenthesis ) before the final ;
+  // Everything between ) and ; that contains MySQL keywords should be removed.
+  // This handles both single-line and multi-line CREATE TABLE statements.
+
+  // Find the position of the last ) before the final ;
+  const lastParenIdx = sql.lastIndexOf(")");
+  if (lastParenIdx === -1) return sql;
+
+  const afterParen = sql.substring(lastParenIdx + 1).trim();
+  // Check if there are MySQL table options between ) and ;
+  if (/\bENGINE\b|\bCHARSET\b|\bCHARACTER\s+SET\b|\bCOLLATE\b|\bAUTO_INCREMENT\b/i.test(afterParen)) {
+    // Remove everything between ) and ; (or end of string)
+    return sql.substring(0, lastParenIdx + 1) + ";";
+  }
+
+  return sql;
 }
 
 /**
@@ -389,10 +412,100 @@ function removeMysqlTableOptions(sql: string): string {
  * - ALTER COLUMN SET DEFAULT → wird durchgereicht
  */
 function transformAlterTable(sql: string): string {
+  let result = sql;
+
+  // ─── Multi-clause ALTER TABLE (phpMyAdmin style) ────────────────────────
+  // phpMyAdmin exports ALTER TABLE with multiple ADD clauses separated by commas:
+  //   ALTER TABLE "auftrag"
+  //     ADD PRIMARY KEY ("AuftrNr"),
+  //     ADD KEY "LKWNr" ("LKWNr"),
+  //     ADD KEY "KdNr" ("KdNr");
+  // SQLite doesn't support this syntax. We need to split them into separate statements.
+
+  // Check if this is a multi-clause ALTER TABLE (contains commas between ADD clauses)
+  const multiClauseMatch = result.match(
+    /^\s*ALTER\s+TABLE\s+"?(\w+)"?\s+(ADD\s+.+)$/is
+  );
+  if (multiClauseMatch && /,\s*\n?\s*ADD\s+/i.test(multiClauseMatch[2])) {
+    const tableName = multiClauseMatch[1];
+    const clauses = multiClauseMatch[2];
+
+    // Split by comma followed by ADD (but not commas inside parentheses)
+    const splitClauses: string[] = [];
+    let current = "";
+    let depth = 0;
+    for (let i = 0; i < clauses.length; i++) {
+      const ch = clauses[i];
+      if (ch === "(") depth++;
+      if (ch === ")") depth--;
+
+      // Split at comma+ADD when not inside parentheses
+      if (depth === 0 && ch === "," && /^\s*ADD\s+/i.test(clauses.substring(i + 1))) {
+        splitClauses.push(current.trim());
+        current = "";
+        // Skip the comma
+        continue;
+      }
+      current += ch;
+    }
+    if (current.trim()) splitClauses.push(current.trim());
+
+    // Transform each clause into a separate ALTER TABLE or CREATE INDEX statement
+    const transformedClauses = splitClauses.map(clause => {
+      const fullStmt = `ALTER TABLE "${tableName}" ${clause}`;
+      return transformAlterTable(fullStmt);
+    });
+
+    return transformedClauses.join("\n");
+  }
+
+  // ─── Single-clause ALTER TABLE transformations ──────────────────────────
+
+  // ALTER TABLE ... ADD PRIMARY KEY (col) → durchreichen (SQLite unterstützt das)
+  // Beispiel: ALTER TABLE auftrag ADD PRIMARY KEY (AuftrNr)
+  // Keine Transformation nötig, SQLite versteht ADD PRIMARY KEY
+
+  // ALTER TABLE ... ADD KEY idxname (col) → CREATE INDEX idxname ON table (col)
+  // MySQL: ALTER TABLE ... ADD KEY idxname (col) / ADD INDEX idxname (col)
+  // SQLite: CREATE INDEX idxname ON table (col)
+  result = result.replace(
+    /^\s*ALTER\s+TABLE\s+"?(\w+)"?\s+ADD\s+(?:KEY|INDEX)\s+"?(\w+)"?\s*\(([^)]+)\)\s*;?\s*$/i,
+    (_, table, idxName, cols) => {
+      return `CREATE INDEX "${idxName}" ON "${table}" (${cols});`;
+    }
+  );
+
+  // ALTER TABLE ... ADD UNIQUE KEY idxname (col) → CREATE UNIQUE INDEX idxname ON table (col)
+  result = result.replace(
+    /^\s*ALTER\s+TABLE\s+"?(\w+)"?\s+ADD\s+UNIQUE\s+(?:KEY|INDEX)\s+"?(\w+)"?\s*\(([^)]+)\)\s*;?\s*$/i,
+    (_, table, idxName, cols) => {
+      return `CREATE UNIQUE INDEX "${idxName}" ON "${table}" (${cols});`;
+    }
+  );
+
+  // ALTER TABLE ... ADD CONSTRAINT name FOREIGN KEY (col) REFERENCES other (col)
+  // → ALTER TABLE ... ADD FOREIGN KEY (col) REFERENCES other (col)
+  // SQLite unterstützt ADD FOREIGN KEY, aber nicht die CONSTRAINT name Syntax
+  result = result.replace(
+    /^\s*ALTER\s+TABLE\s+"?(\w+)"?\s+ADD\s+CONSTRAINT\s+"?\w+"?\s+FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s*"?\w+"?\s*\(([^)]+)\)(?:\s+ON\s+(?:DELETE|UPDATE)\s+(?:CASCADE|SET\s+NULL|SET\s+DEFAULT|RESTRICT|NO\s+ACTION))*\s*;?\s*$/i,
+    (match, table, fkCols, refCols) => {
+      // Extract the REFERENCES clause including ON DELETE/UPDATE from the original
+      const onDeleteMatch = match.match(/\bON\s+DELETE\s+(CASCADE|SET\s+NULL|SET\s+DEFAULT|RESTRICT|NO\s+ACTION)\b/i);
+      const onUpdateMatch = match.match(/\bON\s+UPDATE\s+(CASCADE|SET\s+NULL|SET\s+DEFAULT|RESTRICT|NO\s+ACTION)\b/i);
+      // Extract referenced table name
+      const refTableMatch = match.match(/REFERENCES\s+"?(\w+)"?\s*\(/i);
+      const refTable = refTableMatch ? refTableMatch[1] : 'UNKNOWN';
+      let fkSql = `ALTER TABLE "${table}" ADD FOREIGN KEY (${fkCols}) REFERENCES "${refTable}" (${refCols})`;
+      if (onDeleteMatch) fkSql += ` ON DELETE ${onDeleteMatch[1].toUpperCase()}`;
+      if (onUpdateMatch) fkSql += ` ON UPDATE ${onUpdateMatch[1].toUpperCase()}`;
+      return fkSql + ';';
+    }
+  );
+
   // ALTER TABLE ... CHANGE COLUMN old_name new_name type → ALTER TABLE ... RENAME COLUMN old_name TO new_name
   // MySQL: CHANGE COLUMN kann Spalte umbenennen UND Typ ändern
   // SQLite: Nur RENAME COLUMN (Typ-Änderung wird ignoriert)
-  let result = sql.replace(
+  result = result.replace(
     /^\s*ALTER\s+TABLE\s+(\w+)\s+CHANGE\s+COLUMN\s+(\w+)\s+(\w+)\s+[^;]*;?/i,
     (_, table, oldCol, newCol) => {
       if (oldCol.toLowerCase() === newCol.toLowerCase()) {
@@ -408,6 +521,16 @@ function transformAlterTable(sql: string): string {
     /^\s*ALTER\s+TABLE\s+(\w+)\s+MODIFY\s+COLUMN\s+(\w+)\s+[^;]*;?/i,
     (_, table, col) => {
       return `-- SQLite: ALTER TABLE "${table}" MODIFY COLUMN "${col}" wird nicht unterstützt. Spaltentyp kann nicht geändert werden.`;
+    }
+  );
+
+  // ALTER TABLE ... MODIFY col type [UNSIGNED] [NOT NULL] AUTO_INCREMENT [=x] → Nicht unterstützt
+  // Wird oft von phpMyAdmin für AUTO_INCREMENT-Wert gesetzt
+  // UNSIGNED wurde bereits von removeUnsigned entfernt, daher optional
+  result = result.replace(
+    /^\s*ALTER\s+TABLE\s+"?(\w+)"?\s+MODIFY\s+"?(\w+)"?\s+[^;]*AUTO_INCREMENT\s*(?:=\s*\d+)?\s*;?\s*$/i,
+    (_, table, col) => {
+      return `-- SQLite: ALTER TABLE "${table}" MODIFY "${col}" mit AUTO_INCREMENT wird nicht unterstützt.`;
     }
   );
 

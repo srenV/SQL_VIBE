@@ -906,3 +906,147 @@ CREATE TABLE Personal (PersonalNr INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, 
     expect(extractDatabaseName(sql)).toBe("Kuechenstudio");
   });
 });
+
+// ─── phpMyAdmin-Export Kompatibilität ──────────────────────────────────────
+describe("phpMyAdmin-Export Kompatibilität", () => {
+  it("entfernt phpMyAdmin-Kommentare /*!...*/", () => {
+    const result = mysqlToSqlite("/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;");
+    expect(result.trim()).toBe("");
+  });
+
+  it("entfernt SET SQL_MODE", () => {
+    const result = mysqlToSqlite('SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";');
+    expect(result.trim()).toBe("");
+  });
+
+  it("entfernt SET time_zone", () => {
+    const result = mysqlToSqlite("SET time_zone = \"+00:00\";");
+    expect(result.trim()).toBe("");
+  });
+
+  it("entfernt SET NAMES", () => {
+    const result = mysqlToSqlite("SET NAMES utf8mb4;");
+    expect(result.trim()).toBe("");
+  });
+
+  it("entfernt START TRANSACTION", () => {
+    const result = mysqlToSqlite("START TRANSACTION;");
+    expect(result.trim()).toBe("");
+  });
+
+  it("entfernt COMMIT", () => {
+    const result = mysqlToSqlite("COMMIT;");
+    expect(result.trim()).toBe("");
+  });
+
+  it("transformiert ALTER TABLE ADD KEY zu CREATE INDEX", () => {
+    const result = mysqlToSqlite('ALTER TABLE "auftrag" ADD KEY "LKWNr" ("LKWNr");');
+    expect(result).toContain('CREATE INDEX "LKWNr" ON "auftrag" ("LKWNr")');
+    expect(result).not.toContain("ADD KEY");
+  });
+
+  it("transformiert ALTER TABLE ADD UNIQUE KEY zu CREATE UNIQUE INDEX", () => {
+    const result = mysqlToSqlite('ALTER TABLE "kunde" ADD UNIQUE KEY "email" ("email");');
+    expect(result).toContain('CREATE UNIQUE INDEX "email" ON "kunde" ("email")');
+    expect(result).not.toContain("ADD UNIQUE KEY");
+  });
+
+  it("transformiert ALTER TABLE ADD CONSTRAINT FOREIGN KEY (entfernt CONSTRAINT-Namen)", () => {
+    const result = mysqlToSqlite('ALTER TABLE "auftrag" ADD CONSTRAINT "auftrag_ibfk_1" FOREIGN KEY ("LKWNr") REFERENCES "lkw" ("LKWNr");');
+    expect(result).toContain('ALTER TABLE "auftrag" ADD FOREIGN KEY ("LKWNr") REFERENCES "lkw" ("LKWNr")');
+    expect(result).not.toContain("CONSTRAINT");
+  });
+
+  it("transformiert ALTER TABLE ADD CONSTRAINT FOREIGN KEY mit ON DELETE CASCADE", () => {
+    const result = mysqlToSqlite('ALTER TABLE "auftrag" ADD CONSTRAINT "auftrag_ibfk_1" FOREIGN KEY ("LKWNr") REFERENCES "lkw" ("LKWNr") ON DELETE CASCADE ON UPDATE CASCADE;');
+    expect(result).toContain("ON DELETE CASCADE");
+    expect(result).toContain("ON UPDATE CASCADE");
+    expect(result).not.toContain("CONSTRAINT");
+  });
+
+  it("lässt ALTER TABLE ADD PRIMARY KEY durch (SQLite-kompatibel)", () => {
+    const result = mysqlToSqlite('ALTER TABLE "auftrag" ADD PRIMARY KEY ("AuftrNr");');
+    expect(result).toContain('ADD PRIMARY KEY ("AuftrNr")');
+  });
+
+  it("transformiert ALTER TABLE MODIFY mit AUTO_INCREMENT zu Kommentar", () => {
+    const result = mysqlToSqlite('ALTER TABLE "auftrag" MODIFY "AuftrNr" int(10) UNSIGNED NOT NULL AUTO_INCREMENT;');
+    expect(result).toContain("wird nicht unterstützt");
+  });
+
+  it("entfernt ENGINE= und CHARSET aus CREATE TABLE", () => {
+    const result = mysqlToSqlite('CREATE TABLE "auftrag" ("AuftrNr" int(10) UNSIGNED NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
+    expect(result).not.toContain("ENGINE");
+    expect(result).not.toContain("CHARSET");
+    expect(result).not.toContain("COLLATE");
+    expect(result).toContain('CREATE TABLE "auftrag"');
+  });
+
+  it("verarbeitet komplettes phpMyAdmin-Export-Skript (spedition.sql)", () => {
+    const speditionSql = `
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+CREATE TABLE "auftrag" (
+  "AuftrNr" int(10) UNSIGNED NOT NULL,
+  "LKWNr" int(10) UNSIGNED NOT NULL,
+  "KdNr" int(10) UNSIGNED NOT NULL,
+  "Datum" date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO "auftrag" ("AuftrNr", "LKWNr", "KdNr", "Datum") VALUES
+(1, 1, 7, '2025-11-07'),
+(2, 2, 6, '2025-10-27');
+
+ALTER TABLE "auftrag"
+  ADD PRIMARY KEY ("AuftrNr"),
+  ADD KEY "LKWNr" ("LKWNr"),
+  ADD KEY "KdNr" ("KdNr");
+
+ALTER TABLE "auftrag"
+  ADD CONSTRAINT "auftrag_ibfk_1" FOREIGN KEY ("LKWNr") REFERENCES "lkw" ("LKWNr"),
+  ADD CONSTRAINT "auftrag_ibfk_2" FOREIGN KEY ("KdNr") REFERENCES "kunde" ("KdNr");
+
+ALTER TABLE "auftrag"
+  MODIFY "AuftrNr" int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+COMMIT;
+`;
+
+    const stmts = splitSqlStatements(speditionSql);
+    const transformed = stmts.map(s => mysqlToSqlite(s)).filter(s => s.trim() && !s.trim().startsWith("--"));
+
+    // Alle phpMyAdmin-Kommentare sollten entfernt sein
+    for (const t of transformed) {
+      expect(t).not.toContain("/*!40101");
+    }
+
+    // SET/START TRANSACTION/COMMIT sollten entfernt sein
+    for (const t of transformed) {
+      expect(t.trim()).not.toMatch(/^SET\s+/i);
+      expect(t.trim()).not.toMatch(/^START\s+TRANSACTION/i);
+      expect(t.trim()).not.toMatch(/^COMMIT/i);
+    }
+
+    // CREATE TABLE sollte keine MySQL-Optionen enthalten
+    const createTable = transformed.find(s => s.includes("CREATE TABLE"));
+    expect(createTable).toBeDefined();
+    expect(createTable!).not.toContain("ENGINE");
+    expect(createTable!).not.toContain("CHARSET");
+
+    // ADD KEY sollte zu CREATE INDEX transformiert sein
+    const createIndex = transformed.find(s => s.includes("CREATE INDEX"));
+    expect(createIndex).toBeDefined();
+
+    // ADD CONSTRAINT FOREIGN KEY sollte CONSTRAINT-Namen entfernt haben
+    const addFk = transformed.find(s => s.includes("ADD FOREIGN KEY"));
+    expect(addFk).toBeDefined();
+    expect(addFk!).not.toContain("CONSTRAINT");
+  });
+});
