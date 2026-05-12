@@ -13,6 +13,7 @@
  */
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
 import { SqlEditor } from "@/components/sqlEditor";
@@ -34,6 +35,7 @@ interface StoryPlayerProps {
 }
 
 export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }) => {
+  const t = useTranslations("playground");
   const story = exercise.story;
   if (!story) return null;
 
@@ -147,15 +149,15 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 <svg className="w-6 h-6 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
                 </svg>
-                <h2 className="text-xl font-bold text-success">Fall geloest!</h2>
+                <h2 className="text-xl font-bold text-success">{t("caseSolved")}</h2>
               </div>
               <div className="text-sm text-ink whitespace-pre-line leading-relaxed">
                 {story.outro}
               </div>
               <div className="flex items-center gap-3 text-sm text-ink-muted">
-                <span>Alle {story.chapters.length} Kapitel geloest</span>
+                <span>{t("allChaptersSolved", { count: story.chapters.length })}</span>
                 <span>·</span>
-                <span>{story.chapters.reduce((sum, ch) => sum + ch.points, 0)} Punkte moeglich</span>
+                <span>{story.chapters.reduce((sum, ch) => sum + ch.points, 0)} {t("pointsPossible")}</span>
               </div>
             </div>
           </Card>
@@ -176,7 +178,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
               <span className="text-xs font-semibold text-primary-700 uppercase tracking-wide">
-                Kapitel {chapter.chapterNumber} von {story.chapters.length}
+                {t("chapterOf", { current: chapter.chapterNumber, total: story.chapters.length })}
               </span>
             </div>
             <div className="flex items-center gap-1">
@@ -206,12 +208,12 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
 
       <FadeIn delay={0.1}>
         <fieldset className="bg-surface rounded-xl border border-surface-dim dark:border-dark-dim p-5 min-w-0">
-          <legend className="px-2 -ml-1 text-sm font-medium text-ink">Deine SQL-Abfrage</legend>
+          <legend className="px-2 -ml-1 text-sm font-medium text-ink">{t("yourQuery")}</legend>
           <SqlEditor
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
             error={phase === "error"}
-            placeholder="Schreibe hier deine SQL-Abfrage zur Ermittlung ..."
+            placeholder={t("storyQueryPlaceholder")}
             onSubmit={runUserQuery}
           />
 
@@ -221,10 +223,10 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
               isLoading={phase === "running"}
               disabled={!userQuery.trim() || phase === "running"}
             >
-              Abfrage ausfuehren
+              {t("runQuery")}
             </Button>
             <Button variant="ghost" size="sm" onClick={resetSession}>
-              Zuruecksetzen
+              {t("reset")}
             </Button>
             {hint && (
               <Button
@@ -233,7 +235,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 onClick={requestStrongerHint}
                 disabled={hint.level >= 3}
               >
-                Staerkeren Hinweis anzeigen
+                {t("strongerHint")}
               </Button>
             )}
           </div>
@@ -251,9 +253,9 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h4 className="text-sm font-semibold text-ink">Ergebnis</h4>
+              <h4 className="text-sm font-semibold text-ink">{t("result")}</h4>
               <span className="text-xs text-ink-muted">
-                {queryResult.resultset.rows.length} Zeile{queryResult.resultset.rows.length === 1 ? "" : "n"}
+                {queryResult.resultset.rows.length} {queryResult.resultset.rows.length === 1 ? t("rowSingular") : t("rowsPlural")}
                 {queryResult.executionTimeMs !== undefined ? ` · ${queryResult.executionTimeMs} ms` : ""}
               </span>
             </div>
@@ -273,7 +275,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 ?
               </span>
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-warning">Ergebnis passt nicht ganz</p>
+                <p className="text-sm font-semibold text-warning">{t("partialMatch")}</p>
                 <p className="text-sm text-ink">{comparison.details}</p>
               </div>
             </div>
@@ -289,7 +291,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 <svg className="w-4 h-4 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
-                <p className="text-sm font-semibold text-success">Hinweis gefunden!</p>
+                <p className="text-sm font-semibold text-success">{t("clueFound")}</p>
               </div>
               <p className="text-sm text-ink whitespace-pre-line leading-relaxed">
                 {chapterCompletionNarratives[currentChapter]}
@@ -311,7 +313,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 prevCompletedRef.current = false;
               }}
             >
-              Naechstes Kapitel &rarr;
+              {t("nextChapter")} &rarr;
             </Button>
           </div>
         </FadeIn>
@@ -324,7 +326,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
               variant="accent"
               onClick={() => setShowOutro(true)}
             >
-              Fall abschliessen
+              {t("closeCase")}
             </Button>
           </div>
         </FadeIn>
@@ -338,7 +340,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
                 {hint.level}
               </span>
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-ink">Hinweis (Stufe {hint.level})</p>
+                <p className="text-sm font-semibold text-ink">{t("hintLevel", { level: hint.level })}</p>
                 <p className="text-sm text-ink">{hint.message}</p>
               </div>
             </div>
@@ -349,7 +351,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
       {attemptCount > 0 && (
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
-            <p className="text-xs text-ink-muted">Versuch {attemptCount}</p>
+            <p className="text-xs text-ink-muted">{t("attempt", { count: attemptCount })}</p>
           </Card>
         </FadeIn>
       )}
@@ -357,7 +359,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
       {liveSchema && liveSchema.length > 0 && (
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
-            <h4 className="text-sm font-semibold text-ink mb-3">Schema-Explorer</h4>
+            <h4 className="text-sm font-semibold text-ink mb-3">{t("schemaExplorer")}</h4>
             <SchemaExplorer tables={liveSchema} db={db} />
           </Card>
         </FadeIn>

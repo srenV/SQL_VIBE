@@ -6,6 +6,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
 import { FadeIn } from "@/components/animations";
@@ -25,6 +26,7 @@ interface PredictQuizProps {
 }
 
 export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }) => {
+  const t = useTranslations("playground");
   const [selectedOption, setSelectedOption] = React.useState<string | null>(null);
   const [submitted, setSubmitted] = React.useState(false);
   const [isCorrect, setIsCorrect] = React.useState(false);
@@ -161,12 +163,12 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
                 onClick={handleSubmit}
                 disabled={!selectedOption}
               >
-                Antwort pruefen
+                {t("checkAnswer")}
               </Button>
             )}
             {submitted && (
               <Button variant="ghost" size="sm" onClick={handleReset}>
-                Nochmal versuchen
+                {t("tryAgain")}
               </Button>
             )}
           </div>
@@ -177,8 +179,8 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
         <FadeIn delay={0.05}>
           <Card variant="outlined" className="p-5 border-success/40">
             <SuccessCelebration
-              message="Richtig!"
-              submessage="Deine Antwort ist korrekt."
+              message={t("correct")}
+              submessage={t("correctMessage")}
               show={showCelebration}
             />
           </Card>
@@ -186,9 +188,9 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
       )}
 
       {submitted && !isCorrect && (
-        <StatusCard variant="error" title="Leider falsch" icon="✗" animated>
+        <StatusCard variant="error" title={t("incorrect")} icon="✗" animated>
           <p className="text-sm text-ink">
-            Versuche es noch einmal. Die richtige Antwort ist hervorgehoben.
+            {t("incorrectMessage")}
           </p>
         </StatusCard>
       )}
@@ -196,7 +198,7 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
       {attemptCount > 0 && (
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
-            <p className="text-xs text-ink-muted">Versuch {attemptCount}</p>
+            <p className="text-xs text-ink-muted">{t("attempt", { count: attemptCount })}</p>
           </Card>
         </FadeIn>
       )}
@@ -204,7 +206,7 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
       {liveSchema && liveSchema.length > 0 && (
         <FadeIn delay={0.05}>
           <Card variant="flat" className="p-5">
-            <h4 className="text-sm font-semibold text-ink mb-3">Schema-Explorer</h4>
+            <h4 className="text-sm font-semibold text-ink mb-3">{t("schemaExplorer")}</h4>
             <SchemaExplorer tables={liveSchema} db={db} />
           </Card>
         </FadeIn>

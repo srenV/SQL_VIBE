@@ -111,7 +111,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                   </div>
                   {info.xpNext != null ? (
                     <p className="text-xs text-white/60">
-                      {t.rich("xpToNext", { amount: xpToNext, level: info.level + 1 })}
+                      {t.rich("xpToNext", { amount: xpToNext, level: info.level + 1, strong: (chunks) => <strong className="text-white">{chunks}</strong> })}
                     </p>
                   ) : (
                     <p className="text-xs text-white/60 font-semibold">{t("maxLevel")}</p>
@@ -259,7 +259,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                 {t("unlockLevel", { level: info.level + 1 })}
               </p>
               <p className="text-sm text-ink mb-4">
-                {t.rich("xpToNextLevel", { amount: xpToNext, nextTitle: LEVELS.find(l => l.level === info.level + 1)?.title ?? "" })}
+                {t.rich("xpToNextLevel", { amount: xpToNext, nextTitle: LEVELS.find(l => l.level === info.level + 1)?.title ?? "", strong: (chunks) => <strong>{chunks}</strong> })}
               </p>
               <Link
                 href="/lektionen"
