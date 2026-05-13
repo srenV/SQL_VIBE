@@ -29,7 +29,27 @@
     "loadingExercise": "Übung wird geladen…",
     "autocomplete": "Auto-Vervollständigung",
     "autocompleteOn": "Auto-Vervollständigung aktiviert",
-    "autocompleteOff": "Auto-Vervollständigung deaktiviert"
+    "autocompleteOff": "Auto-Vervollständigung deaktiviert",
+    "settings": "Einstellungen",
+    "settingsAria": "Einstellungen öffnen",
+    "theme": "Design",
+    "lightMode": "Hell",
+    "darkMode": "Dunkel",
+    "fontSize": "Schriftgröße",
+    "fontSizeSm": "Klein",
+    "fontSizeMd": "Normal",
+    "fontSizeLg": "Groß",
+    "resetSettings": "Zurücksetzen",
+    "resetConfirm": "Alle Einstellungen auf Standard zurücksetzen?"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "dialect": "SQL-Dialekt",
+    "autocomplete": "Auto-Vervollständigung",
+    "theme": "Design",
+    "fontSize": "Schriftgröße",
+    "resetAll": "Alle Einstellungen zurücksetzen"
   },
   "nav": {
     "practice": "Üben",
@@ -37,6 +57,7 @@
     "sandbox": "Sandbox",
     "learn": "Lernen",
     "profile": "Profil",
+    "settings": "Einstellungen",
     "mainNav": "Hauptnavigation"
   },
   "landing": {

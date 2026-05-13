@@ -8,7 +8,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const LOCALE_CONFIG: Record<Locale, { label: string; flag: string; nativeName: string }> = {
   de: { label: "DE", flag: "\u{1F1E9}\u{1F1EA}", nativeName: "Deutsch" },
-  en: { label: "EN", flag: "\u{1F1EC}\u{1F1E7}", nativeName: "English" },
+  en: { label: "EN", flag: "\u{1F1FA}\u{1F1F8}", nativeName: "English" },
 };
 
 const LOCALES = [...routing.locales] as Locale[];
@@ -216,6 +216,60 @@ export function LanguageSwitcher() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/**
+ * Language Switcher Inline — button-group variant for settings panels.
+ *
+ * Renders locale buttons side-by-side (no dropdown).
+ * Uses full page navigation (window.location) to ensure next-intl
+ * reloads the locale context correctly in static export mode.
+ */
+export function LanguageSwitcherInline() {
+  const locale = useLocale();
+  const t = useTranslations("common");
+  const pathname = usePathname();
+  const shouldReduceMotion = useReducedMotion();
+
+  const switchLocale = useCallback((newLocale: Locale) => {
+    const newPath = `/${newLocale}${pathname === "/" ? "" : pathname}`;
+    window.location.href = newPath;
+  }, [pathname]);
+
+  return (
+    <div className="flex items-center gap-1" role="radiogroup" aria-label={t("language")}>
+      {LOCALES.map((loc) => {
+        const config = LOCALE_CONFIG[loc];
+        const isActive = loc === locale;
+
+        return (
+          <motion.button
+            key={loc}
+            onClick={() => { if (!isActive) switchLocale(loc); }}
+            disabled={isActive}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+            className={`
+              flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold
+              transition-colors duration-150
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1
+              ${isActive
+                ? "bg-primary-500 text-white shadow-sm"
+                : "bg-surface-dim/60 dark:bg-dark-dim/60 text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim"
+              }
+            `}
+            role="radio"
+            aria-checked={isActive}
+            aria-label={config.nativeName}
+          >
+            <span className="text-sm leading-none" role="img" aria-label={config.nativeName}>
+              {config.flag}
+            </span>
+            <span>{config.label}</span>
+          </motion.button>
+        );
+      })}
     </div>
   );
 }

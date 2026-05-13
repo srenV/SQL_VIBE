@@ -29,7 +29,27 @@
     "loadingExercise": "Loading exercise…",
     "autocomplete": "Autocomplete",
     "autocompleteOn": "Autocomplete enabled",
-    "autocompleteOff": "Autocomplete disabled"
+    "autocompleteOff": "Autocomplete disabled",
+    "settings": "Settings",
+    "settingsAria": "Open settings",
+    "theme": "Theme",
+    "lightMode": "Light",
+    "darkMode": "Dark",
+    "fontSize": "Font size",
+    "fontSizeSm": "Small",
+    "fontSizeMd": "Medium",
+    "fontSizeLg": "Large",
+    "resetSettings": "Reset",
+    "resetConfirm": "Reset all settings to defaults?"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "dialect": "SQL Dialect",
+    "autocomplete": "Autocomplete",
+    "theme": "Theme",
+    "fontSize": "Font size",
+    "resetAll": "Reset all settings"
   },
   "nav": {
     "practice": "Practice",
@@ -37,6 +57,7 @@
     "sandbox": "Sandbox",
     "learn": "Learn",
     "profile": "Profile",
+    "settings": "Settings",
     "mainNav": "Main navigation"
   },
   "landing": {

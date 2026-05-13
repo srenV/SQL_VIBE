@@ -85,7 +85,10 @@ export function mysqlToSqlite(sql: string): string {
   // 10. UNSIGNED-Keyword entfernen
   result = removeUnsigned(result);
 
-  // 11. ENGINE= / CHARACTER SET / COLLATE / AUTO_INCREMENT-Table-Option entfernen
+  // 11. TRUE/FALSE → 1/0 (SQLite hat keinen Boolean-Typ)
+  result = transformBooleans(result);
+
+  // 12. ENGINE= / CHARACTER SET / COLLATE / AUTO_INCREMENT-Table-Option entfernen
   result = removeMysqlTableOptions(result);
 
   // 12. ALTER TABLE MySQL-Befehle → SQLite-Äquivalente
@@ -109,7 +112,13 @@ function transformCreateTable(sql: string): string {
   // Nur anwenden wenn es ein CREATE TABLE ist
   if (!/^\s*CREATE\s+TABLE\b/i.test(sql)) return sql;
 
-  let result = sql;
+  // Protect string literals from type keyword replacement.
+  // Replace content inside single quotes with placeholders, transform, then restore.
+  const strings: string[] = [];
+  let result = sql.replace(/'([^']*)'/g, (match) => {
+    strings.push(match);
+    return `__STR${strings.length - 1}__`;
+  });
 
   // AUTO_INCREMENT → AUTOINCREMENT (nur innerhalb von CREATE TABLE)
   result = result.replace(/\bAUTO_INCREMENT\b/gi, "AUTOINCREMENT");
@@ -142,12 +151,19 @@ function transformCreateTable(sql: string): string {
   // zu INTEGER transformiert wurden und \bINT\b nicht in INTEGER matcht.
   result = result.replace(/\bINT\b(\(\d+\))?/gi, "INTEGER");
 
+  // VARCHAR(n) / CHAR(n) → TEXT (SQLite hat keine Längenbeschränkung bei TEXT)
+  result = result.replace(/\bVARCHAR\s*\(\s*\d+\s*\)/gi, "TEXT");
+  result = result.replace(/\bCHAR\s*\(\s*\d+\s*\)/gi, "TEXT");
+
   // DECIMAL(n,m) / NUMERIC(n,m) → REAL (SQLite hat kein echtes DECIMAL)
   result = result.replace(/\bDECIMAL\s*\(\s*\d+\s*,\s*\d+\s*\)/gi, "REAL");
   result = result.replace(/\bNUMERIC\s*\(\s*\d+\s*,\s*\d+\s*\)/gi, "REAL");
 
   // ON UPDATE CURRENT_TIMESTAMP entfernen (SQLite-Feature nicht vorhanden)
   result = result.replace(/\bON\s+UPDATE\s+CURRENT_TIMESTAMP\b/gi, "");
+
+  // Restore string literals
+  result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
 
   return result;
 }
@@ -266,14 +282,26 @@ function transformFunctions(sql: string): string {
   // Einfacher Fall: 2-3 Argumente
   result = transformConcat(result);
 
+  // Protect CURRENT_TIMESTAMP in DEFAULT clauses from being converted.
+  // SQLite natively supports DEFAULT CURRENT_TIMESTAMP but NOT DEFAULT DATETIME('now').
+  result = result.replace(/\bDEFAULT\s+CURRENT_TIMESTAMP\s*\(\s*\)/gi, "DEFAULT __MYSQL_CURRENT_TS__");
+  result = result.replace(/\bDEFAULT\s+CURRENT_TIMESTAMP\b/gi, "DEFAULT __MYSQL_CURRENT_TS__");
+
   // NOW() → DATETIME('now')
   result = result.replace(/\bNOW\s*\(\s*\)/gi, "DATETIME('now')");
 
   // CURDATE() → DATE('now')
   result = result.replace(/\bCURDATE\s*\(\s*\)/gi, "DATE('now')");
 
-  // CURRENT_TIMESTAMP() → DATETIME('now') (ohne Klammern auch)
+  // CURRENT_TIMESTAMP() → DATETIME('now') (with parens — MySQL function call syntax)
   result = result.replace(/\bCURRENT_TIMESTAMP\s*\(\s*\)/gi, "DATETIME('now')");
+
+  // CURRENT_TIMESTAMP (without parens) → DATETIME('now')
+  // Only in non-DEFAULT contexts (DEFAULT CURRENT_TIMESTAMP is already protected above)
+  result = result.replace(/\bCURRENT_TIMESTAMP\b(?!\s*\()/gi, "DATETIME('now')");
+
+  // Restore protected DEFAULT CURRENT_TIMESTAMP
+  result = result.replace(/__MYSQL_CURRENT_TS__/g, "CURRENT_TIMESTAMP");
 
   // DATE_FORMAT(date, format) → strftime(format, date)
   // MySQL-Format-Specifiers → SQLite-Format-Specifiers
@@ -372,6 +400,25 @@ function transformOnDuplicateKey(sql: string): string {
 /** UNSIGNED-Keyword entfernen */
 function removeUnsigned(sql: string): string {
   return sql.replace(/\bUNSIGNED\b/gi, "");
+}
+
+/** TRUE/FALSE → 1/0 (SQLite hat keinen Boolean-Typ) */
+function transformBooleans(sql: string): string {
+  // Protect string literals before replacing TRUE/FALSE.
+  // Replace content inside single quotes with placeholders, transform, then restore.
+  const strings: string[] = [];
+  let result = sql.replace(/'([^']*)'/g, (match) => {
+    strings.push(match);
+    return `__STR${strings.length - 1}__`;
+  });
+
+  result = result.replace(/\bTRUE\b/gi, "1");
+  result = result.replace(/\bFALSE\b/gi, "0");
+
+  // Restore string literals
+  result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
+
+  return result;
 }
 
 /** MySQL-spezifische ALTER TABLE-Optionen entfernen (ENGINE, CHARSET, etc.) */

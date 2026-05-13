@@ -12,6 +12,8 @@ import { StreakFlame } from "@/components/streakFlame";
 import { useProgress } from "@/hooks/useProgress";
 import { getLevel } from "@/lib/levelSystem";
 import { LanguageSwitcher } from "@/components/languageSwitcher";
+import { SettingsPanel } from "@/components/settingsPanel";
+import { Settings } from "lucide-react";
 
 
 /** Haupt-Navigations-Tabs. */
@@ -172,6 +174,7 @@ export function Header({ rightSlot }: HeaderProps) {
           <div className="flex-1 flex items-center justify-end gap-3">
             {rightSlot}
             <LevelBadge />
+            <SettingsPanel />
 
             {/* Hamburger Button — Mobile only */}
             <button
@@ -340,16 +343,22 @@ export function Header({ rightSlot }: HeaderProps) {
               })}
             </nav>
 
-            {/* Bottom — Language + Theme */}
+            {/* Bottom — Settings link */}
             <motion.div
-              className="relative z-10 flex items-center justify-center gap-4 pb-10 pt-4 border-t border-white/10"
+              className="relative z-10 flex items-center justify-center pb-10 pt-4 border-t border-white/10"
               variants={getItemVariants(NAV_TABS.length + 1)}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              <LanguageSwitcher />
-              <ThemeToggle />
+              <Link
+                href="/einstellungen"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 w-full max-w-xs mx-auto px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors duration-150"
+              >
+                <Settings className="w-5 h-5 text-ink-muted" />
+                <span className="text-base font-semibold text-ink">{t("settings")}</span>
+              </Link>
             </motion.div>
           </motion.div>
         )}

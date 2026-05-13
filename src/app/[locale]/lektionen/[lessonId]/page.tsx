@@ -66,7 +66,7 @@ export default async function LessonOverviewPage({ params }: PageProps) {
   };
 
   return (
-    <PageShell mainClassName="flex-1 py-8" containerClassName="">
+    <PageShell mainClassName="flex-1 py-8" containerClassName="space-y-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

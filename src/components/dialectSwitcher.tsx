@@ -193,3 +193,47 @@ export function DialectSwitcher({ direction = "up" }: { direction?: "up" | "down
     </div>
   );
 }
+
+/**
+ * Dialect Switcher Inline — button-group variant for settings panels.
+ *
+ * Renders dialect buttons side-by-side (no dropdown).
+ * Persists selection via localStorage through the DialectProvider.
+ */
+export function DialectSwitcherInline() {
+  const { dialect, setDialect } = useDialect();
+  const t = useTranslations("common");
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <div className="flex items-center gap-1" role="radiogroup" aria-label={t("switchDialect")}>
+      {DIALECTS.map((d: Dialect) => {
+        const config = DIALECT_LABELS[d];
+        const isActive = d === dialect;
+
+        return (
+          <motion.button
+            key={d}
+            onClick={() => { if (!isActive) setDialect(d); }}
+            disabled={isActive}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+            className={`
+              px-2.5 py-1.5 rounded-lg text-xs font-semibold
+              transition-colors duration-150
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1
+              ${isActive
+                ? "bg-primary-500 text-white shadow-sm"
+                : "bg-surface-dim/60 dark:bg-dark-dim/60 text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim"
+              }
+            `}
+            role="radio"
+            aria-checked={isActive}
+            title={t(`dialectDesc_${d}` as Parameters<typeof t>[0])}
+          >
+            {config.short}
+          </motion.button>
+        );
+      })}
+    </div>
+  );
+}

@@ -212,7 +212,7 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
 
       <FadeIn delay={0.05}>
         <Card variant="outlined" className="p-5 border-primary-200">
-          <h3 className="text-lg font-semibold text-primary-900 mb-2">{chapter.title}</h3>
+          <h3 className="text-lg font-semibold text-ink mb-2">{chapter.title}</h3>
           <p className="text-sm text-ink whitespace-pre-line leading-relaxed">{chapter.narrative}</p>
         </Card>
       </FadeIn>

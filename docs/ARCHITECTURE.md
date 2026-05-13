@@ -75,7 +75,7 @@ Der SQL VIBE ist eine **rein clientseitige** Single-Page-Application (SPA), die 
 | **Adapter** | Format-Konvertierung Katalog ↔ Playground | `playgroundAdapter.ts` |
 | **Engine** | sql.js WASM Wrapper, Schema-Introspektion | `sqlEngine.ts`, `schemaExplorer.ts` |
 | **Editor** | CodeMirror 6 SQL-Editor, Theme, Autocompletion | `sqlEditor.tsx`, `codeMirrorTheme.ts`, `dialect.ts` |
-| **Compat** | MySQL-Kompatibilität, DB-Persistenz | `mysqlCompat.ts`, `dbStorage.ts` |
+| **Compat** | SQL-Dialekt-Transpilation, DB-Persistenz | `dialectCompat.ts`, `postgresCompat.ts`, `mysqlCompat.ts`, `dbStorage.ts` |
 | **Data** | Übungsdefinitionen, Datasets, Katalog | `catalog.ts`, `datasets/*.ts`, `exercises/*.ts` |
 | **Types** | TypeScript-Typdefinitionen | `exercise.ts`, `playground.ts` |
 
@@ -120,12 +120,17 @@ User schreibt SQL & klickt "Ausführen"
   ▼
 usePlayground.runUserQuery()
   │
-  ├── runQuery(db, userQuery)
+  ├── transpileToSqlite(userQuery, dialect)  # Dialekt → SQLite
+  │     ├── "sqlite" → Pass-through
+  │     ├── "mysql" → mysqlToSqlite()
+  │     └── "postgresql" → postgresToSqlite()
+  │
+  ├── runQuery(db, transpiledSql)
   │     │
-  │     ├── transformRightJoin(sql)   # RIGHT JOIN → LEFT JOIN
   │     └── db.exec(sql)              # sql.js Ausführung
   │
-  ├── [Fehler?] explainError(error)   # Deutsche Fehlermeldung
+  ├── [Fehler?] mapSqliteError(error, dialect)  # SQLite-Fehler → Dialekt-Fehler
+  │     └── explainError(mappedError)            # Deutsche Fehlermeldung
   │
   ├── compareResultsets(ref, actual)  # Spalten + Zeilen vergleichen
   │
@@ -239,25 +244,75 @@ getSchema(db) → { name, sql }[]            // Alle Tabellen
 getTableInfo(db, table) → ColumnMeta[]     // Spalten (PRAGMA)
 getForeignKeys(db, table) → FK[]           // FKs (PRAGMA)
 peekTableData(db, table, limit) → Result   // Daten-Vorschau
-transformRightJoin(sql) → string           // RIGHT→LEFT JOIN
 ```
 
 ### SQLite-Kompatibilität
 
-- **RIGHT JOIN** wird automatisch in LEFT JOIN transformiert (`transformRightJoin`)
+- **RIGHT JOIN** wird automatisch in LEFT JOIN transformiert (in `sqlEngine.ts`)
 - **FOREIGN KEY Constraints** werden in DDL nicht deklariert (SQLite erfordert `PRAGMA foreign_keys = ON`)
 - FK-Informationen kommen stattdessen aus Dataset-Metadaten (`ColumnDef.references`)
+- **Dialekt-Transpilation** erfolgt über `dialectCompat.ts` vor der Ausführung (siehe oben)
+
+### Dialekt-Kompatibilität (`dialectCompat.ts`)
+
+Zentrale Einstiegsstelle für SQL-Transpilation. Routet Anfragen an den korrekten Transpiler:
+
+```typescript
+transpileToSqlite(sql, dialect) → string   // PostgreSQL/MySQL → SQLite
+mapSqliteError(error, dialect) → string   // SQLite-Fehler → Dialekt-Fehler
+mapSqliteType(type, dialect) → string     // SQLite-Typ → Dialekt-Typ
+getCompatWarnings(dialect) → string[]     // Bekannte Einschränkungen
+```
+
+- `"sqlite"` → Pass-through (keine Transformation)
+- `"mysql"` → `mysqlToSqlite()` + `mapSqliteErrorToMysql()` + `mapSqliteTypeToMysql()`
+- `"postgresql"` → `postgresToSqlite()` + `mapSqliteErrorToPostgres()` + `mapSqliteTypeToPostgres()`
+
+### PostgreSQL-Kompatibilität (`postgresCompat.ts`)
+
+Übersetzt PostgreSQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 12 Schritten:
+
+1. **Dollar-quoted Strings** → `$$...$$` und `$tag$...$tag$` → reguläre Strings
+2. **CREATE TABLE** → Typ-Mappings (SERIAL→INTEGER PK AUTOINCREMENT, BOOLEAN→INTEGER, TIMESTAMP→TEXT, VARCHAR→TEXT, INT→INTEGER, BIGINT→INTEGER, SMALLINT→INTEGER, DECIMAL→REAL, NUMERIC→REAL, DOUBLE PRECISION→REAL, GENERATED AS IDENTITY→AUTOINCREMENT)
+3. **ALTER TABLE ADD COLUMN** → Gleiche Typ-Mappings wie CREATE TABLE + DEFAULT TRUE/FALSE→1/0 + DEFAULT CURRENT_TIMESTAMP-Schutz
+4. **TRUNCATE TABLE** → `DELETE FROM`
+5. **CAST shorthand** → `::type` → `CAST(expr AS type)`
+6. **EXTRACT** → `EXTRACT(part FROM date)` → `strftime`
+7. **Date functions** → `NOW()`/`CURRENT_TIMESTAMP` → `DATETIME('now')` (mit DEFAULT-Schutz)
+8. **ILIKE** → `LOWER(col) LIKE LOWER(pattern)`
+9. **RETURNING \*** → entfernt
+10. **ON CONFLICT** → `INSERT OR IGNORE` / `INSERT OR REPLACE`
+11. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
+12. **DROP/CREATE DATABASE** → Kommentare
+
+**Bekannte Einschränkungen:**
+- `RETURNING col1, col2` wird NICHT entfernt (nur `RETURNING *`)
+- `NOT ILIKE` wird nicht unterstützt
+- `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
 
 ### MySQL-Kompatibilität (`mysqlCompat.ts`)
 
-```typescript
-extractDatabaseName(sql: string) → string | null  // CREATE DATABASE/USE → DB-Name
-```
+Übersetzt MySQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 13 Schritten:
 
-Behandelt MySQL-spezifische Statements, die SQLite nicht unterstützt:
-- `CREATE DATABASE name` → Extrahiert den Datenbanknamen für die Auto-Erstellung
-- `USE database` → Wechselt den Datenbankkontext
-- Fallback auf "Neue Datenbank" wenn kein Name extrahiert werden kann
+1. **phpMyAdmin-Kommentare** → `/*!40101 ... */` entfernt
+2. **SET-Befehle** → `SET SQL_MODE`, `SET time_zone`, etc. entfernt
+3. **Backticks** → `\`` → `"`
+4. **CREATE TABLE** → Typ-Mappings (BOOLEAN→INTEGER, DATETIME→TEXT, INT(n)→INTEGER, TINYINT/BIGINT/SMALLINT/MEDIUMINT→INTEGER, DOUBLE/FLOAT→REAL, DECIMAL/NUMERIC→REAL, VARCHAR(n)→TEXT, CHAR(n)→TEXT, AUTO_INCREMENT→AUTOINCREMENT)
+5. **RIGHT JOIN** → `LEFT JOIN` (Tabellen vertauscht)
+6. **TRUNCATE TABLE** → `DELETE FROM`
+7. **SHOW/DESCRIBE** → `sqlite_master`-Query / `PRAGMA table_info`
+8. **LIMIT x, y** → `LIMIT y OFFSET x`
+9. **Funktionen** → `IF()`→`CASE WHEN`, `CONCAT()`→`||`, `NOW()`/`CURDATE()`/`CURRENT_TIMESTAMP`→`DATETIME('now')`/`DATE('now')`, `DATE_FORMAT()`→`strftime`, `YEAR()`/`MONTH()`/`DAY()`→`strftime`, `DATEDIFF()`→`julianday`, `SUBSTRING()`→`SUBSTR()`
+10. **ON DUPLICATE KEY UPDATE** → `INSERT OR REPLACE`
+11. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
+12. **ENGINE/CHARSET/COLLATE** → entfernt
+13. **ALTER TABLE** → MySQL-spezifische Befehle (ADD KEY, ADD INDEX, etc.)
+14. **DROP/CREATE DATABASE** → Kommentare
+
+**Bekannte Einschränkungen:**
+- ALTER TABLE ADD COLUMN konvertiert keine Typen (nur PG)
+- `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
+- `CONCAT_WS()` wird vereinfacht (nur 2 Argumente + Separator)
 
 ---
 

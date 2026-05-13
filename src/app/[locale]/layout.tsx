@@ -8,6 +8,7 @@ import { Footer } from "@/components/footer";
 import { IntroOverlay } from "@/components/introOverlay";
 import { AchievementToastProvider } from "@/components/achievementToast";
 import { DialectProvider, DialectScript } from "@/lib/dialect";
+import { FontSizeProvider, FontSizeScript } from "@/lib/fontSize";
 import { routing } from "@/i18n/routing";
 
 const inter = localFont({
@@ -159,6 +160,7 @@ export default async function LocaleLayout({
           }}
         />
         <DialectScript />
+        <FontSizeScript />
         <script
           type="application/ld+json"
           suppressHydrationWarning
@@ -184,15 +186,15 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider messages={messages}>
           <DialectProvider>
-            <AchievementToastProvider>
+            <FontSizeProvider>
+              <AchievementToastProvider>
               <a href="#main-content" className="skip-nav">
                 {locale === "en" ? "Skip to content" : "Zum Inhalt springen"}
               </a>
               <IntroOverlay />
               {children}
               <Footer />
-            </AchievementToastProvider>
-          </DialectProvider>
+            </AchievementToastProvider>            </FontSizeProvider>          </DialectProvider>
         </NextIntlClientProvider>
       </body>
     </html>

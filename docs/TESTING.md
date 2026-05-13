@@ -35,11 +35,11 @@ Test-Strategie, Test-Struktur und Test-Abdeckung der SQL VIBE Lernplattform.
 
 | Ebene | Tests | Dateien |
 |-------|-------|---------|
-| Unit (Lib) | 639 | 8 Dateien |
+| Unit (Lib) | 796 | 9 Dateien |
 | Unit (Components) | 34 | 6 Dateien |
 | Integration (Hooks/Adapter) | 18 | 2 Dateien |
 | E2E (Playwright) | 7 | 7 Dateien |
-| **Gesamt** | **743** | **23 Dateien** |
+| **Gesamt** | **903** | **24 Dateien** |
 
 ---
 
@@ -95,7 +95,7 @@ Testet verdeckte Tests mit allen 5 Compare-Modi:
 - `count`: Zeilenanzahl
 - `contains`: Teilmenge
 
-#### `src/lib/mysqlCompat.test.ts` (85 Tests)
+#### `src/lib/mysqlCompat.test.ts` (99 Tests)
 
 Testet die MySQL→SQLite Kompatibilitätsschicht:
 - `extractDatabaseName()`: CREATE DATABASE, USE, Fallback-Namen
@@ -103,7 +103,14 @@ Testet die MySQL→SQLite Kompatibilitätsschicht:
 - Case-Insensitivity, Whitespace-Handling
 - CHARACTER SET / DEFAULT CHARSET Varianten
 - Vollständige Küchen-Skript-Verarbeitung
+#### `src/lib/__tests__/transpile.test.ts` (146 Tests)
 
+Testet die SQL-Dialekt-Transpilation (PostgreSQL + MySQL → SQLite) systematisch：
+- **PostgreSQL-Transformationen**: GENERATED AS IDENTITY, Typ-Mappings (TIMESTAMP, INT, BIGINT, SMALLINT, BOOLEAN, VARCHAR, DOUBLE PRECISION, DECIMAL, NUMERIC, SERIAL), DEFAULT CURRENT_TIMESTAMP-Schutz, ILIKE, RETURNING *, ON CONFLICT, TRUE/FALSE, ::type CAST, EXTRACT, Dollar-quoted Strings
+- **MySQL-Transformationen**: Typ-Mappings (BOOLEAN, DATETIME, INT(n), TINYINT, BIGINT, SMALLINT, MEDIUMINT, DOUBLE, FLOAT, DECIMAL, NUMERIC, VARCHAR(n), CHAR(n)), DEFAULT CURRENT_TIMESTAMP-Schutz, TRUE/FALSE, Backticks, RIGHT JOIN, LIMIT offset, IF→CASE WHEN, CONCAT→||, NOW/CURDATE/CURRENT_TIMESTAMP, DATE_FORMAT, YEAR/MONTH/DAY, DATEDIFF, SUBSTRING, SHOW/DESCRIBE, ON DUPLICATE KEY, UNSIGNED, ENGINE/CHARSET/COLLATE
+- **Cross-Dialekt-Edge-Cases**: Multi-Statement, String-Literal-Schutz (TRUE/FALSE, Type-Keywords, NOW() in Strings), DEFAULT-Werte mit CURRENT_TIMESTAMP
+- **Erweiterte Edge-Cases**: RETURNING-Varianten, ILIKE mit Tabellenqualifizierung, ALTER TABLE ADD COLUMN (PG+MySQL), CTEs mit TRUE/FALSE, Window-Functions (Pass-through), COALESCE/NULL-Handling, String-Concatenation, DECIMAL/NUMERIC-Typen, Dollar-quoted Strings, CAST-Shorthand
+- **Bekannte Einschränkungen** (dokumentiert in Tests): RETURNING col1,col2 wird nicht entfernt, MySQL ALTER TABLE ADD COLUMN konvertiert keine Typen, NOW() in String-Literalen wird konvertiert
 #### `src/lib/playgroundAdapter.test.ts` (9 Tests)
 
 Testet den Katalog→Playground-Adapter:
