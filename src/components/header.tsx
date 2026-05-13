@@ -172,10 +172,6 @@ export function Header({ rightSlot }: HeaderProps) {
           <div className="flex-1 flex items-center justify-end gap-3">
             {rightSlot}
             <LevelBadge />
-            <LanguageSwitcher />
-            <span className="hidden sm:block">
-              <ThemeToggle />
-            </span>
 
             {/* Hamburger Button — Mobile only */}
             <button
@@ -344,14 +340,15 @@ export function Header({ rightSlot }: HeaderProps) {
               })}
             </nav>
 
-            {/* Bottom — Theme Toggle */}
+            {/* Bottom — Language + Theme */}
             <motion.div
-              className="relative z-10 flex justify-center pb-10 pt-4 border-t border-white/10"
+              className="relative z-10 flex items-center justify-center gap-4 pb-10 pt-4 border-t border-white/10"
               variants={getItemVariants(NAV_TABS.length + 1)}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
+              <LanguageSwitcher />
               <ThemeToggle />
             </motion.div>
           </motion.div>

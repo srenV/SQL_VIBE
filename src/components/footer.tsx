@@ -2,6 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/languageSwitcher";
+import { ThemeToggle } from "@/components/themeToggle";
 
 export function Footer() {
   const t = useTranslations("footer");
@@ -68,8 +70,12 @@ export function Footer() {
         {/* Divider */}
         <div className="mt-8 border-t border-surface-dim" />
 
-        {/* Bottom row: Copyright + GitHub */}
-        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+        {/* Bottom row: Language + Theme + Copyright + GitHub */}
+        <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
           <span className="text-xs text-ink-muted">
             © {new Date().getFullYear()}{" "}S&ouml;ren Timo Voigt
           </span>
