@@ -14,10 +14,10 @@ export type Dialect = "sqlite" | "mysql" | "postgresql";
 
 export const DIALECTS: Dialect[] = ["sqlite", "mysql", "postgresql"];
 
-export const DIALECT_LABELS: Record<Dialect, { short: string; icon: string }> = {
-  sqlite: { short: "SQLite", icon: "🗃️" },
-  mysql: { short: "MySQL", icon: "🐬" },
-  postgresql: { short: "PostgreSQL", icon: "🐘" },
+export const DIALECT_LABELS: Record<Dialect, { short: string }> = {
+  sqlite: { short: "SQLite" },
+  mysql: { short: "MySQL" },
+  postgresql: { short: "PostgreSQL" },
 };
 
 const STORAGE_KEY = "sql-vibe-dialect";

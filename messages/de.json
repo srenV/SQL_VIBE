@@ -151,7 +151,10 @@
     "databaseNotAvailable": "Datenbank nicht verfügbar.",
     "noDataInTable": "Keine Daten in dieser Tabelle.",
     "showingRows": "Zeige {count, plural, =1 {1 Zeile} other {# Zeilen}}",
-    "history": "Verlauf"
+    "history": "Verlauf",
+    "autocomplete": "Auto-Vervollständigung",
+    "autocompleteOn": "Auto-Vervollständigung aktiviert",
+    "autocompleteOff": "Auto-Vervollständigung deaktiviert"
   },
   "achievements": {
     "achievementUnlocked": "Erfolg freigeschaltet",

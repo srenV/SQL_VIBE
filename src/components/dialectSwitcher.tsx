@@ -5,6 +5,35 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useDialect, DIALECTS, DIALECT_LABELS, type Dialect } from "@/lib/dialect";
 
+/** SVG icons for each SQL dialect — no emojis. */
+function DialectIcon({ dialect, className = "w-4 h-4" }: { dialect: Dialect; className?: string }) {
+  switch (dialect) {
+    case "sqlite":
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7" />
+          <path d="M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4" />
+          <path d="M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+          <path d="M12 14.5c-1.5 0-3-.5-3-2" />
+        </svg>
+      );
+    case "mysql":
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3c-1.5 3-4 5-7 6 3 1 5.5 3 7 6 1.5-3 4-5 7-6-3-1-5.5-3-7-6z" />
+        </svg>
+      );
+    case "postgresql":
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2C8 2 4 6 4 10c0 4 2 8 8 12 6-4 8-8 8-12 0-4-4-8-8-8z" />
+          <path d="M9 12h6" />
+          <path d="M12 9v6" />
+        </svg>
+      );
+  }
+}
+
 /**
  * Dialect Switcher — custom-styled select picker for SQL dialect.
  *
@@ -86,9 +115,7 @@ export function DialectSwitcher() {
       >
         {/* Current dialect icon + label */}
         <span className="flex items-center gap-1">
-          <span className="text-xs leading-none" role="img" aria-label={currentConfig.short}>
-            {currentConfig.icon}
-          </span>
+          <DialectIcon dialect={dialect} className="w-3.5 h-3.5" />
           <span className="text-xs font-semibold tracking-wide text-ink">
             {currentConfig.short}
           </span>
@@ -160,9 +187,7 @@ export function DialectSwitcher() {
                     aria-selected={isActive}
                   >
                     {/* Icon */}
-                    <span className="text-lg leading-none" role="img" aria-label={config.short}>
-                      {config.icon}
-                    </span>
+                    <DialectIcon dialect={d} className="w-4 h-4" />
 
                     {/* Label + description */}
                     <div className="flex flex-col">

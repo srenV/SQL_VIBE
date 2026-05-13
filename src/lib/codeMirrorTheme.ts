@@ -38,7 +38,7 @@ const lightTheme = EditorView.theme(
     },
     ".cm-content": {
       fontFamily:
-        '"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        'var(--font-mono), ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       caretColor: "#6366f1",
       padding: "8px 0",
     },
@@ -106,7 +106,7 @@ const lightTheme = EditorView.theme(
     },
     ".cm-completionLabel": {
       fontFamily:
-        '"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace',
+        'var(--font-mono), ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace',
       fontSize: "13px",
     },
     ".cm-completionDetail": {
@@ -139,7 +139,7 @@ const darkTheme = EditorView.theme(
     },
     ".cm-content": {
       fontFamily:
-        '"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        'var(--font-mono), ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       caretColor: "#818cf8",
       padding: "8px 0",
     },
@@ -209,7 +209,7 @@ const darkTheme = EditorView.theme(
     },
     ".cm-completionLabel": {
       fontFamily:
-        '"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace',
+        'var(--font-mono), ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace',
       fontSize: "13px",
     },
     ".cm-completionDetail": {

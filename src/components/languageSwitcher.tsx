@@ -6,10 +6,21 @@ import { usePathname } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-const LOCALE_CONFIG: Record<Locale, { label: string; flag: string; nativeName: string }> = {
-  de: { label: "DE", flag: "🇩🇪", nativeName: "Deutsch" },
-  en: { label: "EN", flag: "🇬🇧", nativeName: "English" },
+const LOCALE_CONFIG: Record<Locale, { label: string; nativeName: string }> = {
+  de: { label: "DE", nativeName: "Deutsch" },
+  en: { label: "EN", nativeName: "English" },
 };
+
+/** SVG globe icon for language switcher — no emojis. */
+function GlobeIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
+    </svg>
+  );
+}
 
 const LOCALES = [...routing.locales] as Locale[];
 
@@ -101,9 +112,7 @@ export function LanguageSwitcher() {
       >
         {/* Current locale flag + code */}
         <span className="flex items-center gap-1">
-          <span className="text-xs leading-none" role="img" aria-label={currentConfig.nativeName}>
-            {currentConfig.flag}
-          </span>
+          <GlobeIcon className="w-3.5 h-3.5" />
           <span className="text-xs font-semibold tracking-wide text-ink">
             {currentConfig.label}
           </span>
@@ -175,9 +184,7 @@ export function LanguageSwitcher() {
                     aria-selected={isActive}
                   >
                     {/* Flag */}
-                    <span className="text-lg leading-none" role="img" aria-label={config.nativeName}>
-                      {config.flag}
-                    </span>
+                    <GlobeIcon className="w-4 h-4" />
 
                     {/* Native name */}
                     <span

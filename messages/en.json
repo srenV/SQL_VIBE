@@ -151,7 +151,10 @@
     "databaseNotAvailable": "Database not available.",
     "noDataInTable": "No data in this table.",
     "showingRows": "Showing {count, plural, =1 {1 row} other {# rows}}",
-    "history": "History"
+    "history": "History",
+    "autocomplete": "Autocomplete",
+    "autocompleteOn": "Autocomplete enabled",
+    "autocompleteOff": "Autocomplete disabled"
   },
   "achievements": {
     "achievementUnlocked": "Achievement unlocked",

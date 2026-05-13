@@ -41,7 +41,7 @@ const SCOPED_CSS = `
   flex-wrap: nowrap;
 }
 .sql-slide p {
-  font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono), ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   font-size: clamp(0.65rem, 1.6vw, 1.4rem);
   flex-shrink: 0;
   line-height: 1;
