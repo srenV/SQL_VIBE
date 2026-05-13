@@ -6,8 +6,10 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getModuleById, getAllModuleIds } from "@/data/learnContentLocale";
+import { routing } from "@/i18n/routing";
 import { Card } from "@/components/card";
 import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
@@ -20,11 +22,14 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return getAllModuleIds("de").map((id) => ({ moduleId: id }));
+  return routing.locales.flatMap((locale) =>
+    getAllModuleIds(locale).map((id) => ({ locale, moduleId: id }))
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, moduleId } = await params;
+  setRequestLocale(locale);
   const mod = getModuleById(locale, moduleId);
   if (!mod) return { title: "Modul nicht gefunden" };
   return {
@@ -40,6 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LearnModulePage({ params }: PageProps) {
   const { locale, moduleId } = await params;
+  setRequestLocale(locale);
   const mod = getModuleById(locale, moduleId);
   if (!mod) notFound();
 

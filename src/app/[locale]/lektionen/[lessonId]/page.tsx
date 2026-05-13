@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getCatalog, allLessonIds } from "@/data/catalog";
+import { routing } from "@/i18n/routing";
 import { PageShell } from "@/components/pageShell";
 import { Card } from "@/components/card";
 import { FadeIn } from "@/components/animations";
@@ -17,7 +18,9 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return allLessonIds.map((id) => ({ lessonId: id }));
+  return routing.locales.flatMap((locale) =>
+    allLessonIds.map((id) => ({ locale, lessonId: id }))
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

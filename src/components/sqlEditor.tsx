@@ -263,7 +263,6 @@ export const SqlEditor = React.memo(function SqlEditor({
         closeBrackets(),
         bracketMatching(),
         highlightSelectionMatches(),
-        autocompleteExt,
         sql({ dialect: initialDialect, schema: Object.keys(initialSchema).length > 0 ? initialSchema : undefined }),
         dialectCompartment.of(initialDialect),
         schemaCompartment.of(
@@ -360,22 +359,6 @@ export const SqlEditor = React.memo(function SqlEditor({
     if (!view) return;
     view.dispatch({ effects: readOnlyCompartment.reconfigure(EditorState.readOnly.of(!!disabled)) });
   }, [disabled, readOnlyCompartment]);
-
-  // Update autocompletion when enabled state changes
-  useEffect(() => {
-    const view = viewRef.current;
-    if (!view) return;
-    const currentSchema = schema ?? {};
-    const newAutocomplete = autocompleteEnabled
-      ? autocompletion({
-          override: [(context: CompletionContext) => sqlCompletionSource(context, currentSchema)],
-          activateOnTyping: true,
-          icons: true,
-          maxRenderedOptions: 12,
-        })
-      : autocompletion({ activateOnTyping: false, icons: true });
-    view.dispatch({ effects: autocompleteCompartment.reconfigure(newAutocomplete) });
-  }, [autocompleteEnabled, schema, autocompleteCompartment]);
 
   const generatedId = React.useId();
   const editorId = id || generatedId;

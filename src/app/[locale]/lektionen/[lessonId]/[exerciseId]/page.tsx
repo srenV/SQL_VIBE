@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getCatalog, allLessonIds } from "@/data/catalog";
+import { routing } from "@/i18n/routing";
 import { adaptExercise } from "@/lib/playgroundAdapter";
 import { ExercisePageClient } from "./ExercisePageClient";
 
@@ -15,13 +16,15 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const params: { lessonId: string; exerciseId: string }[] = [];
-  const defaultCatalog = getCatalog("de");
-  for (const lessonId of allLessonIds) {
-    const lesson = defaultCatalog.lessons[lessonId];
-    if (!lesson) continue;
-    for (const exerciseId of lesson.exercises) {
-      params.push({ lessonId, exerciseId });
+  const params: { locale: string; lessonId: string; exerciseId: string }[] = [];
+  for (const locale of routing.locales) {
+    const catalog = getCatalog(locale);
+    for (const lessonId of allLessonIds) {
+      const lesson = catalog.lessons[lessonId];
+      if (!lesson) continue;
+      for (const exerciseId of lesson.exercises) {
+        params.push({ locale, lessonId, exerciseId });
+      }
     }
   }
   return params;

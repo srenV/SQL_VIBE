@@ -5,11 +5,15 @@
  */
 
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { getAllArticlePaths, getArticle, getModuleById } from "@/data/learnContentLocale";
+import { routing } from "@/i18n/routing";
 import { ArticlePageClient } from "@/components/learn/ArticlePageClient";
 
 export function generateStaticParams() {
-  return getAllArticlePaths("de");
+  return routing.locales.flatMap((locale) =>
+    getAllArticlePaths(locale).map((p) => ({ locale, ...p }))
+  );
 }
 
 export async function generateMetadata({
@@ -18,6 +22,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; moduleId: string; articleId: string }>;
 }): Promise<Metadata> {
   const { locale, moduleId, articleId } = await params;
+  setRequestLocale(locale);
   const result = getArticle(locale, moduleId, articleId);
   if (!result) return { title: "Article not found" };
   const { module: mod, article } = result;
@@ -33,7 +38,9 @@ export async function generateMetadata({
   };
 }
 
-export default function ArticlePage({ params }: { params: Promise<{ locale: string; moduleId: string; articleId: string }> }) {
+export default async function ArticlePage({ params }: { params: Promise<{ locale: string; moduleId: string; articleId: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   // BreadcrumbList JSON-LD is rendered here; article data is loaded client-side
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
