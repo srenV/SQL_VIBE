@@ -4,7 +4,6 @@ import { NextIntlClientProvider, useMessages } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import localFont from "next/font/local";
 import "@/app/globals.css";
-import { ThemeScript } from "@/components/themeProvider";
 import { Footer } from "@/components/footer";
 import { IntroOverlay } from "@/components/introOverlay";
 import { AchievementToastProvider } from "@/components/achievementToast";
@@ -141,7 +140,12 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={`${inter.variable} antialiased`} suppressHydrationWarning>
       <head>
-        <ThemeScript />
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('sql-trainer-theme');var d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(!s&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
+          }}
+        />
         <script
           type="application/ld+json"
           suppressHydrationWarning

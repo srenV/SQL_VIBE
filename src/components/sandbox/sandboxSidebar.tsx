@@ -244,7 +244,7 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
       <div className="px-3 py-2.5 border-b border-surface-dim dark:border-dark-dim flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <DatabaseIcon className="w-4 h-4 text-primary-500 dark:text-primary-400" />
-          <span className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">Explorer</span>
+          <span className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">{t("explorer")}</span>
         </div>
         <button
           onClick={() => setIsCreating(true)}

@@ -6,7 +6,7 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Playground } from "@/components/playground";
 import { PredictQuiz } from "@/components/predictQuiz";
@@ -17,7 +17,7 @@ import { FadeIn } from "@/components/animations";
 import { ProgressBar } from "@/components/progressBar";
 import { DifficultyBadge } from "@/components/difficultyBadge";
 import { useProgress } from "@/hooks/useProgress";
-import { storyExercises } from "@/data/exercises";
+import { getExerciseArrays } from "@/data/exercises/locale";
 import { getUnlockStatus } from "@/lib/storyUnlock";
 import type { Lesson as LessonType, Exercise as ExerciseType } from "@/types/exercise";
 import type { PlaygroundExercise } from "@/types/playground";
@@ -44,7 +44,9 @@ export function ExercisePageClient({
   lessonExerciseCompleted,
 }: ExercisePageClientProps) {
   const { progress, markExerciseCompleted, getLessonProgress } = useProgress();
+  const locale = useLocale();
   const t = useTranslations("exercise");
+  const storyExercises = getExerciseArrays(locale).story;
   const completed = progress.exercises[exercise.id]?.completed ?? false;
 
   const lessonProgress = getLessonProgress(lesson.exercises);

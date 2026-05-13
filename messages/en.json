@@ -64,6 +64,7 @@
   "sandbox": {
     "title": "Sandbox – Create Your Own SQL Database",
     "description": "Create your own MySQL databases, set up tables, insert data, and run any SQL queries. Everything is stored locally in your browser.",
+    "explorer": "Explorer",
     "importData": "Import Data",
     "builtinDatasets": "Sample database…",
     "loadDataset": "Load",
@@ -113,7 +114,7 @@
     "noDatabaseOpen": "No database open",
     "noDatabaseOpenHint": "Paste SQL into the editor and click \"Run\" — a database will be created automatically. Or create one in the sidebar.",
     "writeQueryHint": "Write a SQL query and click \"Run\"",
-    "orCtrlEnter": "or press Ctrl + Enter",
+    "orCtrlEnter": "to run",
     "result": "Result",
     "rowSingular": "row",
     "rowsPlural": "rows",
@@ -236,6 +237,9 @@
     "available": "available",
     "chapters": "chapters",
     "unlockDefault": "Unlock this case",
+    "lockHintIntermediate": "Complete all Fundamentals & Beginner cases",
+    "lockHintAdvanced": "Complete all Intermediate cases",
+    "lockHintInterview": "Complete all Expert cases",
     "noCases": "No cases found for this filter.",
     "skipAnimation": "Skip animation",
     "skip": "Skip",
@@ -290,6 +294,8 @@
     "start": "Start"
   },
   "learn": {
+    "title": "Learn – SQL Theory Hub",
+    "description": "Theory hub for normalization, relational model, ERM, SQL fundamentals and more. Interactive articles with diagrams and embedded examples.",
     "notFound": "Not found",
     "notFoundDescription": "This article does not exist.",
     "backToHub": "Back to Learning Hub",

@@ -4,7 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { PageShell } from "@/components/pageShell";
 import { ProfilClient } from "./ProfilClient";
 import { getCatalog, allLessonIds } from "@/data/catalog";
-import { storyExercises } from "@/data/exercises";
+import { getExerciseArrays } from "@/data/exercises/locale";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -36,7 +36,7 @@ export default async function ProfilPage({ params }: { params: Promise<{ locale:
 
   return (
     <PageShell>
-      <ProfilClient lessons={lessons} storyTotal={storyExercises.length} />
+      <ProfilClient lessons={lessons} storyTotal={getExerciseArrays(locale).story.length} />
     </PageShell>
   );
 }

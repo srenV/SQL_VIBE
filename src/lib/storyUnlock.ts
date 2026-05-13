@@ -4,9 +4,9 @@ import type { ProgressData } from "@/hooks/useProgress";
 export const DIFFICULTY_ORDER = ["beginner", "junior", "intermediate", "advanced", "interview"] as const;
 
 export const LOCK_HINT: Record<string, string> = {
-  intermediate: "Schließe alle Grundlagen- & Einsteiger-Fälle ab",
-  advanced:     "Schließe alle Fortgeschritten-Fälle ab",
-  interview:    "Schließe alle Experten-Fälle ab",
+  intermediate: "lockHintIntermediate",
+  advanced:     "lockHintAdvanced",
+  interview:    "lockHintInterview",
 };
 
 export function getUnlockStatus(

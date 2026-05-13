@@ -1,8 +1,8 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { storyExercises } from "@/data/exercises";
+import { getExerciseArrays } from "@/data/exercises/locale";
 import { Container } from "@/components/container";
 import { PageShell } from "@/components/pageShell";
 import { FadeIn } from "@/components/animations";
@@ -16,7 +16,9 @@ import { DIFFICULTY_ORDER, LOCK_HINT, getUnlockStatus } from "@/lib/storyUnlock"
 
 export default function StoryPage() {
   const { progress } = useProgress();
+  const locale = useLocale();
   const t = useTranslations("story");
+  const storyExercises = getExerciseArrays(locale).story;
 
   const displayed = [...storyExercises].sort(
     (a, b) => DIFFICULTY_ORDER.indexOf(a.difficulty) - DIFFICULTY_ORDER.indexOf(b.difficulty)
@@ -125,7 +127,7 @@ export default function StoryPage() {
                             </div>
                             <h3 className="font-semibold text-ink text-base">{exercise.title}</h3>
                             <p className="text-xs text-ink-muted">
-                              {LOCK_HINT[exercise.difficulty] ?? t("unlockDefault")}
+                              {LOCK_HINT[exercise.difficulty] ? t(LOCK_HINT[exercise.difficulty]) : t("unlockDefault")}
                             </p>
                           </div>
 

@@ -64,6 +64,7 @@
   "sandbox": {
     "title": "Sandbox – Eigene SQL-Datenbank erstellen",
     "description": "Erstelle eigene MySQL-Datenbanken, lege Tabellen an, füge Daten ein und führe beliebige SQL-Abfragen aus.",
+    "explorer": "Explorer",
     "importData": "Daten importieren",
     "builtinDatasets": "Beispieldatenbank…",
     "loadDataset": "Laden",
@@ -113,7 +114,7 @@
     "noDatabaseOpen": "Keine Datenbank geöffnet",
     "noDatabaseOpenHint": "Füge SQL in den Editor ein und klicke \"Ausführen\" — eine Datenbank wird automatisch erstellt. Oder erstelle eine in der Seitenleiste.",
     "writeQueryHint": "Schreibe eine SQL-Abfrage und klicke \"Ausführen\"",
-    "orCtrlEnter": "oder drücke Strg + Enter",
+    "orCtrlEnter": "zum Ausführen",
     "result": "Ergebnis",
     "rowSingular": "Zeile",
     "rowsPlural": "Zeilen",
@@ -242,6 +243,9 @@
     "available": "verfügbar",
     "chapters": "Kapitel",
     "unlockDefault": "Schalte diesen Fall frei",
+    "lockHintIntermediate": "Schließe alle Grundlagen- & Einsteiger-Fälle ab",
+    "lockHintAdvanced": "Schließe alle Fortgeschritten-Fälle ab",
+    "lockHintInterview": "Schließe alle Experten-Fälle ab",
     "noCases": "Keine Fälle für diesen Filter gefunden.",
     "skipAnimation": "Animation überspringen",
     "skip": "Überspringen",
@@ -296,6 +300,8 @@
     "start": "Starten"
   },
   "learn": {
+    "title": "Lernen – SQL Theorie-Hub",
+    "description": "Theorie-Hub für Normalisierung, Relationenmodell, ERM, SQL-Grundlagen und mehr. Interaktive Artikel mit Diagrammen und eingebetteten Beispielen.",
     "notFound": "Nicht gefunden",
     "notFoundDescription": "Dieser Artikel existiert nicht.",
     "backToHub": "Zurück zum Lern-Hub",

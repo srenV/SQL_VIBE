@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 /**
@@ -16,6 +17,7 @@ export interface SqlEditorProps extends React.TextareaHTMLAttributes<HTMLTextAre
 
 export const SqlEditor = React.forwardRef<HTMLTextAreaElement, SqlEditorProps>(
   ({ error, label, className, id, onSubmit, ...props }, ref) => {
+    const t = useTranslations("sandbox");
     const generatedId = React.useId();
     const editorId = id || generatedId;
 
@@ -53,9 +55,9 @@ export const SqlEditor = React.forwardRef<HTMLTextAreaElement, SqlEditorProps>(
         />
         {onSubmit && (
           <p className="text-xs text-ink-muted">
-            <kbd className="rounded border border-surface-dim px-1 py-0.5 text-xs font-mono">Strg</kbd>{" "}&#43;{" "}
+            <kbd className="rounded border border-surface-dim px-1 py-0.5 text-xs font-mono">Ctrl</kbd>{" "}&#43;{" "}
             <kbd className="rounded border border-surface-dim px-1 py-0.5 text-xs font-mono">&#x21B5;</kbd>{" "}
-            zum Ausf&uuml;hren
+            {t("orCtrlEnter")}
           </p>
         )}
       </div>

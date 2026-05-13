@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 
 /**
@@ -9,19 +9,21 @@ import { routing, type Locale } from "@/i18n/routing";
  *
  * Renders a button to switch between DE and EN.
  * Preserves the current path, only changing the locale prefix.
+ *
+ * Uses full page navigation (window.location) instead of client-side
+ * routing to ensure next-intl reloads the locale context correctly
+ * in static export mode.
  */
 export function LanguageSwitcher() {
   const locale = useLocale();
   const t = useTranslations("common");
-  const router = useRouter();
   const pathname = usePathname();
 
   const switchLocale = (newLocale: Locale) => {
-    // pathname already includes the locale prefix (e.g. /de/lektionen)
-    // Replace the current locale with the new one
-    const currentLocalePrefix = `/${locale}`;
-    const newPath = pathname.replace(currentLocalePrefix, `/${newLocale}`);
-    router.push(newPath);
+    // pathname from next-intl's usePathname is locale-relative (no /de/ prefix)
+    // Build the full path with the new locale prefix
+    const newPath = `/${newLocale}${pathname === "/" ? "" : pathname}`;
+    window.location.href = newPath;
   };
 
   const otherLocale = locale === "de" ? "en" : "de";
