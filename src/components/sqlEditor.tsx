@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { EditorView, keymap, placeholder as cmPlaceholder } from "@codemirror/view";
 import { EditorState, Compartment } from "@codemirror/state";
 import { sql, MySQL, PostgreSQL, SQLite } from "@codemirror/lang-sql";
-import { autocompletion, closeBrackets, closeBracketsKeymap, CompletionContext, CompletionResult, completionKeymap } from "@codemirror/autocomplete";
+import { autocompletion, closeBrackets, closeBracketsKeymap, CompletionContext, CompletionResult, completionKeymap, acceptCompletion, completionStatus } from "@codemirror/autocomplete";
 import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { bracketMatching } from "@codemirror/language";
@@ -255,6 +255,7 @@ export const SqlEditor = React.memo(function SqlEditor({
           activateOnTyping: true,
           icons: true,
           maxRenderedOptions: 12,
+          interactionDelay: 50,
         })
       : autocompletion({ activateOnTyping: false, icons: true });
 
@@ -275,11 +276,21 @@ export const SqlEditor = React.memo(function SqlEditor({
         autocompleteCompartment.of(autocompleteExt),
         runQueryKeymap,
         keymap.of([
+          // Tab: accept completion if open/pending, otherwise indent — must come before defaultKeymap
+          { key: "Tab", run: (view) => {
+            // Try to accept an open completion first
+            if (acceptCompletion(view)) return true;
+            // If a completion is pending or active, swallow Tab so it doesn't insert spaces
+            if (completionStatus(view.state)) return true;
+            // No completion open or pending — insert indent
+            view.dispatch(view.state.replaceSelection("  "));
+            return true;
+          } },
+          ...completionKeymap,
           ...closeBracketsKeymap,
           ...defaultKeymap,
           ...searchKeymap,
           ...historyKeymap,
-          ...completionKeymap,
         ]),
         EditorView.updateListener.of((update) => {
           if (update.docChanged && !isSettingValueRef.current) {
@@ -375,6 +386,7 @@ export const SqlEditor = React.memo(function SqlEditor({
         role="textbox"
         aria-label={label || "SQL Editor"}
         aria-invalid={error ? "true" : undefined}
+        aria-multiline="true"
         className={cn(
           "cm-editor-wrapper overflow-visible",
           error

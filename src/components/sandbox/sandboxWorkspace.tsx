@@ -213,7 +213,7 @@ function SandboxWorkspace({
             {t("history")}
           </button>
           <AutocompleteToggle />
-          <DialectSwitcher />
+          <DialectSwitcher direction="down" />
         </div>
       </div>
 

@@ -3,39 +3,18 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Database, Fish, Shell, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { useDialect, DIALECTS, DIALECT_LABELS, type Dialect } from "@/lib/dialect";
 
-/** SVG icons for each SQL dialect — clean, recognizable icons. */
+/** Lucide icons for each SQL dialect. */
 function DialectIcon({ dialect, className = "w-4 h-4" }: { dialect: Dialect; className?: string }) {
   switch (dialect) {
     case "sqlite":
-      // Cylinder/database icon
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <ellipse cx="12" cy="5" rx="8" ry="3" />
-          <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
-          <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
-        </svg>
-      );
+      return <Database className={className} />;
     case "mysql":
-      // Dolphin silhouette simplified — curved fin shape
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 4c0 0-2 1-3 3s-1 4-1 6c0 2 .5 3.5 1.5 4.5" />
-          <path d="M14 13c-1 0-3-.5-4.5-1.5S7 9 7 9" />
-          <path d="M18 4c1 0 2.5.5 3 2s0 4-1 6-3 3.5-4.5 4" />
-          <circle cx="19" cy="6" r="0.5" fill="currentColor" />
-        </svg>
-      );
+      return <Fish className={className} />;
     case "postgresql":
-      // Elephant simplified — trunk and ear
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17 3c-2 0-3.5 1-4 3-.5-1-2-2-4-2-3 0-5 2.5-5 6 0 3 1.5 5 3 6.5V21h3v-3h2v3h3v-4.5c1.5-1.5 3-3.5 3-6.5 0-2.5-.5-4-1-5" />
-          <circle cx="8" cy="9" r="1" fill="currentColor" />
-          <circle cx="14" cy="9" r="1" fill="currentColor" />
-        </svg>
-      );
+      return <Shell className={className} />;
   }
 }
 
@@ -44,8 +23,10 @@ function DialectIcon({ dialect, className = "w-4 h-4" }: { dialect: Dialect; cla
  *
  * Renders an animated dropdown with icons and labels.
  * Persists selection via localStorage through the DialectProvider.
+ *
+ * @param direction - "up" opens dropdown upward (for footer), "down" opens downward (for sandbox)
  */
-export function DialectSwitcher() {
+export function DialectSwitcher({ direction = "up" }: { direction?: "up" | "down" }) {
   const { dialect, setDialect } = useDialect();
   const t = useTranslations("common");
   const [isOpen, setIsOpen] = useState(false);
@@ -79,9 +60,9 @@ export function DialectSwitcher() {
   const currentConfig = DIALECT_LABELS[dialect];
 
   const dropdownVariants = {
-    hidden: { opacity: 0, y: 4, scale: 0.95, filter: "blur(4px)" },
+    hidden: { opacity: 0, y: direction === "up" ? -4 : 4, scale: 0.95, filter: "blur(4px)" },
     visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" },
-    exit: { opacity: 0, y: 4, scale: 0.95, filter: "blur(4px)" },
+    exit: { opacity: 0, y: direction === "up" ? -4 : 4, scale: 0.95, filter: "blur(4px)" },
   };
 
   const itemVariants = {
@@ -127,17 +108,15 @@ export function DialectSwitcher() {
         </span>
 
         {/* Chevron */}
-        <motion.svg
-          className="w-3 h-3 text-ink-muted"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2.5}
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </motion.svg>
+        {direction === "up" ? (
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}>
+            <ChevronUp className="w-3 h-3 text-ink-muted" />
+          </motion.div>
+        ) : (
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}>
+            <ChevronDown className="w-3 h-3 text-ink-muted" />
+          </motion.div>
+        )}
       </motion.button>
 
       {/* Dropdown */}
@@ -150,7 +129,8 @@ export function DialectSwitcher() {
             exit="exit"
             transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className={`
-              absolute right-0 top-full mt-1.5 min-w-[180px] z-50
+              absolute right-0 z-50 min-w-[180px]
+              ${direction === "up" ? "bottom-full mb-1.5" : "top-full mt-1.5"}
               rounded-xl overflow-hidden
               bg-surface dark:bg-dark-dim
               border border-surface-dim dark:border-dark-dim
@@ -218,9 +198,7 @@ export function DialectSwitcher() {
                         transition={{ type: "spring", stiffness: 500, damping: 25 }}
                         className="ml-auto"
                       >
-                        <svg className="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
+                        <Check className="w-4 h-4 text-primary-500" />
                       </motion.span>
                     )}
                   </motion.button>
