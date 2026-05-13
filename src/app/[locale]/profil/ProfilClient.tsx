@@ -139,7 +139,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
         {/* ── Achievements ── */}
         <FadeIn delay={0.1}>
           <section aria-labelledby="achievements-heading">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col gap-1 mb-4 sm:flex-row sm:items-center sm:justify-between">
               <h2 id="achievements-heading" className="text-lg font-bold text-ink">
                 {t("achievements")}
               </h2>
@@ -176,7 +176,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                       <div className={`flex justify-center mb-1.5 ${unlocked ? "text-amber-600 dark:text-amber-400" : "text-ink-muted grayscale"}`}>
                         <AchievementIcon icon={ach.icon} className="w-7 h-7" />
                       </div>
-                      <p className={`text-[11px] font-semibold leading-tight line-clamp-1 ${unlocked ? "text-ink" : "text-ink-muted"}`}>
+                      <p className={`text-[11px] font-semibold leading-tight truncate ${unlocked ? "text-ink" : "text-ink-muted"}`}>
                         {ach.name}
                       </p>
                     </button>
@@ -190,7 +190,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
         {/* ── Lektionen Fortschritt ── */}
         <FadeIn delay={0.2}>
           <section aria-labelledby="lessons-heading">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col gap-1 mb-4 sm:flex-row sm:items-center sm:justify-between">
               <h2 id="lessons-heading" className="text-lg font-bold text-ink">
                 {t("lessonProgress")}
               </h2>
