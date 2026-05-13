@@ -1,17 +1,19 @@
 "use client";
 
 import { useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Header } from "@/components/header";
 import { SandboxSidebar } from "@/components/sandbox/sandboxSidebar";
 import { SandboxWorkspace, type SandboxWorkspaceHandle } from "@/components/sandbox/sandboxWorkspace";
-import { useSandbox, BUILTIN_DATASETS } from "@/hooks/useSandbox";
+import { useSandbox, getBuiltinDatasets } from "@/hooks/useSandbox";
 
 export default function SandboxPage() {
   const sandbox = useSandbox();
   const workspaceRef = useRef<SandboxWorkspaceHandle>(null);
   const t = useTranslations("sandbox");
+  const locale = useLocale();
+  const builtinDatasets = getBuiltinDatasets(locale);
 
   return (
     <>
@@ -25,7 +27,7 @@ export default function SandboxPage() {
             dbList={sandbox.dbList}
             activeDbId={sandbox.activeDbId}
             liveSchema={sandbox.liveSchema}
-            builtinDatasets={BUILTIN_DATASETS}
+            builtinDatasets={builtinDatasets}
             onCreateNew={sandbox.createNewDatabase}
             onOpen={sandbox.openDatabase}
             onClose={sandbox.closeActiveDatabase}

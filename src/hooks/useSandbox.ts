@@ -55,6 +55,26 @@ import {
   storyGhostProtocolDataset,
   storyGeldstromOmegaDataset,
 } from "@/data/datasets";
+import {
+  shopDatasetEn,
+  fitnessDatasetEn,
+  hrDatasetEn,
+  ticketsDatasetEn,
+  bankingDatasetEn,
+  streamingDatasetEn,
+  logsDatasetEn,
+  universityDatasetEn,
+  ecommerceDatasetEn,
+  hospitalDatasetEn,
+  storyAnna7DatasetEn,
+  storyNexusMarktDatasetEn,
+  storyHelpCoreDatasetEn,
+  storyNeuronaleLueckeDatasetEn,
+  storySystemfehlerDeltaDatasetEn,
+  storyRoteZoneDatasetEn,
+  storyGhostProtocolDatasetEn,
+  storyGeldstromOmegaDatasetEn,
+} from "@/data/datasets/en";
 import type { Dataset } from "@/types/exercise";
 
 /** Rueckgabewert des useSandbox-Hooks. */
@@ -97,8 +117,8 @@ export interface UseSandboxReturn {
   importFromSql: (name: string, sql: string) => Promise<string>;
 }
 
-/** Verfügbare vordefinierte Datensätze für den Import. */
-export const BUILTIN_DATASETS: Dataset[] = [
+/** German datasets (default). */
+const DE_DATASETS: Dataset[] = [
   shopDataset,
   fitnessDataset,
   hrDataset,
@@ -118,6 +138,39 @@ export const BUILTIN_DATASETS: Dataset[] = [
   storyGhostProtocolDataset,
   storyGeldstromOmegaDataset,
 ];
+
+/** English datasets. */
+const EN_DATASETS: Dataset[] = [
+  shopDatasetEn,
+  fitnessDatasetEn,
+  hrDatasetEn,
+  ticketsDatasetEn,
+  bankingDatasetEn,
+  streamingDatasetEn,
+  logsDatasetEn,
+  universityDatasetEn,
+  ecommerceDatasetEn,
+  hospitalDatasetEn,
+  storyAnna7DatasetEn,
+  storyNexusMarktDatasetEn,
+  storyHelpCoreDatasetEn,
+  storyNeuronaleLueckeDatasetEn,
+  storySystemfehlerDeltaDatasetEn,
+  storyRoteZoneDatasetEn,
+  storyGhostProtocolDatasetEn,
+  storyGeldstromOmegaDatasetEn,
+];
+
+/**
+ * Returns the builtin datasets for the given locale.
+ * Falls back to German if locale is not recognized.
+ */
+export function getBuiltinDatasets(locale: string): Dataset[] {
+  return locale === "en" ? EN_DATASETS : DE_DATASETS;
+}
+
+/** @deprecated Use getBuiltinDatasets(locale) instead. */
+export const BUILTIN_DATASETS: Dataset[] = DE_DATASETS;
 
 /** Debounce-Timer fuer Auto-Save (ms). */
 const AUTO_SAVE_DEBOUNCE_MS = 500;
