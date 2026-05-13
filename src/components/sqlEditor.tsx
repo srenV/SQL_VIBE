@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { EditorView, keymap, placeholder as cmPlaceholder } from "@codemirror/view";
 import { EditorState, Compartment } from "@codemirror/state";
 import { sql, MySQL, PostgreSQL, SQLite } from "@codemirror/lang-sql";
-import { autocompletion, closeBrackets, closeBracketsKeymap, CompletionContext, CompletionResult } from "@codemirror/autocomplete";
+import { autocompletion, closeBrackets, closeBracketsKeymap, CompletionContext, CompletionResult, completionKeymap } from "@codemirror/autocomplete";
 import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { bracketMatching } from "@codemirror/language";
@@ -277,6 +277,7 @@ export const SqlEditor = React.memo(function SqlEditor({
           ...defaultKeymap,
           ...searchKeymap,
           ...historyKeymap,
+          ...completionKeymap,
         ]),
         EditorView.updateListener.of((update) => {
           if (update.docChanged && !isSettingValueRef.current) {
@@ -287,11 +288,7 @@ export const SqlEditor = React.memo(function SqlEditor({
         EditorView.theme({
           "&": { outline: "none !important" },
           ".cm-scroller": { overflow: "auto", maxHeight: "none" },
-          ".cm-editor": { minHeight: "14rem" },
-          ".cm-tooltip.cm-tooltip-autocomplete": {
-            zIndex: "9999",
-            position: "fixed !important" as unknown as string,
-          },
+          ".cm-editor": { minHeight: "14rem", overflow: "visible" },
         }),
         placeholder ? cmPlaceholder(placeholder) : [],
       ],
@@ -377,7 +374,7 @@ export const SqlEditor = React.memo(function SqlEditor({
         aria-label={label || "SQL Editor"}
         aria-invalid={error ? "true" : undefined}
         className={cn(
-          "cm-editor-wrapper overflow-hidden",
+          "cm-editor-wrapper overflow-visible",
           error
             ? "[&_.cm-editor]:border-error [&_.cm-editor]:focus-within:ring-2 [&_.cm-editor]:focus-within:ring-error/40"
             : "[&_.cm-editor]:focus-within:ring-2 [&_.cm-editor]:focus-within:ring-primary-500/40",

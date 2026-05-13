@@ -94,7 +94,6 @@ const lightTheme = EditorView.theme(
       borderRadius: "0.5rem",
       boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
       zIndex: "9999",
-      position: "fixed",
     },
     ".cm-tooltip-autocomplete ul li": {
       padding: "4px 8px",
@@ -197,7 +196,6 @@ const darkTheme = EditorView.theme(
       boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
       backgroundColor: "var(--color-surface, #0f172a)",
       zIndex: "9999",
-      position: "fixed",
     },
     ".cm-tooltip-autocomplete ul li": {
       padding: "4px 8px",

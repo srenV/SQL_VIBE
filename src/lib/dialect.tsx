@@ -93,7 +93,18 @@ function setStoredAutocomplete(enabled: boolean): void {
   }
 }
 
-let currentAutocomplete = getStoredAutocomplete();
+// Initialize lazily to avoid hydration mismatch — server always returns true,
+// client reads from localStorage on first actual access.
+let currentAutocomplete: boolean = true;
+let autocompleteInitialized = false;
+
+function ensureAutocompleteInitialized(): void {
+  if (!autocompleteInitialized) {
+    currentAutocomplete = getStoredAutocomplete();
+    autocompleteInitialized = true;
+  }
+}
+
 const autocompleteListeners = new Set<() => void>();
 
 function subscribeAutocomplete(callback: () => void): () => void {
@@ -102,6 +113,7 @@ function subscribeAutocomplete(callback: () => void): () => void {
 }
 
 function getAutocompleteSnapshot(): boolean {
+  ensureAutocompleteInitialized();
   return currentAutocomplete;
 }
 
@@ -110,6 +122,7 @@ function getAutocompleteServerSnapshot(): boolean {
 }
 
 function setAutocomplete(enabled: boolean): void {
+  ensureAutocompleteInitialized();
   currentAutocomplete = enabled;
   setStoredAutocomplete(enabled);
   autocompleteListeners.forEach((l) => l());
