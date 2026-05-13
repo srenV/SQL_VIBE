@@ -49,11 +49,13 @@ export function mysqlToSqlite(sql: string): string {
 
   // 0b. MySQL-SET-Befehle entfernen (SET SQL_MODE, SET time_zone, SET NAMES, etc.)
   // Diese werden von phpMyAdmin-Exports generiert und sind in SQLite nicht nötig
-  result = result.replace(/^\s*SET\s+SQL_MODE\s*=.*$/gim, "");
-  result = result.replace(/^\s*SET\s+time_zone\s*=.*$/gim, "");
-  result = result.replace(/^\s*SET\s+NAMES\s+\S+.*$/gim, "");
-  result = result.replace(/^\s*START\s+TRANSACTION\s*;?\s*$/gim, "");
-  result = result.replace(/^\s*COMMIT\s*;?\s*$/gim, "");
+  // Auch START TRANSACTION und COMMIT entfernen
+  // Match standalone lines and inline statements (SET ...; or SET ...\n)
+  result = result.replace(/^\s*SET\s+SQL_MODE\s*=[^;\n]*;?\s*/gim, "");
+  result = result.replace(/^\s*SET\s+time_zone\s*=[^;\n]*;?\s*/gim, "");
+  result = result.replace(/^\s*SET\s+NAMES\s+\S+[^;\n]*;?\s*/gim, "");
+  result = result.replace(/^\s*START\s+TRANSACTION\s*;?\s*/gim, "");
+  result = result.replace(/^\s*COMMIT\s*;?\s*/gim, "");
 
   // 1. Kommentare entfernen (für zuverlässiges Parsing)
   // Aber wir müssen sie behalten — nur für die Transformation relevant
@@ -137,6 +139,7 @@ function transformCreateTable(sql: string): string {
 
   // DOUBLE / FLOAT → REAL
   result = result.replace(/\bDOUBLE\b(?!\s*\()/gi, "REAL");
+  result = result.replace(/\bFLOAT\s*\(\s*\d+\s*,\s*\d+\s*\)/gi, "REAL");
   result = result.replace(/\bFLOAT\b(?!\s*\()/gi, "REAL");
 
   // TINYINT / SMALLINT / MEDIUMINT / BIGINT → INTEGER
@@ -351,6 +354,18 @@ function transformConcat(sql: string): string {
     const splitArgs = splitTopLevel(args, ",");
     if (splitArgs.length < 2) return match; // Nichts zu tun
     return splitArgs.map((a: string) => a.trim()).join(" || ");
+  });
+}
+
+/** CONCAT_WS(sep, a, b, ...) → a || sep || b || sep || c ... */
+function transformConcatWs(sql: string): string {
+  const concatWsRegex = /\bCONCAT_WS\s*\(([^)]+)\)/gi;
+  return sql.replace(concatWsRegex, (match, args) => {
+    const splitArgs = splitTopLevel(args, ",");
+    if (splitArgs.length < 3) return match; // Need separator + at least 2 values
+    const sep = splitArgs[0].trim();
+    const values = splitArgs.slice(1).map((a: string) => a.trim());
+    return values.join(` || ${sep} || `);
   });
 }
 

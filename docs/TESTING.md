@@ -113,7 +113,7 @@ Testet die SQL-Dialekt-Transpilation (PostgreSQL + MySQL → SQLite) systematisc
 - **Error Mapping**: SQLite→PostgreSQL, SQLite→MySQL, SQLite pass-through
 - **Type Mapping**: SQLite→PostgreSQL, SQLite→MySQL, SQLite pass-through
 - **dialectCompat Routing**: sqlite/mysql/postgresql routing
-- **Bekannte Einschränkungen** (dokumentiert in Tests): RETURNING col1,col2 wird nicht entfernt (PG), ALTER TABLE ADD COLUMN keine Typ-Konvertierung (MySQL), NOW() in String-Literalen wird konvertiert, NOT ILIKE wird fälschlich transformiert (PG), CONCAT_WS wird nicht transformiert (MySQL), FLOAT(n,m) wird nicht konvertiert (MySQL)
+- **Bekannte Einschränkungen** (dokumentiert in Tests): RETURNING col1,col2 wird nicht entfernt (PG), ALTER TABLE ADD COLUMN keine Typ-Konvertierung (MySQL), NOW() in String-Literalen wird konvertiert
 #### `src/lib/playgroundAdapter.test.ts` (9 Tests)
 
 Testet den Katalog→Playground-Adapter:

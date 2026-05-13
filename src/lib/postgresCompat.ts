@@ -59,6 +59,9 @@ export function postgresToSqlite(sql: string): string {
   // 5. NOW() / CURRENT_TIMESTAMP → DATETIME('now')
   result = transformDateFunctions(result);
 
+  // 5b. NOT ILIKE → NOT LOWER() LIKE LOWER() (must come before ILIKE)
+  result = transformNotIlike(result);
+
   // 6. ILIKE → LOWER() LIKE LOWER()
   result = transformIlike(result);
 
@@ -343,6 +346,15 @@ function transformDateFunctions(sql: string): string {
   );
 
   return result;
+}
+
+/** NOT ILIKE → NOT LOWER(col) LIKE LOWER(pattern) (must come before ILIKE) */
+function transformNotIlike(sql: string): string {
+  return sql.replace(
+    /(\w+(?:\.\w+)?)\s+NOT\s+ILIKE\s+('[^']*'|"[^"]*")/gi,
+    (_match, col: string, pattern: string) =>
+      `LOWER(${col}) NOT LIKE LOWER(${pattern})`
+  );
 }
 
 /** ILIKE → LOWER(col) LIKE LOWER(pattern) */

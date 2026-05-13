@@ -279,45 +279,39 @@ getCompatWarnings(dialect) → string[]     // Bekannte Einschränkungen
 5. **CAST shorthand** → `::type` → `CAST(expr AS type)`
 6. **EXTRACT** → `EXTRACT(part FROM date)` → `strftime`
 7. **Date functions** → `NOW()`/`CURRENT_TIMESTAMP` → `DATETIME('now')` (mit DEFAULT-Schutz)
-8. **ILIKE** → `LOWER(col) LIKE LOWER(pattern)`
-9. **RETURNING \*** → entfernt
-10. **ON CONFLICT** → `INSERT OR IGNORE` / `INSERT OR REPLACE`
-11. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
-12. **DROP/CREATE DATABASE** → Kommentare
+8. **NOT ILIKE** → `LOWER(col) NOT LIKE LOWER(pattern)`
+9. **ILIKE** → `LOWER(col) LIKE LOWER(pattern)`
+10. **RETURNING \*** → entfernt
+11. **ON CONFLICT** → `INSERT OR IGNORE` / `INSERT OR REPLACE`
+12. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
+13. **DROP/CREATE DATABASE** → Kommentare
 
 **Bekannte Einschränkungen:**
 - `RETURNING col1, col2` wird NICHT entfernt (nur `RETURNING *`)
-- `NOT ILIKE` wird fälschlicherweise wie `ILIKE` transformiert (known limitation)
 - `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
-- `CONCAT_WS()` wird nicht transformiert (MySQL, known limitation)
-- `FLOAT(n,m)` wird nicht zu `REAL` konvertiert (MySQL, known limitation)
 
 ### MySQL-Kompatibilität (`mysqlCompat.ts`)
 
-Übersetzt MySQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 13 Schritten:
+Übersetzt MySQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 14 Schritten:
 
 1. **phpMyAdmin-Kommentare** → `/*!40101 ... */` entfernt
-2. **SET-Befehle** → `SET SQL_MODE`, `SET time_zone`, etc. entfernt
+2. **SET-Befehle** → `SET SQL_MODE`, `SET time_zone`, `START TRANSACTION`, `COMMIT` entfernt
 3. **Backticks** → `\`` → `"`
-4. **CREATE TABLE** → Typ-Mappings (BOOLEAN→INTEGER, DATETIME→TEXT, INT(n)→INTEGER, TINYINT/BIGINT/SMALLINT/MEDIUMINT→INTEGER, DOUBLE/FLOAT→REAL, DECIMAL/NUMERIC→REAL, VARCHAR(n)→TEXT, CHAR(n)→TEXT, AUTO_INCREMENT→AUTOINCREMENT)
+4. **CREATE TABLE** → Typ-Mappings (BOOLEAN→INTEGER, DATETIME→TEXT, INT(n)→INTEGER, TINYINT/BIGINT/SMALLINT/MEDIUMINT→INTEGER, DOUBLE/FLOAT→REAL, FLOAT(n,m)→REAL, DECIMAL/NUMERIC→REAL, VARCHAR(n)→TEXT, CHAR(n)→TEXT, AUTO_INCREMENT→AUTOINCREMENT)
 5. **RIGHT JOIN** → `LEFT JOIN` (Tabellen vertauscht)
 6. **TRUNCATE TABLE** → `DELETE FROM`
 7. **SHOW/DESCRIBE** → `sqlite_master`-Query / `PRAGMA table_info`
 8. **LIMIT x, y** → `LIMIT y OFFSET x`
-9. **Funktionen** → `IF()`→`CASE WHEN`, `CONCAT()`→`||`, `NOW()`/`CURDATE()`/`CURRENT_TIMESTAMP`→`DATETIME('now')`/`DATE('now')`, `DATE_FORMAT()`→`strftime`, `YEAR()`/`MONTH()`/`DAY()`→`strftime`, `DATEDIFF()`→`julianday`, `SUBSTRING()`→`SUBSTR()`
+9. **Funktionen** → `IF()`→`CASE WHEN`, `CONCAT()`→`||`, `CONCAT_WS()`→`||`, `NOW()`/`CURDATE()`/`CURRENT_TIMESTAMP`→`DATETIME('now')`/`DATE('now')`, `DATE_FORMAT()`→`strftime`, `YEAR()`/`MONTH()`/`DAY()`→`strftime`, `DATEDIFF()`→`julianday`, `SUBSTRING()`→`SUBSTR()`, `ISNULL()`→`IFNULL()`
 10. **ON DUPLICATE KEY UPDATE** → `INSERT OR REPLACE`
 11. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
 12. **ENGINE/CHARSET/COLLATE** → entfernt
-13. **ALTER TABLE** → MySQL-spezifische Befehle (ADD KEY, ADD INDEX, etc.)
+13. **ALTER TABLE** → MySQL-spezifische Befehle (ADD KEY, ADD INDEX, CHANGE COLUMN, MODIFY COLUMN, ADD CONSTRAINT)
 14. **DROP/CREATE DATABASE** → Kommentare
 
 **Bekannte Einschränkungen:**
 - ALTER TABLE ADD COLUMN konvertiert keine Typen (nur PG)
 - `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
-- `CONCAT_WS()` wird nicht transformiert (nur einfache CONCAT)
-- `FLOAT(n,m)` wird nicht zu `REAL` konvertiert
-- `SHOW TABLES LIKE` Pattern-Matching ist eingeschränkt (Backtick-Konvertierung)
-- SET/START TRANSACTION/COMMIT werden nur zeilenweise entfernt
 
 ---
 

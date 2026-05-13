@@ -448,6 +448,7 @@ describe("MySQL: Other transformations", () => {
     const sql = "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'; SELECT * FROM users;";
     const result = mysqlToSqlite(sql);
     expect(result).not.toContain("SET SQL_MODE");
+    expect(result).toContain("SELECT * FROM users");
   });
 
   it("phpMyAdmin version comments removed", () => {
@@ -1272,31 +1273,31 @@ describe("MySQL: phpMyAdmin comments removal", () => {
 });
 
 describe("MySQL: SET commands removal", () => {
-  it("SET SQL_MODE=... is removed (only when on its own line)", () => {
-    // SET commands are only removed when they are on their own line
-    const sql = "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\nSELECT * FROM users;";
+  it("SET SQL_MODE=... is removed", () => {
+    const sql = "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'; SELECT * FROM users;";
     const result = mysqlToSqlite(sql);
-    expect(result).toContain("SELECT * FROM users");
     expect(result).not.toContain("SQL_MODE");
+    expect(result).toContain("SELECT * FROM users");
   });
 
-  it("SET time_zone=... is removed (only when on its own line)", () => {
-    const sql = "SET time_zone='+00:00';\nSELECT * FROM users;";
+  it("SET time_zone=... is removed", () => {
+    const sql = "SET time_zone='+00:00'; SELECT * FROM users;";
     const result = mysqlToSqlite(sql);
-    expect(result).toContain("SELECT * FROM users");
     expect(result).not.toContain("time_zone");
-  });
-
-  it("START TRANSACTION is removed (only when on its own line)", () => {
-    // START TRANSACTION is only removed when it's on its own line
-    const sql = "START TRANSACTION;\nSELECT * FROM users;";
-    const result = mysqlToSqlite(sql);
     expect(result).toContain("SELECT * FROM users");
   });
 
-  it("COMMIT is removed (only when on its own line)", () => {
-    const sql = "COMMIT;\nSELECT * FROM users;";
+  it("START TRANSACTION is removed", () => {
+    const sql = "START TRANSACTION; SELECT * FROM users;";
     const result = mysqlToSqlite(sql);
+    expect(result).not.toContain("START TRANSACTION");
+    expect(result).toContain("SELECT * FROM users");
+  });
+
+  it("COMMIT is removed", () => {
+    const sql = "COMMIT; SELECT * FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).not.toContain("COMMIT");
     expect(result).toContain("SELECT * FROM users");
   });
 });
@@ -1625,12 +1626,11 @@ describe("Transpilation: dialectCompat routing", () => {
 });
 
 describe("PG: NOT ILIKE (known limitation)", () => {
-  it("NOT ILIKE is partially transformed (known limitation: ILIKE regex matches NOT ILIKE)", () => {
+  it("NOT ILIKE → NOT LOWER() LIKE LOWER()", () => {
     const sql = "SELECT * FROM users WHERE name NOT ILIKE '%admin%';";
     const result = postgresToSqlite(sql);
-    // ILIKE regex matches NOT ILIKE too, transforming it incorrectly
-    // This is a known limitation
-    expect(result).toBeDefined();
+    expect(result).toContain("LOWER(name) NOT LIKE LOWER('%admin%')");
+    expect(result).not.toContain("ILIKE");
   });
 });
 
@@ -1644,12 +1644,11 @@ describe("PG: RETURNING with column list (known limitation)", () => {
 });
 
 describe("MySQL: FLOAT type mapping", () => {
-  it("FLOAT → REAL in CREATE TABLE (known limitation: FLOAT(n,m) not converted)", () => {
+  it("FLOAT → REAL in CREATE TABLE (bare FLOAT and FLOAT(n,m))", () => {
     const sql = "CREATE TABLE t (price FLOAT, discount FLOAT(5,2));";
     const result = mysqlToSqlite(sql);
     expect(result).toContain("price REAL");
-    // FLOAT(5,2) is not converted because the regex excludes parenthesized types
-    expect(result).toContain("FLOAT(5,2)");
+    expect(result).toContain("discount REAL");
   });
 });
 
