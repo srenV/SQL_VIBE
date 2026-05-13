@@ -274,7 +274,10 @@
     "lessonsCompleted": "{done} / {total} completed",
     "unlockLevel": "Unlock Level {level}",
     "xpToNextLevel": "Only <strong>{amount} XP</strong> until you become <strong>{nextTitle}</strong>.",
-    "keepPracticing": "Keep practicing"
+    "keepPracticing": "Keep practicing",
+    "achievementUnlocked": "Unlocked",
+    "achievementLocked": "Not yet unlocked",
+    "close": "Close"
   },
   "lernen": {
     "title": "Learning Hub",

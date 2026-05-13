@@ -176,7 +176,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                       <div className={`flex justify-center mb-1.5 ${unlocked ? "text-amber-600 dark:text-amber-400" : "text-ink-muted grayscale"}`}>
                         <AchievementIcon icon={ach.icon} className="w-7 h-7" />
                       </div>
-                      <p className={`text-[11px] font-semibold leading-tight ${unlocked ? "text-ink" : "text-ink-muted"}`}>
+                      <p className={`text-[11px] font-semibold leading-tight line-clamp-1 ${unlocked ? "text-ink" : "text-ink-muted"}`}>
                         {ach.name}
                       </p>
                     </button>

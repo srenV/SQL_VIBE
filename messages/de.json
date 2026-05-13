@@ -280,7 +280,10 @@
     "lessonsCompleted": "{done} / {total} abgeschlossen",
     "unlockLevel": "Level {level} freischalten",
     "xpToNextLevel": "Noch <strong>{amount} XP</strong> bis du <strong>{nextTitle}</strong> wirst.",
-    "keepPracticing": "Weiterüben"
+    "keepPracticing": "Weiterüben",
+    "achievementUnlocked": "Freigeschaltet",
+    "achievementLocked": "Noch nicht freigeschaltet",
+    "close": "Schließen"
   },
   "lernen": {
     "title": "Lern-Hub",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { AchievementDef } from "@/lib/levelSystem";
 import { AchievementIcon } from "@/components/achievementIcon";
@@ -30,6 +31,7 @@ function Backdrop({ onClick }: { onClick: () => void }) {
 export function AchievementModal({ achievement, unlocked, onClose }: AchievementModalProps) {
   const shouldReduceMotion = useReducedMotion();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const t = useTranslations("profil");
 
   // Focus close button on open
   useEffect(() => {
@@ -66,7 +68,6 @@ export function AchievementModal({ achievement, unlocked, onClose }: Achievement
             transition={{ duration: shouldReduceMotion ? 0 : 0.15 }}
           >
             <motion.div
-              className="relative w-full max-w-sm pointer-events-auto rounded-3xl overflow-hidden border shadow-2xl"
               initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.85, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, y: 10, opacity: 0 }}
@@ -76,12 +77,11 @@ export function AchievementModal({ achievement, unlocked, onClose }: Achievement
                 damping: 28,
                 mass: 0.8,
               }}
-              style={{
-                borderColor: unlocked ? "rgba(251,191,36,0.3)" : "rgba(226,232,240,0.5)",
-                background: unlocked
-                  ? "linear-gradient(160deg, rgba(255,251,235,0.95) 0%, rgba(254,243,199,0.9) 40%, rgba(253,230,138,0.85) 100%)"
-                  : "linear-gradient(160deg, rgba(248,250,252,0.95) 0%, rgba(241,245,249,0.9) 100%)",
-              }}
+              className={`relative w-full max-w-sm pointer-events-auto rounded-3xl overflow-hidden border shadow-2xl ${
+                unlocked
+                  ? "border-amber-400/30 bg-linear-to-b from-amber-50/95 to-yellow-50/90 dark:from-amber-950/80 dark:to-yellow-950/70"
+                  : "border-surface-dim bg-surface dark:bg-dark-dim"
+              }`}
               role="dialog"
               aria-modal="true"
               aria-label={achievement.name}
@@ -89,8 +89,7 @@ export function AchievementModal({ achievement, unlocked, onClose }: Achievement
               {/* Ambient glow for unlocked */}
               {unlocked && (
                 <motion.div
-                  className="absolute -top-20 -right-20 w-56 h-56 rounded-full pointer-events-none"
-                  style={{ background: "radial-gradient(circle, rgba(251,191,36,0.25) 0%, transparent 70%)" }}
+                  className="absolute -top-20 -right-20 w-56 h-56 rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(251,191,36,0.25)_0%,transparent_70%)] dark:bg-[radial-gradient(circle,rgba(251,191,36,0.15)_0%,transparent_70%)]"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.15, duration: 0.6 }}
@@ -102,7 +101,7 @@ export function AchievementModal({ achievement, unlocked, onClose }: Achievement
                 ref={closeRef}
                 onClick={onClose}
                 className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 transition-colors"
-                aria-label="Schließen"
+                aria-label={t("close")}
               >
                 <svg className="w-4 h-4 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -166,14 +165,14 @@ export function AchievementModal({ achievement, unlocked, onClose }: Achievement
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
-                      Freigeschaltet
+                      {t("achievementUnlocked")}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-surface-dim/60 text-ink-muted border border-surface-dim dark:bg-dark-dim/60 dark:border-dark-dim">
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25z" />
                       </svg>
-                      Noch nicht freigeschaltet
+                      {t("achievementLocked")}
                     </span>
                   )}
                 </motion.div>
