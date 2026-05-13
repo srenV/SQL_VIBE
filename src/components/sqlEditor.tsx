@@ -301,7 +301,8 @@ export const SqlEditor = React.memo(function SqlEditor({
         EditorView.theme({
           "&": { outline: "none !important" },
           ".cm-scroller": { overflow: "auto", maxHeight: "none" },
-          ".cm-editor": { minHeight: "14rem", overflow: "visible" },
+          ".cm-editor": { minHeight: "20rem", overflow: "visible" },
+          ".cm-content": { minHeight: "20rem" },
         }),
         placeholder ? cmPlaceholder(placeholder) : [],
       ],
