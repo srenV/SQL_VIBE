@@ -567,7 +567,7 @@ function renderTable(lines: string[]): string {
         : '';
     html += `<tr class="${bgClass}">`;
     cells.forEach(cell => {
-      html += `<${tag} class="px-3 py-2 text-left text-ink whitespace-nowrap border-b border-surface-dim dark:border-dark-dim">${cell}</${tag}>`;
+      html += `<${tag} class="px-3 py-2 text-left text-ink whitespace-nowrap border-b border-surface-dim dark:border-dark-dim">${escapeHtml(cell)}</${tag}>`;
     });
     html += '</tr>';
   });

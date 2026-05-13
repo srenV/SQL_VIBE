@@ -11,6 +11,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createTimeline, stagger, scrambleText } from "animejs";
 
+/**
+ * Strip HTML tags from text to prevent XSS when passing to anime.js
+ * scrambleText (which uses innerHTML internally).
+ */
+function sanitizeForScramble(text: string): string {
+  return text.replace(/<[^>]*>/g, "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 const SCOPE = "#sql-story-intro";
 
 const SCOPED_CSS = `
@@ -21,7 +29,7 @@ ${SCOPE} {
   border-radius: 0.75rem;
   background: linear-gradient(135deg, var(--color-surface-dim) 0%, var(--color-surface) 100%);
   color: var(--color-ink);
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -142,7 +150,7 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
     // Phase 1: Title scramble in
     tl.add(`${SCOPE} .si-title`, {
       innerHTML: scrambleText({
-        text: scenarioTitle,
+        text: sanitizeForScramble(scenarioTitle),
         override: " ",
         from: "left",
         duration: 1200,
@@ -157,7 +165,7 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
       `${SCOPE} .si-body`,
       {
         innerHTML: scrambleText({
-          text: intro,
+          text: sanitizeForScramble(intro),
           override: " ",
           from: "left",
           duration: 1400,
