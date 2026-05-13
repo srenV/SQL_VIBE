@@ -12,38 +12,38 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Tab-Navigation", () => {
   test("Header zeigt 3 Tabs: Ueben, Sandbox, Lernen", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
     // Alle 3 Tab-Links sollten sichtbar sein (Icons sind immer sichtbar, Text ab sm)
-    await expect(page.locator('a[href="/lektionen"]').first()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('a[href="/sandbox"]').first()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('a[href="/lernen"]').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('a[href*="/lektionen"]').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('a[href*="/sandbox"]').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('a[href*="/lernen"]').first()).toBeVisible({ timeout: 5000 });
   });
 
   test("Tab-Navigation zu Sandbox", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
     // Sandbox-Tab klicken
-    const sandboxTab = page.locator('a[href="/sandbox"]').first();
+    const sandboxTab = page.locator('a[href*="/sandbox"]').first();
     if (await sandboxTab.isVisible({ timeout: 3000 }).catch(() => false)) {
       await sandboxTab.click();
       await page.waitForLoadState("networkidle");
       await expect(page).toHaveURL(/\/sandbox/);
     } else {
       // Direkter Navigation-Test
-      await page.goto("/sandbox");
+      await page.goto("sandbox");
       await page.waitForLoadState("networkidle");
       await expect(page.locator("text=Datenbanken").first()).toBeVisible({ timeout: 5000 });
     }
   });
 
   test("Tab-Navigation zu Lernen", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
-    const lernenTab = page.locator('a[href="/lernen"]').first();
+    const lernenTab = page.locator('a[href*="/lernen"]').first();
     if (await lernenTab.isVisible({ timeout: 3000 }).catch(() => false)) {
       await lernenTab.click();
       await page.waitForLoadState("networkidle");
@@ -52,10 +52,10 @@ test.describe("Tab-Navigation", () => {
   });
 
   test("Tab-Navigation zu Ueben", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
-    const uebenTab = page.locator('a[href="/lektionen"]').first();
+    const uebenTab = page.locator('a[href*="/lektionen"]').first();
     if (await uebenTab.isVisible({ timeout: 3000 }).catch(() => false)) {
       await uebenTab.click();
       await page.waitForLoadState("networkidle");
@@ -66,7 +66,7 @@ test.describe("Tab-Navigation", () => {
 
 test.describe("Landing-Page 3-Saeulen", () => {
   test("Landing-Page zeigt 3 Feature-Cards", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
     // 3 Saeulen-CTAs sollten sichtbar sein (Heading-Text ist auf allen Viewports sichtbar)
@@ -76,10 +76,10 @@ test.describe("Landing-Page 3-Saeulen", () => {
   });
 
   test("Landing-Page CTA 'Zu den Lektionen' navigiert zu Lektionen", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
-    const cta = page.locator('a[href="/lektionen"]').first();
+    const cta = page.locator('a[href*="/lektionen"]').first();
     if (await cta.isVisible({ timeout: 3000 }).catch(() => false)) {
       await cta.click();
       await page.waitForLoadState("networkidle");
@@ -88,7 +88,7 @@ test.describe("Landing-Page 3-Saeulen", () => {
   });
 
   test("Landing-Page CTA 'Sandbox' navigiert zu Sandbox", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
     const cta = page.locator('a[href*="/sandbox"], button:has-text("Sandbox")').first();
@@ -100,7 +100,7 @@ test.describe("Landing-Page 3-Saeulen", () => {
   });
 
   test("Landing-Page CTA 'Lernen' navigiert zu Lernen", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
     const cta = page.locator('a[href*="/lernen"], button:has-text("Lernen")').first();
@@ -117,7 +117,7 @@ test.describe("Cross-Tab Zustand", () => {
     test.skip(testInfo.project.name === "mobile", "Sandbox ist nur auf Desktop/Tablet verfuegbar");
 
     // Sandbox oeffnen und DB erstellen
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     await page.locator("text=+ Neu").first().click();
@@ -128,19 +128,20 @@ test.describe("Cross-Tab Zustand", () => {
     await expect(page.locator("text=CrossTabDB").first()).toBeVisible({ timeout: 5000 });
 
     // Tabelle erstellen
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
-    await editor.fill('CREATE TABLE cross_test (id INTEGER, name TEXT);');
+    await editor.click();
+    await page.keyboard.type('CREATE TABLE cross_test (id INTEGER, name TEXT);');
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 
     // Zu Lernen navigieren
-    await page.goto("/lernen");
+    await page.goto("lernen");
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(1000);
 
     // Zurueck zur Sandbox
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // DB sollte noch da sein
@@ -150,7 +151,8 @@ test.describe("Cross-Tab Zustand", () => {
     await page.locator("text=CrossTabDB").first().click();
     await page.waitForTimeout(1000);
 
-    await editor.fill("SELECT * FROM cross_test;");
+    await editor.click();
+    await page.keyboard.type("SELECT * FROM cross_test;");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 

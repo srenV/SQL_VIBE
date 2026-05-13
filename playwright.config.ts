@@ -18,7 +18,7 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "html",
 
   use: {
-    baseURL: "http://localhost:4000",
+    baseURL: "http://localhost:4000/de",
     trace: "on-first-retry",
   },
 

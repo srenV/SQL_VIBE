@@ -11,7 +11,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Landing Page Smoke", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
   });
 
@@ -26,7 +26,7 @@ test.describe("Landing Page Smoke", () => {
   });
 
   test("zeigt Feature-Cards mit Links zu Lektionen, Sandbox und Lernen", async ({ page }) => {
-    const featureCards = page.locator('a[href="/lektionen"], a[href="/sandbox"], a[href="/lernen"]');
+    const featureCards = page.locator('a[href*="/lektionen"], a[href*="/sandbox"], a[href*="/lernen"]');
     const count = await featureCards.count();
     expect(count).toBeGreaterThan(0);
   });

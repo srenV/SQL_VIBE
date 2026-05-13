@@ -13,21 +13,23 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("SQL-Editor Interaktion", () => {
-  const EXERCISE_URL = "/lektionen/lesson_select/sel_0001";
+  const EXERCISE_URL = "lektionen/lesson_select/sel_0001";
 
-  test("SQL-Editor textarea ist sichtbar", async ({ page }) => {
+  test("SQL-Editor ist sichtbar", async ({ page }) => {
     await page.goto(EXERCISE_URL);
     await page.waitForLoadState("networkidle");
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible();
   });
 
   test("SQL-Editor akzeptiert Eingabe", async ({ page }) => {
     await page.goto(EXERCISE_URL);
     await page.waitForLoadState("networkidle");
-    const editor = page.locator("textarea").first();
-    await editor.fill("SELECT * FROM kunden");
-    await expect(editor).toHaveValue(/SELECT.*FROM/i);
+    const editor = page.locator(".cm-content").first();
+    await editor.click();
+    await page.keyboard.type("SELECT * FROM kunden");
+    const text = await editor.textContent();
+    expect(text).toMatch(/SELECT.*FROM/i);
   });
 
   test("Uebungsbeschreibung ist sichtbar", async ({ page }) => {
@@ -49,7 +51,7 @@ test.describe("SQL-Editor Interaktion", () => {
 });
 
 test.describe("Fortschrittsverfolgung (Local Storage)", () => {
-  const EXERCISE_URL = "/lektionen/lesson_select/sel_0001";
+  const EXERCISE_URL = "lektionen/lesson_select/sel_0001";
 
   test("Fortschritt wird im Local Storage initialisiert", async ({ page }) => {
     await page.goto(EXERCISE_URL);
@@ -111,7 +113,7 @@ test.describe("Fortschrittsverfolgung (Local Storage)", () => {
 
 test.describe("Uebungsnavigation", () => {
   test("naechste Uebung ist erreichbar", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select/sel_0001");
+    await page.goto("lektionen/lesson_select/sel_0001");
     await page.waitForLoadState("networkidle");
     const nextLink = page.locator('a[href*="/sel_0002"]').first();
     if (await nextLink.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -122,7 +124,7 @@ test.describe("Uebungsnavigation", () => {
   });
 
   test("vorherige Uebung Navigation funktioniert", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select/sel_0003");
+    await page.goto("lektionen/lesson_select/sel_0003");
     await page.waitForLoadState("networkidle");
     const prevLink = page.locator('a[href*="/sel_0002"]').first();
     if (await prevLink.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -133,7 +135,7 @@ test.describe("Uebungsnavigation", () => {
   });
 
   test("Lektion-Uebersicht zeigt Uebungsanzahl", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select");
+    await page.goto("lektionen/lesson_select");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("text=SELECT Grundlagen").first()).toBeVisible();
     await expect(page.locator("text=Uebungen").first()).toBeVisible();
@@ -142,31 +144,31 @@ test.describe("Uebungsnavigation", () => {
 
 test.describe("Verschiedene Uebungstypen laden korrekt", () => {
   test("WHERE-Uebung laedt mit Editor", async ({ page }) => {
-    await page.goto("/lektionen/lesson_where/whr_0001");
+    await page.goto("lektionen/lesson_where/whr_0001");
     await page.waitForLoadState("networkidle");
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible();
   });
 
   test("Aggregation-Uebung laedt", async ({ page }) => {
-    await page.goto("/lektionen/lesson_aggregation/agg_0001");
+    await page.goto("lektionen/lesson_aggregation/agg_0001");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("main").first()).toBeVisible();
   });
 
   test("Interview-Challenge laedt", async ({ page }) => {
-    await page.goto("/lektionen/lesson_interview/int_0001");
+    await page.goto("lektionen/lesson_interview/int_0001");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("main").first()).toBeVisible();
   });
 
   test("Debug-Uebung laedt mit vorausgefuelltem Code", async ({ page }) => {
-    await page.goto("/lektionen/lesson_debug/dbg_0001");
+    await page.goto("lektionen/lesson_debug/dbg_0001");
     await page.waitForLoadState("networkidle");
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible();
-    const value = await editor.inputValue();
-    expect(value.length).toBeGreaterThan(0);
+    const text = await editor.textContent();
+    expect(text!.length).toBeGreaterThan(0);
   });
 });
 
@@ -179,14 +181,14 @@ test.describe("Visuelle Regressionstests", () => {
 test.describe("Canary: Deployment Readiness", () => {
   test("alle Hauptseiten liefern HTTP 200", async ({ page }) => {
     const urls = [
-      "/",
-      "/lektionen",
-      "/lektionen/lesson_select",
-      "/lektionen/lesson_where",
-      "/lektionen/lesson_aggregation",
-      "/lektionen/lesson_join",
-      "/lektionen/lesson_debug",
-      "/lektionen/lesson_interview",
+      "",
+      "lektionen",
+      "lektionen/lesson_select",
+      "lektionen/lesson_where",
+      "lektionen/lesson_aggregation",
+      "lektionen/lesson_join",
+      "lektionen/lesson_debug",
+      "lektionen/lesson_interview",
     ];
     for (const url of urls) {
       const response = await page.goto(url);
@@ -196,10 +198,10 @@ test.describe("Canary: Deployment Readiness", () => {
 
   test("Uebungsseiten liefern HTTP 200", async ({ page }) => {
     const urls = [
-      "/lektionen/lesson_select/sel_0001",
-      "/lektionen/lesson_where/whr_0001",
-      "/lektionen/lesson_debug/dbg_0001",
-      "/lektionen/lesson_interview/int_0001",
+      "lektionen/lesson_select/sel_0001",
+      "lektionen/lesson_where/whr_0001",
+      "lektionen/lesson_debug/dbg_0001",
+      "lektionen/lesson_interview/int_0001",
     ];
     for (const url of urls) {
       const response = await page.goto(url);
@@ -208,7 +210,7 @@ test.describe("Canary: Deployment Readiness", () => {
   });
 
   test("statische Assets laden korrekt (CSS)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     const cssLinks = await page.locator('link[rel="stylesheet"]').count();
     expect(cssLinks).toBeGreaterThan(0);
   });
@@ -216,29 +218,29 @@ test.describe("Canary: Deployment Readiness", () => {
   test("JavaScript-Bundle laedt ohne Fehler", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (err) => errors.push(err.message));
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
     expect(errors).toHaveLength(0);
   });
 
   test("404-Seite funktioniert korrekt", async ({ page }) => {
-    const response = await page.goto("/nicht-vorhanden-seite");
+    const response = await page.goto("nicht-vorhanden-seite");
     expect(response!.status()).toBe(404);
   });
 
   test("seitenuebergreifende Navigation liefert konsistente Ergebnisse", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     const h1Text = await page.locator("h1").first().textContent();
     expect(h1Text).toBeTruthy();
     expect(h1Text!).toMatch(/SQL/i);
-    const lektionenLink = page.locator('a[href="/lektionen"]').first();
+    const lektionenLink = page.locator('a[href*="/lektionen"]').first();
     await lektionenLink.click();
-    await expect(page).toHaveURL(/\/lektionen$/);
+    await expect(page).toHaveURL(/\/lektionen/);
     await expect(page.locator("h1").first()).toContainText("SQL Lektionen");
   });
 
   test("Progress-Widget ist auf Uebungsseite vorhanden", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select/sel_0001");
+    await page.goto("lektionen/lesson_select/sel_0001");
     await page.waitForLoadState("networkidle");
     const main = page.locator("main").first();
     await expect(main).toBeVisible();

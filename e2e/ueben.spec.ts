@@ -13,7 +13,7 @@
 
 import { test, expect } from "@playwright/test";
 
-const FIRST_EXERCISE_URL = "/lektionen/lesson_select/sel_0001";
+const FIRST_EXERCISE_URL = "lektionen/lesson_select/sel_0001";
 
 test.describe("Ueben – Seitenladung", () => {
   test("Uebungsseite laedt mit SQL-Editor", async ({ page }) => {
@@ -21,7 +21,7 @@ test.describe("Ueben – Seitenladung", () => {
     await page.waitForLoadState("networkidle");
 
     // SQL-Editor ist sichtbar
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 10000 });
 
     // Aufgabentitel ist sichtbar
@@ -56,11 +56,11 @@ test.describe("Ueben – SQL-Abfragen ausfuehren", () => {
     await page.goto(FIRST_EXERCISE_URL);
     await page.waitForLoadState("networkidle");
 
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 10000 });
 
     // SQL eingeben
-    await editor.fill("SELECT * FROM kunden;");
+    await editor.click(); await page.keyboard.type("SELECT * FROM kunden;");
     
     // Ausfuehren klicken
     const runButton = page.locator("button:has-text('Abfrage ausführen')").first();
@@ -79,11 +79,11 @@ test.describe("Ueben – SQL-Abfragen ausfuehren", () => {
     await page.goto(FIRST_EXERCISE_URL);
     await page.waitForLoadState("networkidle");
 
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 10000 });
 
     // SQL eingeben und ausfuehren
-    await editor.fill("SELECT * FROM kunden;");
+    await editor.click(); await page.keyboard.type("SELECT * FROM kunden;");
     await page.locator("button:has-text('Abfrage ausführen')").first().click();
     await page.waitForTimeout(2000);
 
@@ -104,10 +104,10 @@ test.describe("Ueben – SQL-Abfragen ausfuehren", () => {
     await page.goto(FIRST_EXERCISE_URL);
     await page.waitForLoadState("networkidle");
 
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 10000 });
 
-    await editor.fill("SELECT * FROM nichtexistent;");
+    await editor.click(); await page.keyboard.type("SELECT * FROM nichtexistent;");
     await page.locator("button:has-text('Abfrage ausführen')").first().click();
     await page.waitForTimeout(2000);
 
@@ -119,11 +119,11 @@ test.describe("Ueben – SQL-Abfragen ausfuehren", () => {
     await page.goto(FIRST_EXERCISE_URL);
     await page.waitForLoadState("networkidle");
 
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 10000 });
 
     // Etwas eingeben
-    await editor.fill("SELECT * FROM kunden;");
+    await editor.click(); await page.keyboard.type("SELECT * FROM kunden;");
 
     // Zuruecksetzen klicken
     const resetButton = page.locator("button:has-text('Zurücksetzen')").first();
@@ -132,7 +132,7 @@ test.describe("Ueben – SQL-Abfragen ausfuehren", () => {
       await page.waitForTimeout(500);
 
       // Editor sollte zurueckgesetzt sein
-      const editorValue = await editor.inputValue();
+      const editorValue = await editor.textContent() || "";
       // Nach Reset sollte der Editor leer oder mit Prefill sein
       expect(editorValue.length).toBeLessThanOrEqual(50); // Prefill ist kurz
     }
@@ -226,7 +226,7 @@ test.describe("Ueben – Navigation", () => {
   });
 
   test("Uebungs-Seiten-Navigation funktioniert", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select");
+    await page.goto("lektionen/lesson_select");
     await page.waitForLoadState("networkidle");
 
     // Erste Uebung klicken
@@ -244,11 +244,11 @@ test.describe("Ueben – Hinweis-System", () => {
     await page.goto(FIRST_EXERCISE_URL);
     await page.waitForLoadState("networkidle");
 
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 10000 });
 
     // Falsche Abfrage ausfuehren
-    await editor.fill("SELECT * FROM wrong_table;");
+    await editor.click(); await page.keyboard.type("SELECT * FROM wrong_table;");
     await page.locator("button:has-text('Abfrage ausführen')").first().click();
     await page.waitForTimeout(2000);
 

@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Container } from "@/components/container";
 
+/**
+ * Root 404 page – shown when no locale prefix is matched.
+ * Uses hardcoded /de/ paths because this page lives outside [locale].
+ * The vercel.json redirects handle locale-less URLs → /de/… at the edge.
+ */
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col" id="main-content">

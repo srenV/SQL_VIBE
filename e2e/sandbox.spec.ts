@@ -16,7 +16,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Sandbox – Seitenladung", () => {
   test("Sandbox-Seite laedt und zeigt UI-Elemente", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // Sidebar ist sichtbar
@@ -33,7 +33,7 @@ test.describe("Sandbox – Seitenladung", () => {
   });
 
   test("Navigation zur Sandbox von der Landing-Page", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
     // Klick auf "Sandbox öffnen" oder Tab
@@ -44,7 +44,7 @@ test.describe("Sandbox – Seitenladung", () => {
       await expect(page).toHaveURL(/\/sandbox/);
     } else {
       // Direkter Test: Navigation ueber Header-Tabs
-      await page.goto("/sandbox");
+      await page.goto("sandbox");
       await page.waitForLoadState("networkidle");
       await expect(page.locator("text=Datenbanken").first()).toBeVisible({ timeout: 5000 });
     }
@@ -53,7 +53,7 @@ test.describe("Sandbox – Seitenladung", () => {
 
 test.describe("Sandbox – Datenbank erstellen", () => {
   test("Neue Datenbank erstellen und oeffnen", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // "+ Neu" klicken
@@ -71,11 +71,11 @@ test.describe("Sandbox – Datenbank erstellen", () => {
     await expect(page.locator("text=TestDB").first()).toBeVisible({ timeout: 5000 });
 
     // SQL-Editor ist sichtbar
-    await expect(page.locator("textarea").first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator(".cm-content").first()).toBeVisible({ timeout: 5000 });
   });
 
   test("Neue Datenbank mit Default-Name erstellen (leeres Input)", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // "+ Neu" klicken
@@ -89,7 +89,7 @@ test.describe("Sandbox – Datenbank erstellen", () => {
   });
 
   test("Neue Datenbank erstellen mit Enter-Taste", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     await page.locator("text=+ Neu").first().click();
@@ -103,7 +103,7 @@ test.describe("Sandbox – Datenbank erstellen", () => {
   });
 
   test("Erstellung mit Escape abbrechen", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     await page.locator("text=+ Neu").first().click();
@@ -119,7 +119,7 @@ test.describe("Sandbox – Datenbank erstellen", () => {
 
 test.describe("Sandbox – SQL-Abfragen", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // Datenbank erstellen
@@ -132,11 +132,12 @@ test.describe("Sandbox – SQL-Abfragen", () => {
   });
 
   test("CREATE TABLE ausfuehren und im Schema sehen", async ({ page }) => {
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
 
     // CREATE TABLE eingeben
-    await editor.fill('CREATE TABLE kunden (id INTEGER PRIMARY KEY, name TEXT, email TEXT);');
+    await editor.click();
+    await page.keyboard.type('CREATE TABLE kunden (id INTEGER PRIMARY KEY, name TEXT, email TEXT);');
     await page.locator("button:has-text('Ausführen')").first().click();
 
     // Warten auf Ergebnis
@@ -151,21 +152,24 @@ test.describe("Sandbox – SQL-Abfragen", () => {
   });
 
   test("INSERT und SELECT ausfuehren", async ({ page }) => {
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
 
     // Tabelle erstellen
-    await editor.fill('CREATE TABLE kunden (id INTEGER PRIMARY KEY, name TEXT);');
+    await editor.click();
+    await page.keyboard.type('CREATE TABLE kunden (id INTEGER PRIMARY KEY, name TEXT);');
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
     // Daten einfuegen
-    await editor.fill("INSERT INTO kunden VALUES (1, 'Max');");
+    await editor.click();
+    await page.keyboard.type("INSERT INTO kunden VALUES (1, 'Max');");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
     // Daten abfragen
-    await editor.fill("SELECT * FROM kunden;");
+    await editor.click();
+    await page.keyboard.type("SELECT * FROM kunden;");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 
@@ -174,10 +178,11 @@ test.describe("Sandbox – SQL-Abfragen", () => {
   });
 
   test("Fehlerhafte SQL-Abfrage zeigt Fehlermeldung", async ({ page }) => {
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
 
-    await editor.fill("SELECT * FROM nichtexistent;");
+    await editor.click();
+    await page.keyboard.type("SELECT * FROM nichtexistent;");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 
@@ -186,16 +191,18 @@ test.describe("Sandbox – SQL-Abfragen", () => {
   });
 
   test("DROP TABLE ausfuehren", async ({ page }) => {
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
 
     // Tabelle erstellen
-    await editor.fill('CREATE TABLE temp_table (id INTEGER);');
+    await editor.click();
+    await page.keyboard.type('CREATE TABLE temp_table (id INTEGER);');
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
     // Tabelle droppen
-    await editor.fill("DROP TABLE temp_table;");
+    await editor.click();
+    await page.keyboard.type("DROP TABLE temp_table;");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
@@ -205,39 +212,46 @@ test.describe("Sandbox – SQL-Abfragen", () => {
   });
 
   test("UPDATE und DELETE ausfuehren", async ({ page }) => {
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
 
     // Tabelle erstellen und Daten einfuegen
-    await editor.fill('CREATE TABLE produkte (id INTEGER PRIMARY KEY, name TEXT, preis REAL);');
+    await editor.click();
+    await page.keyboard.type('CREATE TABLE produkte (id INTEGER PRIMARY KEY, name TEXT, preis REAL);');
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
-    await editor.fill("INSERT INTO produkte VALUES (1, 'Apfel', 1.5);");
+    await editor.click();
+    await page.keyboard.type("INSERT INTO produkte VALUES (1, 'Apfel', 1.5);");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
-    await editor.fill("INSERT INTO produkte VALUES (2, 'Banane', 2.0);");
+    await editor.click();
+    await page.keyboard.type("INSERT INTO produkte VALUES (2, 'Banane', 2.0);");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
     // UPDATE
-    await editor.fill("UPDATE produkte SET preis = 1.8 WHERE name = 'Apfel';");
+    await editor.click();
+    await page.keyboard.type("UPDATE produkte SET preis = 1.8 WHERE name = 'Apfel';");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
     // SELECT um UPDATE zu verifizieren
-    await editor.fill("SELECT * FROM produkte WHERE name = 'Apfel';");
+    await editor.click();
+    await page.keyboard.type("SELECT * FROM produkte WHERE name = 'Apfel';");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 
     // DELETE
-    await editor.fill("DELETE FROM produkte WHERE name = 'Banane';");
+    await editor.click();
+    await page.keyboard.type("DELETE FROM produkte WHERE name = 'Banane';");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
     // SELECT um DELETE zu verifizieren
-    await editor.fill("SELECT * FROM produkte;");
+    await editor.click();
+    await page.keyboard.type("SELECT * FROM produkte;");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 
@@ -248,7 +262,7 @@ test.describe("Sandbox – SQL-Abfragen", () => {
 
 test.describe("Sandbox – Persistenz (IndexedDB)", () => {
   test("Datenbank und Daten bleiben nach Page-Reload erhalten", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // Datenbank erstellen
@@ -260,13 +274,15 @@ test.describe("Sandbox – Persistenz (IndexedDB)", () => {
     await expect(page.locator("text=PersistDB").first()).toBeVisible({ timeout: 5000 });
 
     // Tabelle erstellen und Daten einfuegen
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
-    await editor.fill('CREATE TABLE test_persist (id INTEGER PRIMARY KEY, wert TEXT);');
+    await editor.click();
+    await page.keyboard.type('CREATE TABLE test_persist (id INTEGER PRIMARY KEY, wert TEXT);');
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
-    await editor.fill("INSERT INTO test_persist VALUES (1, 'persistiert');");
+    await editor.click();
+    await page.keyboard.type("INSERT INTO test_persist VALUES (1, 'persistiert');");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 
@@ -281,7 +297,8 @@ test.describe("Sandbox – Persistenz (IndexedDB)", () => {
     await page.locator("text=PersistDB").first().click();
     await page.waitForTimeout(1000);
 
-    await editor.fill("SELECT * FROM test_persist;");
+    await editor.click();
+    await page.keyboard.type("SELECT * FROM test_persist;");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 
@@ -291,7 +308,7 @@ test.describe("Sandbox – Persistenz (IndexedDB)", () => {
 
 test.describe("Sandbox – Datenbank-Verwaltung", () => {
   test("Datenbank umbenennen", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // Datenbank erstellen
@@ -318,7 +335,7 @@ test.describe("Sandbox – Datenbank-Verwaltung", () => {
   });
 
   test("Datenbank loeschen", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // Datenbank erstellen
@@ -349,7 +366,7 @@ test.describe("Sandbox – Datenbank-Verwaltung", () => {
 
 test.describe("Sandbox – Query-History", () => {
   test("History zeigt ausgefuehrte Abfragen", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     // Datenbank erstellen
@@ -360,11 +377,12 @@ test.describe("Sandbox – Query-History", () => {
     await page.locator("button:has-text('OK')").click();
     await expect(page.locator("text=HistoryDB").first()).toBeVisible({ timeout: 5000 });
 
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
 
     // Abfrage ausfuehren
-    await editor.fill('CREATE TABLE test (id INTEGER);');
+    await editor.click();
+    await page.keyboard.type('CREATE TABLE test (id INTEGER);');
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(500);
 
@@ -379,7 +397,7 @@ test.describe("Sandbox – Query-History", () => {
 
 test.describe("Sandbox – Fehlerbehandlung", () => {
   test("Leere Abfrage zeigt keinen Fehler", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     await page.locator("text=+ Neu").first().click();
@@ -395,7 +413,7 @@ test.describe("Sandbox – Fehlerbehandlung", () => {
   });
 
   test("Syntax-Fehler zeigt Fehlermeldung", async ({ page }) => {
-    await page.goto("/sandbox");
+    await page.goto("sandbox");
     await page.waitForLoadState("networkidle");
 
     await page.locator("text=+ Neu").first().click();
@@ -405,10 +423,11 @@ test.describe("Sandbox – Fehlerbehandlung", () => {
     await page.locator("button:has-text('OK')").click();
     await expect(page.locator("text=SyntaxDB").first()).toBeVisible({ timeout: 5000 });
 
-    const editor = page.locator("textarea").first();
+    const editor = page.locator(".cm-content").first();
     await expect(editor).toBeVisible({ timeout: 5000 });
 
-    await editor.fill("INVALID SQL SYNTAX HERE;");
+    await editor.click();
+    await page.keyboard.type("INVALID SQL SYNTAX HERE;");
     await page.locator("button:has-text('Ausführen')").first().click();
     await page.waitForTimeout(1000);
 

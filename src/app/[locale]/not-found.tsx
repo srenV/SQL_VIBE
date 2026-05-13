@@ -1,9 +1,11 @@
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Container } from "@/components/container";
 
-export default async function NotFound() {
-  const t = await getTranslations("common");
+export default function NotFound() {
+  const t = useTranslations("common");
 
   return (
     <div className="min-h-screen flex flex-col" id="main-content">

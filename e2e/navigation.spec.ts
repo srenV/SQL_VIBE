@@ -16,29 +16,29 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Landing Page", () => {
   test("laedt und zeigt die Hauptueberschrift", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("h1")).toContainText(/SQL/i);
     await expect(page.locator("text=SQLVIBE").first()).toBeVisible();
   });
 
   test("zeigt Statistiken (Übungen, Lektionen, Datensätze)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("text=Übungen").first()).toBeVisible();
     await expect(page.locator("text=Lektionen").first()).toBeVisible();
   });
 
   test("zeigt Feature-Cards mit Links zu Lektionen, Sandbox und Lernen", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
-    const featureCards = page.locator('a[href="/lektionen"], a[href="/sandbox"], a[href="/lernen"]');
+    const featureCards = page.locator('a[href*="/lektionen"], a[href*="/sandbox"], a[href*="/lernen"]');
     const count = await featureCards.count();
     expect(count).toBeGreaterThan(0);
   });
 
   test("CTA-Links sind sichtbar", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("text=/Zu den Lektionen|Sandbox öffnen|Zum Lern-Hub/i").first()).toBeVisible({ timeout: 5000 });
   });
@@ -50,16 +50,16 @@ test.describe("Landing Page", () => {
 
 test.describe("Lektionen-Uebersicht", () => {
   test("zeigt alle 15 Lektionen", async ({ page }) => {
-    await page.goto("/lektionen");
+    await page.goto("lektionen");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("h1")).toContainText("SQL Lektionen");
-    const lessonCards = page.locator('a[href^="/lektionen/lesson_"]');
+    const lessonCards = page.locator('a[href*="/lektionen/lesson_"]');
     const count = await lessonCards.count();
     expect(count).toBe(15);
   });
 
   test("jede Lektion zeigt Titel", async ({ page }) => {
-    await page.goto("/lektionen");
+    await page.goto("lektionen");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("text=SELECT Grundlagen").first()).toBeVisible();
   });
@@ -70,15 +70,15 @@ test.describe("Lektionen-Uebersicht", () => {
 
 test.describe("Einzelne Lektion-Seite", () => {
   test("zeigt Lektion-Titel und Beschreibung", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select");
+    await page.goto("lektionen/lesson_select");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("h1")).toContainText("SELECT Grundlagen");
   });
 
   test("listet Uebungen auf", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select");
+    await page.goto("lektionen/lesson_select");
     await page.waitForLoadState("networkidle");
-    const exerciseLinks = page.locator('a[href^="/lektionen/lesson_select/sel_"]');
+    const exerciseLinks = page.locator('a[href*="/lektionen/lesson_select/sel_"]');
     const count = await exerciseLinks.count();
     expect(count).toBeGreaterThan(0);
   });
@@ -88,7 +88,7 @@ test.describe("Einzelne Lektion-Seite", () => {
 });
 
 test.describe("Uebungs-Seite (SQL Editor)", () => {
-  const FIRST_SELECT_URL = "/lektionen/lesson_select/sel_0001";
+  const FIRST_SELECT_URL = "lektionen/lesson_select/sel_0001";
 
   test("Uebungsseite laedt und zeigt Inhalt", async ({ page }) => {
     await page.goto(FIRST_SELECT_URL);
@@ -116,42 +116,42 @@ test.describe("Uebungs-Seite (SQL Editor)", () => {
 
 test.describe("Fortlaufende Navigation", () => {
   test("/uebung leitet auf erste Uebung weiter", async ({ page }) => {
-    await page.goto("/uebung");
+    await page.goto("uebung");
     await page.waitForURL(/\/lektionen\/lesson_select\//);
     const mainContent = page.locator("#main-content").or(page.locator("main"));
     await expect(mainContent.first()).toBeVisible();
   });
 
   test("Lektionen-Seite ist von jeder Lektion aus erreichbar", async ({ page }) => {
-    await page.goto("/lektionen/lesson_select");
+    await page.goto("lektionen/lesson_select");
     await page.waitForLoadState("networkidle");
-    const lektionenLink = page.locator('a[href="/lektionen"]').or(page.locator("text=Lektionen"));
+    const lektionenLink = page.locator('a[href*="/lektionen"]').or(page.locator("text=Lektionen"));
     await expect(lektionenLink.first()).toBeVisible();
   });
 });
 
 test.describe("Verschiedene Uebungstypen", () => {
   test("WHERE-Uebung laedt", async ({ page }) => {
-    const response = await page.goto("/lektionen/lesson_where/whr_0001");
+    const response = await page.goto("lektionen/lesson_where/whr_0001");
     expect(response!.status()).toBe(200);
     await page.waitForLoadState("networkidle");
     await expect(page.locator("body")).toBeVisible();
   });
 
   test("Debug-Uebung laedt", async ({ page }) => {
-    const response = await page.goto("/lektionen/lesson_debug/dbg_0001");
+    const response = await page.goto("lektionen/lesson_debug/dbg_0001");
     expect(response!.status()).toBe(200);
     await page.waitForLoadState("networkidle");
     await expect(page.locator("body")).toBeVisible();
   });
 
   test("Predict-Uebung laedt", async ({ page }) => {
-    const response = await page.goto("/lektionen/lesson_predict/prd_0001");
+    const response = await page.goto("lektionen/lesson_predict/prd_0001");
     expect(response!.status()).toBe(200);
   });
 
   test("Story-Uebung laedt", async ({ page }) => {
-    const response = await page.goto("/lektionen/lesson_story/str_0001");
+    const response = await page.goto("lektionen/lesson_story/str_0001");
     expect(response!.status()).toBe(200);
     await page.waitForLoadState("networkidle");
     await expect(page.locator("body")).toBeVisible();
@@ -160,7 +160,7 @@ test.describe("Verschiedene Uebungstypen", () => {
 
 test.describe("Canary: Bereitstellung Readiness", () => {
   test("alle Hauptseiten liefern HTTP 200", async ({ page }) => {
-    const urls = ["/", "/lektionen", "/lektionen/lesson_select", "/lektionen/lesson_select/sel_0001"];
+    const urls = ["", "lektionen", "lektionen/lesson_select", "lektionen/lesson_select/sel_0001"];
     for (const url of urls) {
       const response = await page.goto(url);
       expect(response!.status()).toBe(200);
@@ -168,22 +168,22 @@ test.describe("Canary: Bereitstellung Readiness", () => {
   });
 
   test("seitenuebergreifende Navigation ist konsistent", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
 
-    const lektionenLink = page.locator('a[href="/lektionen"]').first();
+    const lektionenLink = page.locator('a[href*="/lektionen"]').first();
     await lektionenLink.click();
     await page.waitForLoadState("networkidle");
-    await expect(page).toHaveURL(/\/lektionen$/);
+    await expect(page).toHaveURL(/\/lektionen/);
 
-    const firstLesson = page.locator('a[href^="/lektionen/lesson_select"]').first();
+    const firstLesson = page.locator('a[href*="/lektionen/lesson_select"]').first();
     await firstLesson.click();
     await page.waitForLoadState("networkidle");
-    await expect(page).toHaveURL(/\/lektionen\/lesson_select$/);
+    await expect(page).toHaveURL(/\/lektionen\/lesson_select/);
   });
 
   test("statische Assets laden (CSS)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("");
     await page.waitForLoadState("networkidle");
     const cssLinks = await page.locator('link[rel="stylesheet"]').count();
     expect(cssLinks).toBeGreaterThan(0);

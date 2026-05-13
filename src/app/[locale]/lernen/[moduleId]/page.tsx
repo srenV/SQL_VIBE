@@ -6,7 +6,7 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getModuleById, getAllModuleIds } from "@/data/learnContentLocale";
 import { Card } from "@/components/card";
 import { PageShell } from "@/components/pageShell";

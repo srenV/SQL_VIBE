@@ -1,0 +1,64 @@
+{
+  "redirects": [
+    {
+      "source": "/lernen",
+      "destination": "/de/lernen",
+      "permanent": true
+    },
+    {
+      "source": "/lernen/:path*",
+      "destination": "/de/lernen/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/lektionen",
+      "destination": "/de/lektionen",
+      "permanent": true
+    },
+    {
+      "source": "/lektionen/:path*",
+      "destination": "/de/lektionen/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/sandbox",
+      "destination": "/de/sandbox",
+      "permanent": true
+    },
+    {
+      "source": "/sandbox/:path*",
+      "destination": "/de/sandbox/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/profil",
+      "destination": "/de/profil",
+      "permanent": true
+    },
+    {
+      "source": "/profil/:path*",
+      "destination": "/de/profil/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/story",
+      "destination": "/de/story",
+      "permanent": true
+    },
+    {
+      "source": "/story/:path*",
+      "destination": "/de/story/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/uebung",
+      "destination": "/de/uebung",
+      "permanent": true
+    },
+    {
+      "source": "/uebung/:path*",
+      "destination": "/de/uebung/:path*",
+      "permanent": true
+    }
+  ]
+}
