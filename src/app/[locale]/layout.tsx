@@ -7,6 +7,7 @@ import "@/app/globals.css";
 import { Footer } from "@/components/footer";
 import { IntroOverlay } from "@/components/introOverlay";
 import { AchievementToastProvider } from "@/components/achievementToast";
+import { DialectProvider, DialectScript } from "@/lib/dialect";
 import { routing } from "@/i18n/routing";
 
 const inter = localFont({
@@ -19,6 +20,17 @@ const inter = localFont({
     { path: "../../fonts/Inter-900.woff2", weight: "900", style: "normal" },
   ],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const jetbrainsMono = localFont({
+  src: [
+    { path: "../../fonts/JetBrainsMono-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../../fonts/JetBrainsMono-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../../fonts/JetBrainsMono-Bold.woff2", weight: "700", style: "normal" },
+    { path: "../../fonts/JetBrainsMono-ExtraBold.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -138,7 +150,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${inter.variable} antialiased`} suppressHydrationWarning>
+    <html lang={locale} className={`${inter.variable} ${jetbrainsMono.variable} antialiased`} suppressHydrationWarning>
       <head>
         <script
           suppressHydrationWarning
@@ -146,6 +158,7 @@ export default async function LocaleLayout({
             __html: `(function(){try{var s=localStorage.getItem('sql-trainer-theme');var d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(!s&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
           }}
         />
+        <DialectScript />
         <script
           type="application/ld+json"
           suppressHydrationWarning
@@ -170,14 +183,16 @@ export default async function LocaleLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider messages={messages}>
-          <AchievementToastProvider>
-            <a href="#main-content" className="skip-nav">
-              {locale === "en" ? "Skip to content" : "Zum Inhalt springen"}
-            </a>
-            <IntroOverlay />
-            {children}
-            <Footer />
-          </AchievementToastProvider>
+          <DialectProvider>
+            <AchievementToastProvider>
+              <a href="#main-content" className="skip-nav">
+                {locale === "en" ? "Skip to content" : "Zum Inhalt springen"}
+              </a>
+              <IntroOverlay />
+              {children}
+              <Footer />
+            </AchievementToastProvider>
+          </DialectProvider>
         </NextIntlClientProvider>
       </body>
     </html>
