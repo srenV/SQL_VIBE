@@ -104,7 +104,7 @@ export function LanguageSwitcher() {
           <span className="text-xs leading-none" role="img" aria-label={currentConfig.nativeName}>
             {currentConfig.flag}
           </span>
-          <span className="text-xs font-semibold tracking-wide text-ink dark:text-ink-inverted">
+          <span className="text-xs font-semibold tracking-wide text-ink">
             {currentConfig.label}
           </span>
         </span>
@@ -135,7 +135,7 @@ export function LanguageSwitcher() {
             className={`
               absolute right-0 mt-1.5 min-w-[160px] z-50
               rounded-xl overflow-hidden
-              bg-white dark:bg-dark-dim
+              bg-surface dark:bg-dark-dim
               border border-surface-dim dark:border-dark-dim
               shadow-lg shadow-black/5 dark:shadow-black/20
             `}
@@ -184,7 +184,7 @@ export function LanguageSwitcher() {
                       className={`text-sm font-medium ${
                         isActive
                           ? "text-primary-700 dark:text-primary-300"
-                          : "text-ink dark:text-ink-inverted"
+                          : "text-ink"
                       }`}
                     >
                       {config.nativeName}
