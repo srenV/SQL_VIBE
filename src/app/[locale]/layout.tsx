@@ -2,11 +2,26 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
+import localFont from "next/font/local";
+import "@/app/globals.css";
 import { ThemeScript } from "@/components/themeProvider";
 import { Footer } from "@/components/footer";
 import { IntroOverlay } from "@/components/introOverlay";
 import { AchievementToastProvider } from "@/components/achievementToast";
 import { routing } from "@/i18n/routing";
+
+const inter = localFont({
+  src: [
+    { path: "../../fonts/Inter-400.woff2", weight: "400", style: "normal" },
+    { path: "../../fonts/Inter-500.woff2", weight: "500", style: "normal" },
+    { path: "../../fonts/Inter-600.woff2", weight: "600", style: "normal" },
+    { path: "../../fonts/Inter-700.woff2", weight: "700", style: "normal" },
+    { path: "../../fonts/Inter-800.woff2", weight: "800", style: "normal" },
+    { path: "../../fonts/Inter-900.woff2", weight: "900", style: "normal" },
+  ],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 const SITE_URL = "https://sql-vibe.vercel.app";
 const SITE_NAME = "SQL VIBE";
@@ -124,11 +139,12 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="antialiased" suppressHydrationWarning>
+    <html lang={locale} className={`${inter.variable} antialiased`} suppressHydrationWarning>
       <head>
         <ThemeScript />
         <script
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",

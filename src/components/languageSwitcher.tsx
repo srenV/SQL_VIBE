@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 
 /**
@@ -17,15 +17,11 @@ export function LanguageSwitcher() {
   const pathname = usePathname();
 
   const switchLocale = (newLocale: Locale) => {
-    // Remove current locale prefix from pathname
-    const segments = pathname.split("/");
-    // pathname is like /de/lektionen or /en/sandbox
-    if (segments.length > 1 && routing.locales.includes(segments[1] as Locale)) {
-      segments[1] = newLocale;
-    } else {
-      segments.splice(1, 0, newLocale);
-    }
-    router.push(segments.join("/"));
+    // pathname already includes the locale prefix (e.g. /de/lektionen)
+    // Replace the current locale with the new one
+    const currentLocalePrefix = `/${locale}`;
+    const newPath = pathname.replace(currentLocalePrefix, `/${newLocale}`);
+    router.push(newPath);
   };
 
   const otherLocale = locale === "de" ? "en" : "de";
