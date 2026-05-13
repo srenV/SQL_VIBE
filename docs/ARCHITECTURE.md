@@ -287,8 +287,10 @@ getCompatWarnings(dialect) → string[]     // Bekannte Einschränkungen
 
 **Bekannte Einschränkungen:**
 - `RETURNING col1, col2` wird NICHT entfernt (nur `RETURNING *`)
-- `NOT ILIKE` wird nicht unterstützt
+- `NOT ILIKE` wird fälschlicherweise wie `ILIKE` transformiert (known limitation)
 - `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
+- `CONCAT_WS()` wird nicht transformiert (MySQL, known limitation)
+- `FLOAT(n,m)` wird nicht zu `REAL` konvertiert (MySQL, known limitation)
 
 ### MySQL-Kompatibilität (`mysqlCompat.ts`)
 
@@ -312,7 +314,10 @@ getCompatWarnings(dialect) → string[]     // Bekannte Einschränkungen
 **Bekannte Einschränkungen:**
 - ALTER TABLE ADD COLUMN konvertiert keine Typen (nur PG)
 - `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
-- `CONCAT_WS()` wird vereinfacht (nur 2 Argumente + Separator)
+- `CONCAT_WS()` wird nicht transformiert (nur einfache CONCAT)
+- `FLOAT(n,m)` wird nicht zu `REAL` konvertiert
+- `SHOW TABLES LIKE` Pattern-Matching ist eingeschränkt (Backtick-Konvertierung)
+- SET/START TRANSACTION/COMMIT werden nur zeilenweise entfernt
 
 ---
 

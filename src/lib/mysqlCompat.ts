@@ -209,23 +209,23 @@ function transformTruncate(sql: string): string {
 function transformShowAndDescribe(sql: string): string {
   const trimmed = sql.trim();
 
-  // SHOW TABLES
-  if (/^\s*SHOW\s+TABLES\b/i.test(trimmed)) {
-    return "SELECT name AS `Table` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;";
-  }
-
-  // SHOW TABLES FROM db (ignoriert DB-Name)
-  if (/^\s*SHOW\s+TABLES\s+FROM\b/i.test(trimmed)) {
-    return "SELECT name AS `Table` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;";
-  }
-
-  // SHOW TABLES LIKE 'pattern'
+  // SHOW TABLES LIKE 'pattern' (must come before plain SHOW TABLES)
   const showTablesLike = trimmed.match(
     /^\s*SHOW\s+TABLES\s+LIKE\s+'([^']+)'/i
   );
   if (showTablesLike) {
     const pattern = showTablesLike[1].replace(/%/g, "%").replace(/_/g, "_");
     return `SELECT name AS \`Table\` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name LIKE '${pattern}' ORDER BY name;`;
+  }
+
+  // SHOW TABLES FROM db (ignoriert DB-Name, must come before plain SHOW TABLES)
+  if (/^\s*SHOW\s+TABLES\s+FROM\b/i.test(trimmed)) {
+    return "SELECT name AS `Table` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;";
+  }
+
+  // SHOW TABLES
+  if (/^\s*SHOW\s+TABLES\b/i.test(trimmed)) {
+    return "SELECT name AS `Table` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;";
   }
 
   // DESCRIBE table / DESC table

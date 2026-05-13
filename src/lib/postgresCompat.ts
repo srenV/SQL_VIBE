@@ -134,7 +134,10 @@ function transformCreateTable(sql: string): string {
     "$1 INTEGER"
   );
 
-  // SERIAL → INTEGER (will be combined with PRIMARY KEY AUTOINCREMENT later)
+  // SERIAL PRIMARY KEY → INTEGER PRIMARY KEY AUTOINCREMENT (must come before bare SERIAL)
+  result = result.replace(/\b(SMALL|BIG)?SERIAL\s+PRIMARY\s+KEY\b/gi, "INTEGER PRIMARY KEY AUTOINCREMENT");
+
+  // SERIAL → INTEGER (for non-PK contexts, e.g. SERIAL without PRIMARY KEY)
   // BIGSERIAL → same
   result = result.replace(/\b(SMALL|BIG)?SERIAL\b/gi, "INTEGER");
 

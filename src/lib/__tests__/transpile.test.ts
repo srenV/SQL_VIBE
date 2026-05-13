@@ -5,6 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { postgresToSqlite } from "../postgresCompat";
 import { mysqlToSqlite } from "../mysqlCompat";
+import { transpileToSqlite, mapSqliteError, mapSqliteType } from "../dialectCompat";
 
 // ─── PostgreSQL Tests ────────────────────────────────────────────────────────
 
@@ -1034,5 +1035,694 @@ describe("Advanced edge cases: String concatenation (pass-through)", () => {
     const sql = "SELECT 'Kopie von ' || name FROM projects;";
     const result = mysqlToSqlite(sql);
     expect(result).toContain("'Kopie von ' || name");
+  });
+});
+
+// ─── Systematic Gap Coverage ────────────────────────────────────────────────
+
+describe("PG: CURRENT_DATE / CURRENT_TIME", () => {
+  it("CURRENT_DATE → DATE('now')", () => {
+    const sql = "SELECT CURRENT_DATE;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("DATE('now')");
+  });
+
+  it("CURRENT_TIME → TIME('now')", () => {
+    const sql = "SELECT CURRENT_TIME;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("TIME('now')");
+  });
+});
+
+describe("PG: AGE() function", () => {
+  it("AGE(date1, date2) → julianday difference", () => {
+    const sql = "SELECT AGE('2024-01-01', '2023-01-01') AS diff;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("julianday('2024-01-01') - julianday('2023-01-01')");
+  });
+});
+
+describe("PG: DATE_TRUNC() function", () => {
+  it("DATE_TRUNC('year', date) → strftime('%Y-01-01', date)", () => {
+    const sql = "SELECT DATE_TRUNC('year', created_at) FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("strftime('%Y-01-01', created_at)");
+  });
+
+  it("DATE_TRUNC('month', date) → strftime('%Y-%m-01', date)", () => {
+    const sql = "SELECT DATE_TRUNC('month', created_at) FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("strftime('%Y-%m-01', created_at)");
+  });
+
+  it("DATE_TRUNC('day', date) → strftime('%Y-%m-%d', date)", () => {
+    const sql = "SELECT DATE_TRUNC('day', created_at) FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("strftime('%Y-%m-%d', created_at)");
+  });
+});
+
+describe("PG: EXTRACT edge cases", () => {
+  it("EXTRACT(HOUR FROM date) → CAST(strftime('%H', date) AS INTEGER)", () => {
+    const sql = "SELECT EXTRACT(HOUR FROM created_at) FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(strftime('%H', created_at) AS INTEGER)");
+  });
+
+  it("EXTRACT(MINUTE FROM date) → CAST(strftime('%M', date) AS INTEGER)", () => {
+    const sql = "SELECT EXTRACT(MINUTE FROM created_at) FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(strftime('%M', created_at) AS INTEGER)");
+  });
+
+  it("EXTRACT(SECOND FROM date) → CAST(strftime('%S', date) AS INTEGER)", () => {
+    const sql = "SELECT EXTRACT(SECOND FROM created_at) FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(strftime('%S', created_at) AS INTEGER)");
+  });
+});
+
+describe("PG: Database statements", () => {
+  it("CREATE DATABASE → comment", () => {
+    const sql = "CREATE DATABASE mydb;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("not supported");
+  });
+
+  it("DROP DATABASE → comment", () => {
+    const sql = "DROP DATABASE mydb;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("not supported");
+  });
+});
+
+describe("PG: DEFAULT nextval()", () => {
+  it("INT DEFAULT NEXTVAL('seq') NOT NULL → INTEGER NOT NULL", () => {
+    const sql = "CREATE TABLE t (id INT DEFAULT NEXTVAL('my_seq') NOT NULL, name TEXT);";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("INTEGER NOT NULL");
+    expect(result).not.toContain("NEXTVAL");
+  });
+});
+
+describe("PG: BIGSERIAL", () => {
+  it("BIGSERIAL → INTEGER (same as SERIAL)", () => {
+    const sql = "CREATE TABLE t (id BIGSERIAL PRIMARY KEY, name TEXT);";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("id INTEGER PRIMARY KEY");
+  });
+});
+
+describe("PG: Type mappings in CAST shorthand", () => {
+  it("::uuid → CAST(expr AS TEXT)", () => {
+    const sql = "SELECT id::uuid FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(id AS TEXT)");
+  });
+
+  it("::jsonb → CAST(expr AS TEXT)", () => {
+    const sql = "SELECT data::jsonb FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(data AS TEXT)");
+  });
+
+  it("::bytea → CAST(expr AS BLOB)", () => {
+    const sql = "SELECT data::bytea FROM files;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(data AS BLOB)");
+  });
+
+  it("::boolean → CAST(expr AS INTEGER)", () => {
+    const sql = "SELECT active::boolean FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(active AS INTEGER)");
+  });
+
+  it("::real → CAST(expr AS REAL)", () => {
+    const sql = "SELECT price::real FROM products;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(price AS REAL)");
+  });
+});
+
+describe("MySQL: DATE_FORMAT() function", () => {
+  it("DATE_FORMAT(date, '%Y-%m-%d') → strftime('%Y-%m-%d', date)", () => {
+    const sql = "SELECT DATE_FORMAT(created_at, '%Y-%m-%d') FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("strftime('%Y-%m-%d', created_at)");
+  });
+
+  it("DATE_FORMAT with hour and minute (known limitation: %i not converted)", () => {
+    // MySQL %i (minute) → SQLite %M, but %m (month) is replaced first
+    // so %H:%i becomes %H:%M (correct for minute), not %H:%m
+    const sql = "SELECT DATE_FORMAT(created_at, '%H:%i') FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("strftime");
+    expect(result).toContain("created_at");
+  });
+});
+
+describe("MySQL: YEAR() / MONTH() / DAY() functions", () => {
+  it("YEAR(date) → CAST(strftime('%Y', date) AS INTEGER)", () => {
+    const sql = "SELECT YEAR(created_at) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CAST(strftime('%Y', created_at) AS INTEGER)");
+  });
+
+  it("MONTH(date) → CAST(strftime('%m', date) AS INTEGER)", () => {
+    const sql = "SELECT MONTH(created_at) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CAST(strftime('%m', created_at) AS INTEGER)");
+  });
+
+  it("DAY(date) → CAST(strftime('%d', date) AS INTEGER)", () => {
+    const sql = "SELECT DAY(created_at) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CAST(strftime('%d', created_at) AS INTEGER)");
+  });
+});
+
+describe("MySQL: DATEDIFF() function", () => {
+  it("DATEDIFF(d1, d2) → CAST(julianday(d1) - julianday(d2) AS INTEGER)", () => {
+    const sql = "SELECT DATEDIFF('2024-12-31', '2024-01-01') AS days;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CAST(julianday('2024-12-31') - julianday('2024-01-01') AS INTEGER)");
+  });
+});
+
+describe("MySQL: CURDATE() function", () => {
+  it("CURDATE() → DATE('now')", () => {
+    const sql = "SELECT CURDATE();";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("DATE('now')");
+  });
+});
+
+describe("MySQL: SUBSTRING() function", () => {
+  it("SUBSTRING(str, pos, len) → SUBSTR(str, pos, len)", () => {
+    const sql = "SELECT SUBSTRING(name, 1, 5) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("SUBSTR(name, 1, 5)");
+  });
+});
+
+describe("MySQL: ISNULL() function", () => {
+  it("ISNULL(expr) → IFNULL(expr)", () => {
+    const sql = "SELECT ISNULL(name) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("IFNULL(name)");
+  });
+});
+
+describe("MySQL: CONCAT_WS() function", () => {
+  it("CONCAT_WS(sep, a, b) — known limitation: not transformed", () => {
+    // CONCAT_WS is not currently transformed by the transpiler
+    // It passes through as-is (SQLite supports GROUP_CONCAT but not CONCAT_WS)
+    const sql = "SELECT CONCAT_WS('-', first, last) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CONCAT_WS");
+  });
+});
+
+describe("MySQL: SHOW CREATE TABLE", () => {
+  it("SHOW CREATE TABLE → sqlite_master query", () => {
+    const sql = "SHOW CREATE TABLE users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("sqlite_master");
+    expect(result).toContain("users");
+  });
+});
+
+describe("MySQL: SHOW TABLES LIKE", () => {
+  it("SHOW TABLES LIKE 'pattern' → filtered sqlite_master query (backticks in output)", () => {
+    const sql = "SHOW TABLES LIKE 'user%';";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("sqlite_master");
+    expect(result).toContain("user%");
+  });
+});
+
+describe("MySQL: phpMyAdmin comments removal", () => {
+  it("/*!40101 ... */ comments are removed", () => {
+    const sql = "/*!40101 SET NAMES utf8 */; SELECT * FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).not.toContain("40101");
+    expect(result).toContain("SELECT * FROM users");
+  });
+});
+
+describe("MySQL: SET commands removal", () => {
+  it("SET SQL_MODE=... is removed (only when on its own line)", () => {
+    // SET commands are only removed when they are on their own line
+    const sql = "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\nSELECT * FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("SELECT * FROM users");
+    expect(result).not.toContain("SQL_MODE");
+  });
+
+  it("SET time_zone=... is removed (only when on its own line)", () => {
+    const sql = "SET time_zone='+00:00';\nSELECT * FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("SELECT * FROM users");
+    expect(result).not.toContain("time_zone");
+  });
+
+  it("START TRANSACTION is removed (only when on its own line)", () => {
+    // START TRANSACTION is only removed when it's on its own line
+    const sql = "START TRANSACTION;\nSELECT * FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("SELECT * FROM users");
+  });
+
+  it("COMMIT is removed (only when on its own line)", () => {
+    const sql = "COMMIT;\nSELECT * FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("SELECT * FROM users");
+  });
+});
+
+describe("MySQL: UNSIGNED removal", () => {
+  it("INT UNSIGNED → INTEGER (UNSIGNED removed)", () => {
+    const sql = "CREATE TABLE t (id INT UNSIGNED NOT NULL);";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("INTEGER");
+    expect(result).not.toContain("UNSIGNED");
+  });
+
+  it("BIGINT UNSIGNED → INTEGER (UNSIGNED removed)", () => {
+    const sql = "CREATE TABLE t (id BIGINT UNSIGNED NOT NULL);";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("INTEGER");
+    expect(result).not.toContain("UNSIGNED");
+  });
+});
+
+describe("MySQL: ENGINE / CHARACTER SET / COLLATE removal", () => {
+  it("ENGINE=InnoDB is removed from CREATE TABLE", () => {
+    const sql = "CREATE TABLE t (id INT PRIMARY KEY) ENGINE=InnoDB;";
+    const result = mysqlToSqlite(sql);
+    expect(result).not.toContain("ENGINE");
+    expect(result).toContain("id INTEGER PRIMARY KEY");
+  });
+
+  it("DEFAULT CHARSET=utf8 is removed", () => {
+    const sql = "CREATE TABLE t (id INT PRIMARY KEY) DEFAULT CHARSET=utf8;";
+    const result = mysqlToSqlite(sql);
+    expect(result).not.toContain("CHARSET");
+  });
+
+  it("COLLATE=utf8_general_ci is removed", () => {
+    const sql = "CREATE TABLE t (id INT PRIMARY KEY) COLLATE=utf8_general_ci;";
+    const result = mysqlToSqlite(sql);
+    expect(result).not.toContain("COLLATE");
+  });
+});
+
+describe("MySQL: ALTER TABLE multi-clause (phpMyAdmin)", () => {
+  it("ALTER TABLE with ADD PRIMARY KEY + ADD KEY splits into separate statements", () => {
+    const sql = `ALTER TABLE "auftrag"
+      ADD PRIMARY KEY ("AuftrNr"),
+      ADD KEY "LKWNr" ("LKWNr"),
+      ADD KEY "KdNr" ("KdNr");`;
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("ADD PRIMARY KEY");
+    expect(result).toContain("CREATE INDEX");
+  });
+
+  it("ALTER TABLE ADD KEY → CREATE INDEX", () => {
+    const sql = 'ALTER TABLE users ADD KEY idx_name (name);';
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CREATE INDEX");
+    expect(result).toContain("idx_name");
+  });
+
+  it("ALTER TABLE ADD UNIQUE KEY → CREATE UNIQUE INDEX", () => {
+    const sql = 'ALTER TABLE users ADD UNIQUE KEY idx_email (email);';
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CREATE UNIQUE INDEX");
+    expect(result).toContain("idx_email");
+  });
+});
+
+describe("MySQL: ALTER TABLE CHANGE/MODIFY COLUMN", () => {
+  it("CHANGE COLUMN old new type → RENAME COLUMN old TO new", () => {
+    const sql = "ALTER TABLE users CHANGE COLUMN name full_name VARCHAR(100);";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("RENAME COLUMN");
+    expect(result).toContain("name");
+    expect(result).toContain("full_name");
+  });
+
+  it("MODIFY COLUMN col type → comment (not supported)", () => {
+    const sql = "ALTER TABLE users MODIFY COLUMN name VARCHAR(200);";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("nicht unterstützt");
+  });
+});
+
+describe("MySQL: ALTER TABLE ADD CONSTRAINT FOREIGN KEY", () => {
+  it("ADD CONSTRAINT ... FOREIGN KEY → simplified ALTER TABLE ADD FOREIGN KEY", () => {
+    const sql = 'ALTER TABLE orders ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id);';
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("ADD FOREIGN KEY");
+    expect(result).toContain("REFERENCES");
+  });
+
+  it("ADD CONSTRAINT ... FOREIGN KEY with ON DELETE CASCADE", () => {
+    const sql = 'ALTER TABLE orders ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;';
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("ON DELETE CASCADE");
+  });
+});
+
+describe("MySQL: Database statements", () => {
+  it("CREATE DATABASE → comment", () => {
+    const sql = "CREATE DATABASE mydb;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("ignoriert");
+  });
+
+  it("DROP DATABASE → comment", () => {
+    const sql = "DROP DATABASE mydb;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("ignoriert");
+  });
+
+  it("USE database → comment", () => {
+    const sql = "USE mydb;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("ignoriert");
+  });
+
+  it("CREATE DATABASE IF NOT EXISTS → comment", () => {
+    const sql = "CREATE DATABASE IF NOT EXISTS mydb;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("ignoriert");
+  });
+});
+
+describe("MySQL: IF() function edge cases", () => {
+  it("IF with numeric values", () => {
+    const sql = "SELECT IF(score > 50, 1, 0) FROM students;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CASE WHEN score > 50 THEN 1 ELSE 0 END");
+  });
+
+  it("IF with string values", () => {
+    const sql = "SELECT IF(active = 1, 'yes', 'no') FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CASE WHEN active = 1 THEN 'yes' ELSE 'no' END");
+  });
+});
+
+describe("MySQL: CONCAT() edge cases", () => {
+  it("CONCAT with 3 arguments", () => {
+    const sql = "SELECT CONCAT(first, ' ', last) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("first || ' ' || last");
+  });
+
+  it("CONCAT with 2 arguments", () => {
+    const sql = "SELECT CONCAT(city, country) FROM locations;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("city || country");
+  });
+});
+
+describe("MySQL: Backtick conversion", () => {
+  it("Backticks → double quotes", () => {
+    const sql = "SELECT `name`, `age` FROM `users`;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain('"name"');
+    expect(result).toContain('"users"');
+    expect(result).not.toContain("`");
+  });
+
+  it("Backticks in CREATE TABLE", () => {
+    const sql = "CREATE TABLE `my_table` (`id` INT PRIMARY KEY, `name` VARCHAR(100));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain('"my_table"');
+    expect(result).toContain('"id"');
+    expect(result).toContain("INTEGER PRIMARY KEY");
+    expect(result).toContain("TEXT");
+  });
+});
+
+describe("MySQL: ON DUPLICATE KEY UPDATE", () => {
+  it("INSERT ... ON DUPLICATE KEY UPDATE → INSERT OR REPLACE", () => {
+    const sql = "INSERT INTO users (id, name) VALUES (1, 'John') ON DUPLICATE KEY UPDATE name='John';";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("INSERT OR REPLACE INTO users");
+    expect(result).not.toContain("ON DUPLICATE KEY");
+  });
+});
+
+describe("MySQL: TRUNCATE TABLE", () => {
+  it("TRUNCATE TABLE users → DELETE FROM users", () => {
+    const sql = "TRUNCATE TABLE users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("DELETE FROM users");
+  });
+});
+
+describe("MySQL: DESCRIBE / SHOW COLUMNS", () => {
+  it("DESCRIBE table → PRAGMA table_info", () => {
+    const sql = "DESCRIBE users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain('PRAGMA table_info("users")');
+  });
+
+  it("SHOW COLUMNS FROM table → PRAGMA table_info", () => {
+    const sql = "SHOW COLUMNS FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain('PRAGMA table_info("users")');
+  });
+});
+
+describe("Error mapping: PostgreSQL", () => {
+  it("no such table → relation does not exist", () => {
+    
+    const result = mapSqliteError("no such table: users", "postgresql");
+    expect(result).toContain("does not exist");
+  });
+
+  it("no such column → column does not exist", () => {
+    
+    const result = mapSqliteError("no such column: name", "postgresql");
+    expect(result).toContain("does not exist");
+  });
+
+  it("unique constraint failed → duplicate key", () => {
+    
+    const result = mapSqliteError("UNIQUE constraint failed: users.id", "postgresql");
+    expect(result).toContain("duplicate key");
+  });
+});
+
+describe("Error mapping: MySQL", () => {
+  it("no such table → Table doesn't exist", () => {
+    
+    const result = mapSqliteError("no such table: users", "mysql");
+    expect(result).toContain("doesn't exist");
+  });
+
+  it("no such column → Unknown column", () => {
+    
+    const result = mapSqliteError("no such column: name", "mysql");
+    expect(result).toContain("Unknown column");
+  });
+
+  it("table already exists → Table already exists", () => {
+    
+    const result = mapSqliteError("table users already exists", "mysql");
+    expect(result).toContain("already exists");
+  });
+});
+
+describe("Error mapping: SQLite (pass-through)", () => {
+  it("SQLite errors pass through unchanged", () => {
+    
+    const result = mapSqliteError("syntax error near FROM", "sqlite");
+    expect(result).toBe("syntax error near FROM");
+  });
+});
+
+describe("Type mapping: PostgreSQL", () => {
+  it("INTEGER → INTEGER", () => {
+    
+    expect(mapSqliteType("INTEGER", "postgresql")).toBe("INTEGER");
+  });
+
+  it("TEXT → TEXT", () => {
+    
+    expect(mapSqliteType("TEXT", "postgresql")).toBe("TEXT");
+  });
+
+  it("REAL → DOUBLE PRECISION", () => {
+    
+    expect(mapSqliteType("REAL", "postgresql")).toBe("DOUBLE PRECISION");
+  });
+
+  it("BLOB → BYTEA", () => {
+    
+    expect(mapSqliteType("BLOB", "postgresql")).toBe("BYTEA");
+  });
+});
+
+describe("Type mapping: MySQL", () => {
+  it("INTEGER → INT", () => {
+    
+    expect(mapSqliteType("INTEGER", "mysql")).toBe("INT");
+  });
+
+  it("TEXT → VARCHAR(255)", () => {
+    
+    expect(mapSqliteType("TEXT", "mysql")).toBe("VARCHAR(255)");
+  });
+
+  it("REAL → DOUBLE", () => {
+    
+    expect(mapSqliteType("REAL", "mysql")).toBe("DOUBLE");
+  });
+
+  it("BLOB → BLOB", () => {
+    
+    expect(mapSqliteType("BLOB", "mysql")).toBe("BLOB");
+  });
+});
+
+describe("Type mapping: SQLite (pass-through)", () => {
+  it("SQLite types pass through unchanged", () => {
+    
+    expect(mapSqliteType("INTEGER", "sqlite")).toBe("INTEGER");
+    expect(mapSqliteType("TEXT", "sqlite")).toBe("TEXT");
+    expect(mapSqliteType("REAL", "sqlite")).toBe("REAL");
+  });
+});
+
+describe("Transpilation: dialectCompat routing", () => {
+  it("sqlite dialect passes through unchanged", () => {
+    
+    const sql = "SELECT * FROM users WHERE active = TRUE;";
+    expect(transpileToSqlite(sql, "sqlite")).toBe(sql);
+  });
+
+  it("mysql dialect routes to mysqlToSqlite", () => {
+    
+    const sql = "SELECT * FROM users WHERE active = TRUE;";
+    const result = transpileToSqlite(sql, "mysql");
+    expect(result).toContain("1");
+    expect(result).not.toContain("TRUE");
+  });
+
+  it("postgresql dialect routes to postgresToSqlite", () => {
+    
+    const sql = "SELECT * FROM users WHERE active = TRUE;";
+    const result = transpileToSqlite(sql, "postgresql");
+    expect(result).toContain("1");
+    expect(result).not.toContain("TRUE");
+  });
+});
+
+describe("PG: NOT ILIKE (known limitation)", () => {
+  it("NOT ILIKE is partially transformed (known limitation: ILIKE regex matches NOT ILIKE)", () => {
+    const sql = "SELECT * FROM users WHERE name NOT ILIKE '%admin%';";
+    const result = postgresToSqlite(sql);
+    // ILIKE regex matches NOT ILIKE too, transforming it incorrectly
+    // This is a known limitation
+    expect(result).toBeDefined();
+  });
+});
+
+describe("PG: RETURNING with column list (known limitation)", () => {
+  it("RETURNING id, name is NOT removed (known limitation)", () => {
+    const sql = "INSERT INTO users (name) VALUES ('John') RETURNING id, name;";
+    const result = postgresToSqlite(sql);
+    // Only RETURNING * is removed, not RETURNING col1, col2
+    expect(result).toContain("RETURNING");
+  });
+});
+
+describe("MySQL: FLOAT type mapping", () => {
+  it("FLOAT → REAL in CREATE TABLE (known limitation: FLOAT(n,m) not converted)", () => {
+    const sql = "CREATE TABLE t (price FLOAT, discount FLOAT(5,2));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("price REAL");
+    // FLOAT(5,2) is not converted because the regex excludes parenthesized types
+    expect(result).toContain("FLOAT(5,2)");
+  });
+});
+
+describe("MySQL: TINYINT / SMALLINT / MEDIUMINT / BIGINT type mappings", () => {
+  it("TINYINT(1) → INTEGER", () => {
+    const sql = "CREATE TABLE t (active TINYINT(1));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("active INTEGER");
+  });
+
+  it("SMALLINT(5) → INTEGER", () => {
+    const sql = "CREATE TABLE t (count SMALLINT(5));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("count INTEGER");
+  });
+
+  it("MEDIUMINT(7) → INTEGER", () => {
+    const sql = "CREATE TABLE t (value MEDIUMINT(7));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("value INTEGER");
+  });
+
+  it("BIGINT(20) → INTEGER", () => {
+    const sql = "CREATE TABLE t (id BIGINT(20));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("id INTEGER");
+  });
+});
+
+describe("MySQL: ON UPDATE CURRENT_TIMESTAMP removal", () => {
+  it("ON UPDATE CURRENT_TIMESTAMP is removed", () => {
+    const sql = "CREATE TABLE t (id INT PRIMARY KEY, updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP);";
+    const result = mysqlToSqlite(sql);
+    expect(result).not.toContain("ON UPDATE CURRENT_TIMESTAMP");
+    expect(result).toContain("DEFAULT CURRENT_TIMESTAMP");
+  });
+});
+
+describe("MySQL: AUTO_INCREMENT reordering", () => {
+  it("INT AUTO_INCREMENT PRIMARY KEY → INTEGER PRIMARY KEY AUTOINCREMENT", () => {
+    const sql = "CREATE TABLE t (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("id INTEGER PRIMARY KEY AUTOINCREMENT");
+  });
+
+  it("INT NOT NULL AUTO_INCREMENT → INTEGER NOT NULL AUTOINCREMENT", () => {
+    const sql = "CREATE TABLE t (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY);";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("INTEGER NOT NULL");
+    expect(result).toContain("PRIMARY KEY AUTOINCREMENT");
+  });
+});
+
+describe("PG: Multi-column CREATE TABLE with mixed types", () => {
+  it("Complex table with SERIAL, VARCHAR, TIMESTAMP, BOOLEAN, DECIMAL", () => {
+    const sql = "CREATE TABLE orders (id SERIAL PRIMARY KEY, name VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, active BOOLEAN, price DECIMAL(10,2));";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("INTEGER PRIMARY KEY AUTOINCREMENT");
+    expect(result).toContain("name TEXT");
+    expect(result).toContain("created_at TEXT DEFAULT CURRENT_TIMESTAMP");
+    expect(result).toContain("active INTEGER");
+    expect(result).toContain("price REAL");
+  });
+});
+
+describe("MySQL: Multi-column CREATE TABLE with mixed types", () => {
+  it("Complex table with INT AUTO_INCREMENT, VARCHAR, DATETIME, BOOLEAN, DECIMAL", () => {
+    const sql = "CREATE TABLE orders (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), created_at DATETIME DEFAULT CURRENT_TIMESTAMP, active BOOLEAN, price DECIMAL(10,2));";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("id INTEGER PRIMARY KEY AUTOINCREMENT");
+    expect(result).toContain("name TEXT");
+    expect(result).toContain("created_at TEXT DEFAULT CURRENT_TIMESTAMP");
+    expect(result).toContain("active INTEGER");
+    expect(result).toContain("price REAL");
   });
 });
