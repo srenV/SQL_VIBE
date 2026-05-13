@@ -7,7 +7,9 @@ import { Container } from "@/components/container";
 import { FadeIn } from "@/components/animations";
 import { useProgress } from "@/hooks/useProgress";
 import { ACHIEVEMENTS, LEVELS, getLevel } from "@/lib/levelSystem";
+import type { AchievementDef } from "@/lib/levelSystem";
 import { AchievementIcon } from "@/components/achievementIcon";
+import { AchievementModal, useAchievementModal } from "@/components/achievementModal";
 
 interface LessonMeta {
   id: string;
@@ -24,6 +26,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
   const { progress } = useProgress();
   const t = useTranslations("profil");
   const info = getLevel(progress.totalPoints);
+  const achievementModal = useAchievementModal();
 
   const totalSolved = Object.values(progress.exercises).filter((e) => e.completed).length;
   const lessonsComplete = lessons.filter((l) =>
@@ -155,11 +158,13 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ delay: 0.12 + i * 0.03, duration: 0.3, ease: "easeOut" }}
                   >
-                    <div
-                      className={`relative rounded-2xl p-3 text-center border transition-all duration-200 ${
+                    <button
+                      type="button"
+                      onClick={() => achievementModal.open(ach, unlocked)}
+                      className={`relative w-full rounded-2xl p-3 text-center border transition-all duration-200 cursor-pointer hover:scale-[1.03] active:scale-[0.98] ${
                         unlocked
-                          ? "border-amber-400/30 bg-linear-to-b from-amber-50/80 to-yellow-50/40 dark:from-amber-900/20 dark:to-yellow-900/10"
-                          : "border-surface-dim bg-surface-dim/40 dark:border-dark-dim dark:bg-dark-dim/30 opacity-50"
+                          ? "border-amber-400/30 bg-linear-to-b from-amber-50/80 to-yellow-50/40 dark:from-amber-900/20 dark:to-yellow-900/10 hover:border-amber-400/50 hover:shadow-md hover:shadow-amber-200/20 dark:hover:shadow-amber-900/20"
+                          : "border-surface-dim bg-surface-dim/40 dark:border-dark-dim dark:bg-dark-dim/30 opacity-50 hover:opacity-70 hover:border-primary-200 dark:hover:border-primary-800"
                       }`}
                     >
                       {unlocked && (
@@ -174,10 +179,7 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
                       <p className={`text-[11px] font-semibold leading-tight ${unlocked ? "text-ink" : "text-ink-muted"}`}>
                         {ach.name}
                       </p>
-                      <p className={`text-[10px] mt-0.5 leading-tight line-clamp-2 ${unlocked ? "text-ink-muted" : "text-ink-muted/40"}`}>
-                        {ach.description}
-                      </p>
-                    </div>
+                    </button>
                   </motion.div>
                 );
               })}
@@ -275,6 +277,13 @@ export function ProfilClient({ lessons, storyTotal }: ProfilClientProps) {
         )}
 
       </Container>
+
+      {/* Achievement detail modal */}
+      <AchievementModal
+        achievement={achievementModal.selected}
+        unlocked={achievementModal.selectedUnlocked}
+        onClose={achievementModal.close}
+      />
     </main>
   );
 }
