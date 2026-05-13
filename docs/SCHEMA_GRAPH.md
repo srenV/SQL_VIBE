@@ -1,4 +1,4 @@
-# Schema-Explorer & RM-Graph — SQL-Trainer
+# Schema-Explorer & RM-Graph — SQL VIBE
 
 Detaillierte Dokumentation des Schema-Explorers und des interaktiven ER-Graphen.
 

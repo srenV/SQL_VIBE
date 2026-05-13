@@ -1,4 +1,4 @@
-# Playground-Infrastruktur — SQL-Trainer
+# Playground-Infrastruktur — SQL VIBE
 
 Dokumentation der Playground-Engine: sql.js Integration, Query-Ausführung, Validierung und Fehlerbehandlung.
 

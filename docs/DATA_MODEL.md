@@ -1,4 +1,4 @@
-# Datenmodell — SQL-Trainer
+# Datenmodell — SQL VIBE
 
 Dokumentation des Datenmodells: Katalog-Struktur, Datasets, Übungen und Typen.
 

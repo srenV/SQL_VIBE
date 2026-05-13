@@ -1,6 +1,6 @@
-# Testing — SQL-Trainer
+# Testing — SQL VIBE
 
-Test-Strategie, Test-Struktur und Test-Abdeckung der SQL-Trainer MySQL-Lernplattform.
+Test-Strategie, Test-Struktur und Test-Abdeckung der SQL VIBE Lernplattform.
 
 ---
 

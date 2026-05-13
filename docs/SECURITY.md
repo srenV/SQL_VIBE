@@ -1,6 +1,6 @@
-# Security & Datenschutz — SQL-Trainer
+# Security & Datenschutz — SQL VIBE
 
-Sicherheits- und Datenschutzkonzept der SQL-Trainer MySQL-Lernplattform.
+Sicherheits- und Datenschutzkonzept der SQL VIBE Lernplattform.
 
 ---
 
@@ -8,10 +8,11 @@ Sicherheits- und Datenschutzkonzept der SQL-Trainer MySQL-Lernplattform.
 
 1. [Architektur-Sicherheit](#architektur-sicherheit)
 2. [Client-Side Security](#client-side-security)
-3. [Datenschutz (DSGVO)](#datenschutz-dsgvo)
-4. [Datenhaltung](#datenhaltung)
-5. [Supply Chain](#supply-chain)
-6. [Threat Model](#threat-model)
+3. [CodeMirror 6 Editor Security](#codemirror-6-editor-security)
+4. [Datenschutz (DSGVO)](#datenschutz-dsgvo)
+5. [Datenhaltung](#datenhaltung)
+6. [Supply Chain](#supply-chain)
+7. [Threat Model](#threat-model)
 
 ---
 
@@ -19,7 +20,7 @@ Sicherheits- und Datenschutzkonzept der SQL-Trainer MySQL-Lernplattform.
 
 ### Zero-Server-Architektur
 
-Der SQL-Trainer ist ein **reiner Static Export** — es gibt:
+SQL VIBE ist ein **reiner Static Export** — es gibt:
 
 - ❌ Keine API-Routen
 - ❌ Keine Server-seitige Logik
@@ -45,9 +46,26 @@ Der SQL-Trainer ist ein **reiner Static Export** — es gibt:
 | Mechanismus | Status |
 |------------|--------|
 | React JSX Escaping | ✅ Standard (alle `{value}` werden escaped) |
-| `dangerouslySetInnerHTML` | ⚠️ Nur in `ThemeScript` (statisches JS, keine User-Inputs) und `renderMarkdown` (statische Lerninhalte, mit `escapeHtml`) |
+| `dangerouslySetInnerHTML` | ⚠️ Nur in statischen Kontexten (ThemeScript, JSON-LD, SCOPED_CSS) und `renderMarkdown` (mit `escapeHtml` für Code-Blöcke und Tabellen-Zellen) |
 | `eval()` | ❌ Nicht verwendet |
-| `innerHTML` | ⚠️ Nur in `scrambleText` (anime.js, statische Texte) |
+| `innerHTML` | ⚠️ Nur in `scrambleText` (anime.js, mit `sanitizeForScramble()` gegen XSS geschützt) |
+
+### XSS-Schutzmaßnahmen
+
+1. **`renderMarkdown()`** in `ArticlePageClient.tsx`:
+   - Code-Blöcke werden mit `escapeHtml()` escaped
+   - Tabellen-Zellen werden mit `escapeHtml()` escaped
+   - Kommentare werden mit `escapeHtml()` escaped
+
+2. **`scrambleText`** in `storyIntro.tsx` und `introOverlay.tsx`:
+   - Alle Texte werden vor der Übergabe an anime.js `scrambleText()` mit `sanitizeForScramble()` bereinigt
+   - `sanitizeForScramble()` entfernt HTML-Tags und escaped `&`, `<`, `>`
+   - `introOverlay.tsx` verwendet ausschließlich hartcodierte Texte (kein Risiko)
+
+3. **Statische `dangerouslySetInnerHTML`**:
+   - ThemeScript: Hardcoded JS, keine User-Inputs
+   - JSON-LD: `JSON.stringify()` produziert sicheres JSON
+   - SCOPED_CSS: Hardcoded CSS-Konstanten
 
 ### SQL-Injection im Playground
 
@@ -57,6 +75,7 @@ Der Playground führt **User-SQL** in einer **isolierten In-Memory sql.js-Datenb
 - Keine Verbindung zu externen Datenbanken
 - sql.js ist ein Read-Only-WASM-Modul ohne Netzwerkzugriff
 - `PRAGMA foreign_key_list` und `PRAGMA table_info` sind read-only
+- Tabellennamen in PRAGMA-Queries werden mit `escapeIdentifier()` gequoted
 
 **Risiko:** Keines — selbst destruktives SQL (`DROP TABLE`, `DELETE`) betrifft nur die lokale In-Memory-DB.
 
@@ -86,6 +105,46 @@ sql.js läuft in der Browser-WASM-Sandbox:
 - Kein Netzwerk-Zugriff
 - Kein DOM-Zugriff
 - Speicher ist auf den Tab beschränkt
+
+---
+
+## CodeMirror 6 Editor Security
+
+### Architektur
+
+Der SQL-Editor basiert auf **CodeMirror 6** mit folgenden Erweiterungen:
+
+| Erweiterung | Zweck | Sicherheitsrelevanz |
+|-------------|-------|---------------------|
+| `@codemirror/lang-sql` | SQL-Syntax-Highlighting | ✅ Nur Darstellung, keine Ausführung |
+| `@codemirror/autocomplete` | Auto-Vervollständigung | ✅ Text-basiert, kein HTML-Rendering |
+| `@codemirror/commands` | Tastatur-Commands | ✅ Standard-Befehle |
+| `@codemirror/search` | Suchen/Ersetzen | ✅ Standard-Suche |
+| `@codemirror/view` | Editor-View | ✅ Inline-Styles (hardcoded) |
+| `@codemirror/state` | Editor-State | ✅ State-Management |
+| `@codemirror/language` | Bracket Matching | ✅ Nur Darstellung |
+
+### Autocompletion Security
+
+Die Auto-Vervollständigung verwendet eine **benutzerdefinierte Completion-Source** (`sqlCompletionSource`):
+
+- **Keyword-Filter:** Nur ~80 SQL-Schlüsselwörter (UPPERCASE) werden vorgeschlagen
+- **Schema-Aware:** Tabellen- und Spaltennamen aus der aktuellen Datenbank
+- **Prefix-Matching:** Vorschläge werden nach dem aktuellen Präfix gefiltert
+- **String-Erkennung:** Keine Autovervollständigung innerhalb von Strings
+- **Rendering:** CodeMirror rendert Tooltips als **Text-Content**, nicht als HTML → kein XSS-Risiko
+- **Toggle-Prop:** `autocompleteEnabled` erlaubt das Deaktivieren der Autovervollständigung
+
+### Theme Security
+
+- Alle CSS-Werte im CodeMirror-Theme sind **hardcoded** (keine dynamischen Werte)
+- `position: "fixed"` und `zIndex: "9999"` auf Autocomplete-Tooltips verhindern Clipping durch Container-Overflow
+- Keine injizierbaren CSS-Werte
+
+### Linting
+
+- `@codemirror/lint` wird **nicht** aktiv verwendet (kein `linter()` konfiguriert)
+- Das `lintKeymap` wurde entfernt, da es ohne aktive Lint-Erweiterung nur tote Keybindings registriert
 
 ---
 
@@ -157,9 +216,12 @@ Da **keine personenbezogenen Daten** verarbeitet werden, ist keine Einwilligung 
 |-----------|--------|--------|
 | **Framework** | next, react, react-dom | Niedrig (etabliert, Vercel/Meta) |
 | **Styling** | tailwindcss, clsx, tailwind-merge | Niedrig |
-| **Animation** | framer-motion | Niedrig |
+| **Animation** | framer-motion, animejs | Niedrig |
 | **SQL** | sql.js | Niedrig (WASM, keine Netzwerk-I/O) |
+| **Editor** | @codemirror/autocomplete, @codemirror/commands, @codemirror/lang-sql, @codemirror/search, @codemirror/state, @codemirror/view, @codemirror/language, codemirror | Niedrig (etabliert, keine Netzwerk-I/O) |
 | **Graph** | @xyflow/react, dagre | Niedrig |
+| **i18n** | next-intl | Niedrig |
+| **Fonts** | Inter (lokal), JetBrains Mono (lokal) | Kein (lokal gehostet, kein CDN) |
 | **Testing** | vitest, playwright, testing-library | Dev-only |
 
 ### Audit
@@ -183,11 +245,15 @@ npm audit fix      # Auto-Fix für bekannte CVEs
 | **Information Disclosure** | Source Code | Niedrig | Keine Secrets im Code |
 | **Denial of Service** | Große WASM-Allokation / SQL-Import | Niedrig | Browser-Tab-Limit; 5 MB Import-Limit; Dateityp-Check |
 | **Elevation of Privilege** | — | Kein | Keine Rollen/Rechte |
+| **XSS via Markdown** | `renderMarkdown` Tabellen | Behoben | `escapeHtml()` auf alle Tabellen-Zellen |
+| **XSS via anime.js** | `scrambleText` innerHTML | Behoben | `sanitizeForScramble()` entfernt HTML-Tags und escaped Sonderzeichen |
 
 ### Fazit
 
-Der SQL-Trainer hat eine **minimale Angriffsfläche**:
+SQL VIBE hat eine **minimale Angriffsfläche**:
 - Kein Server → keine Server-Angriffe
 - Keine Auth → keine Auth-Angriffe
 - Keine externen APIs → keine Supply-Chain-Angriffe zur Laufzeit
 - WASM-Sandbox → isolierte SQL-Ausführung
+- CodeMirror 6 → Text-basiertes Rendering, kein XSS-Risiko
+- Alle `innerHTML`/`dangerouslySetInnerHTML` → statisch oder sanitized

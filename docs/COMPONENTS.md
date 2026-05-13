@@ -1,4 +1,4 @@
-# Komponenten — SQL-Trainer
+# Komponenten — SQL VIBE
 
 Dokumentation aller React-Komponenten mit Props, Varianten und Verwendungszweck.
 
@@ -186,22 +186,46 @@ Playground
 
 ### SqlEditor
 
-SQL-Textarea mit Monospace-Font und Tastatur-Shortcut.
+CodeMirror 6 SQL-Editor mit Syntax-Highlighting, Autocompletion und Dialekt-Wechsel.
 
 ```typescript
 interface SqlEditorProps {
+  /** Controlled value of the editor */
+  value: string;
+  /** Callback when editor content changes */
+  onChange: (value: string) => void;
+  /** Whether the editor is in an error state */
   error?: boolean;
+  /** Accessible label for the editor */
   label?: string;
+  /** Placeholder text */
+  placeholder?: string;
+  /** Callback when user presses Ctrl+Enter */
   onSubmit?: () => void;
-  // + alle nativen textarea-Attribute
+  /** Whether the editor is disabled */
+  disabled?: boolean;
+  /** Schema for autocompletion: table name → column names */
+  schema?: SqlSchema;
+  /** Whether autocompletion is enabled (default: true) */
+  autocompleteEnabled?: boolean;
+  /** Additional CSS class names */
+  className?: string;
+  /** HTML id attribute */
+  id?: string;
 }
 ```
 
 **Features:**
+- CodeMirror 6 mit Compartment-basiertem Rekonfigurations-System
+- Dialekt-Wechsel (SQLite/MySQL/PostgreSQL) per `useDialect()`
+- Dark/Light Theme per `useTheme()`
 - `Ctrl+Enter` / `Cmd+Enter` → Submit
-- `spellCheck={false}` (SQL ist kein natürlicher Text)
-- Error-State: roter Border + `aria-invalid`
-- `resize-y` für flexible Höhe
+- Custom `sqlCompletionSource()` — SQL-Keywords (UPPERCASE) + Schema-aware
+- Bracket Matching, Close Brackets, Search, History
+- Min. 6 Zeilen (`minHeight: "10rem"`), auto-wachsend
+- Autocomplete Tooltip: `position: "fixed"`, `zIndex: "9999"` (kein Clipping)
+- `autocompleteEnabled` Prop zum Deaktivieren der Autovervollständigung
+- JetBrains Mono Font für Code
 
 ---
 
@@ -456,6 +480,80 @@ Dark/Light Mode Toggle mit `useSyncExternalStore`.
 - `useSyncExternalStore` für sofortige Reaktion ohne Flackern
 - SSR-kompatibel (leerer Button während SSR)
 - Persistenz via `localStorage`
+
+---
+
+### DialectSwitcher
+
+Dropdown zum Wechseln des SQL-Dialekts (SQLite/MySQL/PostgreSQL).
+
+```typescript
+// Keine Props — verwendet useDialect() intern
+```
+
+**Features:**
+- Framer Motion Animation (öffnet nach oben)
+- `z-index` Layering über anderen UI-Elementen
+- Persistiert Dialekt in `localStorage`
+
+---
+
+### LanguageSwitcher
+
+Dropdown zum Wechseln der Sprache (Deutsch/English).
+
+```typescript
+// Keine Props — verwendet next-intl intern
+```
+
+**Features:**
+- Framer Motion Animation (öffnet nach oben)
+- `z-index` Layering über anderen UI-Elementen
+- Path-based Locale-Wechsel (`/de/` ↔ `/en/`)
+
+---
+
+### IntroOverlay
+
+Anime.js Intro-Animation mit Scramble-Text-Effekt.
+
+```typescript
+// Keine Props
+```
+
+**Features:**
+- Zwei-Slide-Animation: SQL-Keywords → "SQL-VIBE"
+- `scrambleText` mit zufälligen Zeichen (░▒▓█)
+- JetBrains Mono Font für Tech-Vibe
+- `sessionStorage` verhindert Wiederholung
+- `prefers-reduced-motion` → sofort überspringen
+- Klick zum Überspringen
+
+---
+
+### StoryIntro
+
+Narrativer Intro-Bildschirm für Story-Modus.
+
+```typescript
+interface StoryIntroProps {
+  scenarioTitle: string;
+  intro: string;
+  difficulty: string;
+  chapterCount: number;
+  solvedCount: number;
+  currentChapter: number;
+  hasProgress: boolean;
+  onStart: () => void;
+}
+```
+
+**Features:**
+- Anime.js `scrambleText` für Titel und Intro-Text
+- `sanitizeForScramble()` schützt vor XSS in `innerHTML`
+- JetBrains Mono Font
+- Fortschritts-Punkte (gelöst/aktuell/gesperrt)
+- `prefers-reduced-motion` → statische Anzeige
 
 ---
 
