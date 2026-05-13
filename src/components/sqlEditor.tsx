@@ -199,14 +199,16 @@ export const SqlEditor = React.memo(function SqlEditor({
   onSubmit,
   disabled,
   schema,
-  autocompleteEnabled = true,
+  autocompleteEnabled: autocompleteEnabledProp,
   className,
   id,
 }: SqlEditorProps) {
   const t = useTranslations("sandbox");
-  const { dialect } = useDialect();
+  const { dialect, autocompleteEnabled: globalAutocompleteEnabled } = useDialect();
   const { theme: appTheme } = useTheme();
   const isDark = appTheme === "dark";
+  // Use prop override if provided, otherwise fall back to global state
+  const autocompleteEnabled = autocompleteEnabledProp ?? globalAutocompleteEnabled;
 
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);

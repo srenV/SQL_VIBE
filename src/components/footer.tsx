@@ -5,13 +5,11 @@ import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/languageSwitcher";
 import { ThemeToggle } from "@/components/themeToggle";
 import { DialectSwitcher } from "@/components/dialectSwitcher";
-import { useDialect } from "@/lib/dialect";
+import { AutocompleteToggle } from "@/components/autocompleteToggle";
 
 export function Footer() {
   const t = useTranslations("footer");
   const tNav = useTranslations("nav");
-  const tCommon = useTranslations("common");
-  const { autocompleteEnabled, setAutocompleteEnabled } = useDialect();
 
   return (
     <footer className="border-t border-surface-dim bg-surface-dim/40">
@@ -79,23 +77,7 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <DialectSwitcher />
-            <button
-              onClick={() => setAutocompleteEnabled(!autocompleteEnabled)}
-              className={`
-                inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium
-                transition-colors duration-200
-                ${autocompleteEnabled
-                  ? "bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 border border-primary-200 dark:border-primary-800"
-                  : "bg-surface-dim/60 dark:bg-dark-dim/60 text-ink-muted border border-surface-dim dark:border-dark-dim hover:text-ink"
-                }
-              `}
-              title={autocompleteEnabled ? tCommon("autocompleteOn") : tCommon("autocompleteOff")}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              {tCommon("autocomplete")}
-            </button>
+            <AutocompleteToggle />
             <ThemeToggle />
           </div>
           <span className="text-xs text-ink-muted">

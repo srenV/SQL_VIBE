@@ -73,59 +73,38 @@ function setDialect(dialect: Dialect): void {
 
 // ─── Autocomplete external store ────────────────────────────────────────
 
-function getStoredAutocomplete(): boolean {
+function readAutocomplete(): boolean {
   if (typeof window === "undefined") return true;
   try {
-    const stored = localStorage.getItem(AUTOCOMPLETE_KEY);
-    if (stored === "false") return false;
-    if (stored === "true") return true;
-  } catch {
-    // localStorage not available
-  }
+    const v = localStorage.getItem(AUTOCOMPLETE_KEY);
+    if (v === "false") return false;
+  } catch { /* ignore */ }
   return true;
 }
 
-function setStoredAutocomplete(enabled: boolean): void {
-  try {
-    localStorage.setItem(AUTOCOMPLETE_KEY, String(enabled));
-  } catch {
-    // localStorage not available
-  }
+function writeAutocomplete(enabled: boolean): void {
+  try { localStorage.setItem(AUTOCOMPLETE_KEY, String(enabled)); } catch { /* ignore */ }
 }
 
-// Initialize lazily to avoid hydration mismatch — server always returns true,
-// client reads from localStorage on first actual access.
+// Module-level state + listeners (same pattern as dialect)
 let currentAutocomplete: boolean = true;
-let autocompleteInitialized = false;
+const acListeners = new Set<() => void>();
 
-function ensureAutocompleteInitialized(): void {
-  if (!autocompleteInitialized) {
-    currentAutocomplete = getStoredAutocomplete();
-    autocompleteInitialized = true;
-  }
+// Initialize from localStorage immediately on client
+if (typeof window !== "undefined") {
+  currentAutocomplete = readAutocomplete();
 }
 
-const autocompleteListeners = new Set<() => void>();
-
-function subscribeAutocomplete(callback: () => void): () => void {
-  autocompleteListeners.add(callback);
-  return () => autocompleteListeners.delete(callback);
+function subscribeAc(cb: () => void): () => void {
+  acListeners.add(cb);
+  return () => { acListeners.delete(cb); };
 }
-
-function getAutocompleteSnapshot(): boolean {
-  ensureAutocompleteInitialized();
-  return currentAutocomplete;
-}
-
-function getAutocompleteServerSnapshot(): boolean {
-  return true;
-}
-
-function setAutocomplete(enabled: boolean): void {
-  ensureAutocompleteInitialized();
-  currentAutocomplete = enabled;
-  setStoredAutocomplete(enabled);
-  autocompleteListeners.forEach((l) => l());
+function getAcSnap(): boolean { return currentAutocomplete; }
+function getAcServerSnap(): boolean { return true; }
+function setAc(v: boolean): void {
+  currentAutocomplete = v;
+  writeAutocomplete(v);
+  acListeners.forEach(l => l());
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────
@@ -146,14 +125,14 @@ const DialectContext = createContext<DialectContextValue>({
 
 export function DialectProvider({ children }: { children: React.ReactNode }) {
   const dialect = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const autocompleteEnabled = useSyncExternalStore(subscribeAutocomplete, getAutocompleteSnapshot, getAutocompleteServerSnapshot);
+  const autocompleteEnabled = useSyncExternalStore(subscribeAc, getAcSnap, getAcServerSnap);
 
   const handleSetDialect = useCallback((d: Dialect) => {
     setDialect(d);
   }, []);
 
   const handleSetAutocomplete = useCallback((enabled: boolean) => {
-    setAutocomplete(enabled);
+    setAc(enabled);
   }, []);
 
   return (
