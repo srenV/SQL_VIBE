@@ -10,17 +10,19 @@
 
 import type { SchemaColumn, SchemaTable, ForeignKey } from "@/types/playground";
 import { getForeignKeys, getSchema, getTableInfo } from "./sqlEngine";
+import type { Dialect } from "./dialect";
 
 /**
  * Introspektiert das Schema einer sql.js-Datenbank und liefert strukturierte Tabelleninformationen.
  * @param db - Die sql.js-Datenbankinstanz.
+ * @param dialect - Der SQL-Dialekt (Standard: "mysql").
  * @returns Array von SchemaTable mit Spalten und Fremdschluesseln.
  */
-export function introspectSchema(db: import("sql.js").Database): SchemaTable[] {
+export function introspectSchema(db: import("sql.js").Database, dialect: Dialect = "mysql"): SchemaTable[] {
   const tables = getSchema(db);
   return tables.map((t) => {
-    const info = getTableInfo(db, t.name);
-    const fks = getForeignKeys(db, t.name);
+    const info = getTableInfo(db, t.name, dialect);
+    const fks = getForeignKeys(db, t.name, dialect);
     const columns: SchemaColumn[] = info.map((col) => ({
       name: col.name,
       type: col.type,

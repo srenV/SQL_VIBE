@@ -25,6 +25,7 @@ import {
 } from "@/lib/sqlEngine";
 import { extractDatabaseName } from "@/lib/mysqlCompat";
 import { introspectSchema } from "@/lib/schemaExplorer";
+import { useDialect } from "@/lib/dialect";
 import {
   saveDatabase,
   loadDatabase,
@@ -176,6 +177,7 @@ export const BUILTIN_DATASETS: Dataset[] = DE_DATASETS;
 const AUTO_SAVE_DEBOUNCE_MS = 500;
 
 export function useSandbox(): UseSandboxReturn {
+  const { dialect } = useDialect();
   const [dbList, setDbList] = useState<SandboxDatabaseMeta[]>([]);
   const [activeDbId, setActiveDbId] = useState<string | null>(null);
   const [activeDb, setActiveDb] = useState<import("sql.js").Database | null>(null);
@@ -270,7 +272,7 @@ export function useSandbox(): UseSandboxReturn {
       return;
     }
     try {
-      const schema = introspectSchema(db);
+      const schema = introspectSchema(db, dialect);
       setLiveSchema(schema);
     } catch {
       setLiveSchema([]);
@@ -284,7 +286,7 @@ export function useSandbox(): UseSandboxReturn {
       const now = new Date().toISOString();
 
       // Leere In-Memory-DB erstellen
-      const db = await createDatabase("");
+      const db = await createDatabase("", dialect);
 
       // Exportieren und sofort schliessen – die DB wird nicht als
       // aktive Instanz verwendet, sondern nur als Binary in IndexedDB gespeichert.
@@ -358,7 +360,7 @@ export function useSandbox(): UseSandboxReturn {
 
         // Schema introspektieren
         try {
-          const schema = introspectSchema(db);
+          const schema = introspectSchema(db, dialect);
           setLiveSchema(schema);
         } catch {
           setLiveSchema([]);
@@ -485,7 +487,7 @@ export function useSandbox(): UseSandboxReturn {
             dbId = existingDb.id;
 
             // SQL auf der bestehenden DB ausführen
-            const result = runSandboxQuery(db, sql);
+            const result = runSandboxQuery(db, sql, dialect);
             setQueryResult(result);
 
             // Auto-Save triggern
@@ -514,7 +516,7 @@ export function useSandbox(): UseSandboxReturn {
           const newId = crypto.randomUUID();
 
           // Leere DB erstellen, SQL direkt darauf ausführen
-          const newDb = await createDatabase(sql);
+          const newDb = await createDatabase(sql, dialect);
           const binaryData = exportAndCloseDatabase(newDb);
 
           // Frische DB aus Binary laden (wie bei openDatabase)
@@ -622,7 +624,7 @@ export function useSandbox(): UseSandboxReturn {
       const id = crypto.randomUUID();
 
       // SQL ausführen und Datenbank erstellen
-      const db = await createDatabase(sql);
+      const db = await createDatabase(sql, dialect);
       const binaryData = exportAndCloseDatabase(db);
 
       // Frische DB aus Binary laden
@@ -648,7 +650,7 @@ export function useSandbox(): UseSandboxReturn {
 
       // Schema aktualisieren
       try {
-        const schema = introspectSchema(freshDb);
+        const schema = introspectSchema(freshDb, dialect);
         setLiveSchema(schema);
       } catch {
         setLiveSchema([]);

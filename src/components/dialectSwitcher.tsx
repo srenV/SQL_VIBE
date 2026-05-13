@@ -1,37 +1,22 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import { usePathname } from "@/i18n/navigation";
-import { routing, type Locale } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-
-const LOCALE_CONFIG: Record<Locale, { label: string; flag: string; nativeName: string }> = {
-  de: { label: "DE", flag: "🇩🇪", nativeName: "Deutsch" },
-  en: { label: "EN", flag: "🇬🇧", nativeName: "English" },
-};
-
-const LOCALES = [...routing.locales] as Locale[];
+import { useDialect, DIALECTS, DIALECT_LABELS, type Dialect } from "@/lib/dialect";
 
 /**
- * Language Switcher — custom-styled select picker.
+ * Dialect Switcher — custom-styled select picker for SQL dialect.
  *
- * Renders an animated dropdown with flag emojis and native language names.
- * Uses full page navigation (window.location) to ensure next-intl
- * reloads the locale context correctly in static export mode.
+ * Renders an animated dropdown with icons and labels.
+ * Persists selection via localStorage through the DialectProvider.
  */
-export function LanguageSwitcher() {
-  const locale = useLocale();
+export function DialectSwitcher() {
+  const { dialect, setDialect } = useDialect();
   const t = useTranslations("common");
-  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
-
-  const switchLocale = useCallback((newLocale: Locale) => {
-    const newPath = `/${newLocale}${pathname === "/" ? "" : pathname}`;
-    window.location.href = newPath;
-  }, [pathname]);
 
   // Close on outside click
   useEffect(() => {
@@ -57,7 +42,7 @@ export function LanguageSwitcher() {
     }
   }, [isOpen]);
 
-  const currentConfig = LOCALE_CONFIG[locale as Locale];
+  const currentConfig = DIALECT_LABELS[dialect];
 
   const dropdownVariants = {
     hidden: { opacity: 0, y: 4, scale: 0.95, filter: "blur(4px)" },
@@ -95,17 +80,17 @@ export function LanguageSwitcher() {
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2
           transition-colors duration-200
         `}
-        aria-label={t("switchLanguage")}
+        aria-label={t("switchDialect")}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
-        {/* Current locale flag + code */}
+        {/* Current dialect icon + label */}
         <span className="flex items-center gap-1">
-          <span className="text-xs leading-none" role="img" aria-label={currentConfig.nativeName}>
-            {currentConfig.flag}
+          <span className="text-xs leading-none" role="img" aria-label={currentConfig.short}>
+            {currentConfig.icon}
           </span>
           <span className="text-xs font-semibold tracking-wide text-ink">
-            {currentConfig.label}
+            {currentConfig.short}
           </span>
         </span>
 
@@ -133,26 +118,26 @@ export function LanguageSwitcher() {
             exit="exit"
             transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className={`
-              absolute right-0 bottom-full mb-1.5 min-w-[160px] z-50
+              absolute right-0 bottom-full mb-1.5 min-w-[180px] z-50
               rounded-xl overflow-hidden
               bg-surface dark:bg-dark-dim
               border border-surface-dim dark:border-dark-dim
               shadow-lg shadow-black/5 dark:shadow-black/20
             `}
             role="listbox"
-            aria-label={t("switchLanguage")}
+            aria-label={t("switchDialect")}
           >
             {/* Subtle top accent line */}
             <div className="h-0.5 bg-gradient-to-r from-primary-400 via-primary-500 to-accent-400" />
 
             <div className="py-1">
-              {LOCALES.map((loc: Locale, i: number) => {
-                const config = LOCALE_CONFIG[loc];
-                const isActive = loc === locale;
+              {DIALECTS.map((d: Dialect, i: number) => {
+                const config = DIALECT_LABELS[d];
+                const isActive = d === dialect;
 
                 return (
                   <motion.button
-                    key={loc}
+                    key={d}
                     custom={i}
                     variants={shouldReduceMotion ? undefined : itemVariants}
                     initial="hidden"
@@ -160,7 +145,7 @@ export function LanguageSwitcher() {
                     exit="exit"
                     onClick={() => {
                       setIsOpen(false);
-                      if (!isActive) switchLocale(loc);
+                      if (!isActive) setDialect(d);
                     }}
                     disabled={isActive}
                     className={`
@@ -174,21 +159,26 @@ export function LanguageSwitcher() {
                     role="option"
                     aria-selected={isActive}
                   >
-                    {/* Flag */}
-                    <span className="text-lg leading-none" role="img" aria-label={config.nativeName}>
-                      {config.flag}
+                    {/* Icon */}
+                    <span className="text-lg leading-none" role="img" aria-label={config.short}>
+                      {config.icon}
                     </span>
 
-                    {/* Native name */}
-                    <span
-                      className={`text-sm font-medium ${
-                        isActive
-                          ? "text-primary-700 dark:text-primary-300"
-                          : "text-ink"
-                      }`}
-                    >
-                      {config.nativeName}
-                    </span>
+                    {/* Label + description */}
+                    <div className="flex flex-col">
+                      <span
+                        className={`text-sm font-medium ${
+                          isActive
+                            ? "text-primary-700 dark:text-primary-300"
+                            : "text-ink"
+                        }`}
+                      >
+                        {config.short}
+                      </span>
+                      <span className="text-[10px] text-ink-muted leading-tight">
+                        {t(`dialectDesc_${d}` as Parameters<typeof t>[0])}
+                      </span>
+                    </div>
 
                     {/* Active indicator */}
                     {isActive && (
@@ -198,13 +188,7 @@ export function LanguageSwitcher() {
                         transition={{ type: "spring", stiffness: 500, damping: 25 }}
                         className="ml-auto"
                       >
-                        <svg
-                          className="w-4 h-4 text-primary-500"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                        >
+                        <svg className="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </motion.span>

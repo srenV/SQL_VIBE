@@ -11,6 +11,7 @@
 import type { HiddenTest, HiddenTestResult } from "@/types/playground";
 import { compareResultsets } from "./resultsetComparison";
 import { runQuery } from "./sqlEngine";
+import type { Dialect } from "./dialect";
 
 /** Prueft, ob die Zeilen zweier Ergebnismengen uebereinstimmen (ohne Beruecksichtigung der Reihenfolge). */
 function resultsetsMatchRows(expected: { columns: { name: string }[]; rows: Record<string, unknown>[] }, actual: { columns: { name: string }[]; rows: Record<string, unknown>[] }): boolean {
@@ -64,10 +65,11 @@ function matchesExpected(expected: HiddenTest, resultset: { columns: { name: str
  */
 export function runHiddenTests(
   db: import("sql.js").Database,
-  hiddenTests: HiddenTest[]
+  hiddenTests: HiddenTest[],
+  dialect: Dialect = "mysql"
 ): HiddenTestResult[] {
   return hiddenTests.map((test) => {
-    const result = runQuery(db, test.query);
+    const result = runQuery(db, test.query, dialect);
     if (!result.success) {
       return {
         testId: test.id,

@@ -28,6 +28,7 @@ import { getStrongerHint, selectHint } from "@/lib/hintEngine";
 import { runHiddenTests } from "@/lib/hiddenTests";
 import { introspectSchema, mergeSchemaWithFKs } from "@/lib/schemaExplorer";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
+import { useDialect } from "@/lib/dialect";
 
 /** Aktuelle Phase einer Playground-Sitzung: idle, running, success, error oder partial. */
 export type PlaygroundPhase = "idle" | "running" | "success" | "error" | "partial";
@@ -61,6 +62,7 @@ export interface UsePlaygroundReturn {
  * @returns Alle Sitzungsdaten und Aktionen fuer die Playground-Komponente.
  */
 export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn {
+  const { dialect } = useDialect();
   const [userQuery, setUserQuery] = useState(exercise.prefillQuery ?? "");
   const [phase, setPhase] = useState<PlaygroundPhase>("idle");
   const [queryResult, setQueryResult] = useState<SqlQueryResult | undefined>(undefined);
@@ -90,17 +92,17 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
     if (dbRef.current) {
       dbRef.current.close();
     }
-    const db = await createDatabase(exercise.setupSql);
+    const db = await createDatabase(exercise.setupSql, dialect);
     dbRef.current = db;
     setDb(db);
     // Referenz-Ergebnismenge aus Loesungsabfrage berechnen
-    const ref = runQuery(db, exercise.solutionQuery);
+    const ref = runQuery(db, exercise.solutionQuery, dialect);
     if (ref.success && ref.resultset) {
       setReferenceResultset(ref.resultset);
     }
     // Live-Schema aus der Datenbank introspektieren und FKs aus Dataset-Metadaten mergen
     try {
-      const schema = introspectSchema(db);
+      const schema = introspectSchema(db, dialect);
       const merged = mergeSchemaWithFKs(schema, exercise.schemaTables || []);
       setLiveSchema(merged.length > 0 ? merged : (exercise.schemaTables || []));
     } catch {
@@ -130,17 +132,17 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
     } else {
       // Datenbank wieder neu initialisieren, damit vorherige Versuche den Status nicht beeinflussen (fuer DML-Uebungen)
       db.close();
-      db = await createDatabase(exercise.setupSql);
+      db = await createDatabase(exercise.setupSql, dialect);
       dbRef.current = db;
       setDb(db);
       // Referenz-Ergebnismenge nach Neu-Initialisierung neu berechnen
-      const ref = runQuery(db, exercise.solutionQuery);
+      const ref = runQuery(db, exercise.solutionQuery, dialect);
       if (ref.success && ref.resultset) {
         setReferenceResultset(ref.resultset);
       }
       // Schema nach Neu-Initialisierung erneut introspektieren und FKs mergen
       try {
-        const schema = introspectSchema(db!);
+        const schema = introspectSchema(db!, dialect);
         const merged = mergeSchemaWithFKs(schema, exercise.schemaTables || []);
         setLiveSchema(merged.length > 0 ? merged : (exercise.schemaTables || []));
       } catch {
@@ -150,7 +152,7 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
 
     if (!db) return;
 
-    const result = runQuery(db, userQuery);
+    const result = runQuery(db, userQuery, dialect);
     setQueryResult(result);
     const nextAttempt = attemptCount + 1;
     setAttemptCount(nextAttempt);
@@ -175,7 +177,7 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
       comp = compareResultsets(referenceResultset, result.resultset || { columns: [], rows: [] });
     } else {
       // Fallback: Loesungsabfrage frisch ausfuehren
-      const ref = runQuery(db, exercise.solutionQuery);
+      const ref = runQuery(db, exercise.solutionQuery, dialect);
       if (ref.success && ref.resultset) {
         comp = compareResultsets(ref.resultset, result.resultset || { columns: [], rows: [] });
       }
@@ -189,7 +191,7 @@ export function usePlayground(exercise: PlaygroundExercise): UsePlaygroundReturn
     // Verdeckte Tests ausfuehren
     let htResults: HiddenTestResult[] | undefined;
     if (isEqual && exercise.hiddenTests && exercise.hiddenTests.length > 0 && db) {
-      htResults = runHiddenTests(db, exercise.hiddenTests);
+      htResults = runHiddenTests(db, exercise.hiddenTests, dialect);
       setHiddenTestResults(htResults);
       sessionRef.current.hiddenTestResults = htResults;
     } else {

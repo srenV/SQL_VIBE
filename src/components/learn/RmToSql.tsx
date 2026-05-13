@@ -8,6 +8,7 @@ import { SqlEditor } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SuccessCelebration } from "@/components/successCelebration";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
+import { useDialect } from "@/lib/dialect";
 import type { SandboxQueryResult } from "@/types/sandbox";
 
 /**
@@ -50,6 +51,7 @@ export interface RmToSqlProps {
 }
 
 export function RmToSql({ data, className }: RmToSqlProps) {
+  const { dialect } = useDialect();
   const t = useTranslations("learn");
   const [userSql, setUserSql] = useState("");
   const [result, setResult] = useState<SandboxQueryResult | null>(null);
@@ -65,10 +67,10 @@ export function RmToSql({ data, className }: RmToSqlProps) {
     setAttempts((prev) => prev + 1);
 
     try {
-      const db = await createDatabase(data.setupSql || "");
+      const db = await createDatabase(data.setupSql || "", dialect);
 
       // Try to run the user's SQL
-      const execResult = runQuery(db, userSql);
+      const execResult = runQuery(db, userSql, dialect);
 
       if (!execResult.success) {
         setResult({
@@ -87,7 +89,7 @@ export function RmToSql({ data, className }: RmToSqlProps) {
 
       for (const expectedTable of data.tables) {
         // Check if table exists
-        const tableCheck = runQuery(db, `SELECT name FROM sqlite_master WHERE type='table' AND name='${expectedTable.name}'`);
+        const tableCheck = runQuery(db, `SELECT name FROM sqlite_master WHERE type='table' AND name='${expectedTable.name}'`, dialect);
         if (!tableCheck.success || !tableCheck.resultset || tableCheck.resultset.rows.length === 0) {
           errors.push(t("tableNotFound", { name: expectedTable.name }));
           allCorrect = false;
@@ -95,7 +97,7 @@ export function RmToSql({ data, className }: RmToSqlProps) {
         }
 
         // Check columns
-        const colCheck = runQuery(db, `PRAGMA table_info(${expectedTable.name})`);
+        const colCheck = runQuery(db, `PRAGMA table_info(${expectedTable.name})`, dialect);
         if (!colCheck.success || !colCheck.resultset) {
           errors.push(t("columnsCheckFailed", { name: expectedTable.name }));
           allCorrect = false;
@@ -241,7 +243,7 @@ export function RmToSql({ data, className }: RmToSqlProps) {
         </div>
         <SqlEditor
           value={userSql}
-          onChange={(e) => setUserSql(e.target.value)}
+          onChange={setUserSql}
           onSubmit={validateSql}
           placeholder="CREATE TABLE ..."
         />

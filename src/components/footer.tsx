@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/languageSwitcher";
 import { ThemeToggle } from "@/components/themeToggle";
+import { DialectSwitcher } from "@/components/dialectSwitcher";
 
 export function Footer() {
   const t = useTranslations("footer");
@@ -74,6 +75,7 @@ export function Footer() {
         <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
+            <DialectSwitcher />
             <ThemeToggle />
           </div>
           <span className="text-xs text-ink-muted">

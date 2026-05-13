@@ -17,6 +17,7 @@ import { useProgress } from "@/hooks/useProgress";
 import type { PlaygroundExercise, QuizOption } from "@/types/playground";
 import { createDatabase, runQuery } from "@/lib/sqlEngine";
 import { introspectSchema, mergeSchemaWithFKs } from "@/lib/schemaExplorer";
+import { useDialect } from "@/lib/dialect";
 
 /** Props fuer die PredictQuiz-Komponente. */
 interface PredictQuizProps {
@@ -27,6 +28,7 @@ interface PredictQuizProps {
 
 export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }) => {
   const t = useTranslations("playground");
+  const { dialect } = useDialect();
   const [selectedOption, setSelectedOption] = React.useState<string | null>(null);
   const [submitted, setSubmitted] = React.useState(false);
   const [isCorrect, setIsCorrect] = React.useState(false);
@@ -42,10 +44,10 @@ export const PredictQuiz: React.FC<PredictQuizProps> = ({ exercise, onComplete }
     let mounted = true;
     (async () => {
       try {
-        const db = await createDatabase(exercise.setupSql);
+        const db = await createDatabase(exercise.setupSql, dialect);
         dbRef.current = db;
         setDb(db);
-        const schema = introspectSchema(db);
+        const schema = introspectSchema(db, dialect);
         if (mounted) {
           const merged = mergeSchemaWithFKs(schema, exercise.schemaTables || []);
           setLiveSchema(merged.length > 0 ? merged : (exercise.schemaTables || []));

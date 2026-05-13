@@ -16,7 +16,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
-import { SqlEditor } from "@/components/sqlEditor";
+import { SqlEditor, type SqlSchema } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { FadeIn } from "@/components/animations";
@@ -94,6 +94,17 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
   } = playground;
 
   const prevCompletedRef = React.useRef(false);
+
+  // Convert liveSchema to SqlSchema for CodeMirror autocompletion
+  const editorSchema = React.useMemo<SqlSchema>(() => {
+    if (!liveSchema || liveSchema.length === 0) return {};
+    const schema: SqlSchema = {};
+    for (const table of liveSchema) {
+      schema[table.name] = table.columns.map((col) => col.name);
+    }
+    return schema;
+  }, [liveSchema]);
+
   React.useEffect(() => {
     if (completed && !prevCompletedRef.current) {
       const newSolved = new Set(solvedChapters);
@@ -211,10 +222,11 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({ exercise, onComplete }
           <legend className="px-2 -ml-1 text-sm font-medium text-ink">{t("yourQuery")}</legend>
           <SqlEditor
             value={userQuery}
-            onChange={(e) => setUserQuery(e.target.value)}
+            onChange={setUserQuery}
             error={phase === "error"}
             placeholder={t("storyQueryPlaceholder")}
             onSubmit={runUserQuery}
+            schema={editorSchema}
           />
 
           <div className="mt-4 flex flex-wrap items-center gap-3">

@@ -11,7 +11,8 @@
 
 import type { SqlColumn, SqlQueryResult, SqlRow } from "@/types/playground";
 import type { SandboxQueryResult } from "@/types/sandbox";
-import { mysqlToSqlite, mapSqliteErrorToMysql, mapSqliteTypeToMysql, getMysqlCompatWarnings } from "@/lib/mysqlCompat";
+import { transpileToSqlite, mapSqliteError, mapSqliteType } from "@/lib/dialectCompat";
+import type { Dialect } from "@/lib/dialect";
 
 /** Sql.js-Modultyp – any wegen dynamischem Import. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,24 +95,23 @@ export function splitSqlStatements(sql: string): string[] {
 /**
  * Erstellt eine neue In-Memory-Datenbank und fuehrt optionales Setup-SQL aus.
  * @param sql - SQL-Statement(s) zum Initialisieren der Datenbank (DDL + DML).
+ * @param dialect - Der SQL-Dialekt des Setup-SQLs (Standard: "mysql" für Abwärtskompatibilität).
  * @returns Die geoeffnete sql.js-Datenbankinstanz.
  */
-export async function createDatabase(sql: string): Promise<SqlJsModule["Database"]> {
+export async function createDatabase(sql: string, dialect: Dialect = "mysql"): Promise<SqlJsModule["Database"]> {
   const SQL = await loadSqlJs();
   const db = new SQL.Database();
   // Foreign-Key-Constraints aktivieren (SQLite-Default: OFF)
   db.run("PRAGMA foreign_keys = ON;");
   if (sql.trim()) {
     // Zuerst in einzelne Statements aufteilen, dann jedes einzeln transformieren.
-    // Das ist wichtig, weil mysqlToSqlite() nur auf einzelnen Statements korrekt
-    // arbeitet (z.B. transformCreateTable prüft auf /^\s*CREATE\s+TABLE/).
     const rawStatements = splitSqlStatements(sql);
     for (const rawStmt of rawStatements) {
       const trimmed = rawStmt.trim();
       if (!trimmed) continue;
 
-      // Jedes Statement einzeln transformieren
-      const sqliteStmt = mysqlToSqlite(trimmed);
+      // Jedes Statement einzeln transformieren (dialektabhängig)
+      const sqliteStmt = transpileToSqlite(trimmed, dialect);
 
       // Kommentare überspringen
       if (sqliteStmt.trim().startsWith("--")) continue;
@@ -129,19 +129,21 @@ export async function createDatabase(sql: string): Promise<SqlJsModule["Database
 
 /**
  * Fuehrt eine SQL-Abfrage auf der Datenbank aus und liefert ein strukturiertes Ergebnis.
- * MySQL-Syntax wird automatisch zu SQLite übersetzt.
+ * Der SQL-Input wird je nach Dialekt automatisch zu SQLite übersetzt.
  *
  * Unterstützt Multi-Statement-SQL: Mehrere Statements werden einzeln ausgeführt,
  * das Ergebnis des letzten SELECT/PRAGMA/SHOW-Statements wird zurückgegeben.
  * DDL/DML-Statements ohne Ergebnismenge werden stillschweigend ausgeführt.
  *
  * @param db - Die sql.js-Datenbankinstanz.
- * @param sql - Die auszufuehrende SQL-Abfrage (MySQL-Syntax akzeptiert).
+ * @param sql - Die auszufuehrende SQL-Abfrage (dialektabhängige Syntax akzeptiert).
+ * @param dialect - Der SQL-Dialekt (Standard: "mysql" für Abwärtskompatibilität).
  * @returns Ergebnisobjekt mit Erfolgsstatus, Ergebnismenge oder Fehlertext und Ausfuehrungszeit.
  */
 export function runQuery(
   db: SqlJsModule["Database"],
-  sql: string
+  sql: string,
+  dialect: Dialect = "mysql"
 ): SqlQueryResult {
   const start = performance.now();
   try {
@@ -153,7 +155,7 @@ export function runQuery(
     // Wenn nur ein Statement: direkte Ausführung (bestehendes Verhalten)
     if (rawStatements.length <= 1) {
       const singleRaw = rawStatements[0] || sql;
-      const transformedSql = mysqlToSqlite(singleRaw);
+      const transformedSql = transpileToSqlite(singleRaw, dialect);
       if (transformedSql.trim().startsWith("--")) {
         // Nur-Kommentar-Statement: Erfolg ohne Ergebnis
         const executionTimeMs = Math.round(performance.now() - start);
@@ -201,7 +203,7 @@ export function runQuery(
       if (!trimmed) continue;
 
       // Jedes Statement einzeln transformieren
-      const sqliteStmt = mysqlToSqlite(trimmed);
+      const sqliteStmt = transpileToSqlite(trimmed, dialect);
 
       // Kommentare überspringen
       if (sqliteStmt.trim().startsWith("--")) continue;
@@ -237,10 +239,10 @@ export function runQuery(
         // Bei Fehler: Abbrechen und Fehler zurückgeben
         const executionTimeMs = Math.round(performance.now() - start);
         const rawError = err instanceof Error ? err.message : String(err);
-        const mysqlError = mapSqliteErrorToMysql(rawError);
+        const dialectError = mapSqliteError(rawError, dialect);
         return {
           success: false,
-          error: mysqlError,
+          error: dialectError,
           executionTimeMs,
         };
       }
@@ -256,12 +258,12 @@ export function runQuery(
     return finalResult;
   } catch (err) {
     const executionTimeMs = Math.round(performance.now() - start);
-    // SQLite-Fehler zu MySQL-artigen Fehlern übersetzen
+    // SQLite-Fehler zu dialekt-artigen Fehlern übersetzen
     const rawError = err instanceof Error ? err.message : String(err);
-    const mysqlError = mapSqliteErrorToMysql(rawError);
+    const dialectError = mapSqliteError(rawError, dialect);
     return {
       success: false,
-      error: mysqlError,
+      error: dialectError,
       executionTimeMs,
     };
   }
@@ -272,13 +274,14 @@ export function runQuery(
  * @param db - Die sql.js-Datenbankinstanz.
  * @returns Array mit Tabellenname und SQL-DDL fuer jede Tabelle.
  */
-export function getSchema(db: SqlJsModule["Database"]): {
+export function getSchema(db: SqlJsModule["Database"], dialect: Dialect = "mysql"): {
   name: string;
   sql: string | null;
 }[] {
   const result = runQuery(
     db,
-    "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
+    "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;",
+    dialect
   );
   if (!result.success || !result.resultset) return [];
   return result.resultset.rows.map((r) => ({
@@ -291,18 +294,20 @@ export function getSchema(db: SqlJsModule["Database"]): {
  * Liefert Spalteninformationen fuer eine bestimmte Tabelle (PRAGMA table_info).
  * @param db - Die sql.js-Datenbankinstanz.
  * @param tableName - Name der Tabelle.
+ * @param dialect - Der SQL-Dialekt (Standard: "mysql").
  * @returns Array mit Spaltenmetadaten (cid, name, type, notnull, dflt_value, pk).
  */
 export function getTableInfo(
   db: SqlJsModule["Database"],
-  tableName: string
+  tableName: string,
+  dialect: Dialect = "mysql"
 ): { cid: number; name: string; type: string; notnull: number; dflt_value: unknown; pk: number }[] {
-  const result = runQuery(db, `PRAGMA table_info(${escapeIdentifier(tableName)});`);
+  const result = runQuery(db, `PRAGMA table_info(${escapeIdentifier(tableName)});`, dialect);
   if (!result.success || !result.resultset) return [];
   return result.resultset.rows.map((r) => ({
     cid: Number(r.cid),
     name: String(r.name),
-    type: mapSqliteTypeToMysql(String(r.type)), // MySQL-artige Typen anzeigen
+    type: mapSqliteType(String(r.type), dialect), // Dialekt-artige Typen anzeigen
     notnull: Number(r.notnull),
     dflt_value: r.dflt_value,
     pk: Number(r.pk),
@@ -313,13 +318,15 @@ export function getTableInfo(
  * Liefert Fremdschluessel-Beziehungen fuer eine bestimmte Tabelle (PRAGMA foreign_key_list).
  * @param db - Die sql.js-Datenbankinstanz.
  * @param tableName - Name der Tabelle.
+ * @param dialect - Der SQL-Dialekt (Standard: "mysql").
  * @returns Array mit from-Spalte, to-Spalte und Zieltabelle.
  */
 export function getForeignKeys(
   db: SqlJsModule["Database"],
-  tableName: string
+  tableName: string,
+  dialect: Dialect = "mysql"
 ): { from: string; to: string; table: string }[] {
-  const result = runQuery(db, `PRAGMA foreign_key_list(${escapeIdentifier(tableName)});`);
+  const result = runQuery(db, `PRAGMA foreign_key_list(${escapeIdentifier(tableName)});`, dialect);
   if (!result.success || !result.resultset) return [];
   return result.resultset.rows.map((r) => ({
     from: String(r.from),
@@ -343,10 +350,11 @@ function escapeIdentifier(name: string): string {
 export function peekTableData(
   db: SqlJsModule["Database"],
   tableName: string,
-  limit: number = 10
+  limit: number = 10,
+  dialect: Dialect = "mysql"
 ): SqlQueryResult {
   const safeName = escapeIdentifier(tableName);
-  return runQuery(db, `SELECT * FROM ${safeName} LIMIT ${limit};`);
+  return runQuery(db, `SELECT * FROM ${safeName} LIMIT ${limit};`, dialect);
 }
 
 /**
@@ -457,14 +465,16 @@ export function detectStatementType(sql: string): "DDL" | "DML" | "DQL" | "OTHER
  * mit rowsModified und statementType.
  * @param db - Die sql.js-Datenbankinstanz.
  * @param sql - Die auszufuehrende SQL-Abfrage.
+ * @param dialect - Der SQL-Dialekt (Standard: "mysql").
  * @returns SandboxQueryResult mit Erfolgsstatus, Ergebnismenge, rowsModified und statementType.
  */
 export function runSandboxQuery(
   db: SqlJsModule["Database"],
-  sql: string
+  sql: string,
+  dialect: Dialect = "mysql"
 ): SandboxQueryResult {
   const statementType = detectStatementType(sql);
-  const result = runQuery(db, sql);
+  const result = runQuery(db, sql, dialect);
   const rowsModified = result.success ? getRowsModified(db) : 0;
 
   return {

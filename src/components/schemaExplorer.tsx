@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { SchemaTable, SqlColumn, SqlRow } from "@/types/playground";
 import { peekTableData } from "@/lib/sqlEngine";
+import { useDialect } from "@/lib/dialect";
 import { Card } from "@/components/card";
 import { SchemaGraph } from "@/components/schemaGraph";
 
@@ -36,6 +37,7 @@ interface TableDataCache {
 
 export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sandboxMode, onDropTable, onInsertTemplate, onCreateTableTemplate, viewMode: externalViewMode, hideTabs, fullHeight }) => {
   const t = useTranslations("sandbox");
+  const { dialect } = useDialect();
   const [internalViewMode, setInternalViewMode] = useState<ViewMode>("rm");
   const viewMode = externalViewMode ?? internalViewMode;
   const setViewMode = hideTabs ? () => {} : setInternalViewMode;
@@ -50,7 +52,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
 
       try {
         const limit = 10;
-        const result = peekTableData(db, tableName, limit);
+        const result = peekTableData(db, tableName, limit, dialect);
 
         if (result.success && result.resultset) {
           setTableData((prev) => ({

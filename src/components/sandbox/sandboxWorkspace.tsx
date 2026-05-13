@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
-import { SqlEditor } from "@/components/sqlEditor";
+import { SqlEditor, type SqlSchema } from "@/components/sqlEditor";
 import { ResultsetTable } from "@/components/resultsetTable";
 import { SchemaExplorer } from "@/components/schemaExplorer";
 import { StatusCard } from "@/components/statusCard";
@@ -13,6 +13,7 @@ import type { SandboxQueryResult, QueryHistoryEntry } from "@/types/sandbox";
 import type { SchemaTable, SqlColumn } from "@/types/playground";
 import { explainError } from "@/lib/errorExplanation";
 import { peekTableData } from "@/lib/sqlEngine";
+import { useDialect } from "@/lib/dialect";
 
 export interface SandboxWorkspaceHandle {
   insertQuery: (sql: string) => void;
@@ -37,13 +38,14 @@ function getDmlMessage(result: SandboxQueryResult, t: (key: string, params?: Rec
 
 const PeekTableData: React.FC<{ db: import("sql.js").Database | null; tableName: string }> = ({ db, tableName }) => {
   const t = useTranslations("sandbox");
+  const { dialect } = useDialect();
   const [data, setData] = useState<{ columns: SqlColumn[]; rows: Record<string, unknown>[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (!db) return;
     try {
-      const result = peekTableData(db, tableName, 50);
+      const result = peekTableData(db, tableName, 50, dialect);
       if (result.success && result.resultset) {
         setData({ columns: result.resultset.columns, rows: result.resultset.rows as Record<string, unknown>[] });
         setError(null);
@@ -55,7 +57,7 @@ const PeekTableData: React.FC<{ db: import("sql.js").Database | null; tableName:
       setData(null);
       setError(e instanceof Error ? e.message : t("errorLoadingData"));
     }
-  }, [db, tableName, t]);
+  }, [db, tableName, t, dialect]);
 
   if (error) return <p className="text-xs text-error italic">{error}</p>;
   if (!data) return <p className="text-xs text-ink-muted italic">{t("loading")}</p>;
@@ -98,6 +100,16 @@ function SandboxWorkspace({
 }, ref) {
   const t = useTranslations("sandbox");
   const [userQuery, setUserQuery] = useState("");
+
+  // Convert liveSchema to SqlSchema for CodeMirror autocompletion
+  const editorSchema = React.useMemo<SqlSchema>(() => {
+    if (!liveSchema || liveSchema.length === 0) return {};
+    const schema: SqlSchema = {};
+    for (const table of liveSchema) {
+      schema[table.name] = table.columns.map((col) => col.name);
+    }
+    return schema;
+  }, [liveSchema]);
 
   useImperativeHandle(ref, () => ({
     insertQuery: setUserQuery,
@@ -208,9 +220,10 @@ function SandboxWorkspace({
         <SqlEditor
           label={t("sqlQuery")}
           value={userQuery}
-          onChange={(e) => setUserQuery(e.target.value)}
+          onChange={setUserQuery}
           onSubmit={handleRun}
           placeholder={hasNoDb ? t("placeholderNoDb") : t("placeholderWithDb")}
+          schema={editorSchema}
         />
       </div>
 
