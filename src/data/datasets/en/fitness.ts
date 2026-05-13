@@ -81,22 +81,22 @@ CREATE TABLE exercises (
 );
 CREATE TABLE workouts (
   id INTEGER PRIMARY KEY,
-  user_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL REFERENCES users(id),
   date DATE NOT NULL,
   duration_min INTEGER NOT NULL,
   calories_burned INTEGER
 );
 CREATE TABLE sets (
   id INTEGER PRIMARY KEY,
-  workout_id INTEGER NOT NULL,
-  exercise_id INTEGER NOT NULL,
+  workout_id INTEGER NOT NULL REFERENCES workouts(id),
+  exercise_id INTEGER NOT NULL REFERENCES exercises(id),
   repetitions INTEGER NOT NULL,
   weight_kg DECIMAL(5,2),
   set_number INTEGER NOT NULL
 );
 CREATE TABLE body_measurements (
   id INTEGER PRIMARY KEY,
-  user_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL REFERENCES users(id),
   date DATE NOT NULL,
   weight_kg DECIMAL(5,2) NOT NULL,
   body_fat_percent DECIMAL(4,2)

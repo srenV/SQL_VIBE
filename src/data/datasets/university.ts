@@ -92,29 +92,29 @@ CREATE TABLE professoren (
 CREATE TABLE kurse (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  professor_id INTEGER NOT NULL,
+  professor_id INTEGER NOT NULL REFERENCES professoren(id),
   credits INTEGER NOT NULL,
   semester VARCHAR(20) NOT NULL,
   max_teilnehmer INTEGER NOT NULL
 );
 CREATE TABLE einschreibungen (
   id INTEGER PRIMARY KEY,
-  student_id INTEGER NOT NULL,
-  kurs_id INTEGER NOT NULL,
+  student_id INTEGER NOT NULL REFERENCES studenten(id),
+  kurs_id INTEGER NOT NULL REFERENCES kurse(id),
   note DECIMAL(3,1),
   semester VARCHAR(20) NOT NULL
 );
 CREATE TABLE pruefungen (
   id INTEGER PRIMARY KEY,
-  kurs_id INTEGER NOT NULL,
+  kurs_id INTEGER NOT NULL REFERENCES kurse(id),
   datum DATE NOT NULL,
   art VARCHAR(20) NOT NULL,
   max_punkte INTEGER NOT NULL
 );
 CREATE TABLE pruefungsergebnisse (
   id INTEGER PRIMARY KEY,
-  pruefung_id INTEGER NOT NULL,
-  student_id INTEGER NOT NULL,
+  pruefung_id INTEGER NOT NULL REFERENCES pruefungen(id),
+  student_id INTEGER NOT NULL REFERENCES studenten(id),
   punkte INTEGER NOT NULL,
   bestanden BOOLEAN NOT NULL
 );

@@ -57,7 +57,7 @@ export const storyGeldstromOmegaDatasetEn: Dataset = {
 );
 CREATE TABLE accounts (
   id INTEGER PRIMARY KEY,
-  customer_id INTEGER NOT NULL,
+  customer_id INTEGER NOT NULL REFERENCES customers(id),
   account_number VARCHAR(20) NOT NULL,
   type VARCHAR(20) NOT NULL,
   balance DECIMAL(12,2) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE accounts (
 );
 CREATE TABLE transactions (
   id INTEGER PRIMARY KEY,
-  account_id INTEGER NOT NULL,
+  account_id INTEGER NOT NULL REFERENCES accounts(id),
   amount DECIMAL(12,2) NOT NULL,
   type VARCHAR(10) NOT NULL,
   description VARCHAR(200),
@@ -73,7 +73,7 @@ CREATE TABLE transactions (
 );
 CREATE TABLE fraud_cases (
   id INTEGER PRIMARY KEY,
-  transaction_id INTEGER NOT NULL,
+  transaction_id INTEGER NOT NULL REFERENCES transactions(id),
   reason VARCHAR(100) NOT NULL,
   status VARCHAR(20) NOT NULL,
   reported_at DATETIME NOT NULL

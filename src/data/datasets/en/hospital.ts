@@ -75,7 +75,7 @@ export const hospitalDatasetEn: Dataset = {
 CREATE TABLE doctors (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  department_id INTEGER NOT NULL,
+  department_id INTEGER NOT NULL REFERENCES departments(id),
   position VARCHAR(30) NOT NULL,
   salary DECIMAL(10,2) NOT NULL,
   hired_on DATE NOT NULL
@@ -90,8 +90,8 @@ CREATE TABLE patients (
 );
 CREATE TABLE treatments (
   id INTEGER PRIMARY KEY,
-  patient_id INTEGER NOT NULL,
-  doctor_id INTEGER NOT NULL,
+  patient_id INTEGER NOT NULL REFERENCES patients(id),
+  doctor_id INTEGER NOT NULL REFERENCES doctors(id),
   diagnosis VARCHAR(200) NOT NULL,
   treatment_date DATE NOT NULL,
   duration_days INTEGER NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE treatments (
 );
 CREATE TABLE invoices (
   id INTEGER PRIMARY KEY,
-  patient_id INTEGER NOT NULL,
+  patient_id INTEGER NOT NULL REFERENCES patients(id),
   amount DECIMAL(10,2) NOT NULL,
   status VARCHAR(20) NOT NULL,
   invoice_date DATE NOT NULL,

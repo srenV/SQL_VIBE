@@ -81,22 +81,22 @@ CREATE TABLE uebungen (
 );
 CREATE TABLE workouts (
   id INTEGER PRIMARY KEY,
-  nutzer_id INTEGER NOT NULL,
+  nutzer_id INTEGER NOT NULL REFERENCES nutzer(id),
   datum DATE NOT NULL,
   dauer_min INTEGER NOT NULL,
   kalorien_verbrannt INTEGER
 );
 CREATE TABLE saetze (
   id INTEGER PRIMARY KEY,
-  workout_id INTEGER NOT NULL,
-  uebung_id INTEGER NOT NULL,
+  workout_id INTEGER NOT NULL REFERENCES workouts(id),
+  uebung_id INTEGER NOT NULL REFERENCES uebungen(id),
   wiederholungen INTEGER NOT NULL,
   gewicht_kg DECIMAL(5,2),
   satz_nr INTEGER NOT NULL
 );
 CREATE TABLE koerperdaten (
   id INTEGER PRIMARY KEY,
-  nutzer_id INTEGER NOT NULL,
+  nutzer_id INTEGER NOT NULL REFERENCES nutzer(id),
   datum DATE NOT NULL,
   gewicht_kg DECIMAL(5,2) NOT NULL,
   koerperfett_prozent DECIMAL(4,2)

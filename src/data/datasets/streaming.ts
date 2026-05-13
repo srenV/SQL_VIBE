@@ -71,15 +71,15 @@ CREATE TABLE filme (
 );
 CREATE TABLE watch_history (
   id INTEGER PRIMARY KEY,
-  nutzer_id INTEGER NOT NULL,
-  film_id INTEGER NOT NULL,
+  nutzer_id INTEGER NOT NULL REFERENCES nutzer(id),
+  film_id INTEGER NOT NULL REFERENCES filme(id),
   geschaut_am DATETIME NOT NULL,
   fortschritt_prozent INTEGER NOT NULL
 );
 CREATE TABLE bewertungen (
   id INTEGER PRIMARY KEY,
-  nutzer_id INTEGER NOT NULL,
-  film_id INTEGER NOT NULL,
+  nutzer_id INTEGER NOT NULL REFERENCES nutzer(id),
+  film_id INTEGER NOT NULL REFERENCES filme(id),
   sterne INTEGER NOT NULL,
   kommentar TEXT,
   bewertet_am DATETIME NOT NULL

@@ -81,27 +81,27 @@ CREATE TABLE kategorien (
 CREATE TABLE produkte (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  kategorie_id INTEGER NOT NULL,
+  kategorie_id INTEGER NOT NULL REFERENCES kategorien(id),
   preis DECIMAL(10,2) NOT NULL,
   lagerbestand INTEGER NOT NULL
 );
 CREATE TABLE bestellungen (
   id INTEGER PRIMARY KEY,
-  kunde_id INTEGER NOT NULL,
+  kunde_id INTEGER NOT NULL REFERENCES kunden(id),
   datum DATE NOT NULL,
   gesamtbetrag DECIMAL(10,2) NOT NULL,
   status VARCHAR(20) NOT NULL
 );
 CREATE TABLE bestellpositionen (
   id INTEGER PRIMARY KEY,
-  bestellung_id INTEGER NOT NULL,
-  produkt_id INTEGER NOT NULL,
+  bestellung_id INTEGER NOT NULL REFERENCES bestellungen(id),
+  produkt_id INTEGER NOT NULL REFERENCES produkte(id),
   menge INTEGER NOT NULL,
   einzelpreis DECIMAL(10,2) NOT NULL
 );
 CREATE TABLE zahlungen (
   id INTEGER PRIMARY KEY,
-  bestellung_id INTEGER NOT NULL,
+  bestellung_id INTEGER NOT NULL REFERENCES bestellungen(id),
   betrag DECIMAL(10,2) NOT NULL,
   zahlungsmittel VARCHAR(20) NOT NULL,
   zahlungsdatum DATE NOT NULL

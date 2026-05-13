@@ -69,7 +69,7 @@ export const storyRoteZoneDataset: Dataset = {
 CREATE TABLE aerzte (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  abteilung_id INTEGER NOT NULL,
+  abteilung_id INTEGER NOT NULL REFERENCES abteilungen(id),
   position VARCHAR(30) NOT NULL,
   gehalt DECIMAL(10,2) NOT NULL,
   eingestellt_am DATE NOT NULL
@@ -84,8 +84,8 @@ CREATE TABLE patienten (
 );
 CREATE TABLE behandlungen (
   id INTEGER PRIMARY KEY,
-  patient_id INTEGER NOT NULL,
-  arzt_id INTEGER NOT NULL,
+  patient_id INTEGER NOT NULL REFERENCES patienten(id),
+  arzt_id INTEGER NOT NULL REFERENCES aerzte(id),
   diagnose VARCHAR(200) NOT NULL,
   behandlungsdatum DATE NOT NULL,
   dauer_tage INTEGER NOT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE behandlungen (
 );
 CREATE TABLE rechnungen (
   id INTEGER PRIMARY KEY,
-  patient_id INTEGER NOT NULL,
+  patient_id INTEGER NOT NULL REFERENCES patienten(id),
   betrag DECIMAL(10,2) NOT NULL,
   status VARCHAR(20) NOT NULL,
   rechnungsdatum DATE NOT NULL,

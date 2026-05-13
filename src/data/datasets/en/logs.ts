@@ -62,7 +62,7 @@ CREATE TABLE sessions (
 );
 CREATE TABLE errors (
   id INTEGER PRIMARY KEY,
-  event_id INTEGER NOT NULL,
+  event_id INTEGER NOT NULL REFERENCES events(id),
   error_code VARCHAR(10) NOT NULL,
   message TEXT NOT NULL,
   severity VARCHAR(10) NOT NULL

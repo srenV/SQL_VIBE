@@ -63,7 +63,7 @@ export const bankingDataset: Dataset = {
 );
 CREATE TABLE konten (
   id INTEGER PRIMARY KEY,
-  kunde_id INTEGER NOT NULL,
+  kunde_id INTEGER NOT NULL REFERENCES kunden(id),
   kontonummer VARCHAR(20) NOT NULL,
   typ VARCHAR(20) NOT NULL,
   saldo DECIMAL(12,2) NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE konten (
 );
 CREATE TABLE transaktionen (
   id INTEGER PRIMARY KEY,
-  konto_id INTEGER NOT NULL,
+  konto_id INTEGER NOT NULL REFERENCES konten(id),
   betrag DECIMAL(12,2) NOT NULL,
   typ VARCHAR(10) NOT NULL,
   beschreibung VARCHAR(200),
@@ -79,7 +79,7 @@ CREATE TABLE transaktionen (
 );
 CREATE TABLE betrugsfaelle (
   id INTEGER PRIMARY KEY,
-  transaktion_id INTEGER NOT NULL,
+  transaktion_id INTEGER NOT NULL REFERENCES transaktionen(id),
   grund VARCHAR(100) NOT NULL,
   status VARCHAR(20) NOT NULL,
   gemeldet_am DATETIME NOT NULL

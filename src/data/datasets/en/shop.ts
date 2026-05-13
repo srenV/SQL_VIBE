@@ -83,27 +83,27 @@ CREATE TABLE categories (
 CREATE TABLE products (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  category_id INTEGER NOT NULL,
+  category_id INTEGER NOT NULL REFERENCES categories(id),
   price DECIMAL(10,2) NOT NULL,
   stock INTEGER NOT NULL
 );
 CREATE TABLE orders (
   id INTEGER PRIMARY KEY,
-  customer_id INTEGER NOT NULL,
+  customer_id INTEGER NOT NULL REFERENCES customers(id),
   date DATE NOT NULL,
   total_amount DECIMAL(10,2) NOT NULL,
   status VARCHAR(20) NOT NULL
 );
 CREATE TABLE order_items (
   id INTEGER PRIMARY KEY,
-  order_id INTEGER NOT NULL,
-  product_id INTEGER NOT NULL,
+  order_id INTEGER NOT NULL REFERENCES orders(id),
+  product_id INTEGER NOT NULL REFERENCES products(id),
   quantity INTEGER NOT NULL,
   unit_price DECIMAL(10,2) NOT NULL
 );
 CREATE TABLE payments (
   id INTEGER PRIMARY KEY,
-  order_id INTEGER NOT NULL,
+  order_id INTEGER NOT NULL REFERENCES orders(id),
   amount DECIMAL(10,2) NOT NULL,
   payment_method VARCHAR(20) NOT NULL,
   payment_date DATE NOT NULL

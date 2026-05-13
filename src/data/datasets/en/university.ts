@@ -92,29 +92,29 @@ CREATE TABLE professors (
 CREATE TABLE courses (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  professor_id INTEGER NOT NULL,
+  professor_id INTEGER NOT NULL REFERENCES professors(id),
   credits INTEGER NOT NULL,
   semester VARCHAR(20) NOT NULL,
   max_participants INTEGER NOT NULL
 );
 CREATE TABLE enrollments (
   id INTEGER PRIMARY KEY,
-  student_id INTEGER NOT NULL,
-  course_id INTEGER NOT NULL,
+  student_id INTEGER NOT NULL REFERENCES students(id),
+  course_id INTEGER NOT NULL REFERENCES courses(id),
   grade DECIMAL(3,1),
   semester VARCHAR(20) NOT NULL
 );
 CREATE TABLE exams (
   id INTEGER PRIMARY KEY,
-  course_id INTEGER NOT NULL,
+  course_id INTEGER NOT NULL REFERENCES courses(id),
   date DATE NOT NULL,
   type VARCHAR(20) NOT NULL,
   max_points INTEGER NOT NULL
 );
 CREATE TABLE exam_results (
   id INTEGER PRIMARY KEY,
-  exam_id INTEGER NOT NULL,
-  student_id INTEGER NOT NULL,
+  exam_id INTEGER NOT NULL REFERENCES exams(id),
+  student_id INTEGER NOT NULL REFERENCES students(id),
   points INTEGER NOT NULL,
   passed BOOLEAN NOT NULL
 );

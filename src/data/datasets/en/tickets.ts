@@ -68,8 +68,8 @@ CREATE TABLE tickets (
   id INTEGER PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
   description TEXT,
-  category_id INTEGER NOT NULL,
-  agent_id INTEGER,
+  category_id INTEGER NOT NULL REFERENCES categories(id),
+  agent_id INTEGER REFERENCES agents(id),
   priority VARCHAR(10) NOT NULL,
   status VARCHAR(20) NOT NULL,
   created_at DATETIME NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE tickets (
 );
 CREATE TABLE comments (
   id INTEGER PRIMARY KEY,
-  ticket_id INTEGER NOT NULL,
+  ticket_id INTEGER NOT NULL REFERENCES tickets(id),
   author VARCHAR(100) NOT NULL,
   message TEXT NOT NULL,
   created_at DATETIME NOT NULL

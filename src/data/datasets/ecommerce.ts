@@ -99,7 +99,7 @@ CREATE TABLE produkte (
 );
 CREATE TABLE bestellungen (
   id INTEGER PRIMARY KEY,
-  kunde_id INTEGER NOT NULL,
+  kunde_id INTEGER NOT NULL REFERENCES kunden(id),
   datum DATE NOT NULL,
   gesamtbetrag DECIMAL(10,2) NOT NULL,
   status VARCHAR(20) NOT NULL,
@@ -107,15 +107,15 @@ CREATE TABLE bestellungen (
 );
 CREATE TABLE bestellpositionen (
   id INTEGER PRIMARY KEY,
-  bestellung_id INTEGER NOT NULL,
-  produkt_id INTEGER NOT NULL,
+  bestellung_id INTEGER NOT NULL REFERENCES bestellungen(id),
+  produkt_id INTEGER NOT NULL REFERENCES produkte(id),
   menge INTEGER NOT NULL,
   einzelpreis DECIMAL(10,2) NOT NULL
 );
 CREATE TABLE bewertungen (
   id INTEGER PRIMARY KEY,
-  kunde_id INTEGER NOT NULL,
-  produkt_id INTEGER NOT NULL,
+  kunde_id INTEGER NOT NULL REFERENCES kunden(id),
+  produkt_id INTEGER NOT NULL REFERENCES produkte(id),
   sterne INTEGER NOT NULL,
   kommentar TEXT,
   datum DATE NOT NULL

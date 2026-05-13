@@ -58,15 +58,15 @@ export const storyAnna7Dataset: Dataset = {
 CREATE TABLE mitarbeiter (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  abteilung_id INTEGER NOT NULL,
+  abteilung_id INTEGER NOT NULL REFERENCES abteilungen(id),
   position VARCHAR(50) NOT NULL,
   gehalt DECIMAL(10,2) NOT NULL,
   einstiegsdatum DATE NOT NULL,
-  manager_id INTEGER
+  manager_id INTEGER REFERENCES mitarbeiter(id)
 );
 CREATE TABLE urlaub (
   id INTEGER PRIMARY KEY,
-  mitarbeiter_id INTEGER NOT NULL,
+  mitarbeiter_id INTEGER NOT NULL REFERENCES mitarbeiter(id),
   startdatum DATE NOT NULL,
   enddatum DATE NOT NULL,
   tage INTEGER NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE bewerbungen (
   id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,
-  abteilung_id INTEGER NOT NULL,
+  abteilung_id INTEGER NOT NULL REFERENCES abteilungen(id),
   bewerbungsdatum DATE NOT NULL,
   status VARCHAR(20) NOT NULL
 );
