@@ -183,7 +183,7 @@
     },
     "level_5": { "name": "Aufsteiger", "description": "Level 5 erreicht" },
     "level_10": {
-      "name": "Meister der Abfragen",
+      "name": "Abfragen-Meister",
       "description": "Level 10 erreicht – du bist ein SQL-Profi"
     },
     "all_lessons": {

@@ -68,7 +68,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: "debug_10",        name: "Debugger",             description: "10 Debug-Aufgaben gefixed",                 icon: "wrench-screwdriver" },
   { id: "interview_10",    name: "Gesprächsbereit",      description: "10 Interview-Aufgaben gelöst",              icon: "chat-bubble" },
   { id: "level_5",         name: "Aufsteiger",           description: "Level 5 erreicht",                          icon: "star" },
-  { id: "level_10",        name: "Meister der Abfragen", description: "Level 10 erreicht – du bist ein SQL-Profi", icon: "trophy" },
+  { id: "level_10",        name: "Abfragen-Meister", description: "Level 10 erreicht – du bist ein SQL-Profi", icon: "trophy" },
   { id: "all_lessons",     name: "Vollständig",          description: "Alle Lektionen zu 100 % abgeschlossen",     icon: "sparkles" },
 ];
 
