@@ -127,7 +127,7 @@ export function AchievementModal({ achievement, unlocked, onClose }: Achievement
                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
                     unlocked
                       ? "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400"
-                      : "bg-surface-dim text-ink-muted grayscale dark:bg-dark-dim"
+                      : "text-ink-muted grayscale"
                   }`}>
                     <AchievementIcon icon={achievement.icon} className="w-9 h-9" />
                   </div>
