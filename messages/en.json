@@ -26,7 +26,10 @@
     "pageNotFoundDescription": "The requested page does not exist or has been moved.",
     "correct": "Correct!",
     "loadingResult": "Loading result…",
-    "loadingExercise": "Loading exercise…"
+    "loadingExercise": "Loading exercise…",
+    "autocomplete": "Autocomplete",
+    "autocompleteOn": "Autocomplete enabled",
+    "autocompleteOff": "Autocomplete disabled"
   },
   "nav": {
     "practice": "Practice",
@@ -151,10 +154,7 @@
     "databaseNotAvailable": "Database not available.",
     "noDataInTable": "No data in this table.",
     "showingRows": "Showing {count, plural, =1 {1 row} other {# rows}}",
-    "history": "History",
-    "autocomplete": "Autocomplete",
-    "autocompleteOn": "Autocomplete enabled",
-    "autocompleteOff": "Autocomplete disabled"
+    "history": "History"
   },
   "achievements": {
     "achievementUnlocked": "Achievement unlocked",

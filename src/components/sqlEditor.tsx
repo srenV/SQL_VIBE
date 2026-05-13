@@ -287,7 +287,7 @@ export const SqlEditor = React.memo(function SqlEditor({
         EditorView.theme({
           "&": { outline: "none !important" },
           ".cm-scroller": { overflow: "auto", maxHeight: "none" },
-          ".cm-editor": { minHeight: "12rem" },
+          ".cm-editor": { minHeight: "14rem" },
           ".cm-tooltip.cm-tooltip-autocomplete": {
             zIndex: "9999",
             position: "fixed !important" as unknown as string,

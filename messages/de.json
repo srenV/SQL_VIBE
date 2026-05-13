@@ -26,7 +26,10 @@
     "pageNotFoundDescription": "Die angeforderte Seite existiert nicht oder wurde verschoben.",
     "correct": "Richtig!",
     "loadingResult": "Ergebnis wird geladen…",
-    "loadingExercise": "Übung wird geladen…"
+    "loadingExercise": "Übung wird geladen…",
+    "autocomplete": "Auto-Vervollständigung",
+    "autocompleteOn": "Auto-Vervollständigung aktiviert",
+    "autocompleteOff": "Auto-Vervollständigung deaktiviert"
   },
   "nav": {
     "practice": "Üben",
@@ -151,10 +154,7 @@
     "databaseNotAvailable": "Datenbank nicht verfügbar.",
     "noDataInTable": "Keine Daten in dieser Tabelle.",
     "showingRows": "Zeige {count, plural, =1 {1 Zeile} other {# Zeilen}}",
-    "history": "Verlauf",
-    "autocomplete": "Auto-Vervollständigung",
-    "autocompleteOn": "Auto-Vervollständigung aktiviert",
-    "autocompleteOff": "Auto-Vervollständigung deaktiviert"
+    "history": "Verlauf"
   },
   "achievements": {
     "achievementUnlocked": "Erfolg freigeschaltet",

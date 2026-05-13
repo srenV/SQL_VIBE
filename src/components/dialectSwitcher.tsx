@@ -5,30 +5,35 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useDialect, DIALECTS, DIALECT_LABELS, type Dialect } from "@/lib/dialect";
 
-/** SVG icons for each SQL dialect — no emojis. */
+/** SVG icons for each SQL dialect — clean, recognizable icons. */
 function DialectIcon({ dialect, className = "w-4 h-4" }: { dialect: Dialect; className?: string }) {
   switch (dialect) {
     case "sqlite":
+      // Cylinder/database icon
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7" />
-          <path d="M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4" />
-          <path d="M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-          <path d="M12 14.5c-1.5 0-3-.5-3-2" />
+          <ellipse cx="12" cy="5" rx="8" ry="3" />
+          <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
+          <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
         </svg>
       );
     case "mysql":
+      // Dolphin silhouette simplified — curved fin shape
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 3c-1.5 3-4 5-7 6 3 1 5.5 3 7 6 1.5-3 4-5 7-6-3-1-5.5-3-7-6z" />
+          <path d="M18 4c0 0-2 1-3 3s-1 4-1 6c0 2 .5 3.5 1.5 4.5" />
+          <path d="M14 13c-1 0-3-.5-4.5-1.5S7 9 7 9" />
+          <path d="M18 4c1 0 2.5.5 3 2s0 4-1 6-3 3.5-4.5 4" />
+          <circle cx="19" cy="6" r="0.5" fill="currentColor" />
         </svg>
       );
     case "postgresql":
+      // Elephant simplified — trunk and ear
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2C8 2 4 6 4 10c0 4 2 8 8 12 6-4 8-8 8-12 0-4-4-8-8-8z" />
-          <path d="M9 12h6" />
-          <path d="M12 9v6" />
+          <path d="M17 3c-2 0-3.5 1-4 3-.5-1-2-2-4-2-3 0-5 2.5-5 6 0 3 1.5 5 3 6.5V21h3v-3h2v3h3v-4.5c1.5-1.5 3-3.5 3-6.5 0-2.5-.5-4-1-5" />
+          <circle cx="8" cy="9" r="1" fill="currentColor" />
+          <circle cx="14" cy="9" r="1" fill="currentColor" />
         </svg>
       );
   }
@@ -145,7 +150,7 @@ export function DialectSwitcher() {
             exit="exit"
             transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className={`
-              absolute right-0 bottom-full mb-1.5 min-w-[180px] z-50
+              absolute right-0 top-full mt-1.5 min-w-[180px] z-50
               rounded-xl overflow-hidden
               bg-surface dark:bg-dark-dim
               border border-surface-dim dark:border-dark-dim

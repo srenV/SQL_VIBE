@@ -21,6 +21,7 @@ export const DIALECT_LABELS: Record<Dialect, { short: string }> = {
 };
 
 const STORAGE_KEY = "sql-vibe-dialect";
+const AUTOCOMPLETE_KEY = "sql-vibe-autocomplete";
 const DEFAULT_DIALECT: Dialect = "mysql";
 
 // ─── localStorage sync (same pattern as theme toggle) ────────────────────
@@ -70,27 +71,80 @@ function setDialect(dialect: Dialect): void {
   listeners.forEach((l) => l());
 }
 
+// ─── Autocomplete external store ────────────────────────────────────────
+
+function getStoredAutocomplete(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    const stored = localStorage.getItem(AUTOCOMPLETE_KEY);
+    if (stored === "false") return false;
+    if (stored === "true") return true;
+  } catch {
+    // localStorage not available
+  }
+  return true;
+}
+
+function setStoredAutocomplete(enabled: boolean): void {
+  try {
+    localStorage.setItem(AUTOCOMPLETE_KEY, String(enabled));
+  } catch {
+    // localStorage not available
+  }
+}
+
+let currentAutocomplete = getStoredAutocomplete();
+const autocompleteListeners = new Set<() => void>();
+
+function subscribeAutocomplete(callback: () => void): () => void {
+  autocompleteListeners.add(callback);
+  return () => autocompleteListeners.delete(callback);
+}
+
+function getAutocompleteSnapshot(): boolean {
+  return currentAutocomplete;
+}
+
+function getAutocompleteServerSnapshot(): boolean {
+  return true;
+}
+
+function setAutocomplete(enabled: boolean): void {
+  currentAutocomplete = enabled;
+  setStoredAutocomplete(enabled);
+  autocompleteListeners.forEach((l) => l());
+}
+
 // ─── Context ─────────────────────────────────────────────────────────────
 
 interface DialectContextValue {
   dialect: Dialect;
   setDialect: (d: Dialect) => void;
+  autocompleteEnabled: boolean;
+  setAutocompleteEnabled: (enabled: boolean) => void;
 }
 
 const DialectContext = createContext<DialectContextValue>({
   dialect: DEFAULT_DIALECT,
   setDialect: () => {},
+  autocompleteEnabled: true,
+  setAutocompleteEnabled: () => {},
 });
 
 export function DialectProvider({ children }: { children: React.ReactNode }) {
   const dialect = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const autocompleteEnabled = useSyncExternalStore(subscribeAutocomplete, getAutocompleteSnapshot, getAutocompleteServerSnapshot);
 
   const handleSetDialect = useCallback((d: Dialect) => {
     setDialect(d);
   }, []);
 
+  const handleSetAutocomplete = useCallback((enabled: boolean) => {
+    setAutocomplete(enabled);
+  }, []);
+
   return (
-    <DialectContext.Provider value={{ dialect, setDialect: handleSetDialect }}>
+    <DialectContext.Provider value={{ dialect, setDialect: handleSetDialect, autocompleteEnabled, setAutocompleteEnabled: handleSetAutocomplete }}>
       {children}
     </DialectContext.Provider>
   );

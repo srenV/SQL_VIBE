@@ -100,6 +100,8 @@ function SandboxWorkspace({
   isLoading,
 }, ref) {
   const t = useTranslations("sandbox");
+  const tCommon = useTranslations("common");
+  const { dialect, autocompleteEnabled, setAutocompleteEnabled } = useDialect();
   const [userQuery, setUserQuery] = useState("");
 
   // Convert liveSchema to SqlSchema for CodeMirror autocompletion
@@ -122,7 +124,6 @@ function SandboxWorkspace({
     },
   }), [onRunQuery]);
   const [showHistory, setShowHistory] = useState(false);
-  const [autocompleteOn, setAutocompleteOn] = useState(true);
   const [activeTab, setActiveTab] = useState<"result" | "data" | "graph" | "schema">("result");
   const [queryVersion, setQueryVersion] = useState(0);
 
@@ -212,18 +213,18 @@ function SandboxWorkspace({
             {t("history")}
           </button>
           <button
-            onClick={() => setAutocompleteOn(!autocompleteOn)}
+            onClick={() => setAutocompleteEnabled(!autocompleteEnabled)}
             className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-              autocompleteOn
+              autocompleteEnabled
                 ? "bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
                 : "text-ink-muted hover:text-ink"
             }`}
-            title={autocompleteOn ? t("autocompleteOn") : t("autocompleteOff")}
+            title={autocompleteEnabled ? tCommon("autocompleteOn") : tCommon("autocompleteOff")}
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
-            {t("autocomplete")}
+            {tCommon("autocomplete")}
           </button>
           <DialectSwitcher />
         </div>
@@ -238,7 +239,7 @@ function SandboxWorkspace({
           onSubmit={handleRun}
           placeholder={hasNoDb ? t("placeholderNoDb") : t("placeholderWithDb")}
           schema={editorSchema}
-          autocompleteEnabled={autocompleteOn}
+          autocompleteEnabled={autocompleteEnabled}
         />
       </div>
 
