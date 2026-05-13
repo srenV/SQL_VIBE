@@ -3,25 +3,13 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Database, Fish, Shell, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { useDialect, DIALECTS, DIALECT_LABELS, type Dialect } from "@/lib/dialect";
-
-/** Lucide icons for each SQL dialect. */
-function DialectIcon({ dialect, className = "w-4 h-4" }: { dialect: Dialect; className?: string }) {
-  switch (dialect) {
-    case "sqlite":
-      return <Database className={className} />;
-    case "mysql":
-      return <Fish className={className} />;
-    case "postgresql":
-      return <Shell className={className} />;
-  }
-}
 
 /**
  * Dialect Switcher — custom-styled select picker for SQL dialect.
  *
- * Renders an animated dropdown with icons and labels.
+ * Renders an animated dropdown with labels.
  * Persists selection via localStorage through the DialectProvider.
  *
  * @param direction - "up" opens dropdown upward (for footer), "down" opens downward (for sandbox)
@@ -99,12 +87,9 @@ export function DialectSwitcher({ direction = "up" }: { direction?: "up" | "down
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
-        {/* Current dialect icon + label */}
-        <span className="flex items-center gap-1">
-          <DialectIcon dialect={dialect} className="w-3.5 h-3.5" />
-          <span className="text-xs font-semibold tracking-wide text-ink">
-            {currentConfig.short}
-          </span>
+        {/* Current dialect label */}
+        <span className="text-xs font-semibold tracking-wide text-ink">
+          {currentConfig.short}
         </span>
 
         {/* Chevron */}
@@ -171,9 +156,6 @@ export function DialectSwitcher({ direction = "up" }: { direction?: "up" | "down
                     role="option"
                     aria-selected={isActive}
                   >
-                    {/* Icon */}
-                    <DialectIcon dialect={d} className="w-4 h-4" />
-
                     {/* Label + description */}
                     <div className="flex flex-col">
                       <span
