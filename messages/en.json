@@ -12,7 +12,7 @@
     "back": "Back",
     "next": "Next",
     "language": "Language",
-    "home": "SQLVIBE Home",
+    "home": "SQL vibe Home",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "switchLanguage": "Switch to German",
@@ -61,7 +61,7 @@
     "mainNav": "Main navigation"
   },
   "landing": {
-    "title": "SQL VIBE – Learn MySQL: Practice, Experiment, Understand",
+    "title": "SQL vibe – Learn MySQL: Practice, Experiment, Understand",
     "description": "Interactive MySQL learning platform with exercises, a free sandbox for your own databases, and a theory hub for normalization, RM, ERM, and SQL fundamentals.",
     "headline": "Learn {highlight} — practice, experiment, understand",
     "headlineHighlight": "SQL",
@@ -442,7 +442,7 @@
   },
   "profil": {
     "title": "Profile",
-    "description": "Your personal SQL VIBE profile with progress, level, and achievements.",
+    "description": "Your personal SQL vibe profile with progress, level, and achievements.",
     "level": "Level",
     "currentRank": "Current Rank",
     "xpToNext": "<strong>{amount} XP</strong> until Level {level}",

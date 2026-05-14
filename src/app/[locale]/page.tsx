@@ -36,7 +36,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "SQL VIBE",
+    name: "SQL vibe",
     applicationCategory: "EducationalApplication",
     operatingSystem: "Web",
     description: t("description"),

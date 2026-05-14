@@ -31,22 +31,33 @@ Dieses Dokument beschreibt das Design-System der SQL-Trainer MySQL-Lernplattform
 
 Alle Farben sind als **CSS-Custom-Properties** im Design-System hinterlegt und werden ueber Tailwind-Utility-Klassen konsumiert.
 
-### Primaer (Indigo)
+### Primaer (Bordeaux)
 
-`primary-50` … `primary-950` – Wird fuer Haupt-CTAs, aktive Navigationselemente und Fokusringe verwendet.
+`primary-50` … `primary-950` – Wird fuer Haupt-CTAs, aktive Navigationselemente und Fokusringe verwendet. Bordeaux-Skala mit warmem, akademischem Charakter.
 
-### Akzent (Teal)
+### Akzent (Gold)
 
-`accent-50` … `accent-950` – Wird fuer Erfolgszustaende, Highlights und gamifizierte Belohnungen genutzt.
+`accent-50` … `accent-950` – Wird fuer Highlights, View-Badges und gamifizierte Belohnungen genutzt. Warme Gold-Skala als Komplement zu Bordeaux.
+
+### Sektions-Farben
+
+Jeder Hauptbereich der App hat eine eigene Akzentfarbe (wie auf der Landing-Page demonstriert):
+
+| Bereich | Farbe | Tailwind-Klasse |
+| -------- | ----- | --------------- |
+| Uebungen | Bordeaux (Primary) | `primary-*` |
+| Story | Violett | `violet-*` |
+| Sandbox | Gold (Accent) | `accent-*` |
+| Lernen | Amber | `amber-*` |
 
 ### Surface & Ink
 
-| Token            | Verwendung                                      |
-| ---------------- | ----------------------------------------------- |
-| `bg-surface`     | Haupt-Seitenhintergrund                         |
-| `bg-surface-dim` | Sekundaere Flaechen (Karten, Button-Secondary)  |
-| `text-ink`       | Primaerer Text                                  |
-| `text-ink-muted` | Beschreibungen, Platzhalter, sekundaere Inhalte |
+| Token            | Light Mode | Dark Mode | Verwendung                                      |
+| ---------------- | ---------- | --------- | ----------------------------------------------- |
+| `bg-surface`     | `#FFF8F0`  | `#0f172a` | Haupt-Seitenhintergrund (warmes Cream / Slate)  |
+| `bg-surface-dim` | `#F0E8DA`  | `#1e293b` | Sekundaere Flaechen (Karten, Button-Secondary)  |
+| `text-ink`       | `#2C1A1E`  | `#f1f5f9` | Primaerer Text (warmes Dunkel / Slate-Light)    |
+| `text-ink-muted` | `#8B7072`  | `#94a3b8` | Beschreibungen, Platzhalter, sekundaere Inhalte |
 
 ### Semantische Farben
 

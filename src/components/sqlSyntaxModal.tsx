@@ -141,9 +141,6 @@ export function SqlSyntaxModal({ isOpen, onClose }: SqlSyntaxModalProps) {
             <h3 className="text-sm font-semibold text-ink">
               {t(sectionTitleKey(activeSectionData.title))}
             </h3>
-            <span className="ml-auto text-[10px] text-ink-muted/50 tabular-nums">
-              {activeSectionData.items.length} {t("itemCount")}
-            </span>
           </div>
 
           {/* Content items */}

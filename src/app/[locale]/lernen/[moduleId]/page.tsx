@@ -68,7 +68,7 @@ export default async function LearnModulePage({ params }: PageProps) {
     description: mod.description,
     provider: {
       "@type": "Organization",
-      name: "SQL VIBE",
+      name: "SQL vibe",
       url: "https://sql-vibe.vercel.app",
     },
     coursePrerequisites: getDifficultyConfig(mod.difficulty).labelKey,

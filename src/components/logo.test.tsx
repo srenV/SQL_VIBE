@@ -8,8 +8,8 @@ import { Logo } from "./logo";
 describe("Logo", () => {
   it("rendert den vollstaendigen Text", () => {
     render(<Logo />);
-    expect(screen.getByText("VIBE")).toBeInTheDocument();
-    expect(screen.getByText("VIBE")).toHaveClass("text-primary-500");
+    expect(screen.getByText("vibe")).toBeInTheDocument();
+    expect(screen.getByText("vibe")).toHaveClass("text-primary-500");
     expect(screen.getByText("SQL")).toBeInTheDocument();
   });
 
@@ -18,7 +18,7 @@ describe("Logo", () => {
     expect(screen.getByText("SQL")).toBeInTheDocument();
     // In jsdom werden Tailwind-Klassen nicht als display:none ausgewertet,
     // daher pruefen wir stattdessen die Klasse des Spans.
-    expect(screen.getByText("VIBE")).toHaveClass("hidden");
+    expect(screen.getByText("vibe")).toHaveClass("hidden");
   });
 
   it("wendet custom className an", () => {

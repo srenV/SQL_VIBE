@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS produkte (
   it("transformiert SHOW TABLES", () => {
     const result = mysqlToSqlite("SHOW TABLES");
     expect(result).toContain("sqlite_master");
-    expect(result).toContain("type = 'table'");
+    expect(result).toContain("type IN ('table', 'view')");
   });
 
   it("transformiert DESCRIBE", () => {

@@ -29,14 +29,14 @@ export interface AnimatedCardProps {
 const themeConfig = {
   primary: {
     glowBorder: "group-hover:border-primary-400/60 dark:group-hover:border-primary-400/40",
-    glowShadow: "group-hover:shadow-[0_8px_30px_-8px_rgba(99,102,241,0.35)] dark:group-hover:shadow-[0_8px_30px_-8px_rgba(99,102,241,0.25)]",
+    glowShadow: "group-hover:shadow-[0_8px_30px_-8px_rgba(123,45,59,0.35)] dark:group-hover:shadow-[0_8px_30px_-8px_rgba(123,45,59,0.25)]",
     gradientFrom: "from-primary-500/5",
     gradientTo: "to-primary-500/0",
     shimmerColor: "bg-gradient-to-r from-transparent via-primary-400 to-transparent",
   },
   accent: {
     glowBorder: "group-hover:border-accent-400/60 dark:group-hover:border-accent-400/40",
-    glowShadow: "group-hover:shadow-[0_8px_30px_-8px_rgba(20,184,166,0.35)] dark:group-hover:shadow-[0_8px_30px_-8px_rgba(20,184,166,0.25)]",
+    glowShadow: "group-hover:shadow-[0_8px_30px_-8px_rgba(196,154,43,0.35)] dark:group-hover:shadow-[0_8px_30px_-8px_rgba(196,154,43,0.25)]",
     gradientFrom: "from-accent-500/5",
     gradientTo: "to-accent-500/0",
     shimmerColor: "bg-gradient-to-r from-transparent via-accent-400 to-transparent",

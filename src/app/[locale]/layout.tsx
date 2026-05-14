@@ -36,7 +36,7 @@ const jetbrainsMono = localFont({
 });
 
 const SITE_URL = "https://sql-vibe.vercel.app";
-const SITE_NAME = "SQL VIBE";
+const SITE_NAME = "SQL vibe";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -51,8 +51,8 @@ export async function generateMetadata({
   const isEn = locale === "en";
 
   const title = isEn
-    ? "SQL VIBE – Learn MySQL: Practice, Experiment, Understand"
-    : "SQL VIBE – Lerne MySQL: Üben, Experimentieren, Verstehen";
+    ? "SQL vibe – Learn MySQL: Practice, Experiment, Understand"
+    : "SQL vibe – Lerne MySQL: Üben, Experimentieren, Verstehen";
 
   const description = isEn
     ? "Interactive MySQL learning platform with exercises, a free sandbox for your own databases, and a theory hub for normalization, RM, ERM, and SQL fundamentals."
@@ -62,7 +62,7 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title: {
       default: title,
-      template: `%s | SQL VIBE`,
+      template: `%s | SQL vibe`,
     },
     description,
     keywords: isEn
