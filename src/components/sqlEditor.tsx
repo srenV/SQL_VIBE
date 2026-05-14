@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils";
 import { getEditorTheme } from "@/lib/codeMirrorTheme";
 import { useDialect, type Dialect } from "@/lib/dialect";
 import { useTheme } from "@/hooks/useTheme";
+import { BookOpen } from "lucide-react";
+import { SqlSyntaxModal } from "@/components/sqlSyntaxModal";
 
 /**
  * SQL keywords for autocompletion.
@@ -176,6 +178,8 @@ export interface SqlEditorProps {
   schema?: SqlSchema;
   /** Whether autocompletion is enabled (default: true) */
   autocompleteEnabled?: boolean;
+  /** Whether to show the syntax help button (default: true) */
+  showSyntaxHelp?: boolean;
   /** Additional CSS class names */
   className?: string;
   /** HTML id attribute */
@@ -200,11 +204,13 @@ export const SqlEditor = React.memo(function SqlEditor({
   disabled,
   schema,
   autocompleteEnabled: autocompleteEnabledProp,
+  showSyntaxHelp = true,
   className,
   id,
 }: SqlEditorProps) {
   const t = useTranslations("sandbox");
   const { dialect, autocompleteEnabled: globalAutocompleteEnabled } = useDialect();
+  const [syntaxModalOpen, setSyntaxModalOpen] = useState(false);
   const { theme: appTheme } = useTheme();
   const isDark = appTheme === "dark";
   // Use prop override if provided, otherwise fall back to global state
@@ -376,11 +382,25 @@ export const SqlEditor = React.memo(function SqlEditor({
 
   return (
     <div className="flex flex-col gap-1.5">
-      {label && (
-        <label htmlFor={editorId} className="text-sm font-medium text-ink">
-          {label}
-        </label>
-      )}
+      <div className="flex items-center justify-between">
+        {label && (
+          <label htmlFor={editorId} className="text-sm font-medium text-ink">
+            {label}
+          </label>
+        )}
+        {showSyntaxHelp && (
+          <button
+            type="button"
+            onClick={() => setSyntaxModalOpen(true)}
+            className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-ink-muted hover:text-primary-600 hover:bg-primary-50 dark:hover:text-primary-400 dark:hover:bg-primary-900/30 transition-colors"
+            aria-label={t("syntaxHelp")}
+            title={t("syntaxHelp")}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{t("syntaxHelpShort")}</span>
+          </button>
+        )}
+      </div>
       <div
         ref={editorRef}
         id={editorId}
@@ -403,6 +423,13 @@ export const SqlEditor = React.memo(function SqlEditor({
           <kbd className="rounded border border-surface-dim px-1 py-0.5 text-xs font-mono">&#x21B5;</kbd>{" "}
           {t("orCtrlEnter")}
           </p>
+        )}
+
+        {showSyntaxHelp && (
+          <SqlSyntaxModal
+            isOpen={syntaxModalOpen}
+            onClose={() => setSyntaxModalOpen(false)}
+          />
         )}
       </div>
     );

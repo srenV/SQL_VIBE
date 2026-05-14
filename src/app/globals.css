@@ -308,6 +308,170 @@ small {
   color: var(--color-ink-muted);
 }
 
+/* ─── AnimeLayoutModal ────────────────────────────────────────────────────── */
+
+.sql-vibe-modal {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Ensure hidden when not open – native <dialog> is display:none,
+   but we need to be explicit in case of CSS conflicts */
+.sql-vibe-modal:not([open]) {
+  display: none;
+}
+
+/* Open state: show as overlay */
+.sql-vibe-modal[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: auto;
+  /* Backdrop: starts transparent, transitions to visible via .modal-open */
+  background-color: color-mix(in srgb, var(--color-ink) 0%, transparent);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition:
+    background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    backdrop-filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    -webkit-backdrop-filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Backdrop pseudo-element (native dialog backdrop) */
+.sql-vibe-modal::backdrop {
+  background: transparent;
+}
+
+/* Open + animated: backdrop fades in */
+.sql-vibe-modal.modal-open {
+  background-color: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Content: starts invisible, transitions to visible via .modal-open */
+.sql-vibe-modal .modal-content {
+  position: relative;
+  width: 100%;
+  max-height: 80dvh;
+  overflow-y: auto;
+  border-radius: 1rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-surface-dim);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  padding: 0;
+  opacity: 0;
+  transform: scale(0.95) translateY(8px);
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .sql-vibe-modal .modal-content {
+  background-color: var(--color-surface);
+  border-color: var(--color-dark-dim);
+}
+
+/* Open + animated: content fades in */
+.sql-vibe-modal.modal-open .modal-content {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Closing state: animate content out */
+.sql-vibe-modal.modal-closing .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(8px);
+  transition:
+    opacity 0.2s cubic-bezier(0.4, 0, 1, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Closing state: fade backdrop out */
+.sql-vibe-modal.modal-closing {
+  background-color: color-mix(in srgb, var(--color-ink) 0%, transparent);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition:
+    background-color 0.2s cubic-bezier(0.4, 0, 1, 1),
+    backdrop-filter 0.2s cubic-bezier(0.4, 0, 1, 1),
+    -webkit-backdrop-filter 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Close button */
+.sql-vibe-modal .modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  color: var(--color-ink-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.sql-vibe-modal .modal-close:hover {
+  background-color: var(--color-surface-dim);
+  color: var(--color-ink);
+}
+
+.dark .sql-vibe-modal .modal-close:hover {
+  background-color: var(--color-dark-dim);
+}
+
+/* Mobile: full-screen sheet */
+@media (max-width: 639px) {
+  .sql-vibe-modal .modal-content {
+    max-height: 100dvh;
+    border-radius: 0;
+    padding: 1rem;
+    padding-top: 1.5rem;
+  }
+}
+
+/* Reduced motion: skip all animations */
+@media (prefers-reduced-motion: reduce) {
+  .sql-vibe-modal .modal-content {
+    transition: none;
+  }
+  .sql-vibe-modal.modal-open .modal-content {
+    transition: none;
+  }
+  .sql-vibe-modal.modal-closing .modal-content {
+    transition: none;
+  }
+  .sql-vibe-modal[open] {
+    transition: none;
+  }
+  .sql-vibe-modal.modal-open {
+    transition: none;
+  }
+  .sql-vibe-modal.modal-closing {
+    transition: none;
+  }
+}
+
 /* Container-Utility */
 .container-main {
   width: 100%;
