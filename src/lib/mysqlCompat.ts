@@ -90,6 +90,9 @@ export function mysqlToSqlite(sql: string): string {
   // 11. TRUE/FALSE → 1/0 (SQLite hat keinen Boolean-Typ)
   result = transformBooleans(result);
 
+  // 11b. NULL-safe equal operator: a <=> b → a IS b
+  result = transformNullSafeEqual(result);
+
   // 12. ENGINE= / CHARACTER SET / COLLATE / AUTO_INCREMENT-Table-Option entfernen
   result = removeMysqlTableOptions(result);
 
@@ -272,7 +275,18 @@ function transformLimitOffset(sql: string): string {
 
 /** MySQL-Funktionen → SQLite-Äquivalente */
 function transformFunctions(sql: string): string {
-  let result = sql;
+  // DATE_FORMAT must be transformed BEFORE string literal protection,
+  // because it needs to read the format string argument.
+  // DATE_FORMAT(date, format) → strftime(format, date)
+  let result = transformDateFormat(sql);
+
+  // Protect string literals from function replacement.
+  // Replace content inside single quotes with placeholders, transform, then restore.
+  const strings: string[] = [];
+  result = result.replace(/'([^']*)'/g, (match) => {
+    strings.push(match);
+    return `__STR${strings.length - 1}__`;
+  });
 
   // IF(expr, a, b) → CASE WHEN expr THEN a ELSE b END
   // Achtung: Verschachtelte IFs werden nicht unterstützt — einfache Fälle nur
@@ -280,6 +294,10 @@ function transformFunctions(sql: string): string {
     /\bIF\s*\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi,
     (_, cond, thenVal, elseVal) => `CASE WHEN ${cond} THEN ${thenVal} ELSE ${elseVal} END`
   );
+
+  // CONCAT_WS(sep, a, b, ...) → a || sep || b || sep || c ...
+  // Must come before CONCAT() so CONCAT_WS is matched first
+  result = transformConcatWs(result);
 
   // CONCAT(a, b, c) → a || b || c
   // Einfacher Fall: 2-3 Argumente
@@ -305,10 +323,6 @@ function transformFunctions(sql: string): string {
 
   // Restore protected DEFAULT CURRENT_TIMESTAMP
   result = result.replace(/__MYSQL_CURRENT_TS__/g, "CURRENT_TIMESTAMP");
-
-  // DATE_FORMAT(date, format) → strftime(format, date)
-  // MySQL-Format-Specifiers → SQLite-Format-Specifiers
-  result = transformDateFormat(result);
 
   // YEAR(date) → CAST(strftime('%Y', date) AS INTEGER)
   result = result.replace(
@@ -340,6 +354,71 @@ function transformFunctions(sql: string): string {
   // ISNULL(expr) → IFNULL(expr) (MySQL's ISNULL mit 1 Arg = IFNULL)
   // Achtung: ISNULL mit 2 Args gibt es nicht in MySQL
   result = result.replace(/\bISNULL\s*\(([^,)]+)\)/gi, "IFNULL($1)");
+
+  // GREATEST(a, b, ...) → MAX(a, b, ...) (SQLite doesn't have GREATEST but MAX works with 2+ args)
+  result = result.replace(/\bGREATEST\s*\(/gi, "MAX(");
+
+  // LEAST(a, b, ...) → MIN(a, b, ...) (SQLite doesn't have LEAST but MIN works with 2+ args)
+  result = result.replace(/\bLEAST\s*\(/gi, "MIN(");
+
+  // TIMESTAMPDIFF(unit, start, end) → julianday-based calculation
+  // MySQL: TIMESTAMPDIFF(MONTH, '2024-01-01', '2024-06-15') → months between dates
+  // SQLite: simplified to julianday difference with unit multiplier
+  result = result.replace(
+    /\bTIMESTAMPDIFF\s*\(\s*(YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)\s*,\s*([^,]+)\s*,\s*([^)]+)\s*\)/gi,
+    (_match, unit: string, start: string, end: string) => {
+      const s = start.trim();
+      const e = end.trim();
+      switch (unit.toUpperCase()) {
+        case "YEAR":
+          return `CAST((julianday(${e}) - julianday(${s})) / 365.25 AS INTEGER)`;
+        case "MONTH":
+          return `CAST((julianday(${e}) - julianday(${s})) / 30.44 AS INTEGER)`;
+        case "DAY":
+          return `CAST(julianday(${e}) - julianday(${s}) AS INTEGER)`;
+        case "HOUR":
+          return `CAST((julianday(${e}) - julianday(${s})) * 24 AS INTEGER)`;
+        case "MINUTE":
+          return `CAST((julianday(${e}) - julianday(${s})) * 1440 AS INTEGER)`;
+        case "SECOND":
+          return `CAST((julianday(${e}) - julianday(${s})) * 86400 AS INTEGER)`;
+        default:
+          return `CAST(julianday(${e}) - julianday(${s}) AS INTEGER)`;
+      }
+    }
+  );
+
+  // TIMESTAMPADD(unit, value, date) → date arithmetic
+  // MySQL: TIMESTAMPADD(MONTH, 3, '2024-01-01') → '2024-04-01'
+  // SQLite: date(date, '+3 months')
+  result = result.replace(
+    /\bTIMESTAMPADD\s*\(\s*(YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)\s*,\s*([^,]+)\s*,\s*([^)]+)\s*\)/gi,
+    (_match, unit: string, value: string, date: string) => {
+      const v = value.trim();
+      const d = date.trim();
+      const unitMap: Record<string, string> = {
+        YEAR: "years",
+        MONTH: "months",
+        DAY: "days",
+        HOUR: "hours",
+        MINUTE: "minutes",
+        SECOND: "seconds",
+      };
+      const sqliteUnit = unitMap[unit.toUpperCase()] || "days";
+      return `date(${d}, '+${v} ${sqliteUnit}')`;
+    }
+  );
+
+  // XOR operator: a XOR b → ((a OR b) AND NOT (a AND b))
+  // SQLite doesn't have XOR; this is the correct logical XOR expansion
+  // Must come after TRUE/FALSE → 1/0 transformation for correct boolean semantics
+  result = result.replace(
+    /(\w+(?:\.\w+)?)\s+XOR\s+(\w+(?:\.\w+)?)/gi,
+    "(($1 OR $2) AND NOT ($1 AND $2))"
+  );
+
+  // Restore string literals
+  result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
 
   return result;
 }
@@ -434,6 +513,13 @@ function transformBooleans(sql: string): string {
   result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
 
   return result;
+}
+
+/** NULL-safe equal operator: a <=> b → a IS b */
+function transformNullSafeEqual(sql: string): string {
+  // MySQL's <=> operator compares NULL-safe: NULL <=> NULL is true, NULL <=> x is false
+  // SQLite's IS operator does the same: NULL IS NULL is true, NULL IS x is false
+  return sql.replace(/(\w+(?:\.\w+)?)\s*<=>\s*(\w+(?:\.\w+)?|'[^']*'|\d+|NULL)/gi, "$1 IS $2");
 }
 
 /** MySQL-spezifische ALTER TABLE-Optionen entfernen (ENGINE, CHARSET, etc.) */

@@ -684,10 +684,10 @@ describe("Advanced edge cases: RETURNING variants", () => {
     expect(result).not.toContain("RETURNING");
   });
 
-  it("PG: RETURNING id, name is NOT removed (known limitation)", () => {
+  it("PG: RETURNING id, name is removed", () => {
     const sql = "INSERT INTO users (name) VALUES ('John') RETURNING id, name;";
     const result = postgresToSqlite(sql);
-    expect(result).toContain("RETURNING");
+    expect(result).not.toContain("RETURNING");
   });
 });
 
@@ -703,6 +703,34 @@ describe("Advanced edge cases: ILIKE variants", () => {
     const result = postgresToSqlite(sql);
     expect(result).toContain("LOWER(name) LIKE LOWER('%john%')");
     expect(result).toContain("age > 18");
+  });
+});
+
+describe("PG: IS DISTINCT FROM / IS NOT DISTINCT FROM", () => {
+  it("IS DISTINCT FROM → IS NOT", () => {
+    const sql = "SELECT * FROM users WHERE status IS DISTINCT FROM 'active';";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("status IS NOT 'active'");
+    expect(result).not.toContain("DISTINCT");
+  });
+
+  it("IS NOT DISTINCT FROM → IS", () => {
+    const sql = "SELECT * FROM users WHERE status IS NOT DISTINCT FROM 'active';";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("status IS 'active'");
+    expect(result).not.toContain("DISTINCT");
+  });
+
+  it("IS DISTINCT FROM with column reference", () => {
+    const sql = "SELECT * FROM t WHERE a IS DISTINCT FROM b;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("a IS NOT b");
+  });
+
+  it("IS NOT DISTINCT FROM with table-qualified column", () => {
+    const sql = "SELECT * FROM t WHERE t.id IS NOT DISTINCT FROM u.id;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("t.id IS u.id");
   });
 });
 
@@ -814,20 +842,17 @@ describe("Advanced edge cases: String literal safety for type keywords", () => {
   });
 
   it("PG: NOW() inside string literal should NOT be converted", () => {
-    // NOW() inside strings is currently converted — this is a known limitation
-    // The transformDateFunctions function doesn't protect string literals
     const sql = "SELECT 'Use NOW() for current time' AS tip;";
     const result = postgresToSqlite(sql);
-    // Known limitation: NOW() inside strings gets converted
-    expect(result).toBeDefined();
+    expect(result).toContain("'Use NOW() for current time'");
+    expect(result).not.toContain("DATETIME('now') for current time");
   });
 
   it("MySQL: NOW() inside string literal should NOT be converted", () => {
-    // NOW() inside strings is currently converted — this is a known limitation
     const sql = "SELECT 'Use NOW() for current time' AS tip;";
     const result = mysqlToSqlite(sql);
-    // Known limitation: NOW() inside strings gets converted
-    expect(result).toBeDefined();
+    expect(result).toContain("'Use NOW() for current time'");
+    expect(result).not.toContain("DATETIME('now') for current time");
   });
 
   it("PG: DEFAULT string with 'true' should NOT be converted to '1'", () => {
@@ -1083,6 +1108,72 @@ describe("PG: DATE_TRUNC() function", () => {
   });
 });
 
+describe("PG: STRING_AGG → GROUP_CONCAT", () => {
+  it("STRING_AGG(name, ', ') → GROUP_CONCAT(name, ', ')", () => {
+    const sql = "SELECT STRING_AGG(name, ', ') FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("GROUP_CONCAT(name, ', ')");
+    expect(result).not.toContain("STRING_AGG");
+  });
+
+  it("STRING_AGG with column and delimiter", () => {
+    const sql = "SELECT STRING_AGG(email, '; ') FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("GROUP_CONCAT(email, '; ')");
+  });
+});
+
+describe("PG: FILTER (WHERE) on aggregates", () => {
+  it("COUNT(*) FILTER (WHERE cond) → SUM(CASE WHEN cond THEN 1 ELSE 0 END)", () => {
+    const sql = "SELECT COUNT(*) FILTER (WHERE status = 'active') FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END)");
+    expect(result).not.toContain("FILTER");
+  });
+
+  it("SUM(x) FILTER (Where cond) → SUM(CASE WHEN cond THEN x ELSE NULL END)", () => {
+    const sql = "SELECT SUM(price) FILTER (WHERE category = 'A') FROM products;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("SUM(CASE WHEN category = 'A' THEN price ELSE NULL END)");
+    expect(result).not.toContain("FILTER");
+  });
+
+  it("AVG(x) FILTER (Where cond) → AVG(CASE WHEN cond THEN x ELSE NULL END)", () => {
+    const sql = "SELECT AVG(score) FILTER (WHERE passed = TRUE) FROM students;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("AVG(CASE WHEN passed = 1 THEN score ELSE NULL END)");
+  });
+});
+
+describe("PG: TO_CHAR / TO_NUMBER / TO_DATE", () => {
+  it("TO_CHAR(date, 'YYYY-MM-DD') → strftime('%Y-%m-%d', date)", () => {
+    const sql = "SELECT TO_CHAR(created_at, 'YYYY-MM-DD') FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("strftime('%Y-%m-%d', created_at)");
+    expect(result).not.toContain("TO_CHAR");
+  });
+
+  it("TO_CHAR(date, 'DD.MM.YYYY') → strftime('%d.%m.%Y', date)", () => {
+    const sql = "SELECT TO_CHAR(created_at, 'DD.MM.YYYY') FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("strftime('%d.%m.%Y', created_at)");
+  });
+
+  it("TO_NUMBER(expr) → CAST(expr AS INTEGER)", () => {
+    const sql = "SELECT TO_NUMBER(price) FROM products;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("CAST(price AS INTEGER)");
+    expect(result).not.toContain("TO_NUMBER");
+  });
+
+  it("TO_DATE(expr, 'YYYY-MM-DD') → date(expr)", () => {
+    const sql = "SELECT TO_DATE('2024-01-01', 'YYYY-MM-DD') FROM events;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("date(");
+    expect(result).not.toContain("TO_DATE");
+  });
+});
+
 describe("PG: EXTRACT edge cases", () => {
   it("EXTRACT(HOUR FROM date) → CAST(strftime('%H', date) AS INTEGER)", () => {
     const sql = "SELECT EXTRACT(HOUR FROM created_at) FROM events;";
@@ -1236,12 +1327,18 @@ describe("MySQL: ISNULL() function", () => {
 });
 
 describe("MySQL: CONCAT_WS() function", () => {
-  it("CONCAT_WS(sep, a, b) — known limitation: not transformed", () => {
-    // CONCAT_WS is not currently transformed by the transpiler
-    // It passes through as-is (SQLite supports GROUP_CONCAT but not CONCAT_WS)
+  it("CONCAT_WS(sep, a, b) → a || sep || b", () => {
     const sql = "SELECT CONCAT_WS('-', first, last) FROM users;";
     const result = mysqlToSqlite(sql);
-    expect(result).toContain("CONCAT_WS");
+    expect(result).toContain("first || '-' || last");
+    expect(result).not.toContain("CONCAT_WS");
+  });
+
+  it("CONCAT_WS with 3+ values → a || sep || b || sep || c", () => {
+    const sql = "SELECT CONCAT_WS('-', first, middle, last) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("first || '-' || middle || '-' || last");
+    expect(result).not.toContain("CONCAT_WS");
   });
 });
 
@@ -1450,6 +1547,111 @@ describe("MySQL: CONCAT() edge cases", () => {
   });
 });
 
+describe("MySQL: NULL-safe equal operator (<=>)", () => {
+  it("a <=> b → a IS b", () => {
+    const sql = "SELECT * FROM users WHERE id <=> 5;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("id IS 5");
+    expect(result).not.toContain("<=>");
+  });
+
+  it("a <=> NULL → a IS NULL", () => {
+    const sql = "SELECT * FROM users WHERE manager_id <=> NULL;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("manager_id IS NULL");
+  });
+
+  it("table.col <=> value → table.col IS value", () => {
+    const sql = "SELECT * FROM t WHERE t.status <=> 'active';";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("t.status IS 'active'");
+  });
+});
+
+describe("MySQL: GREATEST / LEAST", () => {
+  it("GREATEST(a, b) → MAX(a, b)", () => {
+    const sql = "SELECT GREATEST(10, 20) AS max_val;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("MAX(10, 20)");
+    expect(result).not.toContain("GREATEST");
+  });
+
+  it("GREATEST(a, b, c) → MAX(a, b, c)", () => {
+    const sql = "SELECT GREATEST(price, discount, 0) FROM products;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("MAX(price, discount, 0)");
+  });
+
+  it("LEAST(a, b) → MIN(a, b)", () => {
+    const sql = "SELECT LEAST(10, 20) AS min_val;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("MIN(10, 20)");
+    expect(result).not.toContain("LEAST");
+  });
+
+  it("LEAST(a, b, c) → MIN(a, b, c)", () => {
+    const sql = "SELECT LEAST(price, sale_price, 0) FROM products;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("MIN(price, sale_price, 0)");
+  });
+});
+
+describe("MySQL: TIMESTAMPDIFF", () => {
+  it("TIMESTAMPDIFF(DAY, start, end) → julianday difference in days", () => {
+    const sql = "SELECT TIMESTAMPDIFF(DAY, '2024-01-01', '2024-06-15') AS days;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CAST(julianday('2024-06-15') - julianday('2024-01-01') AS INTEGER)");
+  });
+
+  it("TIMESTAMPDIFF(MONTH, start, end) → approximate months", () => {
+    const sql = "SELECT TIMESTAMPDIFF(MONTH, start_date, end_date) FROM t;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("30.44");
+    expect(result).toContain("julianday");
+  });
+
+  it("TIMESTAMPDIFF(YEAR, start, end) → approximate years", () => {
+    const sql = "SELECT TIMESTAMPDIFF(YEAR, '2020-01-01', '2024-01-01') AS years;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("365.25");
+  });
+});
+
+describe("MySQL: TIMESTAMPADD", () => {
+  it("TIMESTAMPADD(MONTH, 3, date) → date(date, '+3 months')", () => {
+    const sql = "SELECT TIMESTAMPADD(MONTH, 3, '2024-01-01');";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("date('2024-01-01', '+3 months')");
+  });
+
+  it("TIMESTAMPADD(YEAR, 1, date) → date(date, '+1 years')", () => {
+    const sql = "SELECT TIMESTAMPADD(YEAR, 1, created_at) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("date(created_at, '+1 years')");
+  });
+
+  it("TIMESTAMPADD(DAY, 7, date) → date(date, '+7 days')", () => {
+    const sql = "SELECT TIMESTAMPADD(DAY, 7, start_date) FROM events;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("date(start_date, '+7 days')");
+  });
+});
+
+describe("MySQL: XOR operator", () => {
+  it("a XOR b → ((a OR b) AND NOT (a AND b))", () => {
+    const sql = "SELECT * FROM t WHERE active XOR admin;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("((active OR admin) AND NOT (active AND admin))");
+    expect(result).not.toContain("XOR");
+  });
+
+  it("XOR with column references", () => {
+    const sql = "SELECT * FROM users WHERE is_active XOR is_banned;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("((is_active OR is_banned) AND NOT (is_active AND is_banned))");
+  });
+});
+
 describe("MySQL: Backtick conversion", () => {
   it("Backticks → double quotes", () => {
     const sql = "SELECT `name`, `age` FROM `users`;";
@@ -1634,12 +1836,23 @@ describe("PG: NOT ILIKE (known limitation)", () => {
   });
 });
 
-describe("PG: RETURNING with column list (known limitation)", () => {
-  it("RETURNING id, name is NOT removed (known limitation)", () => {
+describe("PG: RETURNING with column list", () => {
+  it("RETURNING id, name is removed", () => {
     const sql = "INSERT INTO users (name) VALUES ('John') RETURNING id, name;";
     const result = postgresToSqlite(sql);
-    // Only RETURNING * is removed, not RETURNING col1, col2
-    expect(result).toContain("RETURNING");
+    expect(result).not.toContain("RETURNING");
+  });
+
+  it("RETURNING * is removed", () => {
+    const sql = "INSERT INTO users (name) VALUES ('John') RETURNING *;";
+    const result = postgresToSqlite(sql);
+    expect(result).not.toContain("RETURNING");
+  });
+
+  it("RETURNING single column is removed", () => {
+    const sql = "INSERT INTO users (name) VALUES ('John') RETURNING id;";
+    const result = postgresToSqlite(sql);
+    expect(result).not.toContain("RETURNING");
   });
 });
 

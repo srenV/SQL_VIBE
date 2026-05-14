@@ -65,7 +65,10 @@ export function postgresToSqlite(sql: string): string {
   // 6. ILIKE → LOWER() LIKE LOWER()
   result = transformIlike(result);
 
-  // 7. RETURNING * → removed
+  // 6b. IS DISTINCT FROM / IS NOT DISTINCT FROM → IS / IS NOT (NULL-safe comparison)
+  result = transformIsDistinctFrom(result);
+
+  // 7. RETURNING → removed
   result = transformReturning(result);
 
   // 8. ON CONFLICT transformations
@@ -295,9 +298,15 @@ function transformExtract(sql: string): string {
   );
 }
 
-/** NOW() / CURRENT_TIMESTAMP → DATETIME('now'), but preserve DEFAULT CURRENT_TIMESTAMP */
+/** NOW() / CURRENT_TIMESTAMP → DATETIME('now'), but preserve DEFAULT CURRENT_TIMESTAMP and string literals */
 function transformDateFunctions(sql: string): string {
-  let result = sql;
+  // Protect string literals from date function replacement.
+  // Replace content inside single quotes with placeholders, transform, then restore.
+  const strings: string[] = [];
+  let result = sql.replace(/'([^']*)'/g, (match) => {
+    strings.push(match);
+    return `__STR${strings.length - 1}__`;
+  });
 
   // Protect CURRENT_TIMESTAMP in DEFAULT clauses from being converted.
   // SQLite natively supports DEFAULT CURRENT_TIMESTAMP but NOT DEFAULT DATETIME('now').
@@ -322,6 +331,9 @@ function transformDateFunctions(sql: string): string {
   // CURRENT_TIME → TIME('now')
   result = result.replace(/\bCURRENT_TIME\b(?!\s*\()/gi, "TIME('now')");
 
+  // Restore string literals
+  result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
+
   // AGE(date1, date2) → simplified
   result = result.replace(
     /\bAGE\s*\(\s*([^,)]+)\s*,\s*([^)]+)\s*\)/gi,
@@ -342,6 +354,58 @@ function transformDateFunctions(sql: string): string {
       };
       const fmt = fmtMap[part.toLowerCase()] || "%Y-%m-%d";
       return `strftime('${fmt}', ${dateExpr.trim()})`;
+    }
+  );
+
+  // STRING_AGG(expr, delimiter) → GROUP_CONCAT(expr, delimiter)
+  // PG: STRING_AGG(name, ', ') → SQLite: GROUP_CONCAT(name, ', ')
+  result = result.replace(
+    /\bSTRING_AGG\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)/gi,
+    (_match, expr: string, delim: string) =>
+      `GROUP_CONCAT(${expr.trim()}, ${delim.trim()})`
+  );
+
+  // FILTER (WHERE cond) on aggregates → CASE WHEN cond THEN expr ELSE null END
+  // PG: COUNT(*) FILTER (WHERE status = 'active') → SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END)
+  // PG: SUM(x) FILTER (WHERE cond) → SUM(CASE WHEN cond THEN x ELSE NULL END)
+  // PG: AVG(x) FILTER (WHERE cond) → AVG(CASE WHEN cond THEN x ELSE NULL END)
+  result = result.replace(
+    /\b(COUNT|SUM|AVG|MIN|MAX)\s*\(([^)]*)\)\s*FILTER\s*\(\s*WHERE\s+([^)]+)\)/gi,
+    (_match, func: string, expr: string, cond: string) => {
+      const trimmedExpr = expr.trim();
+      const trimmedCond = cond.trim();
+      if (func.toUpperCase() === "COUNT") {
+        // COUNT(*) FILTER (WHERE cond) → SUM(CASE WHEN cond THEN 1 ELSE 0 END)
+        return `SUM(CASE WHEN ${trimmedCond} THEN 1 ELSE 0 END)`;
+      }
+      // Other aggregates: FUNC(expr) FILTER (WHERE cond) → FUNC(CASE WHEN cond THEN expr ELSE NULL END)
+      return `${func.toUpperCase()}(CASE WHEN ${trimmedCond} THEN ${trimmedExpr} ELSE NULL END)`;
+    }
+  );
+
+  // TO_CHAR(expr, format) → strftime(format, expr)
+  // PG: TO_CHAR(date_col, 'YYYY-MM-DD') → SQLite: strftime('%Y-%m-%d', date_col)
+  result = result.replace(
+    /\bTO_CHAR\s*\(\s*([^,]+)\s*,\s*'([^']+)'\s*\)/gi,
+    (_match, expr: string, pgFmt: string) => {
+      const sqliteFmt = convertPgDateFormat(pgFmt);
+      return `strftime('${sqliteFmt}', ${expr.trim()})`;
+    }
+  );
+
+  // TO_NUMBER(expr) → CAST(expr AS INTEGER)
+  result = result.replace(
+    /\bTO_NUMBER\s*\(\s*([^)]+)\s*\)/gi,
+    (_match, expr: string) => `CAST(${expr.trim()} AS INTEGER)`
+  );
+
+  // TO_DATE(expr, format) → date(expr) (simplified — SQLite's date() only handles ISO-8601)
+  result = result.replace(
+    /\bTO_DATE\s*\(\s*([^,]+)\s*,\s*'[^']*'\s*\)/gi,
+    (_match) => {
+      // Extract just the first argument (the date string expression)
+      const argMatch = _match.match(/\bTO_DATE\s*\(\s*([^,]+)/i);
+      return `date(${argMatch ? argMatch[1].trim() : '?'})`;
     }
   );
 
@@ -367,10 +431,33 @@ function transformIlike(sql: string): string {
   );
 }
 
-/** RETURNING * / RETURNING col → removed (SQLite doesn't support) */
+/** IS DISTINCT FROM / IS NOT DISTINCT FROM → NULL-safe comparison */
+function transformIsDistinctFrom(sql: string): string {
+  let result = sql;
+
+  // IS NOT DISTINCT FROM → IS (NULL-safe equality: a IS NOT DISTINCT FROM b → a IS b)
+  // Must come before IS DISTINCT FROM so the negated form is matched first
+  // Operand can be: column name, table.column, string literal, number, NULL
+  const operand = "(\\w+(?:\\.\\w+)?|'[^']*'|\\d+|NULL)";
+  result = result.replace(
+    new RegExp(`(\\w+(?:\\.\\w+)?)\\s+IS\\s+NOT\\s+DISTINCT\\s+FROM\\s+${operand}`, "gi"),
+    "$1 IS $2"
+  );
+
+  // IS DISTINCT FROM → IS NOT (NULL-safe inequality: a IS DISTINCT FROM b → a IS NOT b)
+  result = result.replace(
+    new RegExp(`(\\w+(?:\\.\\w+)?)\\s+IS\\s+DISTINCT\\s+FROM\\s+${operand}`, "gi"),
+    "$1 IS NOT $2"
+  );
+
+  return result;
+}
+
+/** RETURNING * / RETURNING col1, col2 → removed (SQLite doesn't support) */
 function transformReturning(sql: string): string {
   // Remove RETURNING clause from INSERT/UPDATE/DELETE
-  return sql.replace(/\s+RETURNING\s+\*\s*/gi, " ");
+  // Matches: RETURNING *, RETURNING id, RETURNING id, name, etc.
+  return sql.replace(/\s+RETURNING\s+[^;]+(?=;|$)/gi, "");
 }
 
 /** ON CONFLICT transformations */
@@ -524,4 +611,26 @@ export function getPostgresCompatWarnings(sql: string): string[] {
   if (/\bEXTRACT\s*\(/i.test(sql)) warnings.push("EXTRACT wurde zu strftime konvertiert");
 
   return warnings;
+}
+
+/**
+ * Konvertiert PostgreSQL-TO_CHAR-Format-Specifiers zu SQLite-strftime-Specifiers.
+ * PG: YYYY, YY, MM, DD, HH24, HH12, MI, SS, Day, Dy, Month, Mon
+ * SQLite: %Y, %y, %m, %d, %H, %I, %M, %S, %w, %j, %W
+ */
+function convertPgDateFormat(pgFmt: string): string {
+  return pgFmt
+    .replace(/YYYY/g, "%Y")
+    .replace(/YY/g, "%y")
+    .replace(/MM/g, "%m")
+    .replace(/DD/g, "%d")
+    .replace(/HH24/g, "%H")
+    .replace(/HH12/g, "%I")
+    .replace(/HH/g, "%H")
+    .replace(/MI/g, "%M")
+    .replace(/SS/g, "%S")
+    .replace(/Day/g, "%A")    // Full weekday name (SQLite %A)
+    .replace(/Dy/g, "%a")     // Abbreviated weekday name (SQLite %a)
+    .replace(/Month/g, "%B")  // Full month name (SQLite %B)
+    .replace(/Mon/g, "%b");  // Abbreviated month name (SQLite %b)
 }

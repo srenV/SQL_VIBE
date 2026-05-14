@@ -39,7 +39,7 @@ Test-Strategie, Test-Struktur und Test-Abdeckung der SQL VIBE Lernplattform.
 | Unit (Components) | 34 | 6 Dateien |
 | Integration (Hooks/Adapter) | 18 | 2 Dateien |
 | E2E (Playwright) | 7 | 7 Dateien |
-| **Gesamt** | **995** | **24 Dateien** |
+| **Gesamt** | **1026** | **24 Dateien** |
 
 ---
 
@@ -103,11 +103,11 @@ Testet die MySQL→SQLite Kompatibilitätsschicht:
 - Case-Insensitivity, Whitespace-Handling
 - CHARACTER SET / DEFAULT CHARSET Varianten
 - Vollständige Küchen-Skript-Verarbeitung
-#### `src/lib/__tests__/transpile.test.ts` (238 Tests)
+#### `src/lib/__tests__/transpile.test.ts` (269 Tests)
 
 Testet die SQL-Dialekt-Transpilation (PostgreSQL + MySQL → SQLite) systematisch：
-- **PostgreSQL-Transformationen**: GENERATED AS IDENTITY, Typ-Mappings (TIMESTAMP, INT, BIGINT, SMALLINT, BOOLEAN, VARCHAR, DOUBLE PRECISION, DECIMAL, NUMERIC, SERIAL, BIGSERIAL), DEFAULT CURRENT_TIMESTAMP-Schutz, ILIKE, RETURNING *, ON CONFLICT, TRUE/FALSE, ::type CAST (inkl. UUID, JSONB, BYTEA, boolean, real), EXTRACT (YEAR/MONTH/DAY/HOUR/MINUTE/SECOND), Dollar-quoted Strings, CURRENT_DATE/TIME, AGE(), DATE_TRUNC(), DEFAULT nextval(), DROP/CREATE DATABASE
-- **MySQL-Transformationen**: Typ-Mappings (BOOLEAN, DATETIME, INT(n), TINYINT, BIGINT, SMALLINT, MEDIUMINT, DOUBLE, FLOAT, DECIMAL, NUMERIC, VARCHAR(n), CHAR(n)), DEFAULT CURRENT_TIMESTAMP-Schutz, TRUE/FALSE, Backticks, RIGHT JOIN, LIMIT offset, IF→CASE WHEN, CONCAT→||, NOW/CURDATE/CURRENT_TIMESTAMP, DATE_FORMAT, YEAR/MONTH/DAY, DATEDIFF, SUBSTRING→SUBSTR, ISNULL→IFNULL, CONCAT_WS (known limitation), SHOW/DESCRIBE/SHOW COLUMNS/SHOW CREATE TABLE/SHOW TABLES LIKE, ON DUPLICATE KEY, UNSIGNED, ENGINE/CHARSET/COLLATE, ALTER TABLE (multi-clause, CHANGE/MODIFY, ADD CONSTRAINT), phpMyAdmin-Kommentare, SET-Befehle, START TRANSACTION/COMMIT
+- **PostgreSQL-Transformationen**: GENERATED AS IDENTITY, Typ-Mappings (TIMESTAMP, INT, BIGINT, SMALLINT, BOOLEAN, VARCHAR, DOUBLE PRECISION, DECIMAL, NUMERIC, SERIAL, BIGSERIAL), DEFAULT CURRENT_TIMESTAMP-Schutz, ILIKE, NOT ILIKE, IS DISTINCT FROM / IS NOT DISTINCT FROM, RETURNING (auch col1, col2), ON CONFLICT, TRUE/FALSE, ::type CAST (inkl. UUID, JSONB, BYTEA, boolean, real), EXTRACT (YEAR/MONTH/DAY/HOUR/MINUTE/SECOND), Dollar-quoted Strings, CURRENT_DATE/TIME, AGE(), DATE_TRUNC(), DEFAULT nextval(), DROP/CREATE DATABASE, STRING_AGG→GROUP_CONCAT, FILTER (WHERE)→CASE WHEN, TO_CHAR→strftime, TO_NUMBER→CAST, TO_DATE→date()
+- **MySQL-Transformationen**: Typ-Mappings (BOOLEAN, DATETIME, INT(n), TINYINT, BIGINT, SMALLINT, MEDIUMINT, DOUBLE, FLOAT, FLOAT(n,m), DECIMAL, NUMERIC, VARCHAR(n), CHAR(n)), DEFAULT CURRENT_TIMESTAMP-Schutz, TRUE/FALSE, Backticks, RIGHT JOIN, LIMIT offset, IF→CASE WHEN, CONCAT→||, CONCAT_WS→||, NOW/CURDATE/CURRENT_TIMESTAMP (mit String-Literal-Schutz), DATE_FORMAT, YEAR/MONTH/DAY, DATEDIFF, SUBSTRING→SUBSTR, ISNULL→IFNULL, GREATEST→MAX, LEAST→MIN, TIMESTAMPDIFF→julianday, TIMESTAMPADD→date(), SHOW/DESCRIBE/SHOW COLUMNS/SHOW CREATE TABLE/SHOW TABLES LIKE, ON DUPLICATE KEY, UNSIGNED, ENGINE/CHARSET/COLLATE, ALTER TABLE (multi-clause, CHANGE/MODIFY, ADD CONSTRAINT), phpMyAdmin-Kommentare, SET-Befehle, START TRANSACTION/COMMIT, <=> NULL-safe equal, XOR
 - **Cross-Dialekt-Edge-Cases**: Multi-Statement, String-Literal-Schutz (TRUE/FALSE, Type-Keywords, NOW() in Strings), DEFAULT-Werte mit CURRENT_TIMESTAMP
 - **Erweiterte Edge-Cases**: RETURNING-Varianten, ILIKE mit Tabellenqualifizierung, ALTER TABLE ADD COLUMN (PG+MySQL), CTEs mit TRUE/FALSE, Window-Functions (Pass-through), COALESCE/NULL-Handling, String-Concatenation, DECIMAL/NUMERIC-Typen, Dollar-quoted Strings, CAST-Shorthand, Multi-column CREATE TABLE
 - **Error Mapping**: SQLite→PostgreSQL, SQLite→MySQL, SQLite pass-through

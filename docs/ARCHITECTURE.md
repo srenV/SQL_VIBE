@@ -270,7 +270,7 @@ getCompatWarnings(dialect) → string[]     // Bekannte Einschränkungen
 
 ### PostgreSQL-Kompatibilität (`postgresCompat.ts`)
 
-Übersetzt PostgreSQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 12 Schritten:
+Übersetzt PostgreSQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 17 Schritten:
 
 1. **Dollar-quoted Strings** → `$$...$$` und `$tag$...$tag$` → reguläre Strings
 2. **CREATE TABLE** → Typ-Mappings (SERIAL→INTEGER PK AUTOINCREMENT, BOOLEAN→INTEGER, TIMESTAMP→TEXT, VARCHAR→TEXT, INT→INTEGER, BIGINT→INTEGER, SMALLINT→INTEGER, DECIMAL→REAL, NUMERIC→REAL, DOUBLE PRECISION→REAL, GENERATED AS IDENTITY→AUTOINCREMENT)
@@ -278,21 +278,24 @@ getCompatWarnings(dialect) → string[]     // Bekannte Einschränkungen
 4. **TRUNCATE TABLE** → `DELETE FROM`
 5. **CAST shorthand** → `::type` → `CAST(expr AS type)`
 6. **EXTRACT** → `EXTRACT(part FROM date)` → `strftime`
-7. **Date functions** → `NOW()`/`CURRENT_TIMESTAMP` → `DATETIME('now')` (mit DEFAULT-Schutz)
+7. **Date functions** → `NOW()`/`CURRENT_TIMESTAMP` → `DATETIME('now')` (mit DEFAULT-Schutz und String-Literal-Schutz)
 8. **NOT ILIKE** → `LOWER(col) NOT LIKE LOWER(pattern)`
 9. **ILIKE** → `LOWER(col) LIKE LOWER(pattern)`
-10. **RETURNING \*** → entfernt
-11. **ON CONFLICT** → `INSERT OR IGNORE` / `INSERT OR REPLACE`
-12. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
-13. **DROP/CREATE DATABASE** → Kommentare
+10. **IS DISTINCT FROM** → `IS NOT` / **IS NOT DISTINCT FROM** → `IS`
+11. **RETURNING** → entfernt (auch `RETURNING col1, col2`)
+12. **ON CONFLICT** → `INSERT OR IGNORE` / `INSERT OR REPLACE`
+13. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
+14. **STRING_AGG** → `GROUP_CONCAT`
+15. **FILTER (WHERE)** → `CASE WHEN` auf Aggregaten
+16. **TO_CHAR** → `strftime`, **TO_NUMBER** → `CAST AS INTEGER`, **TO_DATE** → `date()`
+17. **DROP/CREATE DATABASE** → Kommentare
 
 **Bekannte Einschränkungen:**
-- `RETURNING col1, col2` wird NICHT entfernt (nur `RETURNING *`)
 - `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
 
 ### MySQL-Kompatibilität (`mysqlCompat.ts`)
 
-Übersetzt MySQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 14 Schritten:
+Übersetzt MySQL-Syntax zu SQLite-äquivalenten Ausdrücken. Pipeline mit 16 Schritten:
 
 1. **phpMyAdmin-Kommentare** → `/*!40101 ... */` entfernt
 2. **SET-Befehle** → `SET SQL_MODE`, `SET time_zone`, `START TRANSACTION`, `COMMIT` entfernt
@@ -302,16 +305,17 @@ getCompatWarnings(dialect) → string[]     // Bekannte Einschränkungen
 6. **TRUNCATE TABLE** → `DELETE FROM`
 7. **SHOW/DESCRIBE** → `sqlite_master`-Query / `PRAGMA table_info`
 8. **LIMIT x, y** → `LIMIT y OFFSET x`
-9. **Funktionen** → `IF()`→`CASE WHEN`, `CONCAT()`→`||`, `CONCAT_WS()`→`||`, `NOW()`/`CURDATE()`/`CURRENT_TIMESTAMP`→`DATETIME('now')`/`DATE('now')`, `DATE_FORMAT()`→`strftime`, `YEAR()`/`MONTH()`/`DAY()`→`strftime`, `DATEDIFF()`→`julianday`, `SUBSTRING()`→`SUBSTR()`, `ISNULL()`→`IFNULL()`
+9. **Funktionen** → `IF()`→`CASE WHEN`, `CONCAT()`→`||`, `CONCAT_WS()`→`||`, `NOW()`/`CURDATE()`/`CURRENT_TIMESTAMP`→`DATETIME('now')`/`DATE('now')` (mit String-Literal-Schutz), `DATE_FORMAT()`→`strftime`, `YEAR()`/`MONTH()`/`DAY()`→`strftime`, `DATEDIFF()`→`julianday`, `SUBSTRING()`→`SUBSTR()`, `ISNULL()`→`IFNULL()`, `GREATEST()`→`MAX()`, `LEAST()`→`MIN()`, `TIMESTAMPDIFF()`→`julianday`-Berechnung, `TIMESTAMPADD()`→`date()`-Arithmetik
 10. **ON DUPLICATE KEY UPDATE** → `INSERT OR REPLACE`
 11. **TRUE/FALSE** → `1`/`0` (mit String-Literal-Schutz)
-12. **ENGINE/CHARSET/COLLATE** → entfernt
+12. **NULL-safe equal** → `a <=> b` → `a IS b`
+13. **XOR** → `a XOR b` → `((a OR b) AND NOT (a AND b))`
+14. **ENGINE/CHARSET/COLLATE** → entfernt
 13. **ALTER TABLE** → MySQL-spezifische Befehle (ADD KEY, ADD INDEX, CHANGE COLUMN, MODIFY COLUMN, ADD CONSTRAINT)
 14. **DROP/CREATE DATABASE** → Kommentare
 
 **Bekannte Einschränkungen:**
 - ALTER TABLE ADD COLUMN konvertiert keine Typen (nur PG)
-- `NOW()` in String-Literalen wird konvertiert (selten in der Praxis)
 
 ---
 
