@@ -261,8 +261,9 @@ function transformCastShorthand(sql: string): string {
   const { masked: result, strings } = protectStringLiterals(sql);
 
   // Match identifier::type or expression::type
+  // Supports table.column::type (e.g., u.id::text)
   let transformed = result.replace(
-    /(\w+(?:\([^)]*\))?)\s*::\s*(\w+(?:\[\])?)/g,
+    /([\w.]+(?:\([^)]*\))?)\s*::\s*(\w+(?:\[\])?)/g,
     (_match, expr: string, type: string) => {
       // Map PostgreSQL types to SQLite types
       const sqliteType = mapPgTypeToSqlite(type.replace(/\[\]/g, ""));
@@ -711,6 +712,7 @@ export function mapSqliteErrorToPostgres(sqliteError: string): string {
   let msg = sqliteError;
 
   // Common SQLite error patterns → PostgreSQL-style messages
+  // Order matters: more specific patterns must come before more general ones
   const mappings: [RegExp, string][] = [
     [/no such table: (.+)/i, 'relation "$1" does not exist'],
     [/no such view: (.+)/i, 'view "$1" does not exist'],
@@ -719,11 +721,11 @@ export function mapSqliteErrorToPostgres(sqliteError: string): string {
     [/view (.+) already exists/i, 'view "$1" already exists'],
     [/cannot modify view (.+)/i, 'cannot modify view "$1"'],
     [/unique constraint failed: (.+)/i, 'duplicate key value violates unique constraint "$1"'],
+    [/NOT NULL constraint failed: ([\w.]+)/i, 'null value in column "$1" violates not-null constraint'],
+    [/CHECK constraint failed/i, "check constraint violation"],
     [/foreign key mismatch/i, "foreign key constraint violation"],
     [/constraint failed/i, "constraint violation"],
     [/syntax error/i, "syntax error at or near"],
-    [/NOT NULL constraint failed: (.+)/i, 'null value in column "$1" violates not-null constraint'],
-    [/CHECK constraint failed/i, "check constraint violation"],
     [/disk I\/O error/i, "could not read from file: I/O error"],
   ];
 

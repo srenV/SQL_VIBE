@@ -15,7 +15,7 @@ export function Footer() {
           {/* Brand */}
           <div className="flex flex-col items-center sm:items-start gap-1">
             <span className="text-lg font-bold tracking-tight text-ink">
-              SQL<span className="text-primary-500">VIBE</span>
+              SQL<span className="text-primary-500 font-mono italic">vibe</span>
             </span>
             <span className="text-xs text-ink-muted">
               {t("brandSlogan")}

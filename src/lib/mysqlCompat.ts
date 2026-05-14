@@ -174,6 +174,9 @@ function transformCreateTable(sql: string): string {
   // ON UPDATE CURRENT_TIMESTAMP entfernen (SQLite-Feature nicht vorhanden)
   result = result.replace(/\bON\s+UPDATE\s+CURRENT_TIMESTAMP\b/gi, "");
 
+  // Clean up double spaces left by removals (UNSIGNED, ON UPDATE, etc.)
+  result = result.replace(/  +/g, " ");
+
   // Restore string literals
   result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
 
@@ -254,19 +257,19 @@ function transformShowAndDescribe(sql: string): string {
 
   // DESCRIBE table / DESC table
   const describeMatch = trimmed.match(
-    /^\s*(?:DESCRIBE|DESC)\s+(\w+)/i
+    /^\s*(?:DESCRIBE|DESC)\s+(["`]?)(\w+)\1/i
   );
   if (describeMatch) {
-    const table = describeMatch[1];
+    const table = describeMatch[2];
     return `PRAGMA table_info("${table}");`;
   }
 
   // SHOW COLUMNS FROM table / SHOW FIELDS FROM table
   const showColsMatch = trimmed.match(
-    /^\s*SHOW\s+(?:COLUMNS|FIELDS)\s+FROM\s+(\w+)/i
+    /^\s*SHOW\s+(?:COLUMNS|FIELDS)\s+FROM\s+(["`]?)(\w+)\1/i
   );
   if (showColsMatch) {
-    const table = showColsMatch[1];
+    const table = showColsMatch[2];
     return `PRAGMA table_info("${table}");`;
   }
 
@@ -299,11 +302,22 @@ function transformCreateOrReplaceView(sql: string): string {
 
 /** LIMIT x, y → LIMIT y OFFSET x (MySQL-Pagination) */
 function transformLimitOffset(sql: string): string {
+  // Protect string literals from LIMIT replacement.
+  const strings: string[] = [];
+  let result = sql.replace(/'([^']*)'/g, (match) => {
+    strings.push(match);
+    return `__STR${strings.length - 1}__`;
+  });
+
   // LIMIT 10, 20 → LIMIT 20 OFFSET 10
-  return sql.replace(
+  result = result.replace(
     /\bLIMIT\s+(\d+)\s*,\s*(\d+)\b/gi,
     (_, offset, limit) => `LIMIT ${limit} OFFSET ${offset}`
   );
+
+  // Restore string literals
+  result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
+  return result;
 }
 
 /** MySQL-Funktionen → SQLite-Äquivalente */
@@ -598,7 +612,21 @@ function transformInsertIgnore(sql: string): string {
 
 /** UNSIGNED-Keyword entfernen */
 function removeUnsigned(sql: string): string {
-  return sql.replace(/\bUNSIGNED\b/gi, "");
+  // Protect string literals from UNSIGNED removal.
+  const strings: string[] = [];
+  let result = sql.replace(/'([^']*)'/g, (match) => {
+    strings.push(match);
+    return `__STR${strings.length - 1}__`;
+  });
+
+  result = result.replace(/\bUNSIGNED\b/gi, "");
+
+  // Clean up double spaces left by removal
+  result = result.replace(/  +/g, " ");
+
+  // Restore string literals
+  result = result.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
+  return result;
 }
 
 /** TRUE/FALSE → 1/0 (SQLite hat keinen Boolean-Typ) */

@@ -24,7 +24,7 @@ export const Logo = React.forwardRef<HTMLSpanElement, LogoProps>(
         {...props}
       >
         <span>SQL</span>
-        <span className={cn(compact && "hidden", "text-primary-500")}>VIBE</span>
+        <span className={cn(compact && "hidden", "text-primary-500 italic font-mono")}>vibe</span>
       </span>
     );
   }

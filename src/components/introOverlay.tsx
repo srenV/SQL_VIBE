@@ -121,7 +121,7 @@ export function IntroOverlay() {
         ease: "inOutExpo",
         duration: 1800,
         innerHTML: scrambleText({
-          text: "SQL-VIBE",
+          text: "SQLvibe",
           override: " ",
           from: "center",
           cursor: "░▒▓█",
@@ -203,7 +203,7 @@ export function IntroOverlay() {
 
         {/* ── Slide 2: SQL-VIBE outro ───────────────────────────────── */}
         <div className="sql-slide">
-          <p style={{ fontSize: "clamp(1.5rem, 4vw, 3.5rem)" }}>SQL-VIBE</p>
+          <p style={{ fontSize: "clamp(1.5rem, 4vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.025em" }}>SQL<span style={{ fontFamily: "var(--font-mono)", fontStyle: "italic", color: "#818cf8" }}>vibe</span></p>
         </div>
 
       </main>
