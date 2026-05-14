@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -76,6 +76,45 @@ export function Header({ rightSlot }: HeaderProps) {
   const circumference = 2 * Math.PI * 14;
   const dashOffset = circumference * (1 - info.progress);
 
+  // ── Sliding indicator state ──
+  const navRef = useRef<HTMLElement>(null);
+  const tabRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
+  const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
+  const [indicatorReady, setIndicatorReady] = useState(false);
+
+  /** Measure the active tab's position relative to the nav bar. */
+  const measureIndicator = useCallback(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const activeHref = NAV_TABS.find((tab) => isActive(tab.href))?.href;
+    if (!activeHref) { setIndicator(null); return; }
+    const tabEl = tabRefs.current.get(activeHref);
+    if (!tabEl) return;
+    const navRect = nav.getBoundingClientRect();
+    const tabRect = tabEl.getBoundingClientRect();
+    setIndicator({
+      left: tabRect.left - navRect.left,
+      width: tabRect.width,
+    });
+  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Measure on mount and when pathname changes
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure layout is settled
+    const raf = requestAnimationFrame(() => {
+      measureIndicator();
+      setIndicatorReady(true);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [measureIndicator]);
+
+  // Re-measure on resize
+  useEffect(() => {
+    const onResize = () => measureIndicator();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [measureIndicator]);
+
   const isActive = (href: string) => {
     if (!pathname) return false;
     // pathname from next-intl's usePathname is locale-relative (no /de/ prefix)
@@ -150,22 +189,47 @@ export function Header({ rightSlot }: HeaderProps) {
           </div>
 
           {/* Tab-Bar — Desktop only */}
-          <nav className="hidden sm:flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1" aria-label={t("mainNav")}>
+          <nav ref={navRef} className="hidden sm:flex items-center gap-1 rounded-lg bg-surface-dim/70 dark:bg-dark-dim/70 p-1 relative" aria-label={t("mainNav")}>
+            {/* Sliding indicator — positioned absolutely, animated via CSS transition */}
+            {indicator && (
+              <span
+                className="absolute top-1 bottom-1 rounded-md bg-surface shadow-sm dark:bg-dark-dim"
+                style={{
+                  left: indicator.left,
+                  width: indicator.width,
+                  transition: prefersReduced
+                    ? "none"
+                    : "left 0.35s cubic-bezier(0.25, 0.1, 0.25, 1), width 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)",
+                  opacity: indicatorReady ? 1 : 0,
+                }}
+                aria-hidden="true"
+              />
+            )}
             {NAV_TABS.map((tab) => {
               const active = isActive(tab.href);
               return (
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 ${
+                  ref={(el) => {
+                    if (el) tabRefs.current.set(tab.href, el);
+                    else tabRefs.current.delete(tab.href);
+                  }}
+                  className={`relative z-10 inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 ${
                     active
-                      ? "bg-surface text-ink shadow-sm dark:bg-dark-dim dark:text-ink"
+                      ? "text-ink"
                       : "text-ink-muted hover:text-ink"
                   }`}
                   aria-current={active ? "page" : undefined}
                 >
-                  {tab.icon}
-                  <span className="hidden sm:inline">{t(tab.labelKey)}</span>
+                  <motion.span
+                    className="inline-flex items-center gap-1.5"
+                    animate={active && !prefersReduced ? { scale: 1.05 } : { scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  >
+                    {tab.icon}
+                    <span className="hidden sm:inline">{t(tab.labelKey)}</span>
+                  </motion.span>
                 </Link>
               );
             })}
