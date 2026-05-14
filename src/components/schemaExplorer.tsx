@@ -176,13 +176,17 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
         {tables.map((table) => (
           <Card key={table.name} variant="flat" className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center rounded-md bg-primary-50 px-2 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
-                {t("table")}
+              <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+                table.type === "view"
+                  ? "bg-accent-50 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300"
+                  : "bg-primary-50 px-2 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+              }`}>
+                {table.type === "view" ? t("view") : t("table")}
               </span>
               <span className="text-sm font-semibold text-ink">{table.name}</span>
               {sandboxMode && (
                 <div className="ml-auto flex items-center gap-1">
-                  {onInsertTemplate && (
+                  {table.type !== "view" && onInsertTemplate && (
                     <button
                       onClick={() => onInsertTemplate(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors"
@@ -197,7 +201,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                     <button
                       onClick={() => onDropTable(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-error/70 hover:text-error hover:bg-error/10 transition-colors"
-                      title={t("deleteTable")}
+                      title={table.type === "view" ? t("dropView") : t("deleteTable")}
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -208,42 +212,51 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
               )}
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b border-surface-dim dark:border-dark-dim">
-                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">{t("column")}</th>
-                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">{t("type")}</th>
-                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Nullable</th>
-                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Default</th>
-                    <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">PK</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {table.columns.map((col) => (
-                    <tr key={col.name} className="border-b border-surface-dim/50 dark:border-dark-dim/50">
-                      <td className="px-2 py-1 text-ink">{col.name}</td>
-                      <td className="px-2 py-1 text-ink-muted">{col.type}</td>
-                      <td className="px-2 py-1 text-ink-muted">{col.nullable ? t("yes") : t("no")}</td>
-                      <td className="px-2 py-1 text-ink-muted">{col.defaultValue ?? "-"}</td>
-                      <td className="px-2 py-1 text-ink-muted">{col.isPrimaryKey ? "PK" : ""}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {table.foreignKeys && table.foreignKeys.length > 0 && (
-              <div className="mt-3">
-                <p className="text-xs font-medium text-ink-muted mb-1">{t("foreignKey")}</p>
-                <ul className="text-xs text-ink-muted space-y-1">
-                  {table.foreignKeys.map((fk, i) => (
-                    <li key={i}>
-                      {fk.column} → {fk.referencedTable}({fk.referencedColumn})
-                    </li>
-                  ))}
-                </ul>
+            {table.type === "view" && table.sql ? (
+              <div className="mt-1">
+                <p className="text-xs font-medium text-ink-muted mb-1">{t("viewDefinition")}</p>
+                <pre className="text-xs text-ink-muted bg-surface-dim/50 dark:bg-dark-dim/50 rounded p-2 overflow-x-auto whitespace-pre-wrap">{table.sql}</pre>
               </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-surface-dim dark:border-dark-dim">
+                        <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">{t("column")}</th>
+                        <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">{t("type")}</th>
+                        <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Nullable</th>
+                        <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">Default</th>
+                        <th scope="col" className="px-2 py-1 text-left font-medium text-ink-muted">PK</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {table.columns.map((col) => (
+                        <tr key={col.name} className="border-b border-surface-dim/50 dark:border-dark-dim/50">
+                          <td className="px-2 py-1 text-ink">{col.name}</td>
+                          <td className="px-2 py-1 text-ink-muted">{col.type}</td>
+                          <td className="px-2 py-1 text-ink-muted">{col.nullable ? t("yes") : t("no")}</td>
+                          <td className="px-2 py-1 text-ink-muted">{col.defaultValue ?? "-"}</td>
+                          <td className="px-2 py-1 text-ink-muted">{col.isPrimaryKey ? "PK" : ""}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {table.foreignKeys && table.foreignKeys.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-xs font-medium text-ink-muted mb-1">{t("foreignKey")}</p>
+                    <ul className="text-xs text-ink-muted space-y-1">
+                      {table.foreignKeys.map((fk, i) => (
+                        <li key={i}>
+                          {fk.column} → {fk.referencedTable}({fk.referencedColumn})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
             )}
           </Card>
         ))}
@@ -255,13 +268,17 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
         {tables.map((table) => (
           <Card key={table.name} variant="flat" className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center rounded-md bg-primary-50 px-2 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
-                {t("table")}
+              <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+                table.type === "view"
+                  ? "bg-accent-50 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300"
+                  : "bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+              }`}>
+                {table.type === "view" ? t("view") : t("table")}
               </span>
               <span className="text-sm font-semibold text-ink">{table.name}</span>
               {sandboxMode && (
                 <div className="ml-auto flex items-center gap-1">
-                  {onInsertTemplate && (
+                  {table.type !== "view" && onInsertTemplate && (
                     <button
                       onClick={() => onInsertTemplate(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-ink-muted hover:text-ink hover:bg-surface-dim dark:hover:bg-dark-dim transition-colors"
@@ -276,7 +293,7 @@ export const SchemaExplorer: React.FC<SchemaExplorerProps> = ({ tables, db, sand
                     <button
                       onClick={() => onDropTable(table.name)}
                       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-error/70 hover:text-error hover:bg-error/10 transition-colors"
-                      title={t("deleteTable")}
+                      title={table.type === "view" ? t("dropView") : t("deleteTable")}
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

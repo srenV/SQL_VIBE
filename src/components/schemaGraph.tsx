@@ -163,12 +163,18 @@ function layoutWithDagre(tables: SchemaTable[]): { nodes: Node[]; edges: Edge[] 
 const TableNode = React.memo(({ data }: { data: { table: SchemaTable; referencedColumns: Set<string> } }) => {
   const { table, referencedColumns } = data;
 
+  const isView = table.type === "view";
+
   // Pre-compute which columns are FK for badge rendering
   const fkColumns = new Set(table.foreignKeys?.map((fk) => fk.column));
 
   return (
     <div
-      className="rounded-lg border-2 border-primary-300 dark:border-primary-600 bg-surface dark:bg-slate-800 shadow-lg"
+      className={`rounded-lg shadow-lg ${
+        isView
+          ? "border-2 border-dashed border-accent-400 dark:border-accent-500 bg-surface dark:bg-slate-800"
+          : "border-2 border-primary-300 dark:border-primary-600 bg-surface dark:bg-slate-800"
+      }`}
       style={{ width: NODE_WIDTH, fontSize: 12, position: "relative", overflow: "visible" }}
     >
       {/* ── Handles placed at node level with absolute positioning ── */}
@@ -215,8 +221,16 @@ const TableNode = React.memo(({ data }: { data: { table: SchemaTable; referenced
         );
       })}
 
-      <div className="bg-primary-100 dark:bg-primary-500/30 px-3 py-2 border-b border-primary-200 dark:border-primary-400/30">
-        <span className="font-bold text-primary-800 dark:text-white text-sm">
+      <div className={`px-3 py-2 border-b ${
+        isView
+          ? "bg-accent-100 dark:bg-accent-500/30 border-accent-200 dark:border-accent-400/30"
+          : "bg-primary-100 dark:bg-primary-500/30 border-primary-200 dark:border-primary-400/30"
+      }`}>
+        <span className={`font-bold text-sm ${
+          isView
+            ? "text-accent-800 dark:text-accent-200"
+            : "text-primary-800 dark:text-white"
+        }`}>
           {table.name}
         </span>
       </div>

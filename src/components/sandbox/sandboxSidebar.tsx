@@ -49,6 +49,15 @@ function TableIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
   );
 }
 
+function ViewIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8z" />
+      <circle cx="8" cy="8" r="2" />
+    </svg>
+  );
+}
+
 const menuVariants = {
   hidden: { opacity: 0, scale: 0.95, y: -4 },
   visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.12, ease: [0.25, 0.46, 0.45, 0.94] as const } },
@@ -552,7 +561,11 @@ export const SandboxSidebar: React.FC<SandboxSidebarProps> = ({
                           className="w-full flex items-center gap-2 pl-8 pr-3 py-1.5 hover:bg-primary-50/60 dark:hover:bg-primary-900/20 text-left transition-colors"
                           title={`SELECT * FROM \`${table.name}\` LIMIT 50`}
                         >
-                          <TableIcon className="shrink-0 w-3.5 h-3.5 text-ink-muted" />
+                          {table.type === "view" ? (
+                            <ViewIcon className="shrink-0 w-3.5 h-3.5 text-accent-600 dark:text-accent-400" />
+                          ) : (
+                            <TableIcon className="shrink-0 w-3.5 h-3.5 text-ink-muted" />
+                          )}
                           <span className="flex-1 min-w-0 text-xs text-ink truncate">{table.name}</span>
                           <span className="shrink-0 text-[10px] text-ink-muted tabular-nums">
                             {table.columns.length} {t("columnsShort")}
