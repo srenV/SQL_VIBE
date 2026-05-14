@@ -5,7 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { postgresToSqlite } from "../postgresCompat";
 import { mysqlToSqlite } from "../mysqlCompat";
-import { transpileToSqlite, mapSqliteError, mapSqliteType } from "../dialectCompat";
+import { transpileToSqlite, mapSqliteError, mapSqliteType, getCompatWarnings } from "../dialectCompat";
 
 // ─── PostgreSQL Tests ────────────────────────────────────────────────────────
 
@@ -1649,6 +1649,195 @@ describe("MySQL: XOR operator", () => {
     const sql = "SELECT * FROM users WHERE is_active XOR is_banned;";
     const result = mysqlToSqlite(sql);
     expect(result).toContain("((is_active OR is_banned) AND NOT (is_active AND is_banned))");
+  });
+});
+
+describe("MySQL: Backtick conversion", () => {
+  it("Backticks → double quotes", () => {
+    const sql = "SELECT `name`, `age` FROM `users`;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain('"name"');
+    expect(result).toContain('"users"');
+    expect(result).not.toContain("`");
+  });
+});
+
+// ===== NEW TESTS FOR GAP ANALYSIS FIXES =====
+
+describe("PG: FILTER with nested parens", () => {
+  it("COUNT(DISTINCT name) FILTER (WHERE active = 1)", () => {
+    const sql = "SELECT COUNT(DISTINCT name) FILTER (WHERE active = 1) FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END)");
+    expect(result).not.toContain("FILTER");
+  });
+
+  it("SUM(CASE WHEN x THEN y) FILTER (WHERE cond)", () => {
+    const sql = "SELECT SUM(CASE WHEN status = 'active' THEN amount ELSE 0 END) FILTER (WHERE year = 2024) FROM sales;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("SUM(CASE WHEN year = 2024 THEN CASE WHEN status = 'active' THEN amount ELSE 0 END ELSE NULL END)");
+    expect(result).not.toContain("FILTER");
+  });
+});
+
+describe("PG: STRING_AGG with nested parens", () => {
+  it("STRING_AGG with simple args", () => {
+    const sql = "SELECT STRING_AGG(name, ', ') FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("GROUP_CONCAT(name, ', ')");
+    expect(result).not.toContain("STRING_AGG");
+  });
+
+  it("STRING_AGG with nested function call", () => {
+    const sql = "SELECT STRING_AGG(UPPER(name), ', ') FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("GROUP_CONCAT(UPPER(name), ', ')");
+    expect(result).not.toContain("STRING_AGG");
+  });
+});
+
+describe("MySQL: CONCAT with nested parens", () => {
+  it("CONCAT with nested CONCAT", () => {
+    const sql = "SELECT CONCAT(CONCAT(first, ' '), last) FROM users;";
+    const result = mysqlToSqlite(sql);
+    // Inner CONCAT is transformed first: CONCAT(first, ' ') → first || ' '
+    // Then outer: CONCAT(first || ' ', last) → first || ' ' || last
+    expect(result).toContain("||");
+    expect(result).not.toContain("CONCAT");
+  });
+
+  it("CONCAT_WS with nested CONCAT", () => {
+    const sql = "SELECT CONCAT_WS('-', CONCAT(first, ' '), last) FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("||");
+    expect(result).not.toContain("CONCAT");
+  });
+});
+
+describe("MySQL: IF() with nested IF", () => {
+  it("IF(a, IF(b, c, d), e) → nested CASE WHEN", () => {
+    const sql = "SELECT IF(status = 'active', IF(role = 'admin', 'super', 'user'), 'guest') FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CASE WHEN");
+    expect(result).not.toContain("IF(");
+  });
+
+  it("IF with comma in string literal", () => {
+    const sql = "SELECT IF(status = 'active', 'yes, sir', 'no') FROM users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("CASE WHEN status = 'active' THEN 'yes, sir' ELSE 'no' END");
+  });
+});
+
+describe("MySQL: INSERT IGNORE → INSERT OR IGNORE", () => {
+  it("INSERT IGNORE INTO → INSERT OR IGNORE INTO", () => {
+    const sql = "INSERT IGNORE INTO users (name) VALUES ('John');";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("INSERT OR IGNORE INTO");
+    expect(result).not.toContain("INSERT IGNORE");
+  });
+});
+
+describe("PG: ILIKE with function expression", () => {
+  it("LOWER(name) ILIKE '%foo%'", () => {
+    const sql = "SELECT * FROM users WHERE LOWER(name) ILIKE '%foo%';";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("LOWER(LOWER(name)) LIKE LOWER('%foo%')");
+    expect(result).not.toContain("ILIKE");
+  });
+});
+
+describe("PG: NOT ILIKE with function expression", () => {
+  it("LOWER(name) NOT ILIKE '%foo%'", () => {
+    const sql = "SELECT * FROM users WHERE LOWER(name) NOT ILIKE '%foo%';";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("LOWER(LOWER(name)) NOT LIKE LOWER('%foo%')");
+    expect(result).not.toContain("ILIKE");
+  });
+});
+
+describe("PG: String literal protection in transforms", () => {
+  it("ILIKE inside string literal is not transformed", () => {
+    const sql = "SELECT 'this ILIKE that' FROM users;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("ILIKE");
+  });
+
+  it("EXTRACT inside string literal is not transformed", () => {
+    const sql = "SELECT 'EXTRACT(YEAR FROM date)' AS label;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("EXTRACT");
+  });
+
+  it("IS DISTINCT FROM inside string literal is not transformed", () => {
+    const sql = "SELECT 'a IS DISTINCT FROM b' AS label;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("IS DISTINCT FROM");
+  });
+
+  it("CAST shorthand inside string literal is not transformed", () => {
+    const sql = "SELECT 'value::text' AS label;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("::text");
+  });
+});
+
+describe("MySQL: String literal protection in transforms", () => {
+  it("NOW() inside string literal is not transformed", () => {
+    const sql = "SELECT 'call NOW() for current time' AS label;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("NOW()");
+  });
+
+  it("IF() inside string literal is not transformed", () => {
+    const sql = "SELECT 'use IF(a,b,c) for conditions' AS label;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("IF(a,b,c)");
+  });
+});
+
+describe("PG: IS DISTINCT FROM with string literal operand", () => {
+  it("a IS DISTINCT FROM 'hello'", () => {
+    const sql = "SELECT * FROM users WHERE name IS DISTINCT FROM 'hello';";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain("IS NOT");
+    expect(result).not.toContain("DISTINCT");
+  });
+});
+
+describe("MySQL: || operator warning", () => {
+  it("|| in SQL triggers warning", () => {
+    const warnings = getCompatWarnings("SELECT * FROM t WHERE a = 1 || b = 2;", "mysql");
+    expect(warnings.some(w => w.includes("||"))).toBe(true);
+  });
+});
+
+describe("MySQL: INSERT IGNORE warning", () => {
+  it("INSERT IGNORE triggers warning", () => {
+    const warnings = getCompatWarnings("INSERT IGNORE INTO users (name) VALUES ('John');", "mysql");
+    expect(warnings.some(w => w.includes("INSERT IGNORE"))).toBe(true);
+  });
+});
+
+describe("PG: New feature warnings", () => {
+  it("IS DISTINCT FROM triggers warning", () => {
+    const warnings = getCompatWarnings("SELECT * FROM t WHERE a IS DISTINCT FROM b;", "postgresql");
+    expect(warnings.some(w => w.includes("IS DISTINCT FROM"))).toBe(true);
+  });
+
+  it("STRING_AGG triggers warning", () => {
+    const warnings = getCompatWarnings("SELECT STRING_AGG(name, ',') FROM t;", "postgresql");
+    expect(warnings.some(w => w.includes("STRING_AGG"))).toBe(true);
+  });
+
+  it("FILTER (WHERE ...) triggers warning", () => {
+    const warnings = getCompatWarnings("SELECT COUNT(*) FILTER (WHERE active = 1) FROM t;", "postgresql");
+    expect(warnings.some(w => w.includes("FILTER"))).toBe(true);
+  });
+
+  it("TO_CHAR triggers warning", () => {
+    const warnings = getCompatWarnings("SELECT TO_CHAR(date_col, 'YYYY-MM-DD') FROM t;", "postgresql");
+    expect(warnings.some(w => w.includes("TO_CHAR"))).toBe(true);
   });
 });
 

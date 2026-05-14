@@ -214,15 +214,31 @@ function transformTruncate(sql: string): string {
   );
 }
 
+/**
+ * Protect string literals in SQL by replacing them with placeholders.
+ * Returns { masked: string, strings: string[] } where strings can be used to restore.
+ */
+function protectStringLiterals(sql: string): { masked: string; strings: string[] } {
+  const strings: string[] = [];
+  const masked = sql.replace(/'([^']*)'/g, (match) => {
+    strings.push(match);
+    return `__STR${strings.length - 1}__`;
+  });
+  return { masked, strings };
+}
+
+/** Restore string literals from placeholders */
+function restoreStringLiterals(sql: string, strings: string[]): string {
+  return sql.replace(/__STR(\d+)__/g, (_, idx) => strings[parseInt(idx)]);
+}
+
 /** PostgreSQL CAST shorthand ::type → CAST(expr AS type) */
 function transformCastShorthand(sql: string): string {
-  // Match patterns like expression::type
-  // This is tricky because :: can appear inside strings
-  // We'll do a simple approach: replace ::type patterns outside of strings
-  let result = sql;
+  // Protect string literals from ::type replacement
+  const { masked: result, strings } = protectStringLiterals(sql);
+
   // Match identifier::type or expression::type
-  // Be careful not to match inside strings
-  result = result.replace(
+  let transformed = result.replace(
     /(\w+(?:\([^)]*\))?)\s*::\s*(\w+(?:\[\])?)/g,
     (_match, expr: string, type: string) => {
       // Map PostgreSQL types to SQLite types
@@ -230,7 +246,8 @@ function transformCastShorthand(sql: string): string {
       return `CAST(${expr} AS ${sqliteType})`;
     }
   );
-  return result;
+
+  return restoreStringLiterals(transformed, strings);
 }
 
 /** Map PostgreSQL type names to SQLite equivalents */
@@ -280,7 +297,10 @@ function mapPgTypeToSqlite(pgType: string): string {
 
 /** EXTRACT(part FROM date) → strftime('%X', date) */
 function transformExtract(sql: string): string {
-  return sql.replace(
+  // Protect string literals from EXTRACT replacement
+  const { masked: result, strings } = protectStringLiterals(sql);
+
+  const transformed = result.replace(
     /\bEXTRACT\s*\(\s*(YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)\s+FROM\s+([^)]+)\s*\)/gi,
     (_match, part: string, dateExpr: string) => {
       const upperPart = part.toUpperCase();
@@ -296,6 +316,134 @@ function transformExtract(sql: string): string {
       return `CAST(strftime('${fmt}', ${dateExpr.trim()}) AS INTEGER)`;
     }
   );
+
+  return restoreStringLiterals(transformed, strings);
+}
+
+/**
+ * Extract a balanced-parenthesis group starting at `startIdx` (which should point to '(').
+ * Returns the index of the matching ')' or -1 if not found.
+ */
+function findMatchingParen(sql: string, startIdx: number): number {
+  let depth = 0;
+  for (let i = startIdx; i < sql.length; i++) {
+    if (sql[i] === '(') depth++;
+    if (sql[i] === ')') {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Extract the content between balanced parentheses starting at `startIdx`.
+ * Returns the inner content (without the parens) or null if unbalanced.
+ */
+function extractBalancedContent(sql: string, startIdx: number): { content: string; endIdx: number } | null {
+  const closeIdx = findMatchingParen(sql, startIdx);
+  if (closeIdx === -1) return null;
+  return { content: sql.substring(startIdx + 1, closeIdx), endIdx: closeIdx };
+}
+
+/** STRING_AGG(expr, delimiter) → GROUP_CONCAT(expr, delimiter) with balanced-paren support */
+function transformStringAgg(sql: string): string {
+  const result: string[] = [];
+  let i = 0;
+  const upper = sql.toUpperCase();
+  while (i < sql.length) {
+    // Look for STRING_AGG(
+    if (upper.substring(i, i + 10) === 'STRING_AGG' && sql[i + 10] === '(') {
+      // Find the matching close paren for STRING_AGG
+      const aggEnd = findMatchingParen(sql, i + 10);
+      if (aggEnd === -1) {
+        result.push(sql[i]);
+        i++;
+        continue;
+      }
+      // Extract inner content: "expr, delimiter"
+      const inner = sql.substring(i + 11, aggEnd);
+      // Split on the first top-level comma
+      const commaIdx = findTopLevelComma(inner);
+      if (commaIdx === -1) {
+        result.push(sql[i]);
+        i++;
+        continue;
+      }
+      const expr = inner.substring(0, commaIdx).trim();
+      const delim = inner.substring(commaIdx + 1).trim();
+      result.push(`GROUP_CONCAT(${expr}, ${delim})`);
+      i = aggEnd + 1;
+    } else {
+      result.push(sql[i]);
+      i++;
+    }
+  }
+  return result.join('');
+}
+
+/** Find the first top-level comma in a string (not inside parentheses) */
+function findTopLevelComma(s: string): number {
+  let depth = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '(') depth++;
+    if (s[i] === ')') depth--;
+    if (s[i] === ',' && depth === 0) return i;
+  }
+  return -1;
+}
+
+/** FILTER (WHERE cond) on aggregates → CASE WHEN, with balanced-paren support */
+function transformFilterWhere(sql: string): string {
+  const result: string[] = [];
+  let i = 0;
+  const upper = sql.toUpperCase();
+  const aggFuncs = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX'];
+
+  while (i < sql.length) {
+    let matched = false;
+    for (const func of aggFuncs) {
+      if (upper.substring(i, i + func.length) === func && sql[i + func.length] === '(') {
+        // Found an aggregate function — extract its balanced content
+        const aggOpen = i + func.length; // index of '('
+        const aggEnd = findMatchingParen(sql, aggOpen);
+        if (aggEnd === -1) break; // unbalanced, skip
+
+        // Check if FILTER follows
+        const afterAgg = sql.substring(aggEnd + 1).replace(/^\s+/, '');
+        if (afterAgg.toUpperCase().startsWith('FILTER')) {
+          const filterStart = aggEnd + 1 + (sql.length - (aggEnd + 1) - afterAgg.length) + 6; // after "FILTER"
+          // Find the '(' after FILTER
+          const filterParenStart = sql.indexOf('(', aggEnd + 1);
+          if (filterParenStart === -1 || filterParenStart > filterStart + 10) break; // not FILTER(WHERE...)
+
+          const filterContent = extractBalancedContent(sql, filterParenStart);
+          if (!filterContent) break;
+
+          // filterContent.content should start with "WHERE ..."
+          const condStr = filterContent.content.trim();
+          if (!condStr.toUpperCase().startsWith('WHERE')) break;
+
+          const cond = condStr.substring(5).trim(); // remove "WHERE"
+          const expr = sql.substring(aggOpen + 1, aggEnd).trim();
+
+          if (func === 'COUNT') {
+            result.push(`SUM(CASE WHEN ${cond} THEN 1 ELSE 0 END)`);
+          } else {
+            result.push(`${func}(CASE WHEN ${cond} THEN ${expr} ELSE NULL END)`);
+          }
+          i = filterContent.endIdx + 1;
+          matched = true;
+          break;
+        }
+      }
+    }
+    if (!matched) {
+      result.push(sql[i]);
+      i++;
+    }
+  }
+  return result.join('');
 }
 
 /** NOW() / CURRENT_TIMESTAMP → DATETIME('now'), but preserve DEFAULT CURRENT_TIMESTAMP and string literals */
@@ -359,29 +507,15 @@ function transformDateFunctions(sql: string): string {
 
   // STRING_AGG(expr, delimiter) → GROUP_CONCAT(expr, delimiter)
   // PG: STRING_AGG(name, ', ') → SQLite: GROUP_CONCAT(name, ', ')
-  result = result.replace(
-    /\bSTRING_AGG\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)/gi,
-    (_match, expr: string, delim: string) =>
-      `GROUP_CONCAT(${expr.trim()}, ${delim.trim()})`
-  );
+  // Uses balanced-paren matching to handle nested function calls inside expr
+  result = transformStringAgg(result);
 
   // FILTER (WHERE cond) on aggregates → CASE WHEN cond THEN expr ELSE null END
   // PG: COUNT(*) FILTER (WHERE status = 'active') → SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END)
   // PG: SUM(x) FILTER (WHERE cond) → SUM(CASE WHEN cond THEN x ELSE NULL END)
   // PG: AVG(x) FILTER (WHERE cond) → AVG(CASE WHEN cond THEN x ELSE NULL END)
-  result = result.replace(
-    /\b(COUNT|SUM|AVG|MIN|MAX)\s*\(([^)]*)\)\s*FILTER\s*\(\s*WHERE\s+([^)]+)\)/gi,
-    (_match, func: string, expr: string, cond: string) => {
-      const trimmedExpr = expr.trim();
-      const trimmedCond = cond.trim();
-      if (func.toUpperCase() === "COUNT") {
-        // COUNT(*) FILTER (WHERE cond) → SUM(CASE WHEN cond THEN 1 ELSE 0 END)
-        return `SUM(CASE WHEN ${trimmedCond} THEN 1 ELSE 0 END)`;
-      }
-      // Other aggregates: FUNC(expr) FILTER (WHERE cond) → FUNC(CASE WHEN cond THEN expr ELSE NULL END)
-      return `${func.toUpperCase()}(CASE WHEN ${trimmedCond} THEN ${trimmedExpr} ELSE NULL END)`;
-    }
-  );
+  // Uses a function-based approach to handle nested parentheses in aggregate arguments
+  result = transformFilterWhere(result);
 
   // TO_CHAR(expr, format) → strftime(format, expr)
   // PG: TO_CHAR(date_col, 'YYYY-MM-DD') → SQLite: strftime('%Y-%m-%d', date_col)
@@ -412,45 +546,65 @@ function transformDateFunctions(sql: string): string {
   return result;
 }
 
-/** NOT ILIKE → NOT LOWER(col) LIKE LOWER(pattern) (must come before ILIKE) */
+/** NOT ILIKE → LOWER(col) NOT LIKE LOWER(pattern) with expression support (must come before ILIKE) */
 function transformNotIlike(sql: string): string {
-  return sql.replace(
-    /(\w+(?:\.\w+)?)\s+NOT\s+ILIKE\s+('[^']*'|"[^"]*")/gi,
+  // Protect string literals from NOT ILIKE replacement
+  const { masked: result, strings } = protectStringLiterals(sql);
+
+  // Handles: col NOT ILIKE 'pattern', LOWER(col) NOT ILIKE 'pattern', expr NOT ILIKE 'pattern'
+  // Left side: word, table.word, or function call like LOWER(col)
+  // Right side: string literal or word
+  const leftExpr = "(\\w+(?:\\.\\w+)?(?:\\s*\\([^)]*\\))?)";
+  const rightExpr = "('[^']*'|\"[^\"]*\"|\\w+(?:\\.\\w+)?)";
+  const transformed = result.replace(
+    new RegExp(`${leftExpr}\\s+NOT\\s+ILIKE\\s+${rightExpr}`, "gi"),
     (_match, col: string, pattern: string) =>
       `LOWER(${col}) NOT LIKE LOWER(${pattern})`
   );
+
+  return restoreStringLiterals(transformed, strings);
 }
 
-/** ILIKE → LOWER(col) LIKE LOWER(pattern) */
+/** ILIKE → LOWER(col) LIKE LOWER(pattern) with expression support */
 function transformIlike(sql: string): string {
-  // Simple approach: col ILIKE 'pattern' → LOWER(col) LIKE LOWER('pattern')
-  return sql.replace(
-    /(\w+(?:\.\w+)?)\s+ILIKE\s+('[^']*'|"[^"]*")/gi,
+  // Protect string literals from ILIKE replacement
+  const { masked: result, strings } = protectStringLiterals(sql);
+
+  // Handles: col ILIKE 'pattern', LOWER(col) ILIKE 'pattern', expr ILIKE 'pattern'
+  // Left side: word, table.word, or function call like LOWER(col)
+  // Right side: string literal or word
+  const leftExpr = "(\\w+(?:\\.\\w+)?(?:\\s*\\([^)]*\\))?)";
+  const rightExpr = "('[^']*'|\"[^\"]*\"|\\w+(?:\\.\\w+)?)";
+  const transformed = result.replace(
+    new RegExp(`${leftExpr}\\s+ILIKE\\s+${rightExpr}`, "gi"),
     (_match, col: string, pattern: string) =>
       `LOWER(${col}) LIKE LOWER(${pattern})`
   );
+
+  return restoreStringLiterals(transformed, strings);
 }
 
 /** IS DISTINCT FROM / IS NOT DISTINCT FROM → NULL-safe comparison */
 function transformIsDistinctFrom(sql: string): string {
-  let result = sql;
+  // Protect string literals from IS DISTINCT FROM replacement
+  const { masked: result, strings } = protectStringLiterals(sql);
 
   // IS NOT DISTINCT FROM → IS (NULL-safe equality: a IS NOT DISTINCT FROM b → a IS b)
   // Must come before IS DISTINCT FROM so the negated form is matched first
   // Operand can be: column name, table.column, string literal, number, NULL
   const operand = "(\\w+(?:\\.\\w+)?|'[^']*'|\\d+|NULL)";
-  result = result.replace(
+  let transformed = result.replace(
     new RegExp(`(\\w+(?:\\.\\w+)?)\\s+IS\\s+NOT\\s+DISTINCT\\s+FROM\\s+${operand}`, "gi"),
     "$1 IS $2"
   );
 
   // IS DISTINCT FROM → IS NOT (NULL-safe inequality: a IS DISTINCT FROM b → a IS NOT b)
-  result = result.replace(
+  transformed = transformed.replace(
     new RegExp(`(\\w+(?:\\.\\w+)?)\\s+IS\\s+DISTINCT\\s+FROM\\s+${operand}`, "gi"),
     "$1 IS NOT $2"
   );
 
-  return result;
+  return restoreStringLiterals(transformed, strings);
 }
 
 /** RETURNING * / RETURNING col1, col2 → removed (SQLite doesn't support) */
@@ -609,6 +763,13 @@ export function getPostgresCompatWarnings(sql: string): string[] {
   if (/\bON\s+CONFLICT\b/i.test(sql)) warnings.push("ON CONFLICT wurde zu INSERT OR IGNORE/REPLACE konvertiert");
   if (/\bILIKE\b/i.test(sql)) warnings.push("ILIKE wurde zu LOWER() LIKE konvertiert");
   if (/\bEXTRACT\s*\(/i.test(sql)) warnings.push("EXTRACT wurde zu strftime konvertiert");
+  if (/\bIS\s+DISTINCT\s+FROM\b/i.test(sql)) warnings.push("IS DISTINCT FROM wurde zu IS NOT konvertiert (NULL-safe)");
+  if (/\bIS\s+NOT\s+DISTINCT\s+FROM\b/i.test(sql)) warnings.push("IS NOT DISTINCT FROM wurde zu IS konvertiert (NULL-safe)");
+  if (/\bSTRING_AGG\s*\(/i.test(sql)) warnings.push("STRING_AGG wurde zu GROUP_CONCAT konvertiert");
+  if (/\bFILTER\s*\(\s*WHERE\b/i.test(sql)) warnings.push("FILTER (WHERE ...) wurde zu CASE WHEN konvertiert");
+  if (/\bTO_CHAR\s*\(/i.test(sql)) warnings.push("TO_CHAR wurde zu strftime konvertiert");
+  if (/\bTO_NUMBER\s*\(/i.test(sql)) warnings.push("TO_NUMBER wurde zu CAST(... AS INTEGER) konvertiert");
+  if (/\bTO_DATE\s*\(/i.test(sql)) warnings.push("TO_DATE wurde zu date() konvertiert");
 
   return warnings;
 }

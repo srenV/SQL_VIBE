@@ -81,6 +81,9 @@ export function mysqlToSqlite(sql: string): string {
   // 8. Funktions-Transformationen
   result = transformFunctions(result);
 
+  // 8b. INSERT IGNORE → INSERT OR IGNORE (MySQL → SQLite)
+  result = transformInsertIgnore(result);
+
   // 9. INSERT ... ON DUPLICATE KEY UPDATE → INSERT OR REPLACE
   result = transformOnDuplicateKey(result);
 
@@ -289,11 +292,8 @@ function transformFunctions(sql: string): string {
   });
 
   // IF(expr, a, b) → CASE WHEN expr THEN a ELSE b END
-  // Achtung: Verschachtelte IFs werden nicht unterstützt — einfache Fälle nur
-  result = result.replace(
-    /\bIF\s*\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi,
-    (_, cond, thenVal, elseVal) => `CASE WHEN ${cond} THEN ${thenVal} ELSE ${elseVal} END`
-  );
+  // Uses balanced-paren approach to handle nested IF() calls
+  result = transformIf(result);
 
   // CONCAT_WS(sep, a, b, ...) → a || sep || b || sep || c ...
   // Must come before CONCAT() so CONCAT_WS is matched first
@@ -423,29 +423,95 @@ function transformFunctions(sql: string): string {
   return result;
 }
 
-/** CONCAT(a, b, ...) → a || b || ... */
+/** CONCAT(a, b, ...) → a || b || ... with balanced-paren support */
 function transformConcat(sql: string): string {
-  // Einfacher Ansatz: CONCAT mit 2-5 Argumenten
-  // Komplexe Verschachtelungen werden nicht aufgelöst
-  const concatRegex = /\bCONCAT\s*\(([^)]+)\)/gi;
-  return sql.replace(concatRegex, (match, args) => {
-    // Argumente am Komma splitten (aber nicht innerhalb von Klammern)
-    const splitArgs = splitTopLevel(args, ",");
-    if (splitArgs.length < 2) return match; // Nichts zu tun
-    return splitArgs.map((a: string) => a.trim()).join(" || ");
-  });
+  // Run multiple passes to handle nested CONCAT calls
+  let result = sql;
+  let prev = "";
+  while (prev !== result) {
+    prev = result;
+    result = transformConcatSinglePass(result);
+  }
+  return result;
 }
 
-/** CONCAT_WS(sep, a, b, ...) → a || sep || b || sep || c ... */
+/** Single pass of CONCAT transformation */
+function transformConcatSinglePass(sql: string): string {
+  const result: string[] = [];
+  let i = 0;
+  const upper = sql.toUpperCase();
+
+  while (i < sql.length) {
+    // Look for CONCAT( — but not CONCAT_WS( or GROUP_CONCAT(
+    if (upper.substring(i, i + 6) === 'CONCAT' && sql[i + 6] === '(' && upper.substring(i, i + 9) !== 'CONCAT_WS' && (i === 0 || !/^[A-Z_]/i.test(sql.substring(i - 1, i)))) {
+      const openParen = i + 6;
+      const closeParen = findMatchingParen(sql, openParen);
+      if (closeParen === -1) {
+        result.push(sql[i]);
+        i++;
+        continue;
+      }
+      const inner = sql.substring(openParen + 1, closeParen);
+      const splitArgs = splitTopLevel(inner, ",");
+      if (splitArgs.length < 2) {
+        result.push(sql.substring(i, closeParen + 1));
+        i = closeParen + 1;
+        continue;
+      }
+      result.push(splitArgs.map((a: string) => a.trim()).join(" || "));
+      i = closeParen + 1;
+    } else {
+      result.push(sql[i]);
+      i++;
+    }
+  }
+  return result.join('');
+}
+
+/** CONCAT_WS(sep, a, b, ...) → a || sep || b || sep || c ... with balanced-paren support */
 function transformConcatWs(sql: string): string {
-  const concatWsRegex = /\bCONCAT_WS\s*\(([^)]+)\)/gi;
-  return sql.replace(concatWsRegex, (match, args) => {
-    const splitArgs = splitTopLevel(args, ",");
-    if (splitArgs.length < 3) return match; // Need separator + at least 2 values
-    const sep = splitArgs[0].trim();
-    const values = splitArgs.slice(1).map((a: string) => a.trim());
-    return values.join(` || ${sep} || `);
-  });
+  // Run multiple passes to handle nested CONCAT_WS calls
+  let result = sql;
+  let prev = "";
+  while (prev !== result) {
+    prev = result;
+    result = transformConcatWsSinglePass(result);
+  }
+  return result;
+}
+
+/** Single pass of CONCAT_WS transformation */
+function transformConcatWsSinglePass(sql: string): string {
+  const result: string[] = [];
+  let i = 0;
+  const upper = sql.toUpperCase();
+
+  while (i < sql.length) {
+    if (upper.substring(i, i + 9) === 'CONCAT_WS' && sql[i + 9] === '(') {
+      const openParen = i + 9;
+      const closeParen = findMatchingParen(sql, openParen);
+      if (closeParen === -1) {
+        result.push(sql[i]);
+        i++;
+        continue;
+      }
+      const inner = sql.substring(openParen + 1, closeParen);
+      const splitArgs = splitTopLevel(inner, ",");
+      if (splitArgs.length < 3) {
+        result.push(sql.substring(i, closeParen + 1));
+        i = closeParen + 1;
+        continue;
+      }
+      const sep = splitArgs[0].trim();
+      const values = splitArgs.slice(1).map((a: string) => a.trim());
+      result.push(values.join(` || ${sep} || `));
+      i = closeParen + 1;
+    } else {
+      result.push(sql[i]);
+      i++;
+    }
+  }
+  return result.join('');
 }
 
 /** DATE_FORMAT(date, format) → strftime(sqlite_format, date) */
@@ -488,6 +554,15 @@ function transformOnDuplicateKey(sql: string): string {
   return sql.replace(
     /^\s*INSERT\s+(?:INTO\s+)?(\w+)([\s\S]*?)\s+ON\s+DUPLICATE\s+KEY\s+UPDATE\s+[\s\S]*/i,
     (_, table, rest) => `INSERT OR REPLACE INTO ${table}${rest}`
+  );
+}
+
+/** INSERT IGNORE → INSERT OR IGNORE (MySQL → SQLite) */
+function transformInsertIgnore(sql: string): string {
+  // MySQL: INSERT IGNORE INTO table ... → SQLite: INSERT OR IGNORE INTO table ...
+  return sql.replace(
+    /\bINSERT\s+IGNORE\b/gi,
+    "INSERT OR IGNORE"
   );
 }
 
@@ -687,6 +762,72 @@ function transformAlterTable(sql: string): string {
   // Diese durchreichen, keine Transformation nötig
 
   return result;
+}
+
+/**
+ * Find the matching closing parenthesis for an opening paren at `startIdx`.
+ * Returns the index of the matching ')' or -1 if not found.
+ */
+function findMatchingParen(sql: string, startIdx: number): number {
+  let depth = 0;
+  for (let i = startIdx; i < sql.length; i++) {
+    if (sql[i] === '(') depth++;
+    if (sql[i] === ')') {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+/** IF(expr, a, b) → CASE WHEN expr THEN a ELSE b END with balanced-paren support */
+/** IF(expr, a, b) → CASE WHEN expr THEN a ELSE b END with balanced-paren support */
+function transformIf(sql: string): string {
+  // Run multiple passes to handle nested IF() calls
+  let result = sql;
+  let prev = "";
+  while (prev !== result) {
+    prev = result;
+    result = transformIfSinglePass(result);
+  }
+  return result;
+}
+
+/** Single pass of IF transformation */
+function transformIfSinglePass(sql: string): string {
+  const result: string[] = [];
+  let i = 0;
+  const upper = sql.toUpperCase();
+
+  while (i < sql.length) {
+    // Look for IF( — but not IFNULL(
+    if (upper.substring(i, i + 2) === 'IF' && sql[i + 2] === '(' && upper.substring(i, i + 6) !== 'IFNULL') {
+      const openParen = i + 2;
+      const closeParen = findMatchingParen(sql, openParen);
+      if (closeParen === -1) {
+        result.push(sql[i]);
+        i++;
+        continue;
+      }
+      const inner = sql.substring(openParen + 1, closeParen);
+      const args = splitTopLevel(inner, ",");
+      if (args.length !== 3) {
+        // Not a simple IF(cond, then, else) — leave as-is
+        result.push(sql.substring(i, closeParen + 1));
+        i = closeParen + 1;
+        continue;
+      }
+      const cond = args[0].trim();
+      const thenVal = args[1].trim();
+      const elseVal = args[2].trim();
+      result.push(`CASE WHEN ${cond} THEN ${thenVal} ELSE ${elseVal} END`);
+      i = closeParen + 1;
+    } else {
+      result.push(sql[i]);
+      i++;
+    }
+  }
+  return result.join('');
 }
 
 /**
@@ -946,6 +1087,43 @@ export function getMysqlCompatWarnings(sql: string): string[] {
   // SET (Session-Variablen)
   if (/^\s*SET\s+(?!@)/i.test(upper) && !/^\s*SET\s+FOREIGN_KEYS/i.test(upper)) {
     warnings.push("SET-Variablen werden in dieser Umgebung nicht unterstützt.");
+  }
+
+  // || operator — in MySQL default mode, || is logical OR, but in SQLite it's string concatenation.
+  // This is a semantic difference that can produce wrong results.
+  if (/\|\|/.test(sql) && !/\bCONCAT\s*\(/i.test(sql)) {
+    warnings.push("Der ||-Operator ist in MySQL logisches OR, in SQLite aber String-Verkettung. Verwende CONCAT() für String-Verkettung oder OR für logisches ODER.");
+  }
+
+  // <=> (NULL-safe equal) operator
+  if (/<=>/.test(sql)) {
+    warnings.push("Der <=>-Operator wurde zu IS konvertiert (NULL-safe Vergleich).");
+  }
+
+  // GREATEST / LEAST
+  if (/\bGREATEST\s*\(/i.test(sql)) {
+    warnings.push("GREATEST() wurde zu MAX() konvertiert.");
+  }
+  if (/\bLEAST\s*\(/i.test(sql)) {
+    warnings.push("LEAST() wurde zu MIN() konvertiert.");
+  }
+
+  // TIMESTAMPDIFF / TIMESTAMPADD
+  if (/\bTIMESTAMPDIFF\s*\(/i.test(sql)) {
+    warnings.push("TIMESTAMPDIFF wurde zu julianday-basierter Berechnung konvertiert (näherungsweise).");
+  }
+  if (/\bTIMESTAMPADD\s*\(/i.test(sql)) {
+    warnings.push("TIMESTAMPADD wurde zu date()-Arithmetik konvertiert.");
+  }
+
+  // XOR
+  if (/\bXOR\b/i.test(sql)) {
+    warnings.push("XOR wurde zu ((a OR b) AND NOT (a AND b)) konvertiert.");
+  }
+
+  // INSERT IGNORE
+  if (/\bINSERT\s+IGNORE\b/i.test(sql)) {
+    warnings.push("INSERT IGNORE wurde zu INSERT OR IGNORE konvertiert.");
   }
 
   // REPLACE INTO (MySQL-spezifisch, SQLite hat es aber auch)
