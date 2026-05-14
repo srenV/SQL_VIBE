@@ -270,22 +270,24 @@ export function runQuery(
 }
 
 /**
- * Liefert alle Tabellennamen und zugehoerige DDL-Anweisungen aus der Datenbank.
+ * Liefert alle Tabellen- und Sichtnamen (views) mit zugehoerigen DDL-Anweisungen aus der Datenbank.
  * @param db - Die sql.js-Datenbankinstanz.
- * @returns Array mit Tabellenname und SQL-DDL fuer jede Tabelle.
+ * @returns Array mit Name, Typ (table/view) und SQL-DDL fuer jede Tabelle und Sicht.
  */
 export function getSchema(db: SqlJsModule["Database"], dialect: Dialect = "mysql"): {
   name: string;
+  type: "table" | "view";
   sql: string | null;
 }[] {
   const result = runQuery(
     db,
-    "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;",
+    "SELECT name, type, sql FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY type, name;",
     dialect
   );
   if (!result.success || !result.resultset) return [];
   return result.resultset.rows.map((r) => ({
     name: String(r.name),
+    type: (String(r.type) === "view" ? "view" : "table") as "table" | "view",
     sql: r.sql != null ? String(r.sql) : null,
   }));
 }

@@ -86,10 +86,33 @@ export function postgresToSqlite(sql: string): string {
   // 12. DROP DATABASE / CREATE DATABASE → comments
   result = transformDatabaseStatements(result);
 
+  // 13. CREATE OR REPLACE VIEW → DROP VIEW IF EXISTS; CREATE VIEW
+  result = transformCreateOrReplaceView(result);
+
+  // 14. WITH CHECK OPTION → strip (SQLite doesn't support)
+  result = transformWithCheckOption(result);
+
   return result;
 }
 
 // ─── Einzelne Transformationen ────────────────────────────────────────────
+
+/** CREATE OR REPLACE VIEW → DROP VIEW IF EXISTS; CREATE VIEW (SQLite doesn't support OR REPLACE) */
+function transformCreateOrReplaceView(sql: string): string {
+  const match = sql.match(/^\s*CREATE\s+OR\s+REPLACE\s+VIEW\s+(\w+)\s+AS\s+([\s\S]+)$/i);
+  if (match) {
+    const viewName = match[1];
+    const viewDef = match[2];
+    return `DROP VIEW IF EXISTS "${viewName}"; CREATE VIEW "${viewName}" AS ${viewDef}`;
+  }
+  return sql;
+}
+
+/** WITH CHECK OPTION → strip from CREATE VIEW (SQLite doesn't support) */
+function transformWithCheckOption(sql: string): string {
+  // Strip WITH CHECK OPTION / WITH CASCADED CHECK OPTION / WITH LOCAL CHECK OPTION
+  return sql.replace(/\s+WITH\s+(?:CASCADED\s+|LOCAL\s+)?CHECK\s+OPTION\s*;?\s*$/i, ';');
+}
 
 /** Dollar-quoted strings ($$...$$ or $tag$...$tag$) → regular strings */
 function transformDollarQuotes(sql: string): string {
@@ -690,8 +713,11 @@ export function mapSqliteErrorToPostgres(sqliteError: string): string {
   // Common SQLite error patterns → PostgreSQL-style messages
   const mappings: [RegExp, string][] = [
     [/no such table: (.+)/i, 'relation "$1" does not exist'],
+    [/no such view: (.+)/i, 'view "$1" does not exist'],
     [/no such column: (.+)/i, 'column "$1" does not exist'],
     [/table (.+) already exists/i, 'relation "$1" already exists'],
+    [/view (.+) already exists/i, 'view "$1" already exists'],
+    [/cannot modify view (.+)/i, 'cannot modify view "$1"'],
     [/unique constraint failed: (.+)/i, 'duplicate key value violates unique constraint "$1"'],
     [/foreign key mismatch/i, "foreign key constraint violation"],
     [/constraint failed/i, "constraint violation"],

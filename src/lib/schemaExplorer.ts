@@ -22,7 +22,8 @@ export function introspectSchema(db: import("sql.js").Database, dialect: Dialect
   const tables = getSchema(db);
   return tables.map((t) => {
     const info = getTableInfo(db, t.name, dialect);
-    const fks = getForeignKeys(db, t.name, dialect);
+    // Views don't have foreign keys
+    const fks = t.type === "view" ? [] : getForeignKeys(db, t.name, dialect);
     const columns: SchemaColumn[] = info.map((col) => ({
       name: col.name,
       type: col.type,
@@ -39,8 +40,10 @@ export function introspectSchema(db: import("sql.js").Database, dialect: Dialect
 
     return {
       name: t.name,
+      type: t.type,
       columns,
       foreignKeys: foreignKeys.length > 0 ? foreignKeys : undefined,
+      sql: t.sql ?? undefined,
     };
   });
 }

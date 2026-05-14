@@ -105,6 +105,9 @@ export function mysqlToSqlite(sql: string): string {
   // 13. DROP DATABASE / CREATE DATABASE / USE → Kommentare (SQLite hat keine Multi-DB)
   result = transformDatabaseStatements(result);
 
+  // 14. CREATE OR REPLACE VIEW → DROP VIEW IF EXISTS; CREATE VIEW
+  result = transformCreateOrReplaceView(result);
+
   return result;
 }
 
@@ -218,23 +221,35 @@ function transformTruncate(sql: string): string {
 function transformShowAndDescribe(sql: string): string {
   const trimmed = sql.trim();
 
+  // SHOW FULL TABLES (must come before SHOW TABLES)
+  if (/^\s*SHOW\s+FULL\s+TABLES\b/i.test(trimmed)) {
+    return "SELECT name AS 'Table', CASE WHEN type='view' THEN 'VIEW' ELSE 'BASE TABLE' END AS 'Table_type' FROM sqlite_master WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' ORDER BY name;";
+  }
+
   // SHOW TABLES LIKE 'pattern' (must come before plain SHOW TABLES)
   const showTablesLike = trimmed.match(
     /^\s*SHOW\s+TABLES\s+LIKE\s+'([^']+)'/i
   );
   if (showTablesLike) {
     const pattern = showTablesLike[1].replace(/%/g, "%").replace(/_/g, "_");
-    return `SELECT name AS \`Table\` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name LIKE '${pattern}' ORDER BY name;`;
+    return `SELECT name AS \`Table\` FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' AND name LIKE '${pattern}' ORDER BY name;`;
   }
 
   // SHOW TABLES FROM db (ignoriert DB-Name, must come before plain SHOW TABLES)
   if (/^\s*SHOW\s+TABLES\s+FROM\b/i.test(trimmed)) {
-    return "SELECT name AS `Table` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;";
+    return "SELECT name AS `Table` FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name;";
   }
 
   // SHOW TABLES
   if (/^\s*SHOW\s+TABLES\b/i.test(trimmed)) {
-    return "SELECT name AS `Table` FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name;";
+    return "SELECT name AS `Table` FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name;";
+  }
+
+  // SHOW CREATE VIEW name → SELECT from sqlite_master
+  const showCreateViewMatch = trimmed.match(/^\s*SHOW\s+CREATE\s+VIEW\s+(\w+)/i);
+  if (showCreateViewMatch) {
+    const viewName = showCreateViewMatch[1];
+    return `SELECT type, name, sql AS 'Create View' FROM sqlite_master WHERE type = 'view' AND name = '${viewName}';`;
   }
 
   // DESCRIBE table / DESC table
@@ -255,17 +270,32 @@ function transformShowAndDescribe(sql: string): string {
     return `PRAGMA table_info("${table}");`;
   }
 
-  // SHOW CREATE TABLE table
+  // SHOW CREATE TABLE table (also works for views)
   const showCreateMatch = trimmed.match(
     /^\s*SHOW\s+CREATE\s+TABLE\s+(\w+)/i
   );
   if (showCreateMatch) {
     const table = showCreateMatch[1];
-    return `SELECT sql AS 'Create Table' FROM sqlite_master WHERE type = 'table' AND name = '${table}';`;
+    return `SELECT sql AS 'Create Table' FROM sqlite_master WHERE type IN ('table', 'view') AND name = '${table}';`;
   }
 
   return sql;
 }
+
+/** CREATE OR REPLACE VIEW → DROP VIEW IF EXISTS; CREATE VIEW (SQLite doesn't support OR REPLACE) */
+function transformCreateOrReplaceView(sql: string): string {
+  // CREATE OR REPLACE VIEW name AS ... → DROP VIEW IF EXISTS name; CREATE VIEW name AS ...
+  const match = sql.match(/^\s*CREATE\s+OR\s+REPLACE\s+VIEW\s+(\w+)\s+AS\s+([\s\S]+)$/i);
+  if (match) {
+    const viewName = match[1];
+    const viewDef = match[2];
+    return `DROP VIEW IF EXISTS "${viewName}"; CREATE VIEW "${viewName}" AS ${viewDef}`;
+  }
+  return sql;
+}
+
+/** SHOW CREATE VIEW → SELECT from sqlite_master */
+// Handled inside transformShowAndDescribe()
 
 /** LIMIT x, y → LIMIT y OFFSET x (MySQL-Pagination) */
 function transformLimitOffset(sql: string): string {
@@ -927,6 +957,12 @@ export function mapSqliteErrorToMysql(sqliteError: string): string {
     (_, table) => `Table '${table}' doesn't exist`
   );
 
+  // "no such view" → "View 'x' doesn't exist"
+  error = error.replace(
+    /no such view:\s*(\w+)/gi,
+    (_, view) => `View '${view}' doesn't exist`
+  );
+
   // "no such column" → "Unknown column 'x'" ([\w.]+ erfasst qualifizierte Namen wie tabelle.spalte)
   error = error.replace(
     /no such column:\s*([\w.]+)/gi,
@@ -937,6 +973,18 @@ export function mapSqliteErrorToMysql(sqliteError: string): string {
   error = error.replace(
     /table\s+(\w+)\s+already\s+exists/gi,
     (_, table) => `Table '${table}' already exists`
+  );
+
+  // "view x already exists" → "View 'x' already exists"
+  error = error.replace(
+    /view\s+(\w+)\s+already\s+exists/gi,
+    (_, view) => `View '${view}' already exists`
+  );
+
+  // "cannot modify view" → "View 'x' is not updatable"
+  error = error.replace(
+    /cannot\s+modify\s+view\s+(\w+)/gi,
+    (_, view) => `View '${view}' is not updatable`
   );
 
   // "near "x": syntax error" → "You have an error in your SQL syntax near 'x'"

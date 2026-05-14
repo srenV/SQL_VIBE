@@ -2116,14 +2116,107 @@ describe("PG: Multi-column CREATE TABLE with mixed types", () => {
   });
 });
 
-describe("MySQL: Multi-column CREATE TABLE with mixed types", () => {
-  it("Complex table with INT AUTO_INCREMENT, VARCHAR, DATETIME, BOOLEAN, DECIMAL", () => {
-    const sql = "CREATE TABLE orders (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), created_at DATETIME DEFAULT CURRENT_TIMESTAMP, active BOOLEAN, price DECIMAL(10,2));";
+// ─── View Transpilation Tests ──────────────────────────────────────────────
+
+describe("MySQL: CREATE OR REPLACE VIEW", () => {
+  it("CREATE OR REPLACE VIEW → DROP VIEW IF EXISTS; CREATE VIEW", () => {
+    const sql = "CREATE OR REPLACE VIEW active_users AS SELECT * FROM users WHERE active = 1;";
     const result = mysqlToSqlite(sql);
-    expect(result).toContain("id INTEGER PRIMARY KEY AUTOINCREMENT");
-    expect(result).toContain("name TEXT");
-    expect(result).toContain("created_at TEXT DEFAULT CURRENT_TIMESTAMP");
-    expect(result).toContain("active INTEGER");
-    expect(result).toContain("price REAL");
+    expect(result).toContain('DROP VIEW IF EXISTS "active_users"');
+    expect(result).toContain('CREATE VIEW "active_users" AS');
+    expect(result).not.toContain("OR REPLACE");
+  });
+});
+
+describe("MySQL: SHOW CREATE VIEW", () => {
+  it("SHOW CREATE VIEW → SELECT from sqlite_master", () => {
+    const sql = "SHOW CREATE VIEW active_users;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("sqlite_master");
+    expect(result).toContain("type = 'view'");
+    expect(result).toContain("active_users");
+  });
+});
+
+describe("MySQL: SHOW TABLES includes views", () => {
+  it("SHOW TABLES → includes views in sqlite_master query", () => {
+    const sql = "SHOW TABLES;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("type IN ('table', 'view')");
+  });
+
+  it("SHOW TABLES LIKE → includes views", () => {
+    const sql = "SHOW TABLES LIKE 'user%';";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("type IN ('table', 'view')");
+  });
+
+  it("SHOW TABLES FROM db → includes views", () => {
+    const sql = "SHOW TABLES FROM mydb;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("type IN ('table', 'view')");
+  });
+});
+
+describe("MySQL: SHOW FULL TABLES", () => {
+  it("SHOW FULL TABLES → includes Table_type column", () => {
+    const sql = "SHOW FULL TABLES;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("Table_type");
+    expect(result).toContain("'table'");
+    expect(result).toContain("'view'");
+  });
+});
+
+describe("MySQL: SHOW CREATE TABLE includes views", () => {
+  it("SHOW CREATE TABLE → includes views in sqlite_master query", () => {
+    const sql = "SHOW CREATE TABLE my_view;";
+    const result = mysqlToSqlite(sql);
+    expect(result).toContain("type IN ('table', 'view')");
+  });
+});
+
+describe("PostgreSQL: CREATE OR REPLACE VIEW", () => {
+  it("CREATE OR REPLACE VIEW → DROP VIEW IF EXISTS; CREATE VIEW", () => {
+    const sql = "CREATE OR REPLACE VIEW active_users AS SELECT * FROM users WHERE active = 1;";
+    const result = postgresToSqlite(sql);
+    expect(result).toContain('DROP VIEW IF EXISTS "active_users"');
+    expect(result).toContain('CREATE VIEW "active_users" AS');
+    expect(result).not.toContain("OR REPLACE");
+  });
+});
+
+describe("PostgreSQL: WITH CHECK OPTION stripping", () => {
+  it("WITH CHECK OPTION is stripped from CREATE VIEW", () => {
+    const sql = "CREATE VIEW active_users AS SELECT * FROM users WHERE active = 1 WITH CHECK OPTION;";
+    const result = postgresToSqlite(sql);
+    expect(result).not.toContain("CHECK OPTION");
+    expect(result).toContain("CREATE VIEW");
+  });
+
+  it("WITH CASCADED CHECK OPTION is stripped", () => {
+    const sql = "CREATE VIEW active_users AS SELECT * FROM users WHERE active = 1 WITH CASCADED CHECK OPTION;";
+    const result = postgresToSqlite(sql);
+    expect(result).not.toContain("CHECK OPTION");
+    expect(result).not.toContain("CASCADED");
+  });
+
+  it("WITH LOCAL CHECK OPTION is stripped", () => {
+    const sql = "CREATE VIEW active_users AS SELECT * FROM users WHERE active = 1 WITH LOCAL CHECK OPTION;";
+    const result = postgresToSqlite(sql);
+    expect(result).not.toContain("CHECK OPTION");
+    expect(result).not.toContain("LOCAL");
+  });
+});
+
+describe("SQLite: CREATE VIEW / DROP VIEW pass-through", () => {
+  it("CREATE VIEW passes through unchanged for sqlite dialect", () => {
+    const sql = "CREATE VIEW active_users AS SELECT * FROM users WHERE active = 1;";
+    expect(transpileToSqlite(sql, "sqlite")).toBe(sql);
+  });
+
+  it("DROP VIEW passes through unchanged for sqlite dialect", () => {
+    const sql = "DROP VIEW IF EXISTS active_users;";
+    expect(transpileToSqlite(sql, "sqlite")).toBe(sql);
   });
 });

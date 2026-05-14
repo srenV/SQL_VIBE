@@ -149,8 +149,12 @@ export interface HintResult {
 /** Schema-Explorer-Typen. */
 export interface SchemaTable {
   name: string;
+  /** Whether this is a table or a view. Defaults to "table" for backward compat. */
+  type?: "table" | "view";
   columns: SchemaColumn[];
   foreignKeys?: ForeignKey[];
+  /** The DDL SQL from sqlite_master (e.g. CREATE VIEW ... AS SELECT ...). */
+  sql?: string;
 }
 
 export interface SchemaColumn {
